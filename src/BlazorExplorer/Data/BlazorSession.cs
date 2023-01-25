@@ -62,12 +62,22 @@ namespace BlazorUI.Data
         /// </summary>
         public BlazorVisualElements DisplayElements = new BlazorVisualElements();
 
-
         /// <summary>
         /// The main menu holds the options, which are provided by a top/left positioned 
         /// application menu
         /// </summary>
         public AasxMenuBlazor MainMenu = new AasxMenuBlazor();
+
+        /// <summary>
+        /// Thsi menu holds the menu items which are provided by action buttons within
+        /// the dynamically created element panel.
+        /// </summary>
+        public AasxMenuBlazor DynamicMenu = new AasxMenuBlazor();
+
+        /// <summary>
+        /// The top-most display data required for razor pages to render elements.
+        /// </summary>
+        public AnyUiDisplayDataHtml DisplayData = null;
 
         /// <summary>
         /// Holds the stack panel of widgets for active AAS element.
@@ -621,6 +631,173 @@ namespace BlazorUI.Data
         {
             Log.Singleton.Error("Implement REBUILD TREE");
         }
-        
+
+        /// <summary>
+        /// This functions prepares display data and element panel to be rendered
+        /// by a razor page.
+        /// Note: in BlazorUI was in Index.razor; however complex code and better
+        /// maintained in Session.
+        /// </summary>
+        /// <returns>If contents could be rendered</returns>
+        public bool PrepareDisplayDataAndElementPanel(
+            IJSRuntime jsRuntime,
+            ref AnyUiDisplayDataHtml displayData, 
+            ref DispEditHelperMultiElement helper,
+            ref AnyUiStackPanel elementPanel,
+            ref AasxMenuBlazor dynamicMenu)
+        {
+            // access possible
+            var sn = DisplayElements.SelectedItem;
+            var bo = sn?.GetMainDataObject();
+            if (sn == null || bo == null)
+                return false;
+
+            // brutally remember some data
+            renderJsRuntime = jsRuntime;
+            helper.editMode = EditMode;
+            helper.repo = (EditMode) ? repo : null;
+
+            // create new context
+            var displayContext = new AnyUiDisplayContextHtml(this, jsRuntime);
+            displayData = new AnyUiDisplayDataHtml(displayContext);
+            helper.context = displayContext;
+
+            // menu will collect dynamic data
+            dynamicMenu ??= new AasxMenuBlazor();
+            var superMenu = dynamicMenu.Menu;
+
+            // clean view
+            if (elementPanel == null)
+                elementPanel = new AnyUiStackPanel();
+            else
+                elementPanel.Children.Clear();
+
+            // determine some flags
+            var tiCds = DisplayElements.SearchVisualElementOnMainDataObject(
+                PackageCentral.Main?.AasEnv?.ConceptDescriptions) as
+                VisualElementEnvironmentItem;
+
+            // first special case: multiple elements
+            if (DisplayElements.SelectedItems != null
+                && DisplayElements.SelectedItems.Count > 1)
+            {
+                // multi select
+                helper.DisplayOrEditAasEntityMultipleElements(
+                PackageCentral,
+                DisplayElements.SelectedItems,
+                EditMode, elementPanel,
+                tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None,
+                superMenu: superMenu);
+            }
+            else
+            {
+                // try to delegate to common routine
+                var common = helper.DisplayOrEditCommonEntity(
+                    PackageCentral,
+                    elementPanel,
+                    superMenu, EditMode, HintMode,
+                    tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None,
+                    DisplayElements.SelectedItem);
+
+                if (!common)
+                {
+                    // some special cases
+
+                    if (DisplayElements.SelectedItem is VisualElementPluginExtension vepe)
+                    {
+                        // Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
+                        var approach = 0;
+                        var hasWpf = vepe.thePlugin?.HasAction("fill-panel-visual-extension") == true;
+                        var hasAnyUi = vepe.thePlugin?.HasAction("fill-anyui-visual-extension") == true;
+
+                        if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
+                            approach = 1;
+
+                        if (hasAnyUi && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
+                            approach = 2;
+
+                        if (approach == 0 && hasAnyUi)
+                            approach = 2;
+
+                        if (approach == 0 && hasWpf)
+                            approach = 1;
+
+                        // NEW: Differentiate behaviour ..
+                        if (approach == 2)
+                        {
+                            //
+                            // Render panel via ANY UI !!
+                            //
+
+                            try
+                            {
+                                var opContext = new PluginOperationContextBase()
+                                {
+                                    DisplayMode = (EditMode)
+                                        ? PluginOperationDisplayMode.MayAddEdit
+                                        : PluginOperationDisplayMode.JustDisplay
+                                };
+
+                                vepe.thePlugin?.InvokeAction(
+                                    "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
+                                    elementPanel,
+                                    displayContext,
+                                    SessionId,
+                                    opContext);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex,
+                                    $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
+                            }
+                        }
+                        else
+                        {
+                            //
+                            // SWAP panel with NATIVE WPF CONTRAL and try render via WPF !!
+                            //
+
+                            // create controls
+                            object result = null;
+
+                            if (approach == 1)
+                                try
+                                {
+                                    // replace at top level
+                                    elementPanel.Children.Clear();
+                                    if (vepe.thePlugin != null)
+                                        result = vepe.thePlugin.InvokeAction(
+                                            "fill-panel-visual-extension",
+                                            vepe.thePackage, vepe.theReferable, elementPanel);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(ex,
+                                    $"render WPF based visual extension for plugin {vepe.thePlugin.name}");
+                                }
+
+                            // add?
+                            if (result == null)
+                            {
+                                // re-init display!
+                                elementPanel = new AnyUiStackPanel();
+                                helper.AddGroup(
+                                    elementPanel, "Entity from Plugin cannot be rendered!",
+                                    helper.levelColors.MainSection);
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        helper.AddGroup(
+                            elementPanel, "Entity is unknown!", helper.levelColors.MainSection);
+                    }
+                }
+            }
+
+            // okay
+            return true;
+        }
     }
 }
