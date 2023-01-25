@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
+  
+    <!-- force NuGet / Build to put required.dll and more to bin folder -->
+    <!-- Drawback: puts all other *.dll as well :-( -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  
   </PropertyGroup>
 
   <ItemGroup>

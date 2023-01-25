@@ -30,6 +30,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using BlazorExplorer;
+using System.IO.Packaging;
 
 namespace BlazorExplorer
 {

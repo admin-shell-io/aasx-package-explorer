@@ -322,7 +322,7 @@
             <div style="margin:0px 2px 1px 1px">
                 <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; white-space: nowrap;position:sticky;padding:10px 2px 10px 2px">
                     <div class="col" style="white-space: nowrap">
-                        @updateVisibleTree(Items, Session.DisplayElements.SelectedItem)
+                        @* @updateVisibleTree(Items, Session.DisplayElements.SelectedItem) *@
                         @* @if (Program.isLoading)
                             {<span style="color:white;background-color:blue;">Loading...</span>} *@
                         @if (Session.DisplayElements?.TreeItems == null
@@ -490,16 +490,8 @@
 
                     // brutally remember some data
                     Session.renderJsRuntime = JSRuntime;
-
                     Session.helper.editMode = Session.EditMode;
-                    if (Session.EditMode)
-                    {
-                        Session.helper.repo = Session.repo;
-                    }
-                    else
-                    {
-                        Session.helper.repo = null;
-                    }
+                    Session.helper.repo = (Session.EditMode) ? Session.repo : null;
                     var displayContext = new AnyUiDisplayContextHtml(Session, JSRuntime);
                     var displayData = new AnyUiDisplayDataHtml(displayContext);
                     Session.helper.context = displayContext;
@@ -517,123 +509,128 @@
                         Session.PackageCentral.Main?.AasEnv?.ConceptDescriptions) as
                         VisualElementEnvironmentItem;
 
-                    // try to delegate to common routine
-                    var common = Session.helper.DisplayOrEditCommonEntity(
-                        Session.PackageCentral, 
-                        Session.ElementPanel,
-                        superMenu, Session.EditMode, Session.HintMode, 
-                        tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None,
-                    Session.DisplayElements.SelectedItem);
-
-                    if (!common)
+                    // first special case: multiple elements
+                    if (Session.DisplayElements.SelectedItems != null
+                        && Session.DisplayElements.SelectedItems.Count > 1)
                     {
-                        // some special cases
-                        if (Session.DisplayElements.SelectedItem is VisualElementPluginExtension vepe)
+                        // multi select
+                        Session.helper.DisplayOrEditAasEntityMultipleElements(
+                        Session.PackageCentral,
+                        Session.DisplayElements.SelectedItems,
+                        Session.EditMode, Session.ElementPanel,
+                        tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None,
+                        superMenu: superMenu);
+                    }
+                    else
+                    {
+                        // try to delegate to common routine
+                        var common = Session.helper.DisplayOrEditCommonEntity(
+                            Session.PackageCentral,
+                            Session.ElementPanel,
+                            superMenu, Session.EditMode, Session.HintMode,
+                            tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None,
+                            Session.DisplayElements.SelectedItem);
+
+                        if (!common)
                         {
-                            //                            // Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
-                            //                            var approach = 0;
-                            //                            var hasWpf = vepe.thePlugin?.HasAction("fill-panel-visual-extension") == true;
-                            //                            var hasAnyUi = vepe.thePlugin?.HasAction("fill-anyui-visual-extension") == true;
+                            // some special cases
 
-                            //                            if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
-                            //                                approach = 1;
+                            if (Session.DisplayElements.SelectedItem is VisualElementPluginExtension vepe)
+                            {
+								// Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
+								var approach = 0;
+								var hasWpf = vepe.thePlugin?.HasAction("fill-panel-visual-extension") == true;
+								var hasAnyUi = vepe.thePlugin?.HasAction("fill-anyui-visual-extension") == true;
 
-                            //                            if (hasAnyUi && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
-                            //                                approach = 2;
+								if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
+									approach = 1;
 
-                            //                            if (approach == 0 && hasAnyUi)
-                            //                                approach = 2;
+								if (hasAnyUi && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
+									approach = 2;
 
-                            //                            if (approach == 0 && hasWpf)
-                            //                                approach = 1;
+								if (approach == 0 && hasAnyUi)
+									approach = 2;
 
-                            //                            // NEW: Differentiate behaviour ..
-                            //                            if (approach == 2)
-                            //                            {
-                            //                                //
-                            //                                // Render panel via ANY UI !!
-                            //                                //
+								if (approach == 0 && hasWpf)
+									approach = 1;
 
-                            //                                try
-                            //                                {
-                            //                                    var opContext = new PluginOperationContextBase()
-                            //                                {
-                            //                                    DisplayMode = (editMode)
-                            //                            ? PluginOperationDisplayMode.MayAddEdit
-                            //                            : PluginOperationDisplayMode.JustDisplay
-                            //                                };
+								// NEW: Differentiate behaviour ..
+								if (approach == 2)
+								{
+									//
+									// Render panel via ANY UI !!
+									//
 
-                            //                                    vepe.thePlugin?.InvokeAction(
-                            //                                    "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
-                            //                                    stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf,
-                            //                                    opContext);
-                            //                                }
-                            //                                catch (Exception ex)
-                            //                                {
-                            //                                    Log.Singleton.Error(ex,
-                            //                                    $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
-                            //                                }
+									try
+									{
+										var opContext = new PluginOperationContextBase()
+									    {
+										    DisplayMode = (Session.EditMode)
+									            ? PluginOperationDisplayMode.MayAddEdit
+									            : PluginOperationDisplayMode.JustDisplay
+									    };
 
-                            //                                // show no panel nor scroll
-                            //                                renderHints.scrollingPanel = false;
-                            //                                renderHints.showDataPanel = false;
-                            //                                renderHints.useInnerGrid = true;
-                            //                            }
-                            //                            else
-                            //                            {
-                            //                                //
-                            //                                // SWAP panel with NATIVE WPF CONTRAL and try render via WPF !!
-                            //                                //
+										vepe.thePlugin?.InvokeAction(
+										    "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
+                                            Session.ElementPanel, 
+                                            displayContext, 
+                                            Session.SessionId,
+										    opContext);
+									}
+									catch (Exception ex)
+									{
+										Log.Singleton.Error(ex,
+										    $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
+									}
+								}
+								else
+								{
+									//
+									// SWAP panel with NATIVE WPF CONTRAL and try render via WPF !!
+									//
 
-                            //                                // create controls
-                            //                                object result = null;
+									// create controls
+									object result = null;
 
-                            //                                if (approach == 1)
-                            //                                    try
-                            //                                    {
-                            //                                        // replace at top level
-                            //                                        theMasterPanel.Children.Clear();
-                            //                                        if (vepe.thePlugin != null)
-                            //                                            result = vepe.thePlugin.InvokeAction(
-                            //                                            "fill-panel-visual-extension",
-                            //                                            vepe.thePackage, vepe.theReferable, theMasterPanel);
-                            //                                    }
-                            //                                    catch (Exception ex)
-                            //                                    {
-                            //                                        Log.Singleton.Error(ex,
-                            //                                        $"render WPF based visual extension for plugin {vepe.thePlugin.name}");
-                            //                                    }
+									if (approach == 1)
+										try
+										{
+											// replace at top level
+											Session.ElementPanel.Children.Clear();
+											if (vepe.thePlugin != null)
+												result = vepe.thePlugin.InvokeAction(
+												    "fill-panel-visual-extension",
+                                                    vepe.thePackage, vepe.theReferable, Session.ElementPanel);
+										}
+										catch (Exception ex)
+										{
+											Log.Singleton.Error(ex,
+											$"render WPF based visual extension for plugin {vepe.thePlugin.name}");
+										}
 
-                            //                                // add?
-                            //                                if (result == null)
-                            //                                {
-                            //                                    // re-init display!
-                            //#if MONOUI
-                            //                    stack = ClearDisplayDefautlStack();
-                            //#else
-                            //                                    stack = new AnyUiStackPanel();
-                            //#endif
+									// add?
+									if (result == null)
+									{
+										// re-init display!
+#if MONOUI
+				stack = ClearDisplayDefautlStack();
+#else
+										Session.ElementPanel = new AnyUiStackPanel();
+#endif
 
-                            //                                    // helping message
-                            //                                    _helper.AddGroup(
-                            //                                    stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
-                            //                                }
-                            //                                else
-                            //                                {
-                            //                                    // this is natively done; do NOT render Any UI to WPF
-                            //                                    inhibitRenderStackToPanel = true;
-                            //                                }
+										// helping message
+										Session.helper.AddGroup(
+                                            Session.ElementPanel, "Entity from Plugin cannot be rendered!", 
+                                            Session.helper.levelColors.MainSection);
+									}
+								}
 
-                            //                                // show no panel nor scroll
-                            //                                renderHints.scrollingPanel = false;
-                            //                                renderHints.showDataPanel = false;
-                            //                            }
-
-                        }
-                        else
-                        {
-                            Session.helper.AddGroup(
-                                Session.ElementPanel, "Entity is unknown!", Session.helper.levelColors.MainSection);
+                            }
+                            else
+                            {
+                                Session.helper.AddGroup(
+                                    Session.ElementPanel, "Entity is unknown!", Session.helper.levelColors.MainSection);
+                            }
                         }
                     }
 
@@ -1084,69 +1081,69 @@
             }
     }
 
-    string updateVisibleTree(List<Item> viewItems, VisualElementGeneric selectedNode)
-    {
-        if (update && session != null && !session.htmlEventIn && !session.htmlEventOut)
-        {
-            //switch (newDataMode)
-            //{
-            //    // 0 == same tree, only values changed
-            //    case Program.DataRedrawMode.ValueChanged:
-            //        break;
-            //    // 1 == same tree, structure may change
-            //    // 2 == build new tree, keep open nodes
-            //    case Program.DataRedrawMode.SomeStructChange:
-            //    case Program.DataRedrawMode.RebuildTreeKeepOpen:
-            //        bool isSelected = selectedNode != null;
-            //        bool isExpanded = Session.DisplayElements.ExpandedItems.Count != 0;
-            //        List<string>[] expandedNodesPath = new List<string>[Session.DisplayElements.ExpandedItems.Count + 1];
-            //        List<string> selectedNodePath = getPath(selectedNode);
-            //        if (isExpanded)
-            //        {
-            //            for (int j = 0; j < Session.DisplayElements.ExpandedItems.Count; j++)
-            //            {
-            //                expandedNodesPath[j] = getPath(Session.DisplayElements.ExpandedItems[j]);
-            //            }
-            //        }
-            //        Session.RebuildTree();
-            //        //SubmodelService.buildTree(Session);
-            //        //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
-            //        Session.DisplayElements.ExpandedItems.Clear();
-            //        selectedNode = null;
-            //        if (isSelected)
-            //        {
-            //            selectedNode = findPath(selectedNodePath);
-            //        }
-            //        if (isExpanded)
-            //        {
-            //            foreach (var path in expandedNodesPath)
-            //            {
-            //                var p = findPath(path);
-            //                if (p != null)
-            //                    Session.DisplayElements.ExpandedItems.Add(p);
-            //            }
-            //        }
-            //        newDataMode = 0;
-            //        break;
-            //    // 3 == build new tree, all nodes closed
-            //    case Program.DataRedrawMode.RebuildTreeAllClosed:
-            //        Session.RebuildTree();
-            //        //SubmodelService.buildTree(Session);
-            //        //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
-            //        Session.DisplayElements.ExpandedItems.Clear();
-            //        selectedNode = null;
-            //        newDataMode = 0;
-            //        break;
-            //}
+    //string updateVisibleTree(List<Item> viewItems, VisualElementGeneric selectedNode)
+    //{
+    //    if (update && session != null && !session.htmlEventIn && !session.htmlEventOut)
+    //    {
+    //        //switch (newDataMode)
+    //        //{
+    //        //    // 0 == same tree, only values changed
+    //        //    case Program.DataRedrawMode.ValueChanged:
+    //        //        break;
+    //        //    // 1 == same tree, structure may change
+    //        //    // 2 == build new tree, keep open nodes
+    //        //    case Program.DataRedrawMode.SomeStructChange:
+    //        //    case Program.DataRedrawMode.RebuildTreeKeepOpen:
+    //        //        bool isSelected = selectedNode != null;
+    //        //        bool isExpanded = Session.DisplayElements.ExpandedItems.Count != 0;
+    //        //        List<string>[] expandedNodesPath = new List<string>[Session.DisplayElements.ExpandedItems.Count + 1];
+    //        //        List<string> selectedNodePath = getPath(selectedNode);
+    //        //        if (isExpanded)
+    //        //        {
+    //        //            for (int j = 0; j < Session.DisplayElements.ExpandedItems.Count; j++)
+    //        //            {
+    //        //                expandedNodesPath[j] = getPath(Session.DisplayElements.ExpandedItems[j]);
+    //        //            }
+    //        //        }
+    //        //        Session.RebuildTree();
+    //        //        //SubmodelService.buildTree(Session);
+    //        //        //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
+    //        //        Session.DisplayElements.ExpandedItems.Clear();
+    //        //        selectedNode = null;
+    //        //        if (isSelected)
+    //        //        {
+    //        //            selectedNode = findPath(selectedNodePath);
+    //        //        }
+    //        //        if (isExpanded)
+    //        //        {
+    //        //            foreach (var path in expandedNodesPath)
+    //        //            {
+    //        //                var p = findPath(path);
+    //        //                if (p != null)
+    //        //                    Session.DisplayElements.ExpandedItems.Add(p);
+    //        //            }
+    //        //        }
+    //        //        newDataMode = 0;
+    //        //        break;
+    //        //    // 3 == build new tree, all nodes closed
+    //        //    case Program.DataRedrawMode.RebuildTreeAllClosed:
+    //        //        Session.RebuildTree();
+    //        //        //SubmodelService.buildTree(Session);
+    //        //        //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
+    //        //        Session.DisplayElements.ExpandedItems.Clear();
+    //        //        selectedNode = null;
+    //        //        newDataMode = 0;
+    //        //        break;
+    //        //}
 
-            //// remember new (same?) selected node, but do not redraw pluging
-            //_inhibitSelectNodeForPanel += 1;
-            //Session.DisplayElements.SelectedItem = selectedNode;
-            //// update = false;
-            //// updateNode(viewItems[0]);
-        }
-        return "";
-    }
+    //        //// remember new (same?) selected node, but do not redraw pluging
+    //        //_inhibitSelectNodeForPanel += 1;
+    //        //Session.DisplayElements.SelectedItem = selectedNode;
+    //        //// update = false;
+    //        //// updateNode(viewItems[0]);
+    //    }
+    //    return "";
+    //}
 
     List<string> getPath(VisualElementGeneric i)
     {

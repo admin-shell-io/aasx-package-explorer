@@ -78,7 +78,15 @@ namespace AasxIntegrationBaseGdi
             return null;
         }
 
-        
+        public static AnyUiBitmapInfo MakePreviewFromPackageOrUrl(
+            AdminShellPackageEnv package, string path,
+            double dpi = 75)
+        {
+            // makes only sense for ImageMagick
+            return null;
+        }
+
+
     }
 }
 

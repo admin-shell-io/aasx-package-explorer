@@ -94,48 +94,45 @@
       "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
       "Args": []
     },
+    {
+      "Path": "..\\AasxPluginBomStructure\\bin\\Debug\\net6.0-windows\\AasxPluginBomStructure.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\AasxPluginMtpViewer\\bin\\Debug\\net6.0-windows\\AasxPluginMtpViewer.dll",
+      "Args": []
+    },
     */
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
+      "Path": "..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
+      "Path": "..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
+      "Path": "..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net6.0-windows\\AasxPluginAdvancedTextEditor.dll",
+      "Path": "..\\AasxPluginTechnicalData\\bin\\Debug\\net6.0-windows\\AasxPluginTechnicalData.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net6.0-windows\\AasxPluginTechnicalData.dll",
+      "Path": "..\\AasxPluginPlotting\\bin\\Debug\\net6.0-windows\\AasxPluginPlotting.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net6.0-windows\\AasxPluginBomStructure.dll",
+      "Path": "..\\AasxPluginImageMap\\bin\\Debug\\net6.0-windows\\AasxPluginImageMap.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net6.0-windows\\AasxPluginPlotting.dll",
+      "Path": "..\\AasxPluginExportTable\\bin\\Debug\\net6.0-windows\\AasxPluginExportTable.dll",
       "Args": []
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net6.0-windows\\AasxPluginImageMap.dll",
-      "Args": []
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net6.0-windows\\AasxPluginMtpViewer.dll",
-      "Args": []
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net6.0-windows\\AasxPluginExportTable.dll",
-      "Args": []
-    },
+    }
     // Festo specific from here on
+    /* ,    
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\net6.0-windows\\AasxPluginFluiddrawViewer.dll",
       "Args": []
@@ -143,8 +140,7 @@
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\net6.0-windows\\AasxPluginFluiddrawBom.dll",
       "Args": []
-    }
-    /* ,    
+    },
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
       "Args": []

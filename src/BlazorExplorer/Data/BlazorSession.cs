@@ -13,10 +13,12 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Packaging;
 using System.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
+using AasxIntegrationBaseGdi;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
@@ -97,7 +99,7 @@ namespace BlazorUI.Data
         public string[] aasxFiles = new string[1];
         public string aasxFileSelected = "";
         public PackageContainerListHttpRestRepository repository = null;
-        public DispEditHelperEntities helper = null;
+        public DispEditHelperMultiElement helper = null;
         public ModifyRepo repo = null;
         public PackageContainerBase container = null;
 
@@ -257,7 +259,7 @@ namespace BlazorUI.Data
 
             env = null;
 
-            helper = new DispEditHelperEntities();
+            helper = new DispEditHelperMultiElement();
             helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
             
             // some functionality still uses repo != null to detect editMode!!
@@ -276,6 +278,9 @@ namespace BlazorUI.Data
 
             htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
             htmlDotnetThread.Start();
+
+            // Test
+            // var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(this.PackageCentral.Main, "/aasx/icon.bmp");
         }
 
         /// <summary>
