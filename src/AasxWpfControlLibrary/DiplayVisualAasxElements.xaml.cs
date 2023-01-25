@@ -53,6 +53,10 @@ namespace AasxPackageExplorer
         // Public events and properties
         //
 
+        /// <summary>
+        /// Constant to allow fall-back behaviour of the source code
+        /// (basically a define?!)
+        /// </summary>
         public const int MultiSelect = 2;
 
         public event EventHandler SelectedItemChanged = null;
