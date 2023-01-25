@@ -468,7 +468,10 @@ namespace BlazorUI.Data
             }
         }
 
-        public void RedrawAllAasxElements(bool keepFocus = false)
+        public void RedrawAllAasxElements(
+            bool keepFocus = false,
+            object nextFocusMdo = null,
+            bool wishExpanded = true)
         {
             // focus info
             var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
@@ -495,17 +498,19 @@ namespace BlazorUI.Data
                 lazyLoadingFirst: true);
 
             // ok .. try re-focus!!
-            if (keepFocus)
+            if (keepFocus || nextFocusMdo != null)
             {
                 // make sure that Submodel is expanded
                 this.DisplayElements.ExpandAllItems();
 
                 // still proceed?
-                var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(focusMdo,
-                        alsoDereferenceObjects: true);
+                var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(
+                    (nextFocusMdo != null) ? nextFocusMdo : focusMdo,
+                    alsoDereferenceObjects: true);
 
+                // select?
                 if (veFound != null)
-                    DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
+                    DisplayElements.TrySelectVisualElement(veFound, wishExpanded: wishExpanded);
             }
 
             // display again

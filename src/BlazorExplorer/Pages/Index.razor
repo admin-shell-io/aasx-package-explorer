@@ -576,7 +576,7 @@
             //ExpandedNodes.Add(Items.Skip(1).First());
             //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
 
-            SubmodelService.NewDataAvailable += NewData;
+            SubmodelService.NewDataAvailable += NotifyForNewData;
 
             //
             // check query params
@@ -724,7 +724,15 @@
 
     protected bool _onlyUpdatePluginUi = false;
 
-    void NewData(object source, EventArgs args)
+    /// <summary>
+    /// This is main input chanel for external data / events / inputs
+    /// to the razor page. This input data might comprise
+    /// action lambdas from html, event returns from plugins, dispatch
+    /// from singleton main program and more.
+    /// </summary>
+    /// <param name="source">Not used</param>
+    /// <param name="args">Data</param>
+    void NotifyForNewData(object source, EventArgs args)
     {
         // update = true;
         if (args is Program.NewDataAvailableArgs ndm)
@@ -765,9 +773,15 @@
                 if (ndm.OnlyUpdatePanel)
                     _onlyUpdatePluginUi = true;
 
-                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionRedrawAllElementsBase)
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionRedrawAllElementsBase larae)
+                {
                     // force the sticky update mode to false, because of total redraw
+                    Session.RedrawAllAasxElements(
+                        keepFocus: true,
+                        nextFocusMdo: larae.NextFocus,
+                        wishExpanded: larae.IsExpanded ?? true);
                     _onlyUpdatePluginUi = false;
+                }
 
                 if (ndm.ExecuteLambdaAction is AnyUiLambdaActionRedrawEntity)
                     // force the sticky update mode to false, because of redraw of entity
@@ -1067,7 +1081,7 @@
         // TODO SESSION
 
         _timer?.Dispose();
-        SubmodelService.NewDataAvailable -= NewData;
+        SubmodelService.NewDataAvailable -= NotifyForNewData;
         BlazorSession.totalIndexTimer--;
     }
 
