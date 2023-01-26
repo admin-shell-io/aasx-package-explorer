@@ -74,12 +74,15 @@ namespace AasxPackageLogic
 
     public class AnyUiLambdaActionPackCntChange : AnyUiLambdaActionBase
     {
-        public AnyUiLambdaActionPackCntChange() { }
-        public AnyUiLambdaActionPackCntChange(PackCntChangeEventData change)
-        {
-            this.Change = change;
-        }
         public PackCntChangeEventData Change;
+        public object NextFocus = null;
+
+        public AnyUiLambdaActionPackCntChange() { }
+        public AnyUiLambdaActionPackCntChange(PackCntChangeEventData change, object nextFocus = null)
+        {
+            Change = change;
+            NextFocus = nextFocus;
+        }
     }
 
     public class AnyUiLambdaActionNavigateTo : AnyUiLambdaActionBase

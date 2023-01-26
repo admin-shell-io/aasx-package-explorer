@@ -35,12 +35,38 @@ using BlazorUI.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace AnyUi
 {
+
+    // public enum AnyUiHtmlEventType { None, Dialog }
+
     public class AnyUiHtmlEventSession
     {
-        public int sessionNumber = 0;
+        /// <summary>
+        /// The session id matches the one in the BlazorSession.
+        /// </summary>
+        public int SessionId = 0;
+
+        /// <summary>
+        /// If <c>true</c>, a special HTML dialog rendering will occur for
+        /// the event.
+        /// </summary>
+        public bool EventOpen;
+
+        /// <summary>
+        /// Will be raised if the modal event shall be closed.
+        /// </summary>
+        public bool EventDone;
+
+        /// <summary>
+        /// In case of <c>EventType == Dialog</c>, gives the dialog data.
+        /// </summary>
+        public AnyUiDialogueDataBase DialogueData;
+
+        // old stuff
+
         public bool htmlDotnetEventIn = false;
         public bool htmlDotnetEventOut = false;
         public string htmlDotnetEventType = "";
@@ -52,6 +78,41 @@ namespace AnyUi
         public string htmlEventType = "";
         public List<object> htmlEventInputs = new List<object>();
         public List<object> htmlEventOutputs = new List<object>();
+
+        /// <summary>
+        /// Denotes, which event type leads to a special HTML rendering.
+        /// </summary>
+        // public AnyUiHtmlEventType EventType;
+
+
+        // service function
+
+        /// <summary>
+        /// Will set all important flags in a way, that the event can be executed.
+        /// </summary>
+        /// <param name="diaData"></param>
+        public T StartModal<T>(T diaData) where T : AnyUiDialogueDataBase
+        {
+            if (diaData == null)
+            {
+                EventOpen = false;
+                EventDone = true;
+                return diaData;
+            }
+
+            EventOpen = true;
+            DialogueData = diaData;
+            EventDone = false;
+            return diaData;
+        }
+
+        public void EndModal(bool result)
+        {
+			EventOpen = false;
+			EventDone = true;
+            if (DialogueData != null)
+                DialogueData.Result = result;
+		}
     }
 
     public enum AnyUiHtmlFillMode { None, FillWidth }
@@ -104,23 +165,23 @@ namespace AnyUi
         static object staticHtmlDotnetLock = new object();
         public static List<AnyUiHtmlEventSession> sessions = new List<AnyUiHtmlEventSession>();
 
-        public static void addSession(int sessionNumber)
+        public static void AddEventSession(int sessionNumber)
         {
             lock (staticHtmlDotnetLock)
             {
                 var s = new AnyUiHtmlEventSession();
-                s.sessionNumber = sessionNumber;
+                s.SessionId = sessionNumber;
                 sessions.Add(s);
             }
         }
-        public static void deleteSession(int sessionNumber)
+        public static void DeleteEventSession(int sessionNumber)
         {
             lock (staticHtmlDotnetLock)
             {
                 AnyUiHtmlEventSession found = null;
                 foreach (var s in sessions)
                 {
-                    if (s.sessionNumber == sessionNumber)
+                    if (s.SessionId == sessionNumber)
                     {
                         found = s;
                         break;
@@ -130,14 +191,14 @@ namespace AnyUi
                     sessions.Remove(found);
             }
         }
-        public static AnyUiHtmlEventSession findSession(int sessionNumber)
+        public static AnyUiHtmlEventSession FindEventSession(int sessionNumber)
         {
             AnyUiHtmlEventSession found = null;
             lock (staticHtmlDotnetLock)
             {
                 foreach (var s in sessions)
                 {
-                    if (s.sessionNumber == sessionNumber)
+                    if (s.SessionId == sessionNumber)
                     {
                         found = s;
                         break;
@@ -179,7 +240,7 @@ namespace AnyUi
                                         ndm = 0;
                                     Program.signalNewData(
                                         new Program.NewDataAvailableArgs(
-                                            Program.DataRedrawMode.SomeStructChange, s.sessionNumber, 
+                                            Program.DataRedrawMode.SomeStructChange, s.SessionId, 
                                             newLambdaAction: ret, onlyUpdatePanel: true)); // build new tree
                                 }
                                 break;
@@ -197,7 +258,7 @@ namespace AnyUi
                                     s.htmlDotnetEventInputs.Clear();
                                     s.htmlEventIn = true;
                                     Program.signalNewData(
-                                        new Program.NewDataAvailableArgs(Program.DataRedrawMode.SomeStructChange, s.sessionNumber,
+                                        new Program.NewDataAvailableArgs(Program.DataRedrawMode.SomeStructChange, s.SessionId,
                                         onlyUpdatePanel: true)); // same tree, but structure may change
 
                                     while (!s.htmlEventOut) Task.Delay(1);
@@ -228,7 +289,7 @@ namespace AnyUi
             if (dc != null)
             {
                 var sessionNumber = dc._bi.SessionId;
-                var found = findSession(sessionNumber);
+                var found = FindEventSession(sessionNumber);
                 if (found != null)
                 {
                     lock (dc.htmlDotnetLock)
@@ -250,7 +311,7 @@ namespace AnyUi
             if (dc != null)
             {
                 var sessionNumber = dc._bi.SessionId;
-                var found = findSession(sessionNumber);
+                var found = FindEventSession(sessionNumber);
                 if (found != null)
                 {
                     lock (dc.htmlDotnetLock)
@@ -277,41 +338,39 @@ namespace AnyUi
         public override AnyUiMessageBoxResult MessageBoxFlyoutShow(
             string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
-            AnyUiHtmlEventSession found = null;
-            lock (htmlDotnetLock)
-            {
-                foreach (var s in sessions)
-                {
-                    if (_bi.SessionId == s.sessionNumber)
-                    {
-                        found = s;
-                        break;
-                    }
-                }
-            }
-
             AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
-            if (found != null)
-            {
-                found.htmlEventInputs.Clear();
-                found.htmlEventType = "MessageBoxFlyoutShow";
-                found.htmlEventInputs.Add(message);
-                found.htmlEventInputs.Add(caption);
-                found.htmlEventInputs.Add(buttons);
-                found.htmlEventIn = true;
-                Program.signalNewData(
-                    new Program.NewDataAvailableArgs(Program.DataRedrawMode.RebuildTreeKeepOpen, found.sessionNumber)); // build new tree
+            var evs = FindEventSession(_bi.SessionId);
+            if (evs == null)
+                return r;
 
-                while (!found.htmlEventOut) Task.Delay(1);
-                if (found.htmlEventOutputs.Count == 1)
-                    r = (AnyUiMessageBoxResult)found.htmlEventOutputs[0];
+            var dd = evs.StartModal(new AnyUiDialogueDataMessageBox(
+                caption, message, buttons, image));
 
-                found.htmlEventType = "";
-                found.htmlEventOutputs.Clear();
-                found.htmlEventOut = false;
-                found.htmlEventInputs.Clear();
-                found.htmlDotnetEventIn = false;
-            }
+            //evs.htmlEventInputs.Clear();
+            //evs.htmlEventType = "MessageBoxFlyoutShow";
+            //evs.htmlEventInputs.Add(message);
+            //evs.htmlEventInputs.Add(caption);
+            //evs.htmlEventInputs.Add(buttons);
+            //evs.htmlEventIn = true;
+
+            // trigger display
+            Program.signalNewData(
+                new Program.NewDataAvailableArgs(
+                    Program.DataRedrawMode.None, evs.SessionId)); 
+
+            // wait modal
+            while (!evs.EventDone) Task.Delay(1);
+            evs.EventDone = false;
+
+            // dialog result
+            if (dd.Result)
+                r = dd.ResultButton;
+
+            //evs.htmlEventType = "";
+            //evs.htmlEventOutputs.Clear();
+            //evs.htmlEventOut = false;
+            //evs.htmlEventInputs.Clear();
+            //evs.htmlDotnetEventIn = false;
 
             return r;
         }
@@ -325,66 +384,83 @@ namespace AnyUi
         /// <returns>If the dialogue was end with "OK" or similar success.</returns>
         public override bool StartFlyoverModal(AnyUiDialogueDataBase dialogueData)
         {
-            // access
-            if (dialogueData == null)
-                return false;
+			var evs = FindEventSession(_bi.SessionId);
+			if (dialogueData == null || evs == null)
+				return false;
 
-            // make sure to reset
-            dialogueData.Result = false;
+			var dd = evs.StartModal(dialogueData);
 
-            AnyUiHtmlEventSession found = null;
-            lock (htmlDotnetLock)
-            {
-                foreach (var s in sessions)
-                {
-                    if (_bi.SessionId == s.sessionNumber)
-                    {
-                        found = s;
-                        break;
-                    }
-                }
-            }
+			// trigger display
+			Program.signalNewData(
+				new Program.NewDataAvailableArgs(
+					Program.DataRedrawMode.None, evs.SessionId));
 
-            if (found != null)
-            {
-                found.htmlEventInputs.Clear();
-                found.htmlEventType = "StartFlyoverModal";
-                found.htmlEventInputs.Add(dialogueData);
+			// wait modal
+			while (!evs.EventDone) Task.Delay(1);
+			evs.EventDone = false;
 
-                found.htmlEventIn = true;
-                Program.signalNewData(
-                    new Program.NewDataAvailableArgs(
-                        Program.DataRedrawMode.RebuildTreeKeepOpen, found.sessionNumber)); // build new tree
+            return dd.Result;
 
-                while (!found.htmlEventOut) Task.Delay(1);
-                if (dialogueData is AnyUiDialogueDataTextEditor ddte)
-                {
-                    if (found.htmlEventOutputs.Count == 2)
-                    {
-                        ddte.Text = (string)found.htmlEventOutputs[0];
-                        ddte.Result = (bool)found.htmlEventOutputs[1];
-                    }
-                }
-                if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
-                {
-                    ddsfl.Result = false;
-                    if (found.htmlEventOutputs.Count == 1)
-                    {
-                        int iDdsfl = (int)found.htmlEventOutputs[0];
-                        ddsfl.Result = true;
-                        ddsfl.ResultIndex = iDdsfl;
-                        ddsfl.ResultItem = ddsfl.ListOfItems[iDdsfl];
-                    }
-                }
-                found.htmlEventType = "";
-                found.htmlEventOutputs.Clear();
-                found.htmlEventOut = false;
-                found.htmlEventInputs.Clear();
-                found.htmlDotnetEventIn = false;
-            }
-            // result
-            return dialogueData.Result;
-        }
+			//// access
+			//if (dialogueData == null)
+			//    return false;
+
+			//// make sure to reset
+			//dialogueData.Result = false;
+
+			//AnyUiHtmlEventSession found = null;
+			//lock (htmlDotnetLock)
+			//{
+			//    foreach (var s in sessions)
+			//    {
+			//        if (_bi.SessionId == s.SessionId)
+			//        {
+			//            found = s;
+			//            break;
+			//        }
+			//    }
+			//}
+
+			//if (found != null)
+			//{
+			//    found.htmlEventInputs.Clear();
+			//    found.htmlEventType = "StartFlyoverModal";
+			//    found.htmlEventInputs.Add(dialogueData);
+
+			//    found.htmlEventIn = true;
+			//    Program.signalNewData(
+			//        new Program.NewDataAvailableArgs(
+			//            Program.DataRedrawMode.RebuildTreeKeepOpen, found.SessionId)); // build new tree
+
+			//    while (!found.htmlEventOut) Task.Delay(1);
+			//    if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+			//    {
+			//        if (found.htmlEventOutputs.Count == 2)
+			//        {
+			//            ddte.Text = (string)found.htmlEventOutputs[0];
+			//            ddte.Result = (bool)found.htmlEventOutputs[1];
+			//        }
+			//    }
+			//    if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+			//    {
+			//        ddsfl.Result = false;
+			//        if (found.htmlEventOutputs.Count == 1)
+			//        {
+			//            int iDdsfl = (int)found.htmlEventOutputs[0];
+			//            ddsfl.Result = true;
+			//            ddsfl.ResultIndex = iDdsfl;
+			//            ddsfl.ResultItem = ddsfl.ListOfItems[iDdsfl];
+			//        }
+			//    }
+			//    found.htmlEventType = "";
+			//    found.htmlEventOutputs.Clear();
+			//    found.htmlEventOut = false;
+			//    found.htmlEventInputs.Clear();
+			//    found.htmlDotnetEventIn = false;
+			//}
+			//// result
+			//return dialogueData.Result;
+		}
 
         /// <summary>
         /// Think, this is deprecated

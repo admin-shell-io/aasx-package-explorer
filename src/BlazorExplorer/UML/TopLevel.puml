@@ -9,9 +9,9 @@ class Program
   void CreateHostBuilder()
 }
 note top
-  Singleton
-  Program start
-  Dispacting events to session.
+  Singleton.
+  Program start.
+  Dispatching events to session.
 end note
 
 class Startup
@@ -28,6 +28,7 @@ class BlazorSession
   ElementPanel : AnyUiStackPanel
   EditMode : bool
   HintMode : bool
+  PrepareDisplayDataAndElementPanel()
 }
 note top
   This is the top instance for 

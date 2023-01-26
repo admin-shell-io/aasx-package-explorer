@@ -2377,15 +2377,16 @@ namespace AasxPackageLogic
                 // entities helper
                 if (parentContainer != null && parentContainer is Aas.Submodel && wrapper != null)
                     this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
-                        horizStack, repo, (parentContainer as Aas.Submodel).SubmodelElements, wrapper, env,
-                        "SubmodelElement:", nextFocus: wrapper, sendUpdateEvent: evTemplate,
+                        horizStack, repo, (parentContainer as Aas.Submodel).SubmodelElements, 
+                        wrapper, alternativeFocus: parentContainer,
+                        label: "SubmodelElement:", nextFocus: wrapper, sendUpdateEvent: evTemplate,
                         superMenu: superMenu);
 
                 if (parentContainer != null && parentContainer is Aas.SubmodelElementCollection &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
                         horizStack, repo, (parentContainer as Aas.SubmodelElementCollection).Value,
-                        wrapper, env, "SubmodelElement:",
+                        wrapper, alternativeFocus: parentContainer, label: "SubmodelElement:",
                         nextFocus: wrapper, sendUpdateEvent: evTemplate,
                         superMenu: superMenu);
 
@@ -2396,7 +2397,7 @@ namespace AasxPackageLogic
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
                         horizStack, repo, (parentContainer as Aas.SubmodelElementList).Value,
-                        wrapper, env, "SubmodelElement:",
+                        wrapper, alternativeFocus: parentContainer, label: "SubmodelElement:",
                         nextFocus: wrapper, sendUpdateEvent: null,
                         superMenu: superMenu);
 

@@ -139,7 +139,7 @@ namespace BlazorUI.Data
             SessionNumActive++;
 
             // create a new session for plugin / event handling
-            AnyUiDisplayContextHtml.addSession(SessionId);
+            AnyUiDisplayContextHtml.AddEventSession(SessionId);
 
             // create a new package central
             PackageCentral = new PackageCentral();
@@ -205,12 +205,12 @@ namespace BlazorUI.Data
             }
 
             // initialize menu
-            //_mainMenu?.SetChecked("FileRepoLoadWoPrompt", Options.Curr.LoadWithoutPrompt);
-            //_mainMenu?.SetChecked("ShowIriMenu", Options.Curr.ShowIdAsIri);
-            //_mainMenu?.SetChecked("VerboseConnect", Options.Curr.VerboseConnect);
-            //_mainMenu?.SetChecked("AnimateElements", Options.Curr.AnimateElements);
-            //_mainMenu?.SetChecked("ObserveEvents", Options.Curr.ObserveEvents);
-            //_mainMenu?.SetChecked("CompressEvents", Options.Curr.CompressEvents);
+            MainMenu?.SetChecked("FileRepoLoadWoPrompt", Options.Curr.LoadWithoutPrompt);
+            MainMenu?.SetChecked("ShowIriMenu", Options.Curr.ShowIdAsIri);
+            MainMenu?.SetChecked("VerboseConnect", Options.Curr.VerboseConnect);
+            MainMenu?.SetChecked("AnimateElements", Options.Curr.AnimateElements);
+            MainMenu?.SetChecked("ObserveEvents", Options.Curr.ObserveEvents);
+            MainMenu?.SetChecked("CompressEvents", Options.Curr.CompressEvents);
 
             // the UI application might receive events from items in the package central
             PackageCentral.ChangeEventHandler = (data) =>
@@ -298,7 +298,7 @@ namespace BlazorUI.Data
         /// </summary>
         public void Dispose()
         {
-            AnyUiDisplayContextHtml.deleteSession(SessionId);
+            AnyUiDisplayContextHtml.DeleteEventSession(SessionId);
             SessionNumActive--;
             if (env != null)
                 env.Close();

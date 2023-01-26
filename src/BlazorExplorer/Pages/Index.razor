@@ -34,14 +34,39 @@
             <!-- Modal -->
             <div class="row">
                 @{
-                    session = AnyUiDisplayContextHtml.findSession(Session.SessionId);
+                    session = AnyUiDisplayContextHtml.FindEventSession(Session.SessionId);
                     sessionHtmlEventIn = session.htmlEventIn;
                 }
-                @if (session != null && sessionHtmlEventIn)
+                @if (session != null && sessionHtmlEventIn || session.EventOpen)
                 {                    
                     @* <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose"> *@
 
-                    <Modal Close="OnClose">
+                    <Modal @bind-Open="session.EventOpen" Close="OnClose">
+
+                        @if (session.DialogueData is AnyUiDialogueDataMessageBox)
+                        {
+                            <AnyUiFlyoutMessageBox 
+                                EventSession="session" 
+                                DialogueData="session.DialogueData"/>
+                        }
+
+                        @if (session.DialogueData is AnyUiDialogueDataTextBox)
+                        {
+                            <AnyUiFlyoutTextBox
+                                EventSession="session"
+                                DialogueData="session.DialogueData" />
+                        }
+
+                        @if (session.DialogueData is AnyUiDialogueDataTextEditor)
+                        {
+                            <AnyUiFlyoutTextEditor 
+                                EventSession="session"
+                                DialogueData="session.DialogueData" />
+                        }
+
+                    </Modal>
+
+                    <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose">
                         
                         @if (session.htmlEventType == "MessageBoxFlyoutShow" && session.htmlEventInputs.Count >= 2)
                         {
@@ -508,10 +533,6 @@
 
 </div>
 
-@{
-
-}
-
 @code {
 
     // resharper disable all
@@ -805,6 +826,15 @@
                         // if an index is moved within the tree, both the tree shall be re-drawn
                         // and the panel shall be updated (because of index)
                         Session.RedrawAllAasxElements(keepFocus: true);
+                        _onlyUpdatePluginUi = false;
+                    }
+
+                    if (lapcc.Change?.Reason == PackCntChangeEventReason.Delete)
+                    {
+                        // if an element is deleted within the tree, the tree shall be re-drawn,
+                        // the focus shall be shifted to a recommended element
+                        // and the panel shall be updated (because of index)
+                        Session.RedrawAllAasxElements(keepFocus: true, nextFocusMdo: lapcc.NextFocus);
                         _onlyUpdatePluginUi = false;
                     }
                 }
@@ -1186,7 +1216,7 @@
                 && evSelectEntity.Session?.SessionId is int sessionId)
             {
                 ;
-                var found = AnyUiDisplayContextHtml.findSession(Session.SessionId);
+                var found = AnyUiDisplayContextHtml.FindEventSession(Session.SessionId);
                 if (found != null)
                 {
                     // select function
@@ -1200,7 +1230,7 @@
                     // perform
                     Program.signalNewData(
                         new Program.NewDataAvailableArgs(
-                            Program.DataRedrawMode.ValueChanged, found.sessionNumber,
+                            Program.DataRedrawMode.ValueChanged, found.SessionId,
                             onlyUpdatePanel: true)); // build new tree
 
                     while (!found.htmlEventOut) Task.Delay(1) ;
@@ -1235,7 +1265,7 @@
             if (evt is AasxIntegrationBase.AasxPluginResultEventSelectFile fileSel
                 && fileSel.Session?.SessionId is int sessionId3)
             {
-                var found = AnyUiDisplayContextHtml.findSession(sessionId3 /* bi.sessionNumber */);
+                var found = AnyUiDisplayContextHtml.FindEventSession(sessionId3 /* bi.sessionNumber */);
                 if (found != null)
                 {
                     // select function
@@ -1249,7 +1279,7 @@
                     // perform
                     Program.signalNewData(
                         new Program.NewDataAvailableArgs(
-                            Program.DataRedrawMode.ValueChanged, found.sessionNumber,
+                            Program.DataRedrawMode.ValueChanged, found.SessionId,
                             onlyUpdatePanel: true)); // build new tree
 
                     while (!found.htmlEventOut) Task.Delay(1) ;

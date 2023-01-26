@@ -9,6 +9,7 @@ PackageExplorer. Therefore design goals:
 * file-operations similar to local PC
 * repository-handling visible
 * editing capabilities
+* device fit = PC
 
 ## TODO
 

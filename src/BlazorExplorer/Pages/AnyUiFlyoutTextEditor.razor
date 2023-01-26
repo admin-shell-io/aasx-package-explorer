@@ -1,0 +1,73 @@
+﻿@page "/AnyUiFlyoutTextEditor"
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataTextEditor ddte)
+{
+    @* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddte.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		 <form>
+          <div class="mb-3">
+			<textarea class="form-control form-control-lg" id="message-text" @bind="TextLines"
+					  style="resize: none; height: 60vh; font-family: monospace,monospace;" />
+          </div>
+        </form>
+	</div>
+	<div class="modal-footer">
+
+		<div class="dropdown ms-auto">
+			<button class="btn btn-lg btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+				Dropdown button
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+				@for (int i=0; i<10; i++)
+				{
+					<li><a class="dropdown-item" @onclick="() => SetPreset(i)">Item @i</a></li>
+				}
+			</ul>
+		</div>
+
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	public void SetPreset(int i)
+	{
+		;
+	}
+
+	public string TextLines
+	{
+		get
+		{
+			return "Bla";
+		}
+		set
+		{
+			var x = value;
+		}
+	}
+
+	public void LeaveResult(bool result)
+	{
+		EventSession?.EndModal(result);
+	}
+}

@@ -2475,7 +2475,7 @@ namespace AasxPackageLogic
                             if (sendUpdateEvent != null)
                             {
                                 sendUpdateEvent.Reason = PackCntChangeEventReason.Delete;
-                                return new AnyUiLambdaActionPackCntChange(sendUpdateEvent);
+                                return new AnyUiLambdaActionPackCntChange(sendUpdateEvent, nextFocus: ret);
                             }
                             else
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);

@@ -48,7 +48,7 @@ namespace AnyUi
 
     /// <summary>
     /// This action can be used to pass minimal information/ errors/ questions from a 
-    /// called functionality back to the colling function.
+    /// called functionality back to the calling function.
     /// </summary>
     /// <param name="error">True, if an error condition is met.</param>
     /// <param name="message">Message string</param>
@@ -86,6 +86,25 @@ namespace AnyUi
         {
             if (message != null)
                 this.Message = message;
+        }
+    }
+
+    public class AnyUiDialogueDataMessageBox : AnyUiDialogueDataEmpty
+    {
+        public AnyUiMessageBoxButton Buttons = AnyUiMessageBoxButton.OKCancel;
+        public AnyUiMessageBoxImage Image = AnyUiMessageBoxImage.None;
+        public AnyUiMessageBoxResult ResultButton = AnyUiMessageBoxResult.None;
+
+        public AnyUiDialogueDataMessageBox(
+            string caption = "",
+            string message = "",
+            AnyUiMessageBoxButton buttons = AnyUiMessageBoxButton.OKCancel, 
+            AnyUiMessageBoxImage image = AnyUiMessageBoxImage.None,
+            double? maxWidth = null)
+            : base(caption, maxWidth, message)
+        {
+            Buttons = buttons;
+            Image = image;
         }
     }
 
