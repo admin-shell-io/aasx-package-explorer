@@ -858,12 +858,13 @@ namespace AasxPackageLogic
                         (o) =>
                         {
                             var uc = new AnyUiDialogueDataOpenFile(
+                                caption: "Open supplementary file",
                                 message: "Select a supplementary file to add..");
                             this.context?.StartFlyoverModal(uc);
-                            if (uc.Result && uc.FileName != null)
+                            if (uc.Result && uc.TargetFileName != null)
                             {
-                                PackageSourcePath = uc.FileName;
-                                PackageTargetFn = System.IO.Path.GetFileName(uc.FileName);
+                                PackageSourcePath = uc.TargetFileName;
+                                PackageTargetFn = System.IO.Path.GetFileName(uc.TargetFileName);
                                 PackageTargetFn = PackageTargetFn.Replace(" ", "_");
                             }
                             return new AnyUiLambdaActionRedrawEntity();
@@ -3258,7 +3259,17 @@ namespace AasxPackageLogic
                             var uc = new AnyUiDialogueDataTextEditor(
                                 caption: $"Edit Property '{"" + p.IdShort}'",
                                 text: p.Value);
-                            if (this.context.StartFlyoverModal(uc))
+
+#if test
+                            // test wise
+                            uc.Presets = new List<AnyUiDialogueDataTextEditor.Preset>
+							{
+								new AnyUiDialogueDataTextEditor.Preset() { Name = "AAA", Lines = new[] { "Aaa", "AAA" } },
+								new AnyUiDialogueDataTextEditor.Preset() { Name = "BBB", Lines = new[] { "Bbb", "bbb", "bbb bbb" } }
+							};
+#endif
+
+							if (this.context.StartFlyoverModal(uc))
                             {
                                 p.Value = uc.Text;
                                 this.AddDiaryEntry(p, new DiaryEntryUpdateValue());

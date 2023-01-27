@@ -301,7 +301,7 @@ namespace AasxPackageExplorer
                     .AddWpf(name: "EventsShowLogMenu", header: "_Event log", inputGesture: "Ctrl+L",
                         onlyDisplay: true, isCheckable: true)
                     .AddWpf(name: "EventsResetLocks", header: "Reset interlocking"))
-                .AddMenu(header: "Scripts …", childs: (new AasxMenu())
+                .AddMenu(header: "Scripts …", filter: AasxMenuFilter.Wpf, childs: (new AasxMenu())
                     .AddWpf(name: "ScriptEditLaunch", header: "Edit & launch …", inputGesture: "Ctrl+Shift+L")));
 
             //

@@ -1502,7 +1502,7 @@ namespace AnyUi
                 if (res == true)
                 {
                     ddof.Result = true;
-                    ddof.FileName = dlg.FileName;
+                    ddof.TargetFileName = dlg.FileName;
                 }
             }
         }

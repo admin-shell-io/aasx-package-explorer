@@ -375,14 +375,53 @@ namespace AnyUi
             return r;
         }
 
-        /// <summary>
-        /// Shows specified dialogue hardware-independent. The technology implementation will show the
-        /// dialogue based on the type of provided <c>dialogueData</c>. 
-        /// Modal dialogue: this function will block, until user ends dialogue.
-        /// </summary>
-        /// <param name="dialogueData"></param>
-        /// <returns>If the dialogue was end with "OK" or similar success.</returns>
-        public override bool StartFlyoverModal(AnyUiDialogueDataBase dialogueData)
+		/// <summary>
+		/// Shows an open file dialogue
+		/// </summary>
+		/// <param name="caption">Top caption of the dialogue</param>
+		/// <param name="message">Further information to the user</param>
+		/// <param name="filter">Filter specification for certain file extension.</param>
+		/// <param name="proposeFn">Filename, which is initially proposed when the dialogue is opened.</param>
+		/// <returns>Dialogue data including filenames</returns>
+		public override AnyUiDialogueDataOpenFile OpenFileFlyoutShow(
+			string caption, 
+            string message, 
+            string proposeFn = null,
+            string filter = null)
+		{
+			var evs = FindEventSession(_bi.SessionId);
+            if (evs == null)
+                return null;
+
+			var dd = evs.StartModal(new AnyUiDialogueDataOpenFile(
+				caption: caption, 
+                message: message,
+                filter: filter,
+                proposeFn: proposeFn));
+
+			// trigger display
+			Program.signalNewData(
+				new Program.NewDataAvailableArgs(
+					Program.DataRedrawMode.None, evs.SessionId));
+
+			// wait modal
+			while (!evs.EventDone) Task.Delay(1);
+			evs.EventDone = false;
+
+            // dialog result
+            if (dd.Result)
+                return dd;
+			return null;
+		}
+
+		/// <summary>
+		/// Shows specified dialogue hardware-independent. The technology implementation will show the
+		/// dialogue based on the type of provided <c>dialogueData</c>. 
+		/// Modal dialogue: this function will block, until user ends dialogue.
+		/// </summary>
+		/// <param name="dialogueData"></param>
+		/// <returns>If the dialogue was end with "OK" or similar success.</returns>
+		public override bool StartFlyoverModal(AnyUiDialogueDataBase dialogueData)
         {
 			var evs = FindEventSession(_bi.SessionId);
 			if (dialogueData == null || evs == null)

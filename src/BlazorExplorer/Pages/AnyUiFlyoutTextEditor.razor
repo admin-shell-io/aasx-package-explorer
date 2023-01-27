@@ -25,17 +25,21 @@
 	</div>
 	<div class="modal-footer">
 
-		<div class="dropdown ms-auto">
-			<button class="btn btn-lg btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-				Dropdown button
-			</button>
-			<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-				@for (int i=0; i<10; i++)
-				{
-					<li><a class="dropdown-item" @onclick="() => SetPreset(i)">Item @i</a></li>
-				}
-			</ul>
-		</div>
+		@if (ddte.Presets != null && ddte.Presets.Count > 0)
+		{
+			<div class="dropdown ms-auto">
+				<button class="btn btn-lg btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+					Preset
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+					@for (int i=0; i<ddte.Presets.Count; i++)
+					{
+						var currI = i; // save iteration variable
+						<li><a class="dropdown-item" @onclick="() => SetPreset(currI)">@(ddte.Presets[i].Name)</a></li>
+					}
+				</ul>
+			</div>
+		}
 
 		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
 	
@@ -51,18 +55,25 @@
 
 	public void SetPreset(int i)
 	{
-		;
+		if (!(DialogueData is AnyUiDialogueDataTextEditor ddte)
+			|| ddte.Presets == null || i < 0 || i >= ddte.Presets.Count)
+			return;
+		TextLines = "" + ddte.Presets[i]?.Text;
 	}
 
 	public string TextLines
 	{
 		get
 		{
-			return "Bla";
+			if (!(DialogueData is AnyUiDialogueDataTextEditor ddte))
+				return "";
+			return "" + ddte.Text;
 		}
 		set
 		{
-			var x = value;
+			if (!(DialogueData is AnyUiDialogueDataTextEditor ddte))
+				return;
+			ddte.Text = value;
 		}
 	}
 

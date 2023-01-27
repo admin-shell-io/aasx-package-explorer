@@ -1,0 +1,99 @@
+﻿@page "/AnyUiFlyoutSelectFile"
+@using AasxIntegrationBase
+@using AnyUi
+@using BlazorUI.Data
+@using BlazorInputFile
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@* see: https://blog.stevensanderson.com/2019/09/13/blazor-inputfile/ *@
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataOpenFile ddof)
+{
+	@* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@((ddof.Caption?.HasContent() != true) ? "Select file" : ddof.Caption)</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<h5>
+			@ddof.Message
+		</h5>
+
+		<div class="drag-drop-zone">
+			<BlazorInputFile.InputFile OnChange="HandleFileSelected2" />
+			@status
+		</div>
+
+		@* <form method="dialog">
+            <BlazorInputFile.InputFile OnChange="HandleFileSelected2" />
+        </form> *@
+	</div>
+	<div class="modal-footer">
+
+		<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(false)">Cancel</button>
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	const string DefaultStatus = "Drop a file here to upload it, or click to choose a file";
+	const int MaxFileSize = 500 * 1024 * 1024; // 500MB
+	string status = DefaultStatus;
+
+	async Task HandleFileSelected2(IFileListEntry[] files)
+	{
+		// try get the file contents
+		try
+		{
+			var file = files.FirstOrDefault();
+			if (file == null)
+			{
+				return;
+			}
+			else if (file.Size > MaxFileSize)
+			{
+				status = $"That's too big. Max size: {MaxFileSize} bytes.";
+			}
+			else
+			{
+				status = "Loading...";
+
+				var fn = System.IO.Path.Combine(
+							System.IO.Path.GetTempPath(),
+							System.IO.Path.GetFileName(file.Name));
+				var fileStream = System.IO.File.Create(fn);
+				await file.Data.CopyToAsync(fileStream);
+				fileStream.Close();
+
+				if (DialogueData is AnyUiDialogueDataOpenFile ddof)
+				{
+					ddof.OriginalFileName = file.Name;
+					ddof.TargetFileName = fn;
+					status = System.IO.Path.GetFileName(file.Name) + " uploaded. " + DefaultStatus;
+				}
+
+				LeaveResult(true);
+			}
+		}
+		catch
+		{
+		}
+	}
+	
+	public void LeaveResult(bool result)
+	{
+		EventSession?.EndModal(result);
+	}
+}

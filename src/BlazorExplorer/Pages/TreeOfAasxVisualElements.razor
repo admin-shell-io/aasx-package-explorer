@@ -1,0 +1,94 @@
+﻿@page "/TreeOfAasxVisualElements"
+@using AdminShellNS
+@using AasxIntegrationBase
+@using AnyUi
+@using AasxPackageLogic
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession Session
+
+@if (Items != null)
+{
+    <Tree TNode=VisualElementGeneric
+      Nodes="Items"
+      ChildSelector="@(item => item.Members)"
+      IsExpanded="IsExpanded"
+      SetExpanded="SetExpanded"
+      IsSelected="IsSelected"
+      NodeClicked="NodeClicked"
+      HasChildNodes="@(item => item.Members != null && item.Members.Count() > 0)">
+        <TitleTemplate>
+            @{
+                //// SubmodelService.syncSubTree(context);
+                var styleOuter = new StylePile()
+                // .Add("display", "inline-block")
+                // .Add("overflow", "hidden")
+                .Add("white-space", "nowrap")
+                .SetSpecifics(forceNoWrap: true,
+                borderBrush: new AnyUiBrush(context?.Border ?? AnyUiColors.White),
+                borderThickness: new AnyUiThickness(1),
+                background: new AnyUiBrush(context?.Background ?? AnyUiColors.White));
+
+                var styleTag = new StylePile()
+                .Add("display", "inline-block")
+                .Add("white-space", "nowrap")
+                .Add("width", "30px")
+                .Add("text-align", "center")
+                .Add("font-stretch", "30%")
+                .SetSpecifics(forceNoWrap: true,
+                padding: new AnyUiThickness(0, -2, 0, -2),
+                borderThickness: new AnyUiThickness(0),
+                fontSizeRel: 0.8,
+                // fontSizeRel: StylePile.FontSizeRelToFit(context.TagString, normLen: 2),
+                foreground: new AnyUiBrush(context?.TagFg ?? AnyUiColors.White),
+                background: new AnyUiBrush(context?.TagBg ?? AnyUiColors.DarkBlue));
+
+                var styleLine = new StylePile()
+                .Add("display", "inline-block")
+                .Add("width", "1200px")
+                .Add("white-space", "nowrap")
+                .Add("text-align", "left")
+                .SetSpecifics(forceNoWrap: true,
+                foreground: AnyUiBrushes.Black);
+            }
+            <span style="@styleOuter">
+                <div style="@styleTag">
+                    @(context?.TagString ?? "")
+                </div>
+
+                <div style="@styleLine">
+                    @(context?.Caption ?? "") @(context?.Info ?? "")
+                </div>
+                <!-- <strong><span style="color:blue">@getSymbols(context)</span></strong> -->
+            </span>
+        </TitleTemplate>
+    </Tree>
+}
+
+@code {
+    [Parameter] 
+    public ListOfVisualElement Items { get; set; }
+
+    /// <summary>
+    /// Evaluates, if the given node is currently expanded or not.
+    /// Assumption: expanded state is held in or nearby the nodes.
+    /// </summary>
+    [Parameter] public Func<VisualElementGeneric, bool> IsExpanded { get; set; } = null;
+
+    /// <summary>
+    /// Sets the expansion state.
+    /// </summary>
+    [Parameter] public Action<VisualElementGeneric, bool> SetExpanded { get; set; } = null;
+
+    /// <summary>
+    /// Evaluates, if the given node is currently selected or not.
+    /// Assumption: selected state is held in or nearby the nodes.
+    /// </summary>
+    [Parameter] public Func<VisualElementGeneric, bool> IsSelected { get; set; } = null;
+
+    /// <summary>
+    /// Notification, whena item was clicked. Includes keyboad modifiers.
+    /// </summary>
+    [Parameter] 
+    public Action<VisualElementGeneric, BlazorInput.KeyboardModifiers> NodeClicked { get; set; }    
+}

@@ -2295,9 +2295,9 @@ namespace AasxPackageLogic
                             var uc = new AnyUiDialogueDataOpenFile(
                             message: "Select a supplementary file to add..");
                             this.context?.StartFlyoverModal(uc);
-                            if (uc.Result && uc.FileName != null)
+                            if (uc.Result && uc.TargetFileName != null)
                             {
-                                this.uploadAssistance.SourcePath = uc.FileName;
+                                this.uploadAssistance.SourcePath = uc.TargetFileName;
                                 return new AnyUiLambdaActionRedrawEntity();
                             }
                         }

@@ -110,19 +110,46 @@ namespace AnyUi
 
     public class AnyUiDialogueDataOpenFile : AnyUiDialogueDataEmpty
     {
-        // out
-        public string FileName;
+		/// <summary>
+		/// Original file name. <c>TargetFileName</c> might be altered,
+        /// when made available by upload or similar.
+		/// </summary>
+		public string OriginalFileName;
+
+        /// <summary>
+        /// Filename, under which the file is (at least temporarily) available)
+        /// </summary>
+        public string TargetFileName;
+
+        /// <summary>
+        /// Filter specification for certain file extension. Description and
+        /// filter pattern each delimited by pipe ("|").
+        /// Example: "AASX package files (*.aasx)|*.aasx|All files (*.*)|*.*"
+        /// </summary>
+        public string Filter;
+
+        /// <summary>
+        /// Filename, which is initially proposed when the dialogue is opened.
+        /// </summary>
+        public string ProposeFileName;
 
         public AnyUiDialogueDataOpenFile(
             string caption = "",
             double? maxWidth = null,
-            string message = null)
+            string message = null,            
+            string filter = null,
+			string proposeFn = null)
             : base(caption, maxWidth)
         {
-            this.HasModalSpecialOperation = true;
-            this.Message = "Please select a file via dedicated dialogue.";
+            HasModalSpecialOperation = true;
+            Caption = "Open file";
+            if (caption != null)
+                Caption = caption;
+            Message = "Please select a file via dedicated dialogue.";
             if (message != null)
-                this.Message = message;
+                Message = message;
+            Filter = filter;
+            ProposeFileName = proposeFn;
         }
     }
 

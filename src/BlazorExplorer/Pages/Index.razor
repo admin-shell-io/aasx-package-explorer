@@ -64,6 +64,27 @@
                                 DialogueData="session.DialogueData" />
                         }
 
+                        @if (session.DialogueData is AnyUiDialogueDataSelectFromList)
+                        {
+                            <AnyUiFlyoutSelectFromList 
+                                EventSession="session"
+                                DialogueData="session.DialogueData" />
+                        }
+
+                        @if (session.DialogueData is AnyUiDialogueDataOpenFile)
+                        {
+                            <AnyUiFlyoutSelectFile 
+                                EventSession="session"
+                                DialogueData="session.DialogueData" />
+                        }
+
+                        @if (session.DialogueData is AnyUiDialogueDataSelectAasEntity)
+                        {
+                            <AnyUiFlyoutSelectAasEntity 
+                                EventSession="session"
+                                DialogueData="session.DialogueData" />
+                        }
+
                     </Modal>
 
                     <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose">
@@ -364,7 +385,7 @@
                                @bind-SelectedNode="Session.DisplayElements.SelectedItem"
                             *@
 
-						    <Tree TNode=VisualElementGeneric
+						    @*<Tree TNode=VisualElementGeneric
                               Nodes="Session.DisplayElements.TreeItems"
                               ChildSelector="@(item => item.Members)"                                                    
                               IsExpanded="@(item => item.IsExpanded)"
@@ -417,7 +438,16 @@
                                         <!-- <strong><span style="color:blue">@getSymbols(context)</span></strong> -->
                                     </span>
 							    </TitleTemplate>
-                            </Tree>
+                            </Tree>*@
+
+                            <TreeOfAasxVisualElements
+                                Items="Session.DisplayElements.TreeItems"
+                                IsExpanded="@(item => item.IsExpanded)"
+                                SetExpanded="@((item, state) => SetExpanded(Session.DisplayElements.TreeItems, item, state))"
+                                IsSelected="@(item => Session.DisplayElements.SelectedItems?.Contains(item) == true)"
+                                NodeClicked="(ve, modi) => { Session.DisplayElements.NotifyTreeSelectionChanged(ve, modi); this.StateHasChanged(); }"
+                                />
+                                
                         }
 
                         @*<br /><br />*@
