@@ -1986,15 +1986,15 @@ namespace AasxPackageLogic
                     this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 },
-                auxButtonTitles: new[] { "Choose supplementary file", },
-                auxButtonToolTips: new[] { "Select existing supplementary files" },
+                auxButtonTitles: new[] { "Choose supplemental file", },
+                auxButtonToolTips: new[] { "Select existing supplemental file" },
                 auxButtonLambda: (bi) =>
                 {
                     if (bi == 0)
                     {
                         // Select
                         var ve = this.SmartSelectAasEntityVisualElement(
-                                    packages, PackageCentral.PackageCentral.Selector.Main, "File");
+                                    packages, PackageCentral.PackageCentral.Selector.Main, "SupplementalFile");
                         if (ve != null)
                         {
                             var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
@@ -2140,7 +2140,7 @@ namespace AasxPackageLogic
                             if (psf != null)
                             {
                                 this.context?.MessageBoxFlyoutShow(
-                                    $"The supplementary file {ptd + ptfn} is already existing in the " +
+                                    $"The supplemental file {ptd + ptfn} is already existing in the " +
                                     "package. Please re-try with a different file name.", "Create text file",
                                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
                                 return new AnyUiLambdaActionNone();
@@ -2258,7 +2258,7 @@ namespace AasxPackageLogic
                     });
 
                 // Further file assistance
-                this.AddGroup(stack, "Supplementary file assistance", this.levelColors.SubSection);
+                this.AddGroup(stack, "Supplemental file assistance", this.levelColors.SubSection);
 
                 AddKeyValueExRef(
                     stack, "Target path", this.uploadAssistance, this.uploadAssistance.TargetPath, null, repo,
@@ -2293,7 +2293,7 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataOpenFile(
-                            message: "Select a supplementary file to add..");
+                            message: "Select a supplemental file to add..");
                             this.context?.StartFlyoverModal(uc);
                             if (uc.Result && uc.TargetFileName != null)
                             {

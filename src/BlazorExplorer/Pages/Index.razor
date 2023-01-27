@@ -443,7 +443,7 @@
                             <TreeOfAasxVisualElements
                                 Items="Session.DisplayElements.TreeItems"
                                 IsExpanded="@(item => item.IsExpanded)"
-                                SetExpanded="@((item, state) => SetExpanded(Session.DisplayElements.TreeItems, item, state))"
+                                SetExpanded="@((item, state) => Session.DisplayElements.SetExpanded(item, state))"
                                 IsSelected="@(item => Session.DisplayElements.SelectedItems?.Contains(item) == true)"
                                 NodeClicked="(ve, modi) => { Session.DisplayElements.NotifyTreeSelectionChanged(ve, modi); this.StateHasChanged(); }"
                                 />
@@ -723,23 +723,6 @@
             //        });
             //    }
             //}
-        }
-    }
-
-    protected void SetExpanded(ListOfVisualElement items, VisualElementGeneric ve, bool state)
-    {
-        ve.IsExpanded = state;
-
-        if (state)
-        {
-            try
-            {
-                items?.ExecuteLazyLoading(ve, state);
-            }
-            catch (Exception ex)
-            {
-                LogInternally.That.CompletelyIgnoredError(ex);
-            }
         }
     }
 

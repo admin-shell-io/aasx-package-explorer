@@ -25,29 +25,38 @@
 
 	@* limited dimensions, becaus tree-items are limited as well  *@
 	<div class="modal-body my-3 row d-flex justify-content-center">
-		<div class="col-md-6" style="width: 60vw!important; max-width: 1100px; min-height: 60vh!important; overflow: hidden">
-			@* Filter *@
-			<div class="dropdown">
-				<button class="btn btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-					@_filterCurrent
-				</button>
-				<ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton1">
-					@for (int i = 0; i < _filterItems.Count; i++)
-					{
-						var currI = i; // save iteration variable
-						<li><a class="dropdown-item" @onclick="() => SetFilter(currI)">@(_filterItems[i])</a></li>
-					}
-				</ul>
-			</div>
 
+		@* Filter *@
+		<div class="dropdown col-md-6">
+			<button class="btn btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+				@_filterCurrent
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+				@for (int i = 0; i < _filterItems.Count; i++)
+				{
+					var currI = i; // save iteration variable
+					<li><a class="dropdown-item" @onclick="() => SetFilter(currI)">@(_filterItems[i])</a></li>
+				}
+			</ul>
+		</div>
+
+		<div class="col-md-6 mt-2" style="width: 60vw!important; max-width: 1100px; min-height: 60vh!important; overflow: hidden">		
 			@* Tree *@
-			<div class="modal-content-light mt-2 px-3 py-2 rounded-3">
+
+			@*
+				IsExpanded="@(item => ExpandedItems.Contains(item))"
+				SetExpanded="@((item, state) => SetExpanded(item, state))"
+				IsSelected="@(item => item == SelectedItem)"
+			*@
+
+			<div class="modal-content-light px-3 py-2 rounded-3">
 				<span @ondblclick="() => LeaveResult(true)">
 					<TreeOfAasxVisualElements Items="_displayElements.TreeItems"
-						IsExpanded="@(item => ExpandedItems.Contains(item))"
-						SetExpanded="@((item, state) => SetExpanded(item, state))"
-						IsSelected="@(item => item == SelectedItem)"
-						NodeClicked="(ve, modi) => { SelectedItem = ve; this.StateHasChanged(); }" />		
+						IsExpanded="@(item => item.IsExpanded)"
+						SetExpanded="@((item, state) => _displayElements.SetExpanded(item, state))"
+						IsSelected="@(item => _displayElements.SelectedItems?.Contains(item) == true)"
+						NodeClicked="(ve, modi) => { _displayElements.NotifyTreeSelectionChanged(ve, modi); this.StateHasChanged(); }" 
+						/>
 				</span>	
 			</div>
 		</div>
@@ -73,22 +82,8 @@
 
 	protected string _filterCurrent = "All";
 
-	protected VisualElementGeneric SelectedItem = null;
-	protected ListOfVisualElementBasic ExpandedItems = new ListOfVisualElementBasic();
-
-	private string ApplyFullFilterString(string filter)
-        {
-            if (filter == null)
-                return null;
-            var res = filter;
-            if (res.Trim().ToLower() == "submodelelement")
-                foreach (var s in Enum.GetNames(typeof(Aas.AasSubmodelElements)))
-                    res += " " + s + " ";
-            if (res.Trim().ToLower() == "all")
-                return null;
-            else
-                return " " + res + " ";
-        }
+	//protected VisualElementGeneric SelectedItem = null;
+	//protected ListOfVisualElementBasic ExpandedItems = new ListOfVisualElementBasic();
 
 	protected override void OnInitialized()
 	{
@@ -100,9 +95,7 @@
 			return;
 
 		// fill combo box
-		_filterItems.Add("All");
-		foreach (var x in Enum.GetNames(typeof(Aas.KeyTypes)))
-			_filterItems.Add(x);
+		_filterItems = VisualElementGeneric.GetAllFilterElementInfos().ToList();
 
 		// select an item
 		_filterCurrent = "All";
@@ -113,9 +106,9 @@
 					_filterCurrent = x;
 					break;
 				}
-		
+
 		// apply filter
-		var filter = ApplyFullFilterString(_filterCurrent);
+		var filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(_filterCurrent);
 		_displayElements.RebuildAasxElements(Session.PackageCentral, ddsae.Selector, true, filter,
 			expandModePrimary: 1, expandModeAux: 0,
 			lazyLoadingFirst: false);
@@ -130,30 +123,57 @@
 		foreach (var aas in _displayElements.TreeItems.FindAllVisualElementOf<VisualElementAdminShell>((x) => true))
 			if (aas != null)
 				foreach (var ve in aas.FindAllParents(includeThis: true))
-					if (!ExpandedItems.Contains(ve))
-						ExpandedItems.Add(ve);
+					//if (!ExpandedItems.Contains(ve))
+					//	ExpandedItems.Add(ve);
+					ve.IsExpanded = true;
 
 		// redisplay
 		StateHasChanged();
 	}
 
-	public void LeaveResult(bool result)
-	{
-		EventSession?.EndModal(result);
-	}
 
 	protected void SetFilter(int i)
 	{
-		;
+		// initial access
+		if (i < 0 || i >= _filterItems.Count)
+			return;
+
+		// apply combobox itself
+		_filterCurrent = _filterItems[i];
+		StateHasChanged();
+
+		// access (again)
+		if (!(DialogueData is AnyUiDialogueDataSelectAasEntity ddsae))
+			return;
+
+		// apply filter to the tree
+		var filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(_filterCurrent);
+		_displayElements.RebuildAasxElements(Session.PackageCentral, ddsae.Selector, true, filter,
+			expandModePrimary: 1, expandModeAux: 0,
+			lazyLoadingFirst: false);
 	}
 
-	protected void SetExpanded(VisualElementGeneric ve, bool state)
+	//protected void SetExpanded(VisualElementGeneric ve, bool state)
+	//{
+	//	if (state && !ExpandedItems.Contains(ve))
+	//		ExpandedItems.Add(ve);
+
+	//	if (!state && ExpandedItems.Contains(ve))
+	//		ExpandedItems.Remove(ve);
+	//}
+
+	public void LeaveResult(bool result)
 	{
-		if (state && !ExpandedItems.Contains(ve))
-			ExpandedItems.Add(ve);
-
-		if (!state && ExpandedItems.Contains(ve))
-			ExpandedItems.Remove(ve);
+		// check if an item was selected prior
+		if (result && _displayElements?.SelectedItem != null && DialogueData is AnyUiDialogueDataSelectAasEntity ddsae)
+		{
+			var res = ddsae.PrepareResult(_displayElements.SelectedItem, _filterCurrent);
+			EventSession?.EndModal(res);
+		}
+		else
+		{
+			// no
+			EventSession?.EndModal(false);
+		}
 	}
-
 }

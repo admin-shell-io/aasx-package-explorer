@@ -114,143 +114,28 @@ namespace AasxPackageExplorer
             }
         }
 
-        private bool PrepareResult()
-        {
-            // access
-            if (DisplayElements == null || DisplayElements.SelectedItem == null)
-                return false;
-            var si = DisplayElements.SelectedItem;
-            var siMdo = si.GetMainDataObject();
-
-            // already one result
-            DiaData.ResultVisualElement = si;
-
-            //
-            // IReferable
-            //
-            if (siMdo is Aas.IReferable dataRef)
-            {
-                // check if a valuable item was selected
-                // new special case: "GlobalReference" allows to select all (2021-09-11)
-                var skip = DiaData.Filter != null &&
-                    DiaData.Filter.Trim().ToLower() == Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference).Trim().ToLower();
-                if (!skip)
-                {
-                    var elemname = dataRef.GetSelfDescription().AasElementName;
-                    var fullFilter = ApplyFullFilterString(DiaData.Filter);
-                    if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
-                        return false;
-                }
-
-                // ok, prepare list of keys
-                DiaData.ResultKeys = si.BuildKeyListToTop();
-
-                return true;
-            }
-
-            //
-            // other special cases
-            //
-            if (siMdo is Aas.Reference smref && CheckFilter("submodelref"))
-            {
-                DiaData.ResultKeys = new List<Aas.Key>();
-                DiaData.ResultKeys.AddRange(smref.Keys);
-                return true;
-            }
-
-            if (si is VisualElementPluginExtension vepe)
-            {
-                // get main data object of the parent of the plug in ..
-                var parentMdo = vepe.Parent.GetMainDataObject();
-                if (parentMdo != null)
-                {
-                    // safe to return a list for the parent ..
-                    // (include AAS, as this is important to plug-ins)
-                    DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
-
-                    // .. enriched by a last element
-                    DiaData.ResultKeys.Add(new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag));
-
-                    // ok
-                    return true;
-                }
-            }
-
-            if (si is VisualElementAsset veass && CheckFilter("AssetInformation")
-                && veass.theAsset != null)
-            {
-                // prepare data
-                DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
-                return true;
-            }
-
-            if (si is VisualElementOperationVariable veov && CheckFilter("OperationVariable")
-                && veov.theOpVar?.Value != null)
-            {
-                // prepare data
-                DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
-                return true;
-            }
-
-            if (si is VisualElementSupplementalFile vesf && vesf.theFile != null)
-            {
-                // prepare data
-                DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
-                return true;
-            }
-
-            // uups
-            return false;
-        }
-
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
-            if (PrepareResult())
+            if (DiaData?.PrepareResult(DisplayElements.SelectedItem, DiaData?.Filter) == true)
             {
                 DiaData.Result = true;
                 ControlClosed?.Invoke();
             }
         }
-
-        private string ApplyFullFilterString(string filter)
-        {
-            if (filter == null)
-                return null;
-            var res = filter;
-            if (res.Trim().ToLower() == "submodelelement")
-                foreach (var s in Enum.GetNames(typeof(Aas.AasSubmodelElements)))
-                    res += " " + s + " ";
-            if (res.Trim().ToLower() == "all")
-                return null;
-            else
-                return " " + res + " ";
-        }
-
+       
         private void FilterFor(string filter)
         {
-            filter = ApplyFullFilterString(filter);
+            filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(filter);
             DisplayElements.RebuildAasxElements(packages, DiaData.Selector, true, filter,
                 // expandModePrimary: (filter?.ToLower().Contains("ConceptDescription") == true) ? 1 : 0,
                 expandModePrimary: 1, expandModeAux: 0,
                 lazyLoadingFirst: true);
         }
 
-        private bool CheckFilter(string name)
-        {
-            // special case
-            var ff = ApplyFullFilterString(DiaData?.Filter);
-            if (ff == null)
-                return true;
-
-            // regular
-            return (
-                DiaData.Filter == null || name == null
-                || ff.ToLower().IndexOf($"{name.ToLower().Trim()} ", StringComparison.Ordinal) >= 0);
-        }
-
+        
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (PrepareResult())
+            if (DiaData?.PrepareResult(DisplayElements.SelectedItem, DiaData?.Filter) == true)
             {
                 DiaData.Result = true;
                 ControlClosed?.Invoke();

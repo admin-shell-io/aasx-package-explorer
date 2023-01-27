@@ -92,10 +92,12 @@ namespace BlazorUI
         /// <summary>
         /// Return true, if <code>mem</code> has to be deleted, because not in filter.
         /// </summary>
-        /// <param name="mem"></param>
-        /// <param name="fullFilterElementName"></param>
-        /// <returns></returns>
-        public bool FilterLeavesOfVisualElements(VisualElementGeneric mem, string fullFilterElementName)
+        /// <param name="mem">Element in current recursion</param>
+        /// <param name="fullFilterElementName">Filter string</param>
+        /// <param name="firstLeafFound">If null, we be set to very first leaf</param>
+        public bool FilterLeavesOfVisualElements(
+            VisualElementGeneric mem, string fullFilterElementName, 
+            ref VisualElementGeneric firstLeafFound)
         {
             if (fullFilterElementName == null)
                 return (false);
@@ -109,7 +111,7 @@ namespace BlazorUI
                 // go into non-leafs mode -> simply go over list
                 var todel = new List<VisualElementGeneric>();
                 foreach (var x in mem.Members)
-                    if (FilterLeavesOfVisualElements(x, fullFilterElementName))
+                    if (FilterLeavesOfVisualElements(x, fullFilterElementName, ref firstLeafFound))
                         todel.Add(x);
                 // delete items on list
                 foreach (var td in todel)
@@ -122,28 +124,15 @@ namespace BlazorUI
                     && memei.theItemType == VisualElementEnvironmentItem.ItemType.DummyNode)
                     return false;
 
-                // this member is a leaf!!
-                var isIn = false;
-                var mdo = mem.GetMainDataObject();
-                if (mdo is Aas.IReferable mdorf)
-                {
-                    var mdoen = mdorf.GetSelfDescription().AasElementName.Trim().ToLower();
-                    isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
-                }
-                else
-                if (mdo is Aas.IClass mdoic)
-                {
-                    // this special case was intruduced because of AssetInformation
-                    var mdoen = mdoic.GetType().Name.ToLower();
-                    isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
-                }
-                else
-                if (mdo is Aas.Reference)
-                {
-                    // very special case because of importance
-                    var mdoen = (mdo as Aas.Reference).GetSelfDescription().AasElementName.Trim().ToLower();
-                    isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
-                }
+				// this member is a leaf!!
+				var isIn = false;
+				var filterName = mem.GetFilterElementInfo()?.Trim().ToLower();
+                if (filterName != null)
+                    isIn = fullFilterElementName.IndexOf(filterName, StringComparison.Ordinal) >= 0;
+
+                if (isIn && firstLeafFound == null)
+                    firstLeafFound = mem;
+
                 return !isIn;
             }
             return false;
@@ -195,9 +184,17 @@ namespace BlazorUI
 
                 // may be filter
                 if (filterElementName != null)
+                {
+                    VisualElementGeneric firstLeafFound = null;
                     foreach (var dtl in TreeItems)
                         // it is not likely, that we have to delete on this level, therefore don't care
-                        FilterLeavesOfVisualElements(dtl, filterElementName);
+                        FilterLeavesOfVisualElements(dtl, filterElementName, ref firstLeafFound);
+
+                    // expand first leaf ..
+                    if (firstLeafFound != null && expandModePrimary != 0)
+                        foreach (var n in firstLeafFound.FindAllParents(includeThis: true))
+                            n.IsExpanded = true;
+                }
 
                 // any of these lines?
                 if (TreeItems.Count < 1)
@@ -363,8 +360,25 @@ namespace BlazorUI
             }
         }
 
-        // this is bascially a copy from DiplayVisualAasxElements.xaml.cs
-        public void NotifyTreeSelectionChanged(VisualElementGeneric ve, BlazorInput.KeyboardModifiers modi)
+		public void SetExpanded(VisualElementGeneric ve, bool state)
+		{
+			ve.IsExpanded = state;
+
+			if (state)
+			{
+				try
+				{
+					TreeItems?.ExecuteLazyLoading(ve, state);
+				}
+				catch (Exception ex)
+				{
+					LogInternally.That.CompletelyIgnoredError(ex);
+				}
+			}
+		}
+
+		// this is bascially a copy from DiplayVisualAasxElements.xaml.cs
+		public void NotifyTreeSelectionChanged(VisualElementGeneric ve, BlazorInput.KeyboardModifiers modi)
         {
             // trivial
             if (ve == null)

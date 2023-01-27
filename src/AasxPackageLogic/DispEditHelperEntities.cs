@@ -374,7 +374,7 @@ namespace AasxPackageLogic
                                 "Copy selected entity and children from another AAS, caring for ConceptDescriptions.")
                             .AddAction("copy-with-files", "Copy rec. w/ suppl. files",
                                 "Copy selected entity and children from another AAS, caring for ConceptDescriptions " +
-                                "and supplementary files."),
+                                "and supplemental files."),
                         ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0 || buttonNdx == 1 || buttonNdx == 2)
@@ -514,7 +514,7 @@ namespace AasxPackageLogic
                                                 catch (Exception ex)
                                                 {
                                                     Log.Singleton.Error(
-                                                        ex, $"copying supplementary file {fn}");
+                                                        ex, $"copying supplemental file {fn}");
                                                 }
                                             }
                                         }
@@ -839,7 +839,7 @@ namespace AasxPackageLogic
             {
                 // Files
 
-                this.AddGroup(stack, "Supplementary file to add:", this.levelColors.SubSection);
+                this.AddGroup(stack, "Supplemental file to add:", this.levelColors.SubSection);
 
                 var g = this.AddSmallGrid(5, 3, new[] { "#", "*", "#" });
                 this.AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Source path: ");
@@ -858,7 +858,7 @@ namespace AasxPackageLogic
                         (o) =>
                         {
                             var uc = new AnyUiDialogueDataOpenFile(
-                                caption: "Open supplementary file",
+                                caption: "Open supplemental file",
                                 message: "Select a supplementary file to add..");
                             this.context?.StartFlyoverModal(uc);
                             if (uc.Result && uc.TargetFileName != null)
@@ -977,7 +977,7 @@ namespace AasxPackageLogic
             //
             // Package
             //
-            this.AddGroup(stack, "Supplementary file for package of AASX", this.levelColors.MainSection);
+            this.AddGroup(stack, "Supplemental file for package of AASX", this.levelColors.MainSection);
 
             if (editMode && packages.MainStorable && psf != null)
             {
@@ -986,7 +986,7 @@ namespace AasxPackageLogic
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("file-delete", "Delete",
-                            "Deletes the supplementary file from the respective AAS environment."),
+                            "Deletes the supplemental file from the respective AAS environment."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)

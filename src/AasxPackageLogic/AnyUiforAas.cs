@@ -16,6 +16,7 @@ using Aas = AasCore.Aas3_0_RC02;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Extensions;
 
 namespace AasxPackageLogic
 {
@@ -128,7 +129,127 @@ namespace AasxPackageLogic
             if (filter != null)
                 Filter = filter;
         }
-    }
+
+		public static string ApplyFullFilterString(string filter)
+		{
+			if (filter == null)
+				return null;
+			var res = filter;
+			if (res.Trim().ToLower() == "submodelelement")
+				foreach (var s in Enum.GetNames(typeof(Aas.AasSubmodelElements)))
+					res += " " + s + " ";
+			if (res.Trim().ToLower() == "all")
+				return null;
+			else
+				return " " + res + " ";
+		}
+
+		public static bool CheckFilter(string givenFilter, string singleName)
+		{
+			// special case
+			var ff = ApplyFullFilterString(givenFilter);
+			if (ff == null)
+				return true;
+
+			// regular
+			return (
+				givenFilter == null || singleName == null
+				|| ff.ToLower().IndexOf($"{singleName.ToLower().Trim()} ", StringComparison.Ordinal) >= 0);
+		}
+
+		public bool PrepareResult(
+            VisualElementGeneric selectedItem,
+            string filter)
+		{
+			// access
+			if (selectedItem == null)
+				return false;
+			var siMdo = selectedItem.GetMainDataObject();
+
+			// already one result
+			ResultVisualElement = selectedItem;
+
+			//
+			// IReferable
+			//
+			if (siMdo is Aas.IReferable dataRef)
+			{
+				// check if a valuable item was selected
+				// new special case: "GlobalReference" allows to select all (2021-09-11)
+				var skip = filter != null &&
+					filter.Trim().ToLower() == Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference).Trim().ToLower();
+				if (!skip)
+				{
+					var elemname = dataRef.GetSelfDescription().AasElementName;
+					var fullFilter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(filter);
+					if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
+						return false;
+				}
+
+				// ok, prepare list of keys
+				ResultKeys = selectedItem.BuildKeyListToTop();
+
+				return true;
+			}
+
+			//
+			// other special cases
+			//
+			if (siMdo is Aas.Reference smref &&
+				AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "submodelref"))
+			{
+				ResultKeys = new List<Aas.Key>();
+				ResultKeys.AddRange(smref.Keys);
+				return true;
+			}
+
+			if (selectedItem is VisualElementPluginExtension vepe)
+			{
+				// get main data object of the parent of the plug in ..
+				var parentMdo = vepe.Parent.GetMainDataObject();
+				if (parentMdo != null)
+				{
+					// safe to return a list for the parent ..
+					// (include AAS, as this is important to plug-ins)
+					ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+
+					// .. enriched by a last element
+					ResultKeys.Add(new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag));
+
+					// ok
+					return true;
+				}
+			}
+
+			if (selectedItem is VisualElementAsset veass
+				&& AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "AssetInformation")
+				&& veass.theAsset != null)
+			{
+				// prepare data
+				ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+				return true;
+			}
+
+			if (selectedItem is VisualElementOperationVariable veov
+				&& AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "OperationVariable")
+				&& veov.theOpVar?.Value != null)
+			{
+				// prepare data
+				ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+				return true;
+			}
+
+			if (selectedItem is VisualElementSupplementalFile vesf && vesf.theFile != null)
+			{
+				// prepare data
+				ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+				return true;
+			}
+
+			// uups
+			return false;
+		}
+	}
 
     public class AnyUiDialogueDataSelectReferableFromPool : AnyUiDialogueDataBase
     {
