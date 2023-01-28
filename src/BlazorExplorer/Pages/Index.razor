@@ -85,6 +85,14 @@
                                 DialogueData="session.DialogueData" />
                         }
 
+                        @if (session.DialogueData is AnyUiDialogueDataSelectReferableFromPool)
+                        {
+                            <AnyUiFlyoutSelectFromReferablesPool 
+                                EventSession="session"
+                                DialogueData="session.DialogueData"
+                                DataSourcePools="AasxPredefinedConcepts.DefinitionsPool.Static"/>
+                        }
+
                     </Modal>
 
                     <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose">
