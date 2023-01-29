@@ -8,39 +8,43 @@
 {
 	@* see Modal.razor: Bootstrap inner dialog classes *@
 
-	int numItems = 2;
+	@*int numItems = 2;
 	if (sacm.MenuItemHeaders != null && sacm.MenuItemHeaders.Count() >= 4)
-		numItems = (150 * sacm.MenuItemHeaders.Count() / 2) / 100;
+		numItems = (150 * sacm.MenuItemHeaders.Count() / 2) / 100;*@
 
 	<div class="modal-header">
 		<h3 class="modal-title" id="exampleModalLongTitle">@sacm.Caption</h3>
 		<button type="button" class="close btn btn-backdrop" aria-label="Close"
-			@onclick="() => LeaveResult(false)">
+			@onclick="() => LeaveResult(null)">
 			<span aria-hidden="true">&times;</span>
 		</button>
 	</div>
 	<div class="modal-body">
 		<form>
-			<span @ondblclick="@DblHandler">
-				<select class="form-control selectpicker" multiple data-max-options="2"
-					style="height:@(numItems)rem; max-height: 60vh;"
-					aria-label="multiple select example" @onchange="@OnSelect">
+			@* Render as a sequence of buttons *@
+			@{
+				string colw = "col-11";
+				if (sacm.MenuItemHeaders.Count() / 2 > 6)
+					colw = "col-5";
+			}
 
-					@if (sacm.MenuItemHeaders != null)
-						for (int i = 0; i < sacm.MenuItemHeaders.Count(); i += 2)
-						{
-							<option value="@(i)">@(sacm.MenuItemHeaders[i] + sacm.MenuItemHeaders[i + 1])</option>
-						}
+			@for (int i = 0; i < sacm.MenuItemHeaders.Count() / 2; i++)
+			{
+				int currI = i;
 
-				</select>
-			</span>
+				<button type="button" class="btn btn-primary-light btn-lg @colw mx-1 my-1 text-start"
+				@onclick="() => LeaveResult(currI)">
+					<span style="display: inline-block; width: 2rem!important; ">@(sacm.MenuItemHeaders[2 * i])</span>
+					<span style="text-align: left; ">@(sacm.MenuItemHeaders[2 * i + 1])</span>
+				</button>
+			}
         </form>
 	</div>
+	@*
 	<div class="modal-footer">
-
-		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
-	
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button> 
 	</div>
+	*@
 }
 
 @code {
@@ -50,35 +54,16 @@
 	[Parameter]
 	public AnyUiSpecialActionBase SpecialAction { get; set; }
 
-	void OnSelect(ChangeEventArgs e)
+	public void LeaveResult(int? i)
 	{
-		if (SpecialAction is AnyUiSpecialActionContextMenu sacm
-			&& e.Value is string[] varr
-			&& varr.Length > 0
-			&& int.TryParse(varr[0], out int i)
-				&& sacm.MenuItemHeaders != null
-				&& i >= 0 && i < sacm.MenuItemHeaders.Count())
+		if (i.HasValue && SpecialAction is AnyUiSpecialActionContextMenu sacm)
 		{
-			sacm.ResultIndex = i;
-		}
-	}
-
-	void DblHandler(MouseEventArgs e)
-	{
-		LeaveResult(true);
-	}
-
-	public void LeaveResult(bool result)
-	{
-		if (result 
-			&& SpecialAction is AnyUiSpecialActionContextMenu sacm
-			&& sacm.ResultIndex >= 0)
-		{
-			EventSession?.EndModal(true);			
+			sacm.ResultIndex = i.Value;
+			EventSession?.EndModal(true);
 		}
 		else
 		{
 			EventSession?.EndModal(false);
-		}		
+		}
 	}
 }

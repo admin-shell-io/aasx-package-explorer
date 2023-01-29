@@ -1073,7 +1073,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNavigateTo(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>(kl)));
                     },
                     relatedReferable: relatedReferable,
-                    auxContextHeader: new[] { "\u2573", "Delete referredSemanticId" },
+                    auxContextHeader: new[] { "\u2573", "Delete semanticId" },
                     auxContextLambda: (i) =>
                     {
                         if (i == 0)
@@ -1155,7 +1155,7 @@ namespace AasxPackageLogic
                                 return new AnyUiLambdaActionNavigateTo(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>(kl)));
                             },
                             relatedReferable: relatedReferable,
-                            auxContextHeader: new[] { "\u2573", "Delete referredSemanticId" },
+                            auxContextHeader: new[] { "\u2573", "Delete supplementalSemanticId" },
                             auxContextLambda: (i) =>
                             {
                                 if (i == 0)

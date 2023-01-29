@@ -76,6 +76,8 @@
 	[Parameter]
 	public AnyUiDialogueDataBase DialogueData { get; set; }
 
+	protected AnyUiDialogueDataBase _lastDiaData = null;
+
 	protected BlazorVisualElements _displayElements = new BlazorVisualElements();
 
 	protected List<string> _filterItems = new List<string>();
@@ -85,10 +87,31 @@
 	//protected VisualElementGeneric SelectedItem = null;
 	//protected ListOfVisualElementBasic ExpandedItems = new ListOfVisualElementBasic();
 
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+
+		// check if new dia data
+		if (_lastDiaData != DialogueData)
+		{
+			_lastDiaData = DialogueData;
+			InitState();
+		}
+	}
+
 	protected override void OnInitialized()
 	{
 		// pass thru
 		base.OnInitialized();
+
+		// init 
+		InitState();
+	}
+
+	protected void InitState()
+	{
+		// display elements need cache
+		_displayElements.ActivateElementStateCache();
 
 		// access
 		if (!(DialogueData is AnyUiDialogueDataSelectAasEntity ddsae))
@@ -98,7 +121,7 @@
 		_filterItems = VisualElementGeneric.GetAllFilterElementInfos().ToList();
 
 		// select an item
-		_filterCurrent = "All";
+		_filterCurrent = "As proposed";
 		if (ddsae.Filter != null)
 			foreach (var x in _filterItems)
 				if (x.ToString().Trim().ToLower() == ddsae.Filter.Trim().ToLower())
@@ -107,8 +130,8 @@
 					break;
 				}
 
-		// apply filter
-		var filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(_filterCurrent);
+		// apply original filter, a change of filter might olter this
+		var filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(ddsae.Filter);
 		_displayElements.RebuildAasxElements(Session.PackageCentral, ddsae.Selector, true, filter,
 			expandModePrimary: 1, expandModeAux: 0,
 			lazyLoadingFirst: false);
@@ -147,7 +170,8 @@
 			return;
 
 		// apply filter to the tree
-		var filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(_filterCurrent);
+		ddsae.Filter = _filterCurrent;
+		var filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(ddsae.Filter);
 		_displayElements.RebuildAasxElements(Session.PackageCentral, ddsae.Selector, true, filter,
 			expandModePrimary: 1, expandModeAux: 0,
 			lazyLoadingFirst: false);
