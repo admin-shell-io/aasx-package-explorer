@@ -27,7 +27,7 @@
 					aria-label="multiple select example" @onchange="@OnSelect">
 
 					@if (sacm.MenuItemHeaders != null)
-						for (int i = 0; i < sacm.MenuItemHeaders.Count(); i = 2)
+						for (int i = 0; i < sacm.MenuItemHeaders.Count(); i += 2)
 						{
 							<option value="@(i)">@(sacm.MenuItemHeaders[i] + sacm.MenuItemHeaders[i + 1])</option>
 						}
@@ -59,7 +59,7 @@
 				&& sacm.MenuItemHeaders != null
 				&& i >= 0 && i < sacm.MenuItemHeaders.Count())
 		{
-			;
+			sacm.ResultIndex = i;
 		}
 	}
 
@@ -70,6 +70,15 @@
 
 	public void LeaveResult(bool result)
 	{
-		EventSession?.EndModal(result);
+		if (result 
+			&& SpecialAction is AnyUiSpecialActionContextMenu sacm
+			&& sacm.ResultIndex >= 0)
+		{
+			EventSession?.EndModal(true);			
+		}
+		else
+		{
+			EventSession?.EndModal(false);
+		}		
 	}
 }

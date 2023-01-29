@@ -40,7 +40,7 @@
                 
                 @* <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose"> *@
 
-                <Modal @bind-Open="evs.EventOpen" Close="OnClose2">
+                <Modal @bind-Open="evs.EventOpen" Close="OnClose2">                    
 
                     @if (evs.DialogueData is AnyUiDialogueDataMessageBox)
                     {
@@ -100,10 +100,16 @@
                     }
 
                     @if (evs.SpecialAction is AnyUiSpecialActionContextMenu)
-                    {
+                    {                        
+                        ;
+
+                        <span>TOTALE SCHEISSE!!</span>
+
+                        
                         <AnyUiFlyoutContextMenu
                             EventSession="evs"
                             SpecialAction="evs.SpecialAction"/>
+                    
                     }
 
                 </Modal>

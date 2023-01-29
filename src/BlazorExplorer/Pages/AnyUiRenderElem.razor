@@ -342,7 +342,7 @@
             {
                 if (chbt.SpecialAction is AnyUiSpecialActionContextMenu cntlcm)
                 {
-                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm);
+                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm, DisplayData._context);
                     return;
                 }
                 // chbt.setValueLambda?.Invoke(chbt.Content);

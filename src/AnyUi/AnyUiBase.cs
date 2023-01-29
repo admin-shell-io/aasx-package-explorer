@@ -533,6 +533,8 @@ namespace AnyUi
         [JsonIgnore]
         public Func<object, AnyUiLambdaActionBase> MenuItemLambda;
 
+        public int ResultIndex = -1;
+
         public AnyUiSpecialActionContextMenu() { }
 
         public AnyUiSpecialActionContextMenu(

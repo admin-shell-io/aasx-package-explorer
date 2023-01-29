@@ -50,10 +50,15 @@ namespace AnyUi
         public int SessionId = 0;
 
         /// <summary>
-        /// Distincts the different working mode of display and
-        /// execution of the event loop.
+        /// JavaScript runtime to call scripts.
         /// </summary>
-        public AnyUiHtmlEventType EventType;
+		public IJSRuntime JsRuntime;
+
+		/// <summary>
+		/// Distincts the different working mode of display and
+		/// execution of the event loop.
+		/// </summary>
+		public AnyUiHtmlEventType EventType;
 
 		/// <summary>
 		/// If <c>true</c>, a special HTML dialog rendering will occur for
@@ -94,14 +99,20 @@ namespace AnyUi
         /// </summary>
         // public AnyUiHtmlEventType EventType;
 
+        // constructor: guarantee some data
 
-        // service function
+        public AnyUiHtmlEventSession(int sessionId)
+        {
+            SessionId = sessionId;
+        }
 
-        /// <summary>
-        /// Will set all important flags in a way, that the event can be executed.
-        /// </summary>
-        /// <param name="diaData"></param>
-        public T StartModal<T>(T diaData) where T : AnyUiDialogueDataBase
+		// service function
+
+		/// <summary>
+		/// Will set all important flags in a way, that the event can be executed.
+		/// </summary>
+		/// <param name="diaData"></param>
+		public T StartModal<T>(T diaData) where T : AnyUiDialogueDataBase
         {
             if (diaData == null)
             {
@@ -112,6 +123,7 @@ namespace AnyUi
 
             EventOpen = true;
             DialogueData = diaData;
+            SpecialAction = null;
             EventDone = false;
             return diaData;
         }
@@ -126,6 +138,7 @@ namespace AnyUi
 			}
 
 			EventOpen = true;
+            DialogueData = null;
 			SpecialAction = sdData;
 			EventDone = false;
 			return sdData;
@@ -176,7 +189,7 @@ namespace AnyUi
         public BlazorUI.Data.BlazorSession _bi;
 
         [JsonIgnore]
-        protected IJSRuntime _jsRuntime;
+        public IJSRuntime _jsRuntime;
 
         public AnyUiDisplayContextHtml(
             PackageCentral packageCentral,
@@ -195,12 +208,11 @@ namespace AnyUi
         static object staticHtmlDotnetLock = new object();
         public static List<AnyUiHtmlEventSession> sessions = new List<AnyUiHtmlEventSession>();
 
-        public static void AddEventSession(int sessionNumber)
+        public static void AddEventSession(int sessionId)
         {
             lock (staticHtmlDotnetLock)
             {
-                var s = new AnyUiHtmlEventSession();
-                s.SessionId = sessionNumber;
+                var s = new AnyUiHtmlEventSession(sessionId);
                 sessions.Add(s);
             }
         }
@@ -241,7 +253,10 @@ namespace AnyUi
         /// <summary>
         /// This very special suspicious double-mangled infinite loop serves as a context
         /// for dedicated event loops aside from the general Blazor event loop,
-        /// that is: context menu, execution of value lambdas
+        /// that is: context menu, execution of value lambdas.
+        /// This function seems to cyclically scan the event loop "sessions" and will
+        /// "lock on" an active one and do some modal things ..
+        /// TODO: Check if this would work with multiple users (!!!)
         /// </summary>
         public static void htmlDotnetLoop()
         {
@@ -311,7 +326,38 @@ namespace AnyUi
                                 break;
                         }
                     }
-                    i++;
+
+                    if (s.EventType == AnyUiHtmlEventType.ContextMenu)
+                    {
+                        // assumption: context menu already on the screen
+                        if (!s.EventOpen || !(s.SpecialAction is AnyUiSpecialActionContextMenu sacm))
+                        {
+                            // emergency exit
+                            s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
+                            return;
+                        }
+
+                        // simply do event loop (but here in the "background")
+                        while (!s.EventDone) Task.Delay(1);
+                        s.EventOpen = false;
+                        s.EventDone = false;
+                        s.EventType = AnyUiHtmlEventType.None;
+
+                        // trigger display(again)
+                        //Program.signalNewData(
+                        //    new Program.NewDataAvailableArgs(
+                        //        Program.DataRedrawMode.None, evs.SessionId));
+                        s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
+
+                        // directly concern about the results
+                        if (sacm.ResultIndex >= 0)
+						{
+							int bufferedI = sacm.ResultIndex;
+							var action2 = sacm.MenuItemLambda?.Invoke(bufferedI);
+						}
+					}
+
+					i++;
                 }
                 // ReSharper enable InconsistentlySynchronizedField
                 Thread.Sleep(100);
@@ -340,7 +386,10 @@ namespace AnyUi
             }
         }
 
-        public static void specialActionContextMenuHtml(AnyUiUIElement el, AnyUiSpecialActionContextMenu cntlcm)
+        public static void specialActionContextMenuHtml(
+            AnyUiUIElement el, 
+            AnyUiSpecialActionContextMenu cntlcm,
+            AnyUiDisplayContextHtml context)
         {
             var dc = (el.DisplayData as AnyUiDisplayDataHtml)?._context;
             if (dc != null)
@@ -351,16 +400,47 @@ namespace AnyUi
                 {
                     lock (dc.htmlDotnetLock)
                     {
-                        // woodoo?
-                        while (evs.htmlDotnetEventIn) Task.Delay(1);
+                        // woodoo? -> wait for "old" dislogs????
+                        // while (/* evs.htmlDotnetEventIn || evs.EventOpen) Task.Delay(1);
 
                         // start new thing
-                        evs.htmlEventInputs.Clear();
-                        evs.htmlDotnetEventType = "contextMenu";
-                        evs.htmlDotnetEventInputs.Add(el);
-                        evs.htmlDotnetEventInputs.Add(cntlcm);
-                        evs.htmlDotnetEventIn = true;
+                        //evs.htmlEventInputs.Clear();
+                        //evs.htmlDotnetEventType = "contextMenu";
+                        //evs.htmlDotnetEventInputs.Add(el);
+                        //evs.htmlDotnetEventInputs.Add(cntlcm);
+                        //evs.htmlDotnetEventIn = true;
+
+                        // simply treat woodoo as error!
+                        evs.JsRuntime = dc._jsRuntime;
+
+						if (evs.EventOpen)
+					    {
+						    Log.Singleton.Error("Error in starting special action as some modal dialogue " +
+							    "is still active. Aborting!!");
+						    return;
+					    }
+
+                        evs.EventType = AnyUiHtmlEventType.ContextMenu;
+					    evs.StartModalSpecialAction(cntlcm);
+
+					    // trigger display
+					    Program.signalNewData(
+						    new Program.NewDataAvailableArgs(
+							    Program.DataRedrawMode.None, evs.SessionId));
+
+                        // wait modal
+                        //while (!evs.EventDone) Task.Delay(1);
+                        //evs.EventOpen = false;
+                        //evs.EventDone = false;
+
+                        // trigger display (again)
+                        //Program.signalNewData(
+                        //    new Program.NewDataAvailableArgs(
+                        //        Program.DataRedrawMode.None, evs.SessionId));
+                        // context?._jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
+
                     }
+
                 }
             }
         }
