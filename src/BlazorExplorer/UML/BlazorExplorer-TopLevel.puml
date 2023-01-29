@@ -1,5 +1,51 @@
 ﻿@startuml
 
+package AasxPackageLogic {
+
+class MainWindowLogic {
+  PackageCentral
+}
+note right
+  Base class for abstract 
+  (non-UI) main window
+  handling.
+end note
+
+class MainWindowTools
+note right
+  Some tools (Andreas,
+  security) used by
+  multiple menu functions
+end note
+
+MainWindowLogic <|-- MainWindowTools
+
+class MainWindowDispatch {
+  + CommandBinding_GeneralDispatch()
+}
+note right
+  Abstract menu items.
+  Inner core of menu items.
+  Will be wrapped in WPF, HTML, Toolkit.
+end note
+
+MainWindowTools <|-- MainWindowDispatch
+
+IMainWindow <--- MainWindowDispatch : uses
+
+class IMainWindow {
+  UiLoadPackageWithNew()
+}
+note right
+  An main window needs implement this to allow 
+  business logic to trigger important state 
+  changes visible to the user, e.g. loading.
+end note
+
+}
+
+package AasxPackageExplorer {
+
 class Program
 {
   + Options
@@ -24,7 +70,11 @@ class "App.razor" as AppRazor <<Razor*>>
 class BlazorSession
 {
   SessionId : int
-  PackageCentral : PackageCentral
+  Logic : MainWindowDispatch
+  DisplayElements : BlazorVisualElements
+  MainMenu : AasxMenuBlazor
+  DynamicMenu : AasxMenuBlazor
+  DisplayData : AnyUiDisplayDataHtml
   ElementPanel : AnyUiStackPanel
   EditMode : bool
   HintMode : bool
@@ -35,6 +85,18 @@ note top
   holding session data.
   Injected into razor pages.
 end note
+
+class "BlazorSession.CommandBindings.cs" as BlazorSessionCommandBindings {
+  CommandBinding_GeneralDispatch()
+}
+note right
+  Menu functions which 
+  involve a lot of HTML.
+end note
+
+BlazorSession *-- BlazorSessionCommandBindings : partial
+
+MainWindowDispatch <-- BlazorSessionCommandBindings : uses
 
 class BlazorVisualElements
 {
@@ -146,6 +208,9 @@ end note
 
 Program *-- "1..n" BlazorSession
 
+MainWindowDispatch <--- BlazorSession
+IMainWindow <|--- BlazorSession
+
 BlazorSession *-- BlazorVisualElements : DisplayElements
 BlazorSession *-- AasxMenuBlazor : MainMenu
 
@@ -194,5 +259,7 @@ Index --> BlazorModalJs
 MainLayout --> KeyboardJs
 
 StylePile <--> SiteCss : co-exists
+
+}
 
 @enduml

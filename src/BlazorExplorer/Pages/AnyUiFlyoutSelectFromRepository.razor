@@ -1,0 +1,116 @@
+﻿@page "/AnyUiFlyoutSelectFromRepository"
+@using AnyUi
+@using AasxPackageLogic
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataSelectFromRepository ddsfr)
+{
+    @* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddsfr.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		 <form>
+			<div class="mt-3">
+				<label for="textBoxAssetId" class="form-label">AssetID:</label>
+				<div class="row" >
+					<div class="col-11">					
+						<input type="text" class="form-control form-control-lg" id="textBoxAssetId" @bind-value="_assetId">
+					</div>
+					<div class="col-auto">
+						<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => OnSelectOK()">OK</button>
+					</div>
+				</div>
+			</div>
+        </form>
+	</div>
+	<div class="modal-footer">
+
+		<div class="row">
+			@for (int i = 0; i < _itemButtons.Count; i++)
+			{
+				var currI = i;
+				<button type="button" class="btn btn-primary col-auto mx-1 my-1"
+				@onclick="() => OnSelectRepoButton(currI)">
+					@(_itemButtons[i])
+				</button>
+			}
+		</div>
+
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	/// <summary>
+	/// Titles of the buttons, which will directly trigger a loading
+	/// of a repo item.
+	/// </summary>
+	protected List<string> _itemButtons = new List<string>();
+
+	/// <summary>
+	/// Asset id currently edited; used to lookup an item.
+	/// </summary>
+	protected string _assetId = "";
+
+	protected override void OnInitialized()
+	{
+		// pass thru
+		base.OnInitialized();
+
+		// access
+		if (!(DialogueData is AnyUiDialogueDataSelectFromRepository ddsfr))
+			return;
+
+		// item buttons
+		_itemButtons.Clear();
+		if (ddsfr.Items != null)
+			foreach (var ri in ddsfr.Items)
+				_itemButtons.Add("" + ri?.Tag?.Trim());
+	}
+
+	public void OnSelectRepoButton(int i)
+	{
+		// access
+		if (!(DialogueData is AnyUiDialogueDataSelectFromRepository ddsfr))
+			return;
+
+		if (i < 0 || ddsfr.Items == null || i >= ddsfr.Items.Count())
+			return;
+
+		// ok
+		ddsfr.ResultItem = ddsfr.Items[i];
+		LeaveResult(true);
+	}
+
+	public void OnSelectOK()
+	{
+		// access
+		if (!(DialogueData is AnyUiDialogueDataSelectFromRepository ddsfr))
+			return;
+
+		var ri = ddsfr.SearchId(_assetId);
+		if (ri != null)
+		{
+			ddsfr.ResultItem = ri;
+			LeaveResult(true);
+		}
+	}
+
+	public void LeaveResult(bool result)
+	{
+		EventSession?.EndModal(result);
+	}
+}

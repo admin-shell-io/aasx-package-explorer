@@ -528,6 +528,7 @@ namespace AnyUi
 
     public class AnyUiSpecialActionContextMenu : AnyUiSpecialActionBase
     {
+        public string Caption = "Context menu";
         public string[] MenuItemHeaders;
         [JsonIgnore]
         public Func<object, AnyUiLambdaActionBase> MenuItemLambda;

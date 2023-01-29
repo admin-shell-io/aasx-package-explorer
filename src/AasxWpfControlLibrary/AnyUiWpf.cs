@@ -1475,7 +1475,14 @@ namespace AnyUi
                 res = uc;
             }
 
-            if (dialogueData is AnyUiDialogueDataSelectQualifierPreset ddsq)
+			if (dialogueData is AnyUiDialogueDataSelectFromRepository ddfr)
+			{
+				var uc = new SelectFromRepositoryFlyout();
+				uc.DiaData = ddfr;
+				res = uc;
+			}
+
+			if (dialogueData is AnyUiDialogueDataSelectQualifierPreset ddsq)
             {
                 var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
                 var uc = new SelectQualifierPresetFlyout(fullfn);

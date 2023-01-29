@@ -1141,99 +1141,102 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "filerepoquery")
-            {
-                ticket.StartExec();
+                _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
-                // access
-                if (_packageCentral.Repositories == null || _packageCentral.Repositories.Count < 1)
-                {
-                    _logic?.LogErrorToTicket(ticket,
-                        "AASX File Repository: No repository currently available! Please open.");
-                    return;
-                }
+            //if (cmd == "filerepoquery")
+            //{
+            //    ticket.StartExec();
 
-                // make a lambda
-                Action<PackageContainerRepoItem> lambda = (ri) =>
-                {
-                    var fr = _packageCentral.Repositories?.FindRepository(ri);
+            //    // access
+            //    if (_packageCentral.Repositories == null || _packageCentral.Repositories.Count < 1)
+            //    {
+            //        _logic?.LogErrorToTicket(ticket,
+            //            "AASX File Repository: No repository currently available! Please open.");
+            //        return;
+            //    }
 
-                    if (fr != null && ri?.Location != null)
-                    {
-                        // which file?
-                        var loc = fr?.GetFullItemLocation(ri.Location);
-                        if (loc == null)
-                            return;
+            //    // make a lambda
+            //    Action<PackageContainerRepoItem> lambda = (ri) =>
+            //    {
+            //        var fr = _packageCentral.Repositories?.FindRepository(ri);
 
-                        // start animation
-                        fr.StartAnimation(ri,
-                            PackageContainerRepoItem.VisualStateEnum.ReadFrom);
+            //        if (fr != null && ri?.Location != null)
+            //        {
+            //            // which file?
+            //            var loc = fr?.GetFullItemLocation(ri.Location);
+            //            if (loc == null)
+            //                return;
 
-                        try
-                        {
-                            // load
-                            Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
-                            UiLoadPackageWithNew(
-                                _packageCentral.MainItem, null, loc, onlyAuxiliary: false);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Singleton.Error(
-                                ex, $"When switching to AASX repository location {loc}.");
-                        }
-                    }
-                };
+            //            // start animation
+            //            fr.StartAnimation(ri,
+            //                PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
-                // get the list of items
-                var repoItems = _packageCentral.Repositories.EnumerateItems().ToList();
+            //            try
+            //            {
+            //                // load
+            //                Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
+            //                UiLoadPackageWithNew(
+            //                    _packageCentral.MainItem, null, loc, onlyAuxiliary: false);
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                Log.Singleton.Error(
+            //                    ex, $"When switching to AASX repository location {loc}.");
+            //            }
+            //        }
+            //    };
 
-                // scripted?
-                if (ticket["Index"] is int)
-                {
-                    var ri = (int)ticket["Index"];
-                    if (ri < 0 || ri >= repoItems.Count)
-                    {
-                        _logic?.LogErrorToTicket(ticket, "Repo Query: Index out of bounds");
-                        return;
-                    }
-                    lambda(repoItems[ri]);
-                }
-                else
-                if (ticket["AAS"] is string aasid)
-                {
-                    var ri = _packageCentral.Repositories.FindByAasId(aasid);
-                    if (ri == null)
-                    {
-                        _logic?.LogErrorToTicket(ticket, "Repo Query: AAS-Id not found");
-                        return;
-                    }
-                    lambda(ri);
-                }
-                else
-                if (ticket["Asset"] is string aid)
-                {
-                    var ri = _packageCentral.Repositories.FindByAssetId(aid);
-                    if (ri == null)
-                    {
-                        _logic?.LogErrorToTicket(ticket, "Repo Query: Asset-Id not found");
-                        return;
-                    }
-                    lambda(ri);
-                }
-                else
-                {
-                    // dialogue
-                    var uc = new SelectFromRepositoryFlyout();
-                    uc.Margin = new Thickness(10);
-                    if (uc.LoadAasxRepoFile(items: repoItems))
-                    {
-                        uc.ControlClosed += () =>
-                        {
-                            lambda(uc.ResultItem);
-                        };
-                        this.StartFlyover(uc);
-                    }
-                }
-            }
+            //    // get the list of items
+            //    var repoItems = _packageCentral.Repositories.EnumerateItems().ToList();
+
+            //    // scripted?
+            //    if (ticket["Index"] is int)
+            //    {
+            //        var ri = (int)ticket["Index"];
+            //        if (ri < 0 || ri >= repoItems.Count)
+            //        {
+            //            _logic?.LogErrorToTicket(ticket, "Repo Query: Index out of bounds");
+            //            return;
+            //        }
+            //        lambda(repoItems[ri]);
+            //    }
+            //    else
+            //    if (ticket["AAS"] is string aasid)
+            //    {
+            //        var ri = _packageCentral.Repositories.FindByAasId(aasid);
+            //        if (ri == null)
+            //        {
+            //            _logic?.LogErrorToTicket(ticket, "Repo Query: AAS-Id not found");
+            //            return;
+            //        }
+            //        lambda(ri);
+            //    }
+            //    else
+            //    if (ticket["Asset"] is string aid)
+            //    {
+            //        var ri = _packageCentral.Repositories.FindByAssetId(aid);
+            //        if (ri == null)
+            //        {
+            //            _logic?.LogErrorToTicket(ticket, "Repo Query: Asset-Id not found");
+            //            return;
+            //        }
+            //        lambda(ri);
+            //    }
+            //    else
+            //    {
+            //        // dialogue
+            //        var uc = new SelectFromRepositoryFlyout();
+            //        uc.Margin = new Thickness(10);
+            //        if (uc.LoadAasxRepoFile(items: repoItems))
+            //        {
+            //            uc.ControlClosed += () =>
+            //            {
+            //                lambda(uc.ResultItem);
+            //            };
+            //            this.StartFlyover(uc);
+            //        }
+            //    }
+            //}
 
             if (cmd == "filerepocreatelru")
             {

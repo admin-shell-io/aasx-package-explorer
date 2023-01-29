@@ -1,0 +1,74 @@
+﻿@startuml
+
+package AasxPackageLogic {
+
+class MainWindowLogic {
+  PackageCentral
+}
+note right
+  Base class for abstract 
+  (non-UI) main window
+  handling.
+end note
+
+class MainWindowTools
+note right
+  Some tools (Andreas,
+  security) used by
+  multiple menu functions
+end note
+
+MainWindowLogic <|-- MainWindowTools
+
+class MainWindowDispatch {
+  + CommandBinding_GeneralDispatch()
+}
+note right
+  Abstract menu items.
+  Inner core of menu items.
+  Will be wrapped in WPF, HTML, Toolkit.
+end note
+
+MainWindowTools <|-- MainWindowDispatch
+
+IMainWindow <--- MainWindowDispatch : uses
+
+class IMainWindow {
+  UiLoadPackageWithNew()
+}
+note right
+  An main window needs implement this to allow 
+  business logic to trigger important state 
+  changes visible to the user, e.g. loading.
+end note
+
+}
+
+package AasxPackageExplorer {
+
+class "MainWindow.xaml.cs" as MainWindowXamlCs {
+  MainWindowDispatch _logic
+}
+note right
+  Main window to the 
+  WPF application.
+  Contains all glue 
+  logic between library
+  elements.
+end note
+
+IMainWindow <|--- MainWindowXamlCs
+
+class "MainWindow.CommandBindings.cs" as MainWindowCommandBindingsCs {
+  CommandBinding_GeneralDispatch()
+}
+note right
+  Menu functions which 
+  involve a lot of WPF.
+end note
+
+MainWindowXamlCs *-- MainWindowCommandBindingsCs : partial
+
+MainWindowDispatch <--- MainWindowXamlCs
+
+@enduml

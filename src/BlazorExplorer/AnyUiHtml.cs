@@ -40,7 +40,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 namespace AnyUi
 {
 
-    // public enum AnyUiHtmlEventType { None, Dialog }
+    public enum AnyUiHtmlEventType { None, Dialog, ContextMenu }
 
     public class AnyUiHtmlEventSession
     {
@@ -50,10 +50,16 @@ namespace AnyUi
         public int SessionId = 0;
 
         /// <summary>
-        /// If <c>true</c>, a special HTML dialog rendering will occur for
-        /// the event.
+        /// Distincts the different working mode of display and
+        /// execution of the event loop.
         /// </summary>
-        public bool EventOpen;
+        public AnyUiHtmlEventType EventType;
+
+		/// <summary>
+		/// If <c>true</c>, a special HTML dialog rendering will occur for
+		/// the event.
+		/// </summary>
+		public bool EventOpen;
 
         /// <summary>
         /// Will be raised if the modal event shall be closed.
@@ -61,9 +67,13 @@ namespace AnyUi
         public bool EventDone;
 
         /// <summary>
-        /// In case of <c>EventType == Dialog</c>, gives the dialog data.
+        /// If a dialog shall be executed, dialogue data
         /// </summary>
         public AnyUiDialogueDataBase DialogueData;
+
+        /// If a special action shall be executed, data to it
+        /// </summary>
+        public AnyUiSpecialActionBase SpecialAction;
 
         // old stuff
 
@@ -106,7 +116,22 @@ namespace AnyUi
             return diaData;
         }
 
-        public void EndModal(bool result)
+		public T StartModalSpecialAction<T>(T sdData) where T : AnyUiSpecialActionBase
+		{
+			if (sdData == null)
+			{
+				EventOpen = false;
+				EventDone = true;
+				return sdData;
+			}
+
+			EventOpen = true;
+			SpecialAction = sdData;
+			EventDone = false;
+			return sdData;
+		}
+
+		public void EndModal(bool result)
         {
 			EventOpen = false;
 			EventDone = true;
@@ -154,11 +179,16 @@ namespace AnyUi
         protected IJSRuntime _jsRuntime;
 
         public AnyUiDisplayContextHtml(
-            BlazorUI.Data.BlazorSession bi,
-            IJSRuntime jsRuntime)
+            PackageCentral packageCentral,
+            BlazorUI.Data.BlazorSession bi)
         {
             _bi = bi;
-            _jsRuntime = jsRuntime;
+            Packages = packageCentral;
+        }
+
+        public void SetJsRuntime(IJSRuntime runtime)
+        {
+            _jsRuntime = runtime;
         }
 
         object htmlDotnetLock = new object();
@@ -208,6 +238,11 @@ namespace AnyUi
             return found;
         }
 
+        /// <summary>
+        /// This very special suspicious double-mangled infinite loop serves as a context
+        /// for dedicated event loops aside from the general Blazor event loop,
+        /// that is: context menu, execution of value lambdas
+        /// </summary>
         public static void htmlDotnetLoop()
         {
             AnyUiUIElement el;
@@ -311,17 +346,20 @@ namespace AnyUi
             if (dc != null)
             {
                 var sessionNumber = dc._bi.SessionId;
-                var found = FindEventSession(sessionNumber);
-                if (found != null)
+                var evs = FindEventSession(sessionNumber);
+                if (evs != null)
                 {
                     lock (dc.htmlDotnetLock)
                     {
-                        while (found.htmlDotnetEventIn) Task.Delay(1);
-                        found.htmlEventInputs.Clear();
-                        found.htmlDotnetEventType = "contextMenu";
-                        found.htmlDotnetEventInputs.Add(el);
-                        found.htmlDotnetEventInputs.Add(cntlcm);
-                        found.htmlDotnetEventIn = true;
+                        // woodoo?
+                        while (evs.htmlDotnetEventIn) Task.Delay(1);
+
+                        // start new thing
+                        evs.htmlEventInputs.Clear();
+                        evs.htmlDotnetEventType = "contextMenu";
+                        evs.htmlDotnetEventInputs.Add(el);
+                        evs.htmlDotnetEventInputs.Add(cntlcm);
+                        evs.htmlDotnetEventIn = true;
                     }
                 }
             }
@@ -429,14 +467,21 @@ namespace AnyUi
 
 			var dd = evs.StartModal(dialogueData);
 
-			// trigger display
-			Program.signalNewData(
-				new Program.NewDataAvailableArgs(
-					Program.DataRedrawMode.None, evs.SessionId));
+            // trigger display
+            Program.signalNewData(
+                new Program.NewDataAvailableArgs(
+                    Program.DataRedrawMode.None, evs.SessionId));
 
-			// wait modal
-			while (!evs.EventDone) Task.Delay(1);
+            // wait modal
+            while (!evs.EventDone) Task.Delay(1);
+            evs.EventOpen = false;
 			evs.EventDone = false;
+
+            // trigger display (again)
+            //Program.signalNewData(
+            //    new Program.NewDataAvailableArgs(
+            //        Program.DataRedrawMode.None, evs.SessionId));
+            _jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
 
             return dd.Result;
 

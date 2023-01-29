@@ -33,6 +33,7 @@ using System.Xml.Serialization;
 using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using System.Windows;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -42,7 +43,7 @@ namespace AasxPackageLogic
     /// This class takes menu action tickets with fully provided arguments and dispatches these
     /// to the functionality pieces provide by the "logic" class
     /// </summary>
-    public class MainWindowDispatch : MainWindowLogic
+    public class MainWindowDispatch : MainWindowTools
     {
         /// <summary>
         /// Standard handler, if not given by ticket.
@@ -1002,7 +1003,105 @@ namespace AasxPackageLogic
                     LogErrorToTicket(ticket, ex, "while doing user defined conversion");
                 }
             }
-        }
+
+			if (cmd == "filerepoquery")
+			{
+				ticket.StartExec();
+
+				// access
+				if (PackageCentral.Repositories == null || PackageCentral.Repositories.Count < 1)
+				{
+					LogErrorToTicket(ticket,
+						"AASX File Repository: No repository currently available! Please open.");
+					return;
+				}
+
+				// make a lambda
+				Action<PackageContainerRepoItem> lambda = (ri) =>
+				{
+					var fr = PackageCentral.Repositories?.FindRepository(ri);
+
+					if (fr != null && ri?.Location != null)
+					{
+						// which file?
+						var loc = fr?.GetFullItemLocation(ri.Location);
+						if (loc == null)
+							return;
+
+						// start animation
+						fr.StartAnimation(ri,
+							PackageContainerRepoItem.VisualStateEnum.ReadFrom);
+
+						try
+						{
+							// load
+							Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
+                            MainWindow?.UiLoadPackageWithNew(
+							    PackageCentral.MainItem, null, loc, onlyAuxiliary: false);
+						}
+						catch (Exception ex)
+						{
+							Log.Singleton.Error(
+								ex, $"When switching to AASX repository location {loc}.");
+						}
+					}
+				};
+
+				// get the list of items
+				var repoItems = PackageCentral.Repositories.EnumerateItems().ToList();
+
+				// scripted?
+				if (ticket["Index"] is int)
+				{
+					var ri = (int)ticket["Index"];
+					if (ri < 0 || ri >= repoItems.Count)
+					{
+						LogErrorToTicket(ticket, "Repo Query: Index out of bounds");
+						return;
+					}
+					lambda(repoItems[ri]);
+				}
+				else
+				if (ticket["AAS"] is string aasid)
+				{
+					var ri = PackageCentral.Repositories.FindByAasId(aasid);
+					if (ri == null)
+					{
+						LogErrorToTicket(ticket, "Repo Query: AAS-Id not found");
+						return;
+					}
+					lambda(ri);
+				}
+				else
+				if (ticket["Asset"] is string aid)
+				{
+					var ri = PackageCentral.Repositories.FindByAssetId(aid);
+					if (ri == null)
+					{
+						LogErrorToTicket(ticket, "Repo Query: Asset-Id not found");
+						return;
+					}
+					lambda(ri);
+				}
+				else
+				{
+					// dialogue
+					if (AnyUiContext == null)
+					{
+						LogErrorToTicket(ticket, "Repo Query: No AnyUI context found. Could not display.");
+						return;
+					}
+
+					var uc = new AnyUiDialogueDataSelectFromRepository();
+                    uc.Caption = "Select in repository";
+                    uc.Items = repoItems;
+					if (AnyUiContext.StartFlyoverModal(uc))
+                    {
+						lambda(uc.ResultItem);
+					}
+				}
+			}
+		}
 
         public Tuple<List<ImportExportTableRecord>, ExportUmlRecord, ImportTimeSeriesRecord>
             GetImportExportTablePreset()

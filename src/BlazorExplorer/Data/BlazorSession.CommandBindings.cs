@@ -97,6 +97,12 @@ namespace BlazorUI.Data
                     DisplayElements.TrySelectMainDataObject(currMdo, wishExpanded: true);
                 }
             }
+
+            // dispatching directly to PackageLogic
+
+            if (cmd == "filerepoquery")
+                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+
         }
     }
 }

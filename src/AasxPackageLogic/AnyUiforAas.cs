@@ -15,8 +15,10 @@ using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0_RC02;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
+using AasxIntegrationBase;
 using AnyUi;
 using Extensions;
+using System.Xaml;
 
 namespace AasxPackageLogic
 {
@@ -268,7 +270,48 @@ namespace AasxPackageLogic
         }
     }
 
-    public class AnyUiDialogueDataSelectQualifierPreset : AnyUiDialogueDataBase
+	public class AnyUiDialogueDataSelectFromRepository : AnyUiDialogueDataBase
+	{
+        /// <summary>
+        /// Limit the number of buttons shown in the dialogue.
+        /// </summary>
+        public static int MaxButtonsToShow = 20;
+
+		public IList<PackageContainerRepoItem> Items = null;
+		public PackageContainerRepoItem ResultItem = null;
+
+		public AnyUiDialogueDataSelectFromRepository(
+			string caption = "",
+			double? maxWidth = null)
+			: base(caption, maxWidth)
+		{
+		}
+
+        public PackageContainerRepoItem SearchId(string aid)
+        {
+			// condition
+			aid = aid?.Trim().ToLower();
+			if (aid?.HasContent() != true)
+				return null;
+
+			// first compare against tags
+			if (this.Items != null)
+				foreach (var ri in this.Items)
+					if (aid == ri.Tag.Trim().ToLower())
+						return ri;
+
+			// if not, compare asset ids
+			if (this.Items != null)
+				foreach (var ri in this.Items)
+					foreach (var id in ri.EnumerateAssetIds())
+						if (aid == id.Trim().ToLower())
+							return ri;
+
+			return null;
+		}
+	}
+
+	public class AnyUiDialogueDataSelectQualifierPreset : AnyUiDialogueDataBase
     {
         // in
         // (the presets will be provided by the technology implementation)

@@ -39,13 +39,14 @@ using Extensions;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
+using System.IO.Packaging;
 
 namespace AasxPackageExplorer
 {
     /// <summary>
     /// This partial class is the "root" partial class of MainWindow.
     /// </summary>
-    public partial class MainWindow : Window, IFlyoutProvider, IPushApplicationEvent
+    public partial class MainWindow : Window, IFlyoutProvider, IPushApplicationEvent, IMainWindow
     {
         #region Dependencies
         // (mristin, 2020-11-18): consider injecting OptionsInformation, Package environment *etc.* to the main window
@@ -56,9 +57,26 @@ namespace AasxPackageExplorer
         #region Members
         // ============
 
-        public PackageCentral _packageCentral = new PackageCentral();
+        /// <summary>
+        /// Abstracted menu functions to be wrapped by functions triggering
+        /// more UI feedback.
+        /// </summary>
+        protected MainWindowDispatch _logic = new MainWindowDispatch();
 
-        public AasxMenuWpf _mainMenu = new AasxMenuWpf();
+        protected AnyUiDisplayContextWpf _displayContext = null;
+
+		// public PackageCentral _packageCentral = new PackageCentral();
+
+		/// <summary>
+		/// This symbol is only a link to the abstract main-windows class.
+		/// </summary>
+		public PackageCentral _packageCentral
+        {
+            get => _logic?.PackageCentral;
+            // set { _logic ??= new MainWindowDispatch(); _logic.PackageCentral = value; }
+        }
+
+		public AasxMenuWpf _mainMenu = new AasxMenuWpf();
 
         private string showContentPackageUri = null;
         private string showContentPackageMime = null;
@@ -71,7 +89,6 @@ namespace AasxPackageExplorer
 
         private AasEventCompressor _eventCompressor = new AasEventCompressor();
 
-        protected MainWindowDispatch _logic = new MainWindowDispatch();
 
         protected AasxMenuWpf _dynamicMenu = new AasxMenuWpf();
 
@@ -292,7 +309,21 @@ namespace AasxPackageExplorer
             return ro;
         }
 
-        public void UiLoadPackageWithNew(
+		/// <summary>
+		/// This function serve as a kind of unified contact point for all kind
+		/// of business functions to trigger loading an item to PackageExplorer data 
+        /// represented by an item of PackageCentral. This function triggers UI procedures.
+		/// </summary>
+		/// <param name="packItem">PackageCentral item to load to</param>
+		/// <param name="takeOverEnv">Already loaded environment to take over (alternative 1)</param>
+		/// <param name="loadLocalFilename">Local filename to read (alternative 2)</param>
+		/// <param name="info">Human information what is loaded</param>
+		/// <param name="onlyAuxiliary">Treat as auxiliary load, not main item load</param>
+		/// <param name="doNotNavigateAfterLoaded">Disable automatic navigate to behaviour</param>
+		/// <param name="takeOverContainer">Already loaded container to take over (alternative 3)</param>
+		/// <param name="storeFnToLRU">Store this filename into last recently used list</param>
+		/// <param name="indexItems">Index loaded contents, e.g. for animate of event sending</param>
+		public void UiLoadPackageWithNew(
             PackageCentralItem packItem,
             AdminShellPackageEnv takeOverEnv = null,
             string loadLocalFilename = null,
@@ -521,11 +552,12 @@ namespace AasxPackageExplorer
             // update element view?
             _dynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                    _packageCentral, entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
-                    flyoutProvider: this,
-                    appEventProvider: this,
-                    hightlightField: hightlightField,
-                    superMenu: _dynamicMenu.Menu);
+                _packageCentral, _displayContext, 
+                entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
+                flyoutProvider: this,
+                appEventProvider: this,
+                hightlightField: hightlightField,
+                superMenu: _dynamicMenu.Menu);
 
             // panels
             var panelHeight = 48;
@@ -698,8 +730,13 @@ namespace AasxPackageExplorer
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // making up "empty" picture
-            this.AasId.Text = "<id unknown!>";
+            // basic AnyUI handling
+			_displayContext = new AnyUiDisplayContextWpf(this, _packageCentral);
+            _logic.AnyUiContext = _displayContext;
+            _logic.MainWindow = this;
+
+			// making up "empty" picture
+			this.AasId.Text = "<id unknown!>";
             this.AssetId.Text = "<id unknown!>";
 
             // logical main menu

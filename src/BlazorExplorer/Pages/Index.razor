@@ -34,75 +34,97 @@
             <!-- Modal -->
             <div class="row">
                 @{
-                    session = AnyUiDisplayContextHtml.FindEventSession(Session.SessionId);
-                    sessionHtmlEventIn = session.htmlEventIn;
+                    evs = AnyUiDisplayContextHtml.FindEventSession(Session.SessionId);
+                    sessionHtmlEventIn = evs.htmlEventIn;
                 }
-                @if (session != null && sessionHtmlEventIn || session.EventOpen)
-                {                    
-                    @* <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose"> *@
+                
+                @* <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose"> *@
 
-                    <Modal @bind-Open="session.EventOpen" Close="OnClose">
+                <Modal @bind-Open="evs.EventOpen" Close="OnClose2">
 
-                        @if (session.DialogueData is AnyUiDialogueDataMessageBox)
-                        {
-                            <AnyUiFlyoutMessageBox 
-                                EventSession="session" 
-                                DialogueData="session.DialogueData"/>
-                        }
+                    @if (evs.DialogueData is AnyUiDialogueDataMessageBox)
+                    {
+                        <AnyUiFlyoutMessageBox 
+                            EventSession="evs" 
+                            DialogueData="evs.DialogueData"/>
+                    }
 
-                        @if (session.DialogueData is AnyUiDialogueDataTextBox)
-                        {
-                            <AnyUiFlyoutTextBox
-                                EventSession="session"
-                                DialogueData="session.DialogueData" />
-                        }
+                    @if (evs.DialogueData is AnyUiDialogueDataTextBox)
+                    {
+                        <AnyUiFlyoutTextBox
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
 
-                        @if (session.DialogueData is AnyUiDialogueDataTextEditor)
-                        {
-                            <AnyUiFlyoutTextEditor 
-                                EventSession="session"
-                                DialogueData="session.DialogueData" />
-                        }
+                    @if (evs.DialogueData is AnyUiDialogueDataTextEditor)
+                    {
+                        <AnyUiFlyoutTextEditor 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
 
-                        @if (session.DialogueData is AnyUiDialogueDataSelectFromList)
-                        {
-                            <AnyUiFlyoutSelectFromList 
-                                EventSession="session"
-                                DialogueData="session.DialogueData" />
-                        }
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectFromList)
+                    {
+                        <AnyUiFlyoutSelectFromList 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
 
-                        @if (session.DialogueData is AnyUiDialogueDataOpenFile)
-                        {
-                            <AnyUiFlyoutSelectFile 
-                                EventSession="session"
-                                DialogueData="session.DialogueData" />
-                        }
+                    @if (evs.DialogueData is AnyUiDialogueDataOpenFile)
+                    {
+                        <AnyUiFlyoutSelectFile 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
 
-                        @if (session.DialogueData is AnyUiDialogueDataSelectAasEntity)
-                        {
-                            <AnyUiFlyoutSelectAasEntity 
-                                EventSession="session"
-                                DialogueData="session.DialogueData" />
-                        }
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectAasEntity)
+                    {
+                        <AnyUiFlyoutSelectAasEntity 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
 
-                        @if (session.DialogueData is AnyUiDialogueDataSelectReferableFromPool)
-                        {
-                            <AnyUiFlyoutSelectFromReferablesPool 
-                                EventSession="session"
-                                DialogueData="session.DialogueData"
-                                DataSourcePools="AasxPredefinedConcepts.DefinitionsPool.Static"/>
-                        }
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectReferableFromPool)
+                    {
+                        <AnyUiFlyoutSelectFromReferablesPool 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData"
+                            DataSourcePools="AasxPredefinedConcepts.DefinitionsPool.Static"/>
+                    }
 
-                    </Modal>
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectFromRepository)
+                    {
+                        <AnyUiFlyoutSelectFromRepository 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData"/>
+                    }
 
+                    @if (evs.SpecialAction is AnyUiSpecialActionContextMenu)
+                    {
+                        <AnyUiFlyoutContextMenu
+                            EventSession="evs"
+                            SpecialAction="evs.SpecialAction"/>
+                    }
+
+                </Modal>
+
+                @code{
+                    void OnClose2(string value)
+                    {
+                        evs.EventOpen = false;
+                    }
+                }
+
+                @if (false && (evs != null && sessionHtmlEventIn || evs.EventOpen))
+                {
                     <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose">
-                        
-                        @if (session.htmlEventType == "MessageBoxFlyoutShow" && session.htmlEventInputs.Count >= 2)
+
+                        @if (evs.htmlEventType == "MessageBoxFlyoutShow" && evs.htmlEventInputs.Count >= 2)
                         {
-                            string message = (string)session.htmlEventInputs[0];
-                            string caption = (string)session.htmlEventInputs[1];
-                            AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)session.htmlEventInputs[2];
-                            session.htmlEventInputs.Clear();
+                            string message = (string)evs.htmlEventInputs[0];
+                            string caption = (string)evs.htmlEventInputs[1];
+                            AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)evs.htmlEventInputs[2];
+                            evs.htmlEventInputs.Clear();
 
                             <form method="dialog">
                                 <p><span style="font-weight:bold">@caption</span></p>
@@ -125,9 +147,9 @@
                             </form>
                         }
                         else
-                        if (session.htmlEventType == "ModalSelectFile")
+                   if (evs.htmlEventType == "ModalSelectFile")
                         {
-                            session.htmlEventInputs.Clear();
+                            evs.htmlEventInputs.Clear();
 
                             <form method="dialog">
                                 <p><span style="font-weight:bold">Select file</span></p>
@@ -136,58 +158,58 @@
                                 <span>&nbsp&nbsp&nbsp&nbsp</span>
                             </form>
                             @code {
-                                async Task HandleFileSelected2(IFileListEntry[] files)
+                        async Task HandleFileSelected2(IFileListEntry[] files)
                                 {                                               
                                     // try get the file contents
-                                    string targetFn = null;
-                                    try
-                                    {
-                                        var file = files.FirstOrDefault();
-                                        if (file != null)
-                                        {
-                                            var fn = System.IO.Path.Combine(
-                                                        System.IO.Path.GetTempPath(), 
-                                                        System.IO.Path.GetFileName(file.Name));
-                                            var fileStream = System.IO.File.Create(fn);
-                                            await file.Data.CopyToAsync(fileStream);
-                                            fileStream.Close();
-                                            targetFn = fn;
-                                        }
-                                    }
-                                    catch
-                                    {
-                                    }
+                        string targetFn = null;
+                        try
+                        {
+                            var file = files.FirstOrDefault();
+                            if (file != null)
+                            {
+                                var fn = System.IO.Path.Combine(
+                                            System.IO.Path.GetTempPath(), 
+                                            System.IO.Path.GetFileName(file.Name));
+                                var fileStream = System.IO.File.Create(fn);
+                                await file.Data.CopyToAsync(fileStream);
+                                fileStream.Close();
+                                targetFn = fn;
+                            }
+                        }
+                        catch
+                        {
+                        }
 
-                                    // finally: the modal dialog will be closed!
-                                    session.htmlEventIn = false;
-                                    session.htmlEventType = null;
-                                    session.htmlEventInputs.Clear();
-                                    session.htmlEventOut = true;                                            
-                                    session.htmlEventOutputs.Clear();
-                                    session.htmlEventOutputs.Add(targetFn);
+                        // finally: the modal dialog will be closed!
+                        evs.htmlEventIn = false;
+                        evs.htmlEventType = null;
+                        evs.htmlEventInputs.Clear();
+                        evs.htmlEventOut = true;                                            
+                        evs.htmlEventOutputs.Clear();
+                        evs.htmlEventOutputs.Add(targetFn);
                                 }
                             }
                         }
                         else
-                        if (session.htmlEventType == "ModalSelectEntity")
+                   if (evs.htmlEventType == "ModalSelectEntity")
                         {
-                            session.htmlEventInputs.Clear();
+                            evs.htmlEventInputs.Clear();
 
                             <p><span style="font-weight:bold">Select AAS entity</span></p>
                             <br />                                                       
                             <div style="max-width: 70%; max-height: 70%">
-                            <!--
-                            <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"                          
-                                    @bind-ExpandedNodes="ExpandedNodes"
-                                    SelectedNodeChanged="new EventCallback<Item>(null, (Action<Item>) SelectedNodeChangedModal)"
-                                    HasChildNodes="@(item => item.Childs?.Any() == true)">
+                                <!--
+                                <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"                          
+                                @bind-ExpandedNodes="ExpandedNodes"
+                                SelectedNodeChanged="new EventCallback<Item>(null, (Action<Item>) SelectedNodeChangedModal)"
+                                HasChildNodes="@(item => item.Childs?.Any() == true)">
                                 <TitleTemplate>                                                
-                                    <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
-                                    <strong><span style="color:blue">@getSymbols(context)</span></strong>
+                                <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
+                                <strong><span style="color:blue">@getSymbols(context)</span></strong>
                                 </TitleTemplate>
-                            </Tree>
-                            -->
-                            <br />                                                                                
+                                </Tree>
+                                -->
+                                <br />                                                                                
                             </div>
 
                             <form method="dialog">
@@ -196,27 +218,27 @@
                             </form>
 
                             @code {
-                                public void SelectedNodeChangedModal(Item im)
+                        public void SelectedNodeChangedModal(Item im)
                                 {
-                                    ;
-                                    if (session != null)
-                                    {
-                                        session.htmlEventOutputs.Clear();
-                                        session.htmlEventOutputs.Add(im?.Referable);
-                                    }
+                        ;
+                        if (evs != null)
+                        {
+                            evs.htmlEventOutputs.Clear();
+                            evs.htmlEventOutputs.Add(im?.Referable);
+                        }
                                 }
                             }
                         }
                         else
-                        if (session.htmlEventType == "StartFlyoverModal" && session.htmlEventInputs.Count >= 1)
+                   if (evs.htmlEventType == "StartFlyoverModal" && evs.htmlEventInputs.Count >= 1)
                         {
-                            AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)session.htmlEventInputs[0];
+                            AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)evs.htmlEventInputs[0];
                             if (dialogueData is AnyUiDialogueDataTextEditor ddte)
                             {
                                 string flyCaption = ddte.Caption + " - read only";
                                 flyText = ddte.Text;
-                                session.htmlEventInputs.Clear();
-                                            
+                                evs.htmlEventInputs.Clear();
+
                                 <form method="dialog">
                                     <p><span style="font-weight:bold">@flyCaption</span></p>
                                     // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
@@ -239,23 +261,25 @@
                                         {
                                             // menu item itself
                                             string textDdsfl = ddsfl.ListOfItems[iDdsfl].Text;
-                                            <option value="@(iDdsfl + ": " + textDdsfl)">@(iDdsfl + ": " + textDdsfl)</option>
+                                            <option value="@(iDdsfl + ": " + textDdsfl)">@(
+                                       iDdsfl + ": " + textDdsfl
+                                       )</option>
                                         }
                                     </select>
                                 </form>
                             }
                         }
                         else
-                        if (session.htmlEventType == "contextMenu" && session.htmlEventInputs.Count >= 1)
+                   if (evs.htmlEventType == "contextMenu" && evs.htmlEventInputs.Count >= 1)
                         {
                             // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
                             AnyUiSpecialActionContextMenu cntlcm =
-                                (AnyUiSpecialActionContextMenu)session.htmlEventInputs[1];
+                                (AnyUiSpecialActionContextMenu)evs.htmlEventInputs[1];
                             var nmi = cntlcm.MenuItemHeaders.Length / 2;
                             int i = 0;
                             string icon = "" + cntlcm.MenuItemHeaders[0];
                             string header = "" + cntlcm.MenuItemHeaders[1];
-                            session.htmlEventInputs.Clear();
+                            evs.htmlEventInputs.Clear();
                             // string v = i + ": " + icon + " " + header;
                             <form method="dialog">
                                 <select class="form-control selectpicker" size="@nmi"
@@ -265,14 +289,16 @@
                                         // menu item itself
                                         icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
                                         header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
-                                        <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
+                                        <option value="@(i + ": " + icon + " " + header)">@(
+                                i + ": " + icon + " " + header
+                                )</option>
                                     }
                                 </select>
                             </form>
                         }
                         else
                         {
-                            session.htmlEventInputs.Clear();
+                            evs.htmlEventInputs.Clear();
                             <form method="dialog">
                                 <p><span style="font-weight:bold">Something went wrong!</span></p>
                                 <br /> 
@@ -283,27 +309,27 @@
                 }
 
                 @code {
-                    private AnyUiHtmlEventSession session { get; set; }
+                    private AnyUiHtmlEventSession evs { get; set; }
                     private bool sessionHtmlEventIn { get; set; }
 
                     void MyContextMenuSelect(string value)
                     {
                         string[] s = value.Split(':');
                         int i = Convert.ToInt32(s[0]);
-                        session.htmlEventOutputs.Add(i);
-                        session.htmlEventIn = false;
-                        session.htmlEventInputs.Clear();
-                        session.htmlEventOut = true;
+                        evs.htmlEventOutputs.Add(i);
+                        evs.htmlEventIn = false;
+                        evs.htmlEventInputs.Clear();
+                        evs.htmlEventOut = true;
                     }
 
                     void MyDialogDataSelectFromList(string value)
                     {
                         string[] s = value.Split(':');
                         int i = Convert.ToInt32(s[0]);
-                        session.htmlEventOutputs.Add(i);
-                        session.htmlEventIn = false;
-                        session.htmlEventInputs.Clear();
-                        session.htmlEventOut = true;
+                        evs.htmlEventOutputs.Add(i);
+                        evs.htmlEventIn = false;
+                        evs.htmlEventInputs.Clear();
+                        evs.htmlEventOut = true;
                     }
 
                     private void MyTextInput(string value)
@@ -315,13 +341,13 @@
 
                     void OnClose(string value)
                     {
-                        session.htmlEventIn = false;
-                        session.htmlEventInputs.Clear();
-                        switch (session.htmlEventType)
+                        evs.htmlEventIn = false;
+                        evs.htmlEventInputs.Clear();
+                        switch (evs.htmlEventType)
                         {
                             case "MessageBoxFlyoutShow":
 
-                                session.htmlEventOutputs.Clear();
+                                evs.htmlEventOutputs.Clear();
                                 AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
                                 switch (value)
                                 {
@@ -338,7 +364,7 @@
                                         r = AnyUiMessageBoxResult.No;
                                         break;
                                 }
-                                session.htmlEventOutputs.Add(r);
+                                evs.htmlEventOutputs.Add(r);
                                 break;
 
                             case "ModalSelectEntity":
@@ -346,28 +372,28 @@
                                 break;
 
                             case "StartFlyoverModal":
-                                session.htmlEventOutputs.Clear();
-                                session.htmlEventOutputs.Add(flyText);
+                                evs.htmlEventOutputs.Clear();
+                                evs.htmlEventOutputs.Add(flyText);
                                 switch (value)
                                 {
                                     case "OK":
-                                        session.htmlEventOutputs.Add(true);
+                                        evs.htmlEventOutputs.Add(true);
                                         break;
                                     case "Cancel":
-                                        session.htmlEventOutputs.Add(false);
+                                        evs.htmlEventOutputs.Add(false);
                                         break;
                                 }
                                 break;
                             
                             case "contextMenu":
-                                session.htmlEventOutputs.Clear();                               
+                                evs.htmlEventOutputs.Clear();                               
                                 break;
 
                             default:
-                                session.htmlEventOutputs.Clear();                               
+                                evs.htmlEventOutputs.Clear();                               
                                 break;
                         }
-                        session.htmlEventOut = true;
+                        evs.htmlEventOut = true;
                     }
                 }
             </div>
@@ -546,15 +572,17 @@
         <div class="sticky-top" style="margin-top:-16px; word-wrap: break-word; width: 100%; overflow: hidden">
             @{
                 // call prepare function (the ref's make clear, which session data is altered)
+                Session.DisplayContext.SetJsRuntime(JSRuntime);                
                 if (Session?.PrepareDisplayDataAndElementPanel(
                     JSRuntime,
-                    ref Session.DisplayData,
+                    Session.DisplayContext,
                     ref Session.helper,
                     ref Session.ElementPanel,
                     ref Session.DynamicMenu) == true)
                 {
                     // render
-                    <AnyUiRenderElem DisplayData="@Session.DisplayData"
+                    var _displayData = new AnyUiDisplayDataHtml(Session.DisplayContext);
+                    <AnyUiRenderElem DisplayData="@_displayData"
                                 Session="@Session" 
                                 Element="@Session.ElementPanel"
                                 FillMode="@AnyUiHtmlFillMode.FillWidth"/>

@@ -81,7 +81,7 @@ namespace AasxPackageExplorer
                         // redraw ourselves?
                         if (_packages != null && _theEntities != null)
                             DisplayOrEditVisualAasxElement(
-                                _packages, _theEntities, _helper.editMode, _helper.hintMode,
+                                _packages, _displayContext, _theEntities, _helper.editMode, _helper.hintMode,
                                 flyoutProvider: _displayContext?.FlyoutProvider,
                                 appEventProvider: _helper?.appEventsProvider);
                     }
@@ -212,7 +212,8 @@ namespace AasxPackageExplorer
 
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
-            ListOfVisualElementBasic entities,
+			AnyUiDisplayContextWpf _displayContext,
+			ListOfVisualElementBasic entities,
             bool editMode, bool hintMode = false, bool showIriMode = false,
             VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
@@ -249,7 +250,6 @@ namespace AasxPackageExplorer
 #endif
 
             // create display context for WPF
-            _displayContext = new AnyUiDisplayContextWpf(flyoutProvider, packages);
             _helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
 
             // modify repository

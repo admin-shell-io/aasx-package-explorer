@@ -17,3 +17,9 @@ function blazorCloseModal(dialog) {
         dialog.close();
     }
 }
+
+function blazorCloseModalForce() {
+    /* this does not use a named parameter but goes directly to a(?) dialog element */
+    dialog.close();
+    dialog.close();
+}

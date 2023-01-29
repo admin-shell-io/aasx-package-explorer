@@ -43,6 +43,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * IndexPos of OperationVariables is constant == 0
 
+* PackageExplorer seems NOT to invoke() "dispose-anyui-visual-extension" -> memory leak!!
+
 ## Fixed TODOs
 
 * DocuShelf / Double click in WPF does not work -> took over changes from FixAnyUiPlugins, working

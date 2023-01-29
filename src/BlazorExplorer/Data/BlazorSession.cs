@@ -24,6 +24,7 @@ using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using BlazorExplorer;
 using Extensions;
 using Microsoft.JSInterop;
 
@@ -34,7 +35,7 @@ namespace BlazorUI.Data
     /// A session holds almost all data a user concerns with, as multiple users/ roles might use the same
     /// server application.
     /// </summary>
-    public partial class BlazorSession : IDisposable
+    public partial class BlazorSession : IDisposable, IMainWindow
     {
         /// <summary>
         /// Monotonous index to be counted upwards to generate SessionId
@@ -52,10 +53,20 @@ namespace BlazorUI.Data
         public static int SessionNumActive = 0;
 
         /// <summary>
-        /// All loaded packages, repos are user-specific
+        /// Abstracted menu functions to be wrapped by functions triggering
+        /// more UI feedback.
         /// </summary>
-        // TODO (MIHO, 2023-01-15): Think of a concept of sharing? locking? repo items
-        public PackageCentral PackageCentral = null;
+        public MainWindowDispatch Logic = new MainWindowDispatch();
+
+        /// <summary>
+        /// All repositories, files, .. are user-specific and therefore hosted in the session.
+        /// However, PacgaeCentral resides in the logic; therefore this symbol is only a 
+        /// link to the abstract main-windows class.
+        /// </summary>
+        public PackageCentral PackageCentral
+        {
+            get => Logic?.PackageCentral;
+        }
 
         /// <summary>
         /// This object wrap the visual elements, that is, the main tree
@@ -77,7 +88,7 @@ namespace BlazorUI.Data
         /// <summary>
         /// The top-most display data required for razor pages to render elements.
         /// </summary>
-        public AnyUiDisplayDataHtml DisplayData = null;
+        public AnyUiDisplayContextHtml DisplayContext = null;
 
         /// <summary>
         /// Holds the stack panel of widgets for active AAS element.
@@ -138,11 +149,13 @@ namespace BlazorUI.Data
             SessionId = ++SessionIndex;
             SessionNumActive++;
 
+            // initalize the abstract main window logic
+            DisplayContext = new AnyUiDisplayContextHtml(PackageCentral, this);
+            Logic.AnyUiContext = DisplayContext;
+            Logic.MainWindow = this;
+
             // create a new session for plugin / event handling
             AnyUiDisplayContextHtml.AddEventSession(SessionId);
-
-            // create a new package central
-            PackageCentral = new PackageCentral();
 
             // display elements have a cache
             DisplayElements.ActivateElementStateCache();
@@ -196,12 +209,13 @@ namespace BlazorUI.Data
             // Repository pointed by the Options
             if (Options.Curr.AasxRepositoryFn.HasContent())
             {
-                //var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
-                //if (fr2 != null)
-                //{
-                //    this.UiAssertFileRepository(visible: true);
-                //    _packageCentral.Repositories.AddAtTop(fr2);
-                //}
+                var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
+                if (fr2 != null)
+                {
+                    // this.UiAssertFileRepository(visible: true);
+                    PackageCentral.Repositories ??= new PackageContainerListOfList();
+                    PackageCentral.Repositories.AddAtTop(fr2);
+                }
             }
 
             // initialize menu
@@ -447,6 +461,30 @@ namespace BlazorUI.Data
             Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
+        public PackageContainerListBase UiLoadFileRepository(string fn)
+        {
+            try
+            {
+                Log.Singleton.Info(
+                    $"Loading aasx file repository {fn} ..");
+
+                var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+
+                if (fr != null)
+                    return fr;
+                else
+                    Log.Singleton.Info(
+                        $"File not found when loading aasx file repository {fn}");
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(
+                    ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+            }
+
+            return null;
+        }
+
         private void RestartUIafterNewPackage(bool onlyAuxiliary = false)
         {
             if (onlyAuxiliary)
@@ -514,6 +552,9 @@ namespace BlazorUI.Data
             }
 
             // display again
+            Program.signalNewData(
+                new Program.NewDataAvailableArgs(
+                    Program.DataRedrawMode.None, this.SessionId));
             DisplayElements.Refresh();            
 
 #if _log_times
@@ -646,7 +687,7 @@ namespace BlazorUI.Data
         /// <returns>If contents could be rendered</returns>
         public bool PrepareDisplayDataAndElementPanel(
             IJSRuntime jsRuntime,
-            ref AnyUiDisplayDataHtml displayData, 
+            AnyUiDisplayContextHtml displayContext, 
             ref DispEditHelperMultiElement helper,
             ref AnyUiStackPanel elementPanel,
             ref AasxMenuBlazor dynamicMenu)
@@ -663,8 +704,6 @@ namespace BlazorUI.Data
             helper.repo = (EditMode) ? repo : null;
 
             // create new context
-            var displayContext = new AnyUiDisplayContextHtml(this, jsRuntime);
-            displayData = new AnyUiDisplayDataHtml(displayContext);
             helper.context = displayContext;
 
             // menu will collect dynamic data

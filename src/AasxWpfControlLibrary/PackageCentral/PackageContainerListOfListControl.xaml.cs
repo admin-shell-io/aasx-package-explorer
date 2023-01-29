@@ -183,12 +183,11 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     // dialogue
                     var uc = new SelectFromRepositoryFlyout();
-                    uc.Margin = new Thickness(10);
-                    if (uc.LoadAasxRepoFile(items: fr.EnumerateItems()))
+                    uc.DiaData.Items = fr.EnumerateItems().ToList();
                     {
                         uc.ControlClosed += () =>
                         {
-                            var fi = uc.ResultItem;
+                            var fi = uc.DiaData.ResultItem;
                             var fn = fi?.Location;
                             if (fn != null)
                             {
