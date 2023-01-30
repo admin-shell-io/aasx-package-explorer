@@ -10,7 +10,7 @@
 
 	<div class="modal-header">
 		<h3 class="modal-title" id="exampleModalLongTitle">@ddtb.Caption</h3>
-		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+		<button type="button" class="btn btn-backdrop"
 			@onclick="() => LeaveResult(false)">
 			<span aria-hidden="true">&times;</span>
 		</button>
@@ -18,13 +18,13 @@
 	<div class="modal-body">
 		 <form>
           <div class="mb-3">
-				<input type="text" class="form-control form-control-lg" id="text" @bind-value="ddtb.Text">
+				<input type="text" class="form-control form-control-lg autofocus" id="text" @bind-value="ddtb.Text">
           </div>
         </form>
 	</div>
 	<div class="modal-footer">
 
-		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+		<button type="button" class="btn btn-enter btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
 	
 	</div>
 }
@@ -34,7 +34,7 @@
 	public AnyUiHtmlEventSession EventSession { get; set; }
 
 	[Parameter]
-	public AnyUiDialogueDataBase DialogueData { get; set; }
+	public AnyUiDialogueDataBase DialogueData { get; set; }	
 
 	public void LeaveResult(bool result)
 	{

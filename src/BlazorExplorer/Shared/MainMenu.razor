@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+@using AdminShellNS;
+@using AasxIntegrationBase
+@using AasxPackageLogic;
+@using AasxPackageLogic.PackageCentral;
+@using BlazorUI.Data;
+@inject IJSRuntime JsRuntime
+@inject BlazorUI.Data.BlazorSession Session
+
+
+<nav class="navbar navbar-expand navbar-dark bg-primary">
+    <div class="container" style="margin-left: 10px">
+        <a class="navbar-brand" href="#">
+            <img src="/image/IDTA_AAS-Logo_Circle.png" height="35" width="35" alt="">
+        </a>
+        <div class="navbar-collapse w-100" id="navbarSupportedContent">
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <DynamicMenuItem TopMenu="Session.MainMenu?.Menu"
+                                MenuItems="Session.MainMenu?.Menu"
+                                Depth="1" />
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+                <img src="/image/PI40_and_IDTA.png" height="30" alt="">
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+@code
+{
+}

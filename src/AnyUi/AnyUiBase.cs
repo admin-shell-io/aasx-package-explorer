@@ -526,6 +526,10 @@ namespace AnyUi
     {
     }
 
+    /// <summary>
+    /// Special action for showing context menu and consequently executing 
+    /// lambda associated with that menu.
+    /// </summary>
     public class AnyUiSpecialActionContextMenu : AnyUiSpecialActionBase
     {
         public string Caption = "Context menu";
@@ -546,16 +550,31 @@ namespace AnyUi
         }
     }
 
-    //
-    // Hierarchy of AnyUI graphical elements (including controls).
-    // This hierarchy stems from the WPF hierarchy but should be sufficiently 
-    // abstracted in order to be implemented an many UI systems
-    //
-
     /// <summary>
-    /// Absolute base class of all AnyUI graphical elements
+    /// Special action for setting values/ executing button actions
     /// </summary>
-    public class AnyUiUIElement
+    public class AnyUiSpecialActionSetValue : AnyUiSpecialActionBase
+    {
+        public AnyUiUIElement UiElement;
+        public object Argument;
+
+        public AnyUiSpecialActionSetValue(AnyUiUIElement uiElement, object argument)
+        {
+            UiElement = uiElement;
+            Argument = argument;
+        }
+	}
+
+	//
+	// Hierarchy of AnyUI graphical elements (including controls).
+	// This hierarchy stems from the WPF hierarchy but should be sufficiently 
+	// abstracted in order to be implemented an many UI systems
+	//
+
+	/// <summary>
+	/// Absolute base class of all AnyUI graphical elements
+	/// </summary>
+	public class AnyUiUIElement
     {
         // these attributes are typically managed by the (automatic) layout
         // exception: shapes

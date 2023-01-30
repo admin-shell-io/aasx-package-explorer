@@ -13,13 +13,6 @@
 // see: https://stackoverflow.com/questions/65198814/how-to-pass-a-value-from-a-page-to-the-layout-in-blazor
 }
 
-@*@<div class="sidebar">
-        <NavMenu />
-    </div>
-    <div class="top-row px-4">
-    <tr style="max-height:100%">
-*@
-
 <CascadingValue Value="this">
     <div class="main" style="margin:0px 0px 2px 0px">
         <!-- 
@@ -28,286 +21,7 @@
         -->
         @if (_showHeader == 1)
         {
-            <div class="top-row px-5">
-                <div class="col-12 row">
-                    <table border="0" cellspacing="2">
-                        <tr>
-                            <td nowrap>
-                                <span style="font-weight:bold">URL or *:</span>
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                            </td>
-                            <td nowrap>
-                                @{
-                                    int ww = 50;
-                                    <input size="@ww" value="@text"
-                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))" />
-                                    string[] textList = {
-                                        "*",
-                                        "https://admin-shell-io.com/51411",
-                                        "https://admin-shell-io.com/51711" };
-                                    <select width="10" maxwidth="10" style="height:30px"
-                                            @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">
-                                        <option value="">--select--</option>
-                                        @foreach (var item in textList)
-                                        {
-                                            <option value="@item">@item</option>
-                                        }
-                                    </select>
-                                }
-                                @code {
-                                    string text = "";
-
-                                    private async void MyTextInput(string value)
-                                    {
-                                        text = value;
-                                        try
-                                        {
-                                            value = value.ToLower();
-                                            if (value != "" && (value.Contains("http://") || value.Contains("https://")))
-                                            {
-                                                if (value.Contains("getaasx"))
-                                                {
-                                                    await InvokeAsync(async () => await Program.getAasxAsync(Session, value));
-                                                }
-                                                else // repo
-                                                {
-                                                    string fn = value;
-                                                    var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
-                                                    // Program._packageCentral.Repositories.Add(fr);
-                                                    Session.repository = fr as PackageContainerListHttpRestRepository;
-                                                    var task = Task.Run(async () => await Session.repository.SyncronizeFromServerAsync());
-                                                    var r = task.Result;
-                                                    if (Session.repository.FileMap.Count > 0)
-                                                    {
-                                                        if (Session.env != null)
-                                                            Session.env.Dispose();
-                                                        Session.aasxFiles = new string[Session.repository.FileMap.Count];
-                                                        for (int i = 0; i < Session.repository.FileMap.Count; i++)
-                                                        {
-                                                            Session.aasxFiles[i] = Session.repository.FileMap[i].InfoIds;
-                                                        }
-                                                        var repoFile = Session.repository.FileMap[0];
-                                                        Session.container = PackageContainerFactory.GuessAndCreateFor(Session.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                                        Session.env = Session.container.Env;
-                                                        Session.aasxFileSelected = "";
-                                                        Session.EditMode = false;
-                                                        Session.thumbNail = null;
-                                                        Program.signalNewData(
-                                                            new Program.NewDataAvailableArgs(
-                                                                Program.DataRedrawMode.RebuildTreeAllClosed, 
-                                                                Session.SessionId));
-                                                    }
-                                                }
-                                            }
-                                            if (value == "*" || value == "*.*")
-                                            {
-                                                Session.repository = null;
-                                                await InvokeAsync(() => Program.loadAasxFiles(Session, true));
-                                            }
-                                        }
-                                        catch
-                                        {
-                                        }
-                                        this.StateHasChanged();
-                                    }
-                                }
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                            </td>
-                            <td nowrap>
-                            </td>
-                            <td nowrap>
-                                @if (!Program.DisableEdit)
-                                {
-                                    <button @onclick="toggleEditMode">
-                                        @{
-                                            if (Session.EditMode)
-                                            {
-                                                <span>EditMode is ON</span>
-                                            }
-                                            else
-                                            {
-                                                <span>EditMode is OFF</span>
-                                            }
-                                        }
-                                    </button>
-                                    @code {
-                                        private void toggleEditMode()
-                                        {
-                                            Session.EditMode = !Session.EditMode;
-                                            this.StateHasChanged();
-                                            Program.signalNewData(
-                                                new Program.NewDataAvailableArgs(
-                                                    Program.DataRedrawMode.ValueChanged, Session.SessionId));
-                                        }
-                                    }
-                                }
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                                <a href="About">LICENSE</a>
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                            </td>
-                            <td nowrap>
-                                Session:@Session.SessionId
-                                <span>&nbsp</span>
-                                #@BlazorUI.Data.BlazorSession.SessionNumActive
-                                <span>&nbsp</span>
-                                %@BlazorUI.Data.BlazorSession.totalIndexTimer
-                            </td>
-                        </tr>
-                        <tr>
-                            <td nowrap>
-                                <span style="font-weight:bold">Select AASX:</span>
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                            </td>
-                            <td nowrap>
-                                @{
-
-                                    // string w = (bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
-                                    // w = "50%";
-                                    // string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
-                                    <select style="width:100%;max-width:100%;height:30px" value="@Session.aasxFileSelected"
-                                            @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
-                                        @foreach (var item in Session.aasxFiles)
-                                        {
-                                            <option value="@item">@item</option>
-                                        }
-                                    </select>
-                                    @code {
-                                        private async void MyAasxSelect(string value)
-                                        {
-                                            try
-                                            {
-                                                if (Session.repository?.FileMap?.Count > 0)
-                                                {
-                                                    for (int i = 0; i < Session.repository.FileMap.Count; i++)
-                                                    {
-                                                        if (value == Session.repository.FileMap[i].InfoIds)
-                                                        {
-                                                            var repoFile = Session.repository.FileMap[i];
-                                                            Session.container = PackageContainerFactory.GuessAndCreateFor(Session.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                                            Session.env = Session.container.Env;
-                                                            Session.aasxFileSelected = "";
-                                                            Session.EditMode = false;
-                                                            Session.thumbNail = null;
-                                                            Program.signalNewData(
-                                                                new Program.NewDataAvailableArgs(
-                                                                    Program.DataRedrawMode.RebuildTreeAllClosed, Session.SessionId));
-                                                        }
-                                                    }
-                                                }
-                                                else if (Session.aasxFiles?.Length > 0)
-                                                {
-                                                    await InvokeAsync(() => Program.loadAasx(Session, value));
-                                                }
-                                            }
-                                            catch
-                                            {
-                                            }
-                                            this.StateHasChanged();
-                                        }
-                                    }
-                                }
-                            </td>
-                            <td nowrap>
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                                <span style="font-weight:bold">Upload:</span>
-                            </td>
-                            <td nowrap>
-                                @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-                                *@
-                                @{
-                                    bool isDisabled = !(Session.aasxFiles?.Length > 0 && Session.aasxFileSelected != "");
-                                    //<InputFile OnChange="HandleFileSelected" disabled="@isDisabled" />
-                                }
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                                @code {
-                                    async Task HandleFileSelected(IFileListEntry[] files)
-                                    {
-                                        try
-                                        {
-                                            var file = files.FirstOrDefault();
-                                            if (file != null)
-                                            {
-                                                var fileStream = System.IO.File.Create(file.Name);
-                                                await file.Data.CopyToAsync(fileStream);
-                                                fileStream.Close();
-                                                Session.repository = null;
-                                                await InvokeAsync(() => Program.loadAasxFiles(Session, false));
-                                                await InvokeAsync(() => Program.loadAasx(Session, file.Name));
-                                                this.StateHasChanged();
-                                            }
-                                        }
-                                        catch
-                                        {
-                                        }
-                                    }
-                                }
-                            </td>
-                            <td nowrap>
-                                @if (!Program.DisableEdit)
-                                {
-                                    <button @onclick="onSave">Save</button>
-                                }
-                                @*<span>&nbsp&nbsp&nbsp&nbsp</span>*@
-                                @{
-                                    bool isDisabled2 = !(Session.aasxFiles?.Length > 0 && Session.aasxFileSelected != "");
-                                    <button @onclick="DownloadBinary" disabled="@isDisabled2">Download</button>
-                                }
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                                @code {
-                                    private async void onSave()
-                                    {
-                                        if (Program.DisableEdit)
-                                            return;
-                                        try
-                                        {
-                                            if (Session.repository?.FileMap?.Count > 0)
-                                            {
-                                                if (Session.container != null)
-                                                {
-                                                    await InvokeAsync(() => Session.container.SaveToSourceAsync());
-                                                }
-                                            }
-                                            else if (Session.aasxFiles?.Length > 0)
-                                            {
-                                                if (Session.aasxFileSelected != "")
-                                                {
-                                                    Session.env.SaveAs(Session.aasxFileSelected);
-                                                }
-                                            }
-                                        }
-                                        catch
-                                        {
-                                        }
-                                        this.StateHasChanged();
-                                    }
-                                    
-                                    async Task DownloadBinary()
-                                    {
-                                        // Generate a file
-                                        if (Session.env != null)
-                                        {
-                                            if (Session.aasxFiles?.Length > 0)
-                                            {
-                                                if (Session.aasxFileSelected != "")
-                                                {
-                                                    Session.env.SaveAs(Session.aasxFileSelected);
-                                                    Session.env.Close();
-                                                    byte[] file = System.IO.File.ReadAllBytes(Session.aasxFileSelected);
-                                                    string fileName = System.IO.Path.GetFileName(Session.aasxFileSelected);
-                                                    // Send the data to JS to actually download the file
-                                                    await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "application/octet-stream", file);
-                                                    await InvokeAsync(() => Program.loadAasx(Session, Session.aasxFileSelected));
-                                                    this.StateHasChanged();
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
+            @* Deleted for clarity. See in GitHub. *@
         }
 
         <!-- 
@@ -316,110 +30,7 @@
         -->
         @if (_showHeader == 2)
         {
-            <div class="top-row px-5">
-                <div class="col-12 row">
-                    <table border="0" cellspacing="2">
-                        <tr>
-                            <td nowrap>
-                                <span style="font-weight:bold">AssetID:</span>
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                            </td>
-                            <td nowrap>
-                                @{
-                                    int ww = 50;
-                                    <input size="@ww" value="@searchId"
-                                           @onchange="@((ChangeEventArgs __e) => SearchIdInput(__e.Value.ToString()))" />
-                                    <select width="10" maxwidth="10" style="height:30px"
-                                            value="@selectId"
-                                            @onchange="@((ChangeEventArgs __e) => RepoItemSelected(__e.Value.ToString()))">
-                                        <option value="">--select--</option>
-                                        @{
-                                            if(Program.Repo?.FileMap != null)
-                                                foreach (var item in Program.Repo.FileMap)
-                                                {
-                                                <option value="@item.Location">@item.Description</option>
-                                            }
-                                        }
-                                    </select>
-                                }
-                                @code {
-                                    string searchId = "";
-                                    string selectId = "--select--";
-
-                                    private async Task SearchIdInput(string value)
-                                    {
-                                        try
-                                        {
-
-                                            // lookup
-                                            var rif = Program.Repo?.FindByAssetId(value);
-                                            if (rif == null)
-                                                rif = Program.Repo?.FindByAasId(value);
-                                            if (rif == null)
-                                                return;
-
-                                            // load
-                                            var loc = Program.Repo?.GetFullItemLocation(rif.Location);
-                                            await RepoFnLoadReleative(loc);
-                                        }
-                                        catch { }
-
-                                        // try clear text edit field
-                                        // see: https://stackoverflow.com/questions/61454672/reset-input-text-after-onchange
-                                        searchId = null;
-                                        selectId = null;
-                                        await Task.Delay(1); //Magic!  
-                                        StateHasChanged();
-                                        searchId = "";
-                                        selectId = "--select--";
-                                        this.StateHasChanged();
-
-                                    }
-
-                                    private async Task RepoItemSelected(string location)
-                                    {
-                                        selectId = location;
-                                        // access
-                                        try
-                                        {
-                                            // as we're from the internet, make sure the repo and location
-                                            PackageContainerRepoItem rif = null;
-                                            if (Program.Repo?.FileMap != null)
-                                                foreach (var ri in Program.Repo.FileMap)
-                                                    if (ri.Location == location)
-                                                        rif = ri;
-
-                                            if (rif == null)
-                                                return;
-
-                                            // make it full path
-                                            var loc = Program.Repo?.GetFullItemLocation(rif.Location);
-                                            await RepoFnLoadReleative(loc);
-                                        }
-                                        catch { }
-                                        this.StateHasChanged();
-                                    }
-
-                                    protected async Task RepoFnLoadReleative(string location)
-                                    {
-                                        var fn = System.IO.Path.Combine(
-                                            System.IO.Path.GetDirectoryName(
-                                                System.Reflection.Assembly.GetEntryAssembly()?.Location),
-                                            location);
-                                        await InvokeAsync(() => Program.loadAasx(Session, fn));
-                                    }
-                                }
-                                <span>&nbsp&nbsp&nbsp&nbsp</span>
-                            </td>
-                            <td nowrap>
-                                Session:@Session.SessionId
-                                <span>&nbsp</span>
-                                #@BlazorUI.Data.BlazorSession.SessionNumActive
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
+            @* Deleted for clarity. See in GitHub. *@
         }
 
         <!--
@@ -429,170 +40,13 @@
         @if (_showHeader == 3)
         {
             <div class="top-row px-2">
-                <div class="col-12 row">                    
-                    @*<nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <div class="container-fluid">
-                            <a class="navbar-brand" href="#">Navbar</a>
-                            <button class="navbar-toggler" type="button">
-                                <span class="navbar-toggler-icon"></span>
-                            </button>
-                            <div class="collapse navbar-collapse">
-                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="#">Home</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Link</a>
-                                    </li>
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" role="button">
-                                            Dropdown
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">Action</a></li>
-                                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </nav>*@
-
-                    <!--
-                    <nav class="navbar navbar-expand-lg navbar-inverse">
-                        <div class="container-fluid">
-                            <div class="navbar-header">
-                                <a class="navbar-brand" href="#">WebSiteName</a>
-                            </div>
-                            <ul class="nav navbar-nav">
-                                <li class="active"><a href="#">Home</a></li>
-                                <li class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Page 1 <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">Page 1-1</a></li>
-                                        <li><a href="#">Page 1-2</a></li>
-                                        <li><a href="#">Page 1-3</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="#">Page 2</a></li>
-                                <li><a href="#">Page 3</a></li>
-                            </ul>
-                        </div>
-                    </nav>
-                    -->
-                    
-                    <!--
-                    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-                        <div class="container" style="margin-left: 10px">
-                            <a class="navbar-brand" href="#">
-                                <img src="/image/IDTA_AAS-Logo_Circle.png" height="35" width="35" alt="">
-                            </a>
-                            <div class="navbar-collapse" id="navbarSupportedContent">
-                                <ul class="navbar-nav mb-2 mb-lg-0">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Link</a>
-                                    </li>
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Dropdown
-                                        </a>
-                                        <ul class="dropdown-menu" id="ddm" aria-labelledby="navbarDropdown">
-                                            <li><a class="dropdown-item" @onclick="() => Doit(null)" style="cursor: pointer;">Action</a></li>
-                                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                            <li class="nav-item dropdown">
-                                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Dropdown
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-submenu" aria-labelledby="navbarDropdown" id="test2">
-                                                    <li><a class="dropdown-item" @onclick="() => Doit(null)" style="cursor: pointer;">Action</a></li>
-                                                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link disabled">Disabled</a>
-                                    </li>
-                                </ul>
-                                <ul class="navbar-nav ms-auto">
-                                    <img src="/image/PI40_and_IDTA.png" height="35" alt="">
-                                </ul>
-                            </div>
-                        </div>
-                    </nav>
-                    -->
-                    
-                    <!--
-                    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-                         <div class="container-fluid">
- 	                         <a class="navbar-brand" href="#">Brand</a>
-                          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav"  aria-expanded="false" aria-label="Toggle navigation">
-                              <span class="navbar-toggler-icon"></span>
-                            </button>
-                          <div class="collapse navbar-collapse" id="main_nav">
-	
-
-	                        <ul class="navbar-nav">
-                                <li class="nav-item active"> <a class="nav-link" href="#">Home </a> </li>
-		                        <li class="nav-item"><a class="nav-link" href="#"> About </a></li>
-		                        <li class="nav-item dropdown">
-			                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">  Treeview menu  </a>
-		                            <ul class="dropdown-menu">
-			                            <li><a class="dropdown-item" href="#"> Dropdown item 1 </a></li>
-			                            <li><a class="dropdown-item" href="#"> Dropdown item 2 &raquo; </a>
-			  	                            <ul class="submenu dropdown-menu">
-				                            <li><a class="dropdown-item" href="#">Submenu item 1</a></li>
-				                            <li><a class="dropdown-item" href="#">Submenu item 2</a></li>
-				                            <li><a class="dropdown-item" href="#">Submenu item 3 &raquo; </a>
-				    	                        <ul class="submenu dropdown-menu">
-						                            <li><a class="dropdown-item" href="#">Multi level 1</a></li>
-						                            <li><a class="dropdown-item" href="#">Multi level 2</a></li>
-						                        </ul>
-				                            </li>
-				                            <li><a class="dropdown-item" href="#">Submenu item 4</a></li>
-				                            <li><a class="dropdown-item" href="#">Submenu item 5</a></li>
-				                            </ul>
-			                            </li>
-			                            <li><a class="dropdown-item" href="#"> Dropdown item 3 </a></li>
-                                        <li><a class="dropdown-item" href="#"> Dropdown item 4 </a></li>
-		                            </ul>
-		                        </li>
-                                </ul>
-
-                            </div> 
-                        </div> 
-                    </nav>
-                    -->
-                    
-                    <nav class="navbar navbar-expand navbar-dark bg-primary">
-                        <div class="container" style="margin-left: 10px">
-                            <a class="navbar-brand" href="#">
-                                <img src="/image/IDTA_AAS-Logo_Circle.png" height="35" width="35" alt="">
-                            </a>
-                            <div class="navbar-collapse w-100" id="navbarSupportedContent">
-                                <ul class="navbar-nav mb-2 mb-lg-0">
-                                    <DynamicMenuItem TopMenu="Session.MainMenu?.Menu"
-                                                     MenuItems="Session.MainMenu?.Menu"
-                                                     Depth="1"/>
-                                </ul>
-                                
-                                <ul class="navbar-nav ms-auto">
-                                    <img src="/image/PI40_and_IDTA.png" height="35" alt="">
-                                </ul>
-                                
-                            </div>
-                        </div>
-                    </nav>
-                    
+                <div class="col-12">
+                    <MainMenu/>
+@*                    <div style="width: 90vw">
+                        <StatusBar @bind-Value="@Session.Message"/>
+                    </div>                    
+*@                
+                    <span>Doof @_message</span>
                 </div>
             </div>
         }
@@ -600,7 +54,7 @@
         <!-- 
             Main content
         -->
-        <div class="content px-4">
+        <div class="content">
             @Body
         </div>
     </div>
@@ -608,6 +62,17 @@
 
 @code
 {
+    protected string _message = "init";
+
+    public string Message
+    {
+        get { return _message; }
+        set { 
+            _message = value; 
+            InvokeAsync(() => StateHasChanged()); 
+        }
+    }
+
     protected int _showHeader = 3;
     public int ShowHeader { 
         get { 
@@ -617,11 +82,6 @@
             _showHeader = value; 
             StateHasChanged(); 
         } 
-    }
-
-    public void Doit(AasxMenuItemBase mi)
-    {
-        int a = 1;
     }
 
     // ---------

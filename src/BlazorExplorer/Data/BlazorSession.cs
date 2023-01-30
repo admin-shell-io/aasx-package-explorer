@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
 using System.Threading;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
@@ -25,6 +26,7 @@ using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using BlazorExplorer;
+using ExhaustiveMatching;
 using Extensions;
 using Microsoft.JSInterop;
 
@@ -111,6 +113,12 @@ namespace BlazorUI.Data
         /// functionality.
         /// </summary>
         public bool HintMode = true;
+
+        ///// <summary>
+        ///// Content of the status line. View model for a blazor component; therefore too frequent
+        ///// updates to be avoided.
+        ///// </summary>
+        //public string Message = "Initialized.";
 
         // old stuff, to be refactored
 
@@ -843,5 +851,16 @@ namespace BlazorUI.Data
             // okay
             return true;
         }
+
+
+        /// <summary>
+        /// This is the main session timer callback. It is either activated by the session itself
+        /// or by the index page (proper initialized / disposed cycle).
+        /// </summary>
+        public void MainTimerTick()
+        {
+//            MainTimer_HandleLogMessages();
+        }
+
     }
 }

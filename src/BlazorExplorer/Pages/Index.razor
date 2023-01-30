@@ -830,9 +830,22 @@
                     // force the sticky update mode to true
                     _onlyUpdatePluginUi = true;
                 }
-                
+
                 if (ndm.ExecuteMenuItem?.HasContent() == true)
                 {
+                    // special case
+                    if (ndm.ExecuteMenuItem == "@@ENTER@@")
+                    {
+                        var evs = AnyUiDisplayContextHtml.FindEventSession(ndm.SessionNumber);
+                        if (evs != null && evs.EventOpen && evs.DialogueData != null)
+                        {
+                            ;
+                            // evs.EndModal(true);
+                        }
+                        return;
+                    }
+
+                    // ordinary
                     var mi = Session?.MainMenu?.Menu?.FindName(ndm.ExecuteMenuItem);
                     if (mi != null)
                         Task.Run(async () =>
@@ -1149,6 +1162,8 @@
     {
         _timer = new System.Threading.Timer((e) =>
         {
+            Session?.MainTimerTick();
+            MainTimer_HandleLogMessages();
             MainTimer_HandleApplicationEvents();
             MainTimer_HandleElementAnimation();
         }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(100));
@@ -1165,6 +1180,57 @@
     }
 
     private bool _inTimer = false;
+
+    private void MainTimer_HandleLogMessages()
+    {
+        // check for Stored Prints in Log
+        StoredPrint sp;
+        while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
+        {
+            // pop            
+            Layout.Message = "Halo" + sp.msg;
+
+            // display
+            switch (sp.color)
+            {
+                default:
+                    // throw ExhaustiveMatch.Failed(sp.color);
+                    break;
+                case StoredPrint.Color.Black:
+                    {
+                        //Message.Background = Brushes.White;
+                        //Message.Foreground = Brushes.Black;
+                        //Message.FontWeight = FontWeights.Normal;
+                        break;
+                    }
+                case StoredPrint.Color.Blue:
+                    {
+                        //Message.Background = Brushes.LightBlue;
+                        //Message.Foreground = Brushes.Black;
+                        //Message.FontWeight = FontWeights.Normal;
+                        break;
+                    }
+                case StoredPrint.Color.Yellow:
+                    {
+                        //Message.Background = Brushes.Yellow;
+                        //Message.Foreground = Brushes.Black;
+                        //Message.FontWeight = FontWeights.Bold;
+                        break;
+                    }
+                case StoredPrint.Color.Red:
+                    {
+                        //Message.Background = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
+                        //Message.Foreground = Brushes.White;
+                        //Message.FontWeight = FontWeights.Bold;
+                        break;
+                    }
+            }
+
+            // message window
+            //_messageReportWindow?.AddStoredPrint(sp);
+        }
+    }
+
 
     private void MainTimer_HandleApplicationEvents()
     {

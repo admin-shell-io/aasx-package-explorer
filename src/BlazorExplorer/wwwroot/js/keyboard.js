@@ -31,26 +31,32 @@ window.mainLayoutAttachKeyboard = () => {
             return;
         }
 
-    //    if (keyName === 'e' && event.ctrlKey) {
-    //        event.preventDefault();
-    //        // alert("Edit mode!");
-    //        window.customNetHandleKey(keyName, event.shiftKey, event.ctrlKey, event.altKey);
-    //        return;
-    //    }
+        if (dialog && dialog.open && keyName === 'Enter' && !event.ctrlKey) {
 
-        // if (keyName === 'e' && event.ctrlKey) {
-            if (window.mainLayoutHotkeys)
-                window.mainLayoutHotkeys.forEach((hk) => {
-                    if (keyName.toLowerCase() === hk.key.toLowerCase()
-                        && event.shiftKey === hk.isShift
-                        && event.ctrlKey === hk.isCtrl
-                        && event.altKey === hk.isAlt) {
-                        event.preventDefault();
-                        // alert("Found " + hk.itemName);
-                        window.customNetHandleKey(window.mainLayoutSessionId, hk.itemName);
-                    }
-                });
-        //}
+            event.preventDefault();
+
+            // alert("Enter!");
+
+            //var els = dialog.getElementsByClassName("btn-enter");
+            //if (els && els.length > 0)
+            //    els[0].trigger("click");
+
+            window.customNetHandleKey(window.mainLayoutSessionId, "@@ENTER@@");
+
+            return;
+        }
+
+        if (window.mainLayoutHotkeys)
+            window.mainLayoutHotkeys.forEach((hk) => {
+                if (keyName.toLowerCase() === hk.key.toLowerCase()
+                    && event.shiftKey === hk.isShift
+                    && event.ctrlKey === hk.isCtrl
+                    && event.altKey === hk.isAlt) {
+                    event.preventDefault();
+                    // alert("Found " + hk.itemName);
+                    window.customNetHandleKey(window.mainLayoutSessionId, hk.itemName);
+                }
+            });
 
     }, false);
 

@@ -1,0 +1,22 @@
+﻿@page "/StatusBar"
+@using Microsoft.AspNetCore.Components.Web
+@using MW.Blazor
+@using AasxIntegrationBase
+@using AnyUi
+@using System.Globalization;
+@inject IJSRuntime JsRuntime
+
+<div class="row" style="overflow: hidden">
+    <div class="col-12" style="display: inline-block; white-space: nowrap">
+        <small>@Message</small>
+    </div>
+</div>
+
+@code {
+
+    [Parameter] public string Message { get; set; }
+
+    [Parameter]
+    public EventCallback<string> MessageChanged { get; set; }
+
+}

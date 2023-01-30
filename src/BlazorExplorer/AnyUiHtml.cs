@@ -40,7 +40,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 namespace AnyUi
 {
 
-    public enum AnyUiHtmlEventType { None, Dialog, ContextMenu }
+    public enum AnyUiHtmlBackgroundActionType { None, Dialog, ContextMenu, SetValue }
 
     public class AnyUiHtmlEventSession
     {
@@ -58,7 +58,7 @@ namespace AnyUi
 		/// Distincts the different working mode of display and
 		/// execution of the event loop.
 		/// </summary>
-		public AnyUiHtmlEventType EventType;
+		public AnyUiHtmlBackgroundActionType BackgroundAction;
 
 		/// <summary>
 		/// If <c>true</c>, a special HTML dialog rendering will occur for
@@ -128,30 +128,37 @@ namespace AnyUi
             return diaData;
         }
 
+        public void ResetModal()
+        {
+			DialogueData = null;
+			SpecialAction = null;
+			EventOpen = false;
+			EventDone = false;
+		}
+
 		public T StartModalSpecialAction<T>(T sdData) where T : AnyUiSpecialActionBase
 		{
+			ResetModal();
+
 			if (sdData == null)
 			{
-				EventOpen = false;
 				EventDone = true;
-				return sdData;
+				return null;
 			}
 
 			EventOpen = true;
-            DialogueData = null;
 			SpecialAction = sdData;
-			EventDone = false;
 			return sdData;
 		}
 
 		public void EndModal(bool result)
         {
-			EventOpen = false;
-			EventDone = true;
-            if (DialogueData != null)
+			if (DialogueData != null)
                 DialogueData.Result = result;
+			ResetModal();
+			EventDone = true;
 		}
-    }
+	}
 
     public enum AnyUiHtmlFillMode { None, FillWidth }
 
@@ -269,68 +276,69 @@ namespace AnyUi
                 while (i < sessions.Count)
                 {
                     var s = sessions[i];
-                    if (s.htmlDotnetEventIn)
-                    {
-                        switch (s.htmlDotnetEventType)
-                        {
-                            case "setValueLambda":
-                                if (s.htmlDotnetEventInputs != null && s.htmlDotnetEventInputs.Count > 0)
-                                {
-                                    el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
-                                    object o = s.htmlDotnetEventInputs[1];
-                                    s.htmlDotnetEventIn = false;
-                                    s.htmlDotnetEventInputs.Clear();
-                                    var ret = el?.setValueLambda?.Invoke(o);
+                    //if (s.htmlDotnetEventIn)
+                    //{
+                    //    switch (s.htmlDotnetEventType)
+                    //    {
+                    //        case "setValueLambda":
+                    //            if (s.htmlDotnetEventInputs != null && s.htmlDotnetEventInputs.Count > 0)
+                    //            {
+                    //                el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
+                    //                object o = s.htmlDotnetEventInputs[1];
+                    //                s.htmlDotnetEventIn = false;
+                    //                s.htmlDotnetEventInputs.Clear();
+                    //                var ret = el?.setValueLambda?.Invoke(o);
 
-                                    while (s.htmlDotnetEventOut) Task.Delay(1);
+                    //                while (s.htmlDotnetEventOut) Task.Delay(1);
 
-                                    // determine, which (visual) update has to be done
-                                    int ndm = 2;
-                                    if (ret is AnyUiLambdaActionNone)
-                                        ndm = 0;
-                                    Program.signalNewData(
-                                        new Program.NewDataAvailableArgs(
-                                            Program.DataRedrawMode.SomeStructChange, s.SessionId, 
-                                            newLambdaAction: ret, onlyUpdatePanel: true)); // build new tree
-                                }
-                                break;
+                    //                // determine, which (visual) update has to be done
+                    //                int ndm = 2;
+                    //                if (ret is AnyUiLambdaActionNone)
+                    //                    ndm = 0;
+                    //                Program.signalNewData(
+                    //                    new Program.NewDataAvailableArgs(
+                    //                        Program.DataRedrawMode.SomeStructChange, s.SessionId, 
+                    //                        newLambdaAction: ret, onlyUpdatePanel: true)); // build new tree
+                    //            }
+                    //            break;
 
-                            case "contextMenu":
-                                if (s.htmlDotnetEventInputs != null && s.htmlDotnetEventInputs.Count > 0)
-                                {
-                                    el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
-                                    AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
-                                        s.htmlDotnetEventInputs[1];
-                                    s.htmlEventType = "contextMenu";
-                                    s.htmlEventInputs.Add(el);
-                                    s.htmlEventInputs.Add(cntlcm);
-                                    s.htmlDotnetEventIn = false;
-                                    s.htmlDotnetEventInputs.Clear();
-                                    s.htmlEventIn = true;
-                                    Program.signalNewData(
-                                        new Program.NewDataAvailableArgs(Program.DataRedrawMode.SomeStructChange, s.SessionId,
-                                        onlyUpdatePanel: true)); // same tree, but structure may change
+                    //        case "contextMenu":
+                    //            if (s.htmlDotnetEventInputs != null && s.htmlDotnetEventInputs.Count > 0)
+                    //            {
+                    //                el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
+                    //                AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
+                    //                    s.htmlDotnetEventInputs[1];
+                    //                s.htmlEventType = "contextMenu";
+                    //                s.htmlEventInputs.Add(el);
+                    //                s.htmlEventInputs.Add(cntlcm);
+                    //                s.htmlDotnetEventIn = false;
+                    //                s.htmlDotnetEventInputs.Clear();
+                    //                s.htmlEventIn = true;
+                    //                Program.signalNewData(
+                    //                    new Program.NewDataAvailableArgs(Program.DataRedrawMode.SomeStructChange, s.SessionId,
+                    //                    onlyUpdatePanel: true)); // same tree, but structure may change
 
-                                    while (!s.htmlEventOut) Task.Delay(1);
-                                    int bufferedI = 0;
-                                    if (s.htmlEventOutputs.Count == 1)
-                                    {
-                                        bufferedI = (int)s.htmlEventOutputs[0];
-                                        var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
-                                    }
-                                    s.htmlEventOutputs.Clear();
-                                    s.htmlEventType = "";
-                                    s.htmlEventOut = false;
-                                    //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
-                                }
-                                break;
-                        }
-                    }
+                    //                while (!s.htmlEventOut) Task.Delay(1);
+                    //                int bufferedI = 0;
+                    //                if (s.htmlEventOutputs.Count == 1)
+                    //                {
+                    //                    bufferedI = (int)s.htmlEventOutputs[0];
+                    //                    var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
+                    //                }
+                    //                s.htmlEventOutputs.Clear();
+                    //                s.htmlEventType = "";
+                    //                s.htmlEventOut = false;
+                    //                //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                    //            }
+                    //            break;
+                    //    }
+                    //}
 
-                    if (s.EventType == AnyUiHtmlEventType.ContextMenu)
+                    if (s.BackgroundAction == AnyUiHtmlBackgroundActionType.ContextMenu
+                        && s.SpecialAction is AnyUiSpecialActionContextMenu sacm)
                     {
                         // assumption: context menu already on the screen
-                        if (!s.EventOpen || !(s.SpecialAction is AnyUiSpecialActionContextMenu sacm))
+                        if (!s.EventOpen)
                         {
                             // emergency exit
                             s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
@@ -341,13 +349,14 @@ namespace AnyUi
                         while (!s.EventDone) Task.Delay(1);
                         s.EventOpen = false;
                         s.EventDone = false;
-                        s.EventType = AnyUiHtmlEventType.None;
+                        s.BackgroundAction = AnyUiHtmlBackgroundActionType.None;
+                        s.SpecialAction = null;
 
-                        // trigger display(again)
-                        //Program.signalNewData(
-                        //    new Program.NewDataAvailableArgs(
-                        //        Program.DataRedrawMode.None, evs.SessionId));
-                        s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
+						// trigger display(again)
+						//Program.signalNewData(
+						//    new Program.NewDataAvailableArgs(
+						//        Program.DataRedrawMode.None, evs.SessionId));
+						s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
 
                         // directly concern about the results
                         if (sacm.ResultIndex >= 0)
@@ -357,31 +366,70 @@ namespace AnyUi
 						}
 					}
 
+					if (s.BackgroundAction == AnyUiHtmlBackgroundActionType.SetValue
+						&& s.SpecialAction is AnyUiSpecialActionSetValue sasv)
+					{
+						// simply do event loop (but here in the "background")
+						// while (!s.EventDone) Task.Delay(1);
+                        // reset everything
+						s.EventOpen = false;
+						s.EventDone = false;
+						s.BackgroundAction = AnyUiHtmlBackgroundActionType.None;
+						s.SpecialAction = null;
+
+						// execute lambda
+						var ret = sasv.UiElement?.setValueLambda?.Invoke(sasv.Argument);
+
+                        // not required?!
+                        // while (s.htmlDotnetEventOut) Task.Delay(1);
+
+                        // trigger handling of lambda return
+                        Program.signalNewData(
+							new Program.NewDataAvailableArgs(
+								    Program.DataRedrawMode.SomeStructChange, s.SessionId,
+								    newLambdaAction: ret, onlyUpdatePanel: true));
+					}
+
 					i++;
                 }
+                
                 // ReSharper enable InconsistentlySynchronizedField
-                Thread.Sleep(100);
+                Thread.Sleep(50);
             }
         }
 
-        public static void setValueLambdaHtml(AnyUiUIElement el, object o)
+        public static void setValueLambdaHtml(AnyUiUIElement uiElement, object argument)
         {
-            var dc = (el?.DisplayData as AnyUiDisplayDataHtml)?._context;
+            var dc = (uiElement?.DisplayData as AnyUiDisplayDataHtml)?._context;
             if (dc != null)
             {
                 var sessionNumber = dc._bi.SessionId;
-                var found = FindEventSession(sessionNumber);
-                if (found != null)
+                var evs = FindEventSession(sessionNumber);
+                if (evs != null)
                 {
                     lock (dc.htmlDotnetLock)
                     {
-                        while (found.htmlDotnetEventIn) Task.Delay(1);
-                        found.htmlEventInputs.Clear();
-                        found.htmlDotnetEventType = "setValueLambda";
-                        found.htmlDotnetEventInputs.Add(el);
-                        found.htmlDotnetEventInputs.Add(o);
-                        found.htmlDotnetEventIn = true;
-                    }
+						//while (found.htmlDotnetEventIn) Task.Delay(1);
+						//found.htmlEventInputs.Clear();
+						//found.htmlDotnetEventType = "setValueLambda";
+						//found.htmlDotnetEventInputs.Add(el);
+						//found.htmlDotnetEventInputs.Add(o);
+						//found.htmlDotnetEventIn = true;
+
+						// simply treat woodoo as error!
+						evs.JsRuntime = dc._jsRuntime;
+
+						if (evs.EventOpen)
+						{
+							Log.Singleton.Error("Error in starting special action as some modal dialogue " +
+								"is still active. Aborting!!");
+							return;
+						}
+
+						evs.BackgroundAction = AnyUiHtmlBackgroundActionType.SetValue;
+                        evs.ResetModal();
+                        evs.SpecialAction = new AnyUiSpecialActionSetValue(uiElement, argument);
+					}
                 }
             }
         }
@@ -420,7 +468,7 @@ namespace AnyUi
 						    return;
 					    }
 
-                        evs.EventType = AnyUiHtmlEventType.ContextMenu;
+                        evs.BackgroundAction = AnyUiHtmlBackgroundActionType.ContextMenu;
 					    evs.StartModalSpecialAction(cntlcm);
 
 					    // trigger display
