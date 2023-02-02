@@ -240,6 +240,11 @@ namespace AasxIntegrationBase
                 this.ArgDefs = args;
             return this;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     /// <summary>

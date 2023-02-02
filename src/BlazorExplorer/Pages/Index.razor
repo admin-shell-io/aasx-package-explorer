@@ -28,7 +28,6 @@
 }
 
 <div class="col-12 row">
-    <br />
     <div class=@($"col-{Session.DividerTreeAndElement}")>
         <div class="row-12">
             <!-- Modal -->
@@ -493,43 +492,19 @@
             <!-- Details / repo -->
             <div style="margin:2px 2px 0px 1px">
                 <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; word-wrap:break-word;position:sticky;padding:10px">
-                @{
-                    if (Session.env != null /* TODO?? && (selectedNode == null || selectedNode.Tag != null) */)
-                    {
-                        {
-                            if (Session.thumbNail == null && Session.env != null)
-                            {
-                                System.IO.Stream s = null;
-                                try
-                                {
-                                    s = Session.env.GetLocalThumbnailStream();
-                                }
-                                catch
-                                {
-                                    s = null;
-                                }
-                                if (s != null)
-                                {
-                                    using (var m = new System.IO.MemoryStream())
-                                    {
-                                        s.CopyTo(m);
-                                        Session.thumbNail = System.Convert.ToBase64String(m.ToArray());
-                                    }
 
-                                    // it is indespensible to properly close the thumbnail stream!
-                                    s.Close();
-                                }
-                            }
-                            if (Session.thumbNail != null)
-                            {
-                                <br />
-                                <img src=data:image;base64,@Session.thumbNail
-                                     style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
-                            }
-                        }
+                    @if (Session.PackageCentral.Repositories != null 
+                         && Session.PackageCentral.Repositories.Count() > 0)
+                    {
+                        var cl0 = Session.PackageCentral.Repositories[0];
+
+                        <PanelPackageContainerList
+                            ContainerList="cl0"
+                            ContextMenuSelected="ContainerListItemSelected"/>
+
                     }
-                }
-            </div>
+
+                </div>
             </div>
         </div>
     </div>
@@ -599,6 +574,8 @@
 
 </div>
 
+<span>Redraws: @CounterRedraw</span>
+
 @code {
 
     // resharper disable all
@@ -606,6 +583,9 @@
     // Gets a reference to the MainLayout component
     [CascadingParameter]
     public BlazorExplorer.Shared.MainLayout Layout { get; set; }
+
+    [Parameter]
+    public int CounterRedraw { get; set; }
 
     ListOfItems Items = null;
 
@@ -909,6 +889,7 @@
 
                 // trigger redraw (but inhibit for plugin-redraw)
                 _inhibitSelectNodeForPanel += 1;
+                CounterRedraw += 1;
                 InvokeAsync(() => this.StateHasChanged());
                 // this.StateHasChanged();
 
@@ -1183,47 +1164,29 @@
 
     private void MainTimer_HandleLogMessages()
     {
+        return;
+
         // check for Stored Prints in Log
         StoredPrint sp;
         while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
         {
-            // pop            
-            Layout.Message = "Halo" + sp.msg;
-
-            // display
             switch (sp.color)
             {
                 default:
-                    // throw ExhaustiveMatch.Failed(sp.color);
+                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
                     break;
                 case StoredPrint.Color.Black:
-                    {
-                        //Message.Background = Brushes.White;
-                        //Message.Foreground = Brushes.Black;
-                        //Message.FontWeight = FontWeights.Normal;
-                        break;
-                    }
+                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
+                    break;
                 case StoredPrint.Color.Blue:
-                    {
-                        //Message.Background = Brushes.LightBlue;
-                        //Message.Foreground = Brushes.Black;
-                        //Message.FontWeight = FontWeights.Normal;
-                        break;
-                    }
+                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.LightBlue);
+                    break;
                 case StoredPrint.Color.Yellow:
-                    {
-                        //Message.Background = Brushes.Yellow;
-                        //Message.Foreground = Brushes.Black;
-                        //Message.FontWeight = FontWeights.Bold;
-                        break;
-                    }
+                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Yellow);
+                    break;
                 case StoredPrint.Color.Red:
-                    {
-                        //Message.Background = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
-                        //Message.Foreground = Brushes.White;
-                        //Message.FontWeight = FontWeights.Bold;
-                        break;
-                    }
+                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.White, AnyUiBrushes.Red);
+                    break;
             }
 
             // message window
@@ -1279,17 +1242,17 @@
 
                 // find items
                 #if TODO
-                var targetItem = Items?.FindReferable(workRf, pluginTag);
+        var targetItem = Items?.FindReferable(workRf, pluginTag);
 
-                // activate this
-                if (targetItem != null)
-                {
-                    _inhibitSelectNodeForPanel = 0;
-                    _onlyUpdatePluginUi = false;
-                    ListOfItems.AddToExpandNodesFor(ExpandedNodes, targetItem);
-                    SelectedNode = targetItem;
-                    InvokeAsync(() => this.StateHasChanged());
-                }
+    // activate this
+    if (targetItem != null)
+    {
+        _inhibitSelectNodeForPanel = 0;
+    _onlyUpdatePluginUi = false;
+    ListOfItems.AddToExpandNodesFor(ExpandedNodes, targetItem);
+    SelectedNode = targetItem;
+    InvokeAsync(() => this.StateHasChanged());
+    }
                 #endif
             }
 
@@ -1301,10 +1264,10 @@
                 && evtDispCont.fn != null)
             {
 #if TEST
-            InvokeAsync(async () => {
-                await BlazorUtils.DisplayOrDownloadFile(JSRuntime, evtDispCont.fn, evtDispCont.mimeType);
-                this.StateHasChanged();
-            });
+    InvokeAsync(async () => {
+    await BlazorUtils.DisplayOrDownloadFile(JSRuntime, evtDispCont.fn, evtDispCont.mimeType);
+    this.StateHasChanged();
+    });
 #else
                 Program.signalNewData(
                     new Program.NewDataAvailableArgs(
@@ -1519,5 +1482,100 @@
 
         // dive out
         _inTimer = false;
+    }
+
+    protected async void ContainerListItemSelected(BlazorExplorer.Pages.PanelPackageContainerList.ContextMenuSelectArgs args)
+    {
+        // access
+        var cmd = args?.MenuItem?.Name?.Trim().ToLower();
+        var fi = args?.RepoItem;
+        var list = args?.ContainerList;
+        if (args?.ContainerList == null || cmd?.HasContent() != true)
+            return;
+
+        var update = false;
+
+        // header of container list
+        if (fi == null)
+        {
+            if (cmd == "query")
+            {
+                //// start a dedicated repo select
+                //var uc = new AnyUiDialogueDataSelectFromRepository("Select from: " + list.Header);
+                //uc.Items = list.EnumerateItems().ToList();
+                //if (Session.DisplayContext.StartFlyoverModal(uc)
+                //&& uc.ResultItem != null)
+                //{
+                //    Log.Singleton.Info($"Loading from repository {list.Header} the item {uc.ResultItem.InfoLocation} ..");
+                //    // this will update already by itself
+                //    await Session?.ContainerListItemLoad(list, fi);
+                //}
+
+                await Session.CommandBinding_GeneralDispatch("filerepoquery",
+                    new AasxMenuItem() { Header = "FileRepoQuery", Name = "FileRepoQuery" },
+                    new AasxMenuActionTicket());
+            }
+        }
+
+        // specific item of container list
+        if (fi != null)
+        {
+            if (cmd == "deletelist")
+            {
+                list.Remove(fi);
+                update = true;
+            }
+
+            if (cmd == "deletefromrepo")
+            {
+                list.DeletePackageFromServer(fi);
+                update = true;
+            }
+
+            if (cmd == "moveup")
+            {
+                list.MoveUp(fi);
+                update = true;
+            }
+
+            if (cmd == "movedown")
+            {
+                list.MoveDown(fi);
+                update = true;
+            }
+
+            if (cmd == "unload")
+            {
+                fi.Close();
+                update = true;
+            }
+
+            if (cmd == "recalc")
+            {
+                await fi.LoadResidentIfPossible(list.GetFullItemLocation(fi.Location));
+
+                if (fi.Env?.AasEnv == null)
+                {
+                    Log.Singleton.Error("AAS information not already loaded for this item.");
+                    return;
+                }
+
+                fi.CalculateIdsTagAndDesc();
+            }
+
+            if (cmd == "doubleclick")
+            {
+                // this will update already by itself
+                await Session?.ContainerListItemLoad(list, fi);
+            }
+        }
+
+        // update?
+        if (update)
+        {
+            Program.signalNewData(
+                new Program.NewDataAvailableArgs(
+                    Program.DataRedrawMode.None, Session.SessionId));
+        }
     }
 }

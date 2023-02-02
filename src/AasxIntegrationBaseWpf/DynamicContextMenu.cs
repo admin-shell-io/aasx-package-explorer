@@ -19,7 +19,7 @@ using System.Windows.Data;
 namespace AasxIntegrationBaseWpf
 {
     /// <summary>
-    /// One item for DynamicContextMenu. Basicall a wrapper around MenuItem
+    /// One item for DynamicContextMenu. Basically a wrapper around MenuItem
     /// </summary>
     public class DynamicContextItem
     {

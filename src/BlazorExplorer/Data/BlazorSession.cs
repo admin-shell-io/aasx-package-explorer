@@ -12,9 +12,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Packaging;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -862,5 +864,94 @@ namespace BlazorUI.Data
 //            MainTimer_HandleLogMessages();
         }
 
+        /// <summary>
+        /// Nearly the same as copied.
+        /// </summary>
+        public async Task ContainerListItemLoad(PackageContainerListBase repo, PackageContainerRepoItem fi)
+        {
+            {
+                // access
+                if (repo == null || fi == null)
+                    return;
+
+                // safety?
+                if (MainMenu?.IsChecked("FileRepoLoadWoPrompt") == false)
+                {
+                    // ask double question
+                    if (AnyUiMessageBoxResult.OK != DisplayContext.MessageBoxFlyoutShow(
+                            "Load file from AASX file repository?",
+                            "AASX File Repository",
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+                        return;
+                }
+
+                // start animation
+                repo.StartAnimation(fi, PackageContainerRepoItem.VisualStateEnum.ReadFrom);
+
+                // container options
+                var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                if (fi.ContainerOptions != null)
+                    copts = fi.ContainerOptions;
+
+                // try load ..
+#if TODO
+                if (repo is PackageContainerAasxFileRepository restRepository)
+                {
+                    if (restRepository.IsAspNetConnection)
+                    {
+                        var container = await restRepository.LoadAasxFileFromServer(fi.PackageId, _packageCentral.CentralRuntimeOptions);
+                        if (container != null)
+                        {
+                            UiLoadPackageWithNew(_packageCentral.MainItem,
+                            takeOverContainer: container, onlyAuxiliary: false,
+                            storeFnToLRU: fi.PackageId);
+                        }
+
+                        Log.Singleton.Info($"Successfully loaded AASX Package with PackageId {fi.PackageId}");
+
+                        if (senderList is PackageContainerListControl pclc)
+                            pclc.RedrawStatus();
+                    }
+                }
+                else
+#endif
+                {
+                    var location = repo.GetFullItemLocation(fi.Location);
+                    if (location == null)
+                        return;
+                    Log.Singleton.Info($"Auto-load file from repository {location} into container");
+
+                    try
+                    {
+                        var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                            PackageCentral,
+                            location,
+                            location,
+                            overrideLoadResident: true,
+                            takeOver: fi,
+                            fi.ContainerList,
+                            containerOptions: copts,
+                            runtimeOptions: PackageCentral.CentralRuntimeOptions);
+
+                        if (container == null)
+                            Log.Singleton.Error($"Failed to load AASX from {location}");
+                        else
+                            UiLoadPackageWithNew(PackageCentral.MainItem,
+                                takeOverContainer: container, onlyAuxiliary: false,
+                                storeFnToLRU: location);
+
+                        Log.Singleton.Info($"Successfully loaded AASX {location}");
+
+                        //if (senderList is PackageContainerListControl pclc)
+                        //    pclc.RedrawStatus();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    }
+                }
+
+            };
+        }
     }
 }

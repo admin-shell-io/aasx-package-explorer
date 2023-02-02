@@ -202,7 +202,6 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (mi?.Name == "MenuItemDeleteFromFileRepo" && fi != null)
             {
                 this.FileRepository?.DeletePackageFromServer(fi);
-
             }
 
             if (mi?.Name == "MenuItemMoveUp" && fi != null)

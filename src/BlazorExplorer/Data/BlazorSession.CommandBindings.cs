@@ -12,6 +12,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -31,7 +32,7 @@ namespace BlazorUI.Data
     /// </summary>
     public partial class BlazorSession : IDisposable
     {
-        private async Task CommandBinding_GeneralDispatch(
+        public async Task CommandBinding_GeneralDispatch(
                     string cmd,
                     AasxMenuItemBase menuItem,
                     AasxMenuActionTicket ticket)
@@ -81,27 +82,32 @@ namespace BlazorUI.Data
                 this.HintMode = MainMenu?.IsChecked("HintMenu") == true;
 
                 // edit mode affects the total element view
-                RedrawAllAasxElements();
+                RedrawAllAasxElements(nextFocusMdo: currMdo);
 
-                // signalNewData should be sufficient:
-                // this.StateHasChanged(); 
-                Program.signalNewData(
-                    new Program.NewDataAvailableArgs(
-                        Program.DataRedrawMode.RebuildTreeKeepOpen, this.SessionId));
+                //// signalNewData should be sufficient:
+                //// this.StateHasChanged(); 
+                //Program.signalNewData(
+                //    new Program.NewDataAvailableArgs(
+                //        Program.DataRedrawMode.RebuildTreeKeepOpen, this.SessionId));
 
-                // fake selection
-                // RedrawElementView();
-                // select last object
-                if (currMdo != null)
-                {
-                    DisplayElements.TrySelectMainDataObject(currMdo, wishExpanded: true);
-                }
+                //// fake selection
+                //// RedrawElementView();
+                //// select last object
+                //if (currMdo != null)
+                //{
+                //    DisplayElements.TrySelectMainDataObject(currMdo, wishExpanded: true);
+                //}
             }
 
             // dispatching directly to PackageLogic
 
             if (cmd == "filerepoquery")
                 Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+
+            if (cmd == "locationpop")
+            {
+                Log.Singleton.Info("Time is " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
+            }
 
         }
     }

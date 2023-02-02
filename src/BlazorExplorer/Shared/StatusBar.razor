@@ -6,17 +6,24 @@
 @using System.Globalization;
 @inject IJSRuntime JsRuntime
 
-<div class="row" style="overflow: hidden">
-    <div class="col-12" style="display: inline-block; white-space: nowrap">
-        <small>@Message</small>
+@{
+    var innerStyle = new StylePile()
+       .Set("text-color", Foreground?.HtmlRgba(), doNotSetIfNull: true, add: true)
+       .Set("background-color",Background?.HtmlRgba(), doNotSetIfNull: true, add: true);
+}
+
+<div class="row" style="overflow: hidden; padding-left: 0px; padding-right: 0px; margin-left: 0px; margin-right: 0px">
+    <div style="@innerStyle">
+        <div class="col-12" style="display: inline-block; white-space: nowrap">
+            <small>@Message</small>
+        </div>
     </div>
 </div>
 
 @code {
 
     [Parameter] public string Message { get; set; }
-
-    [Parameter]
-    public EventCallback<string> MessageChanged { get; set; }
+    [Parameter] public AnyUiBrush Foreground { get; set; }
+    [Parameter] public AnyUiBrush Background { get; set; }
 
 }

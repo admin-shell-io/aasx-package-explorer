@@ -251,6 +251,15 @@ namespace AnyUi
                 solidColorBrush.G + ", " +
                 solidColorBrush.B + ")";
         }
+
+        public string HtmlRgba()
+        {
+            return "rgba(" +
+                solidColorBrush.R + ", " +
+                solidColorBrush.G + ", " +
+                solidColorBrush.B + ", " +
+                solidColorBrush.A + ")";
+        }
     }
 
     public class AnyUiBrushes
@@ -260,6 +269,8 @@ namespace AnyUi
         public static AnyUiBrush Black { get { return new AnyUiBrush(0xff000000u); } }
         public static AnyUiBrush DarkBlue { get { return new AnyUiBrush(0xff00008bu); } }
         public static AnyUiBrush LightBlue { get { return new AnyUiBrush(0xffadd8e6u); } }
+        public static AnyUiBrush Yellow { get { return new AnyUiBrush(0xffffcc00); } }
+        public static AnyUiBrush Red { get { return new AnyUiBrush(0xffe53d02); } }
         public static AnyUiBrush White { get { return new AnyUiBrush(0xffffffffu); } }
         public static AnyUiBrush LightGray { get { return new AnyUiBrush(0xffe8e8e8u); } }
         public static AnyUiBrush MiddleGray { get { return new AnyUiBrush(0xffc8c8c8u); } }

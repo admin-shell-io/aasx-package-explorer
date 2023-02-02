@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using AdminShellNS;
 @using AasxIntegrationBase
+@using AnyUi
 @using AasxPackageLogic;
 @using AasxPackageLogic.PackageCentral;
 @using BlazorUI.Data;
@@ -42,11 +43,12 @@
             <div class="top-row px-2">
                 <div class="col-12">
                     <MainMenu/>
-@*                    <div style="width: 90vw">
-                        <StatusBar @bind-Value="@Session.Message"/>
-                    </div>                    
-*@                
-                    <span>Doof @_message</span>
+                    <div style="width: 90vw">
+                        <StatusBar 
+                            Message="@_message" 
+                            Foreground="@_msgForeground" 
+                            Background="@_msgBackground"/>
+                    </div>
                 </div>
             </div>
         }
@@ -62,7 +64,19 @@
 
 @code
 {
-    protected string _message = "init";
+    protected string _message = "Starting ..";
+    protected AnyUiBrush _msgForeground = AnyUiBrushes.Black;
+    protected AnyUiBrush _msgBackground = AnyUiBrushes.Transparent;
+
+    public void UpdateMessage(string message, AnyUiBrush foreground = null, AnyUiBrush background = null)
+    {
+        _message = message;
+        if (foreground != null)
+            _msgForeground = foreground;
+        if (background != null)
+            _msgBackground = background;
+        InvokeAsync(() => StateHasChanged());
+    }
 
     public string Message
     {

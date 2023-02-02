@@ -49,6 +49,14 @@ a, .btn-link {
     background-color: #e53d02!important
 }
 
+.caret-off::before {
+    display: none;
+}
+
+.caret-off::after {
+    display: none;
+}
+
 /* Disable selection of text in browser
    see: https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting */
 * {
@@ -146,6 +154,35 @@ dialog header {
     color: black;
     padding: 5px;
     background-color: #f0f0f0;
+}
+
+/* Lower left panel, repository / container list items / infos with AAS / AssetId .. */
+.container-list-item-infos {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 0.7em;
+    color: #0028cd;
+    font-weight: bolder;
+    line-height: 100%;
+}
+
+/* Lower left panel, repository / container list items / location info .. */
+.container-list-item-location {
+    display: inline-block;
+    overflow: hidden;
+    font-size: 0.7em;
+    line-height: 100%;
+    color: #a07c7c;
+}
+
+/* Lower left panel, repository / container list : tablöe header */
+.container-list-header {
+    background: #e0e0e0
+}
+
+.container-list-body {
+    background: #ffffff
 }
 
 app {
@@ -277,7 +314,7 @@ app {
     border-color: #0128CB;
     border-width: 2px;
     border-radius: 4px;
-    color: #0128CB;
+    color: #0128CB!important;
     font-size: 0.8rem;
 }
 

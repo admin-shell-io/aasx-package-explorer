@@ -124,11 +124,32 @@ package AnyUiHtml
 
 class MainLayout <<Layout>>
 note top
-  Blazor feature
+  Organizes pages layout
   Hosts pages as content
   Provides Functions via 
   CascadingParameter
 end note
+
+class MainMenu <<RazorComponent>>
+note top
+  Hosts menu items to
+  dynamically created
+  main menue
+end note
+
+MainLayout *-- MainMenu
+
+class StatusBar <<RazorComponent>>
+note top
+  Shows status line in
+  colors.
+  Separate component to
+  minimize overhead when
+  render state.
+end note
+
+MainLayout *-- StatusBar
+
 
 class Tree <<RazorComponent>>
 note top
@@ -236,7 +257,7 @@ Index --> AnyUiRenderStar : uses
 AnyUiRenderStar --> BlazorSession : renders ElementPanel
 
 
-Tree --> BlazorVisualElements : renders
+TreeOfAasxVisualElements --> BlazorVisualElements : renders
 
 class ToBeDone
 ToBeDone *-- AnyUiDisplayContextHtml : displayContext
@@ -251,7 +272,7 @@ DynamicMenuItem--> SiteCss : uses
 DynamicMenuItem --> AasxMenuBlazor : renders
 
 MainLayout --> MainLayoutJs : uses
-MainLayout --> DynamicMenuItem : uses
+MainMenu --> DynamicMenuItem : uses
 
 Index --> Modal
 Index --> BlazorModalJs
