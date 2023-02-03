@@ -37,7 +37,7 @@
 	if (ContainerList is PackageContainerListLastRecentlyUsed)
 		icon = "\u2749";
 
-	<div style="overflow: hidden">
+	<div style="">
 
 		<div style="">
 			<table class="table container-list-header mb-0" id="tableHeader">
@@ -121,14 +121,6 @@
 			</table>
 		</div>
 
-		@* Leave some footer space for context menues *@
-		<div class="col-12 row">
-			@for (int i = 0; i < 8; i++)
-			{
-				<br />
-			}
-		</div>
-
 	</div>
 }
 
@@ -169,7 +161,8 @@
 	protected IEnumerable<AasxMenuItemBase> DotMenuEnumerateContextMenu(PackageContainerListBase fr)
 	{
 		var menu = new AasxMenu()
-			.AddAction("FileRepoClose", "Close", icon: "\u274c");
+			.AddAction("FileRepoClose", "Close", icon: "\u274c")
+			.AddAction("FileRepoEditName", "Edit name", icon: "\u270e");
 
 		if (!(fr is PackageContainerListLastRecentlyUsed))
 		{

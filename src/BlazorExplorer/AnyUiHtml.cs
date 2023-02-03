@@ -541,15 +541,57 @@ namespace AnyUi
             return r;
         }
 
-		/// <summary>
-		/// Shows an open file dialogue
-		/// </summary>
-		/// <param name="caption">Top caption of the dialogue</param>
-		/// <param name="message">Further information to the user</param>
-		/// <param name="filter">Filter specification for certain file extension.</param>
-		/// <param name="proposeFn">Filename, which is initially proposed when the dialogue is opened.</param>
-		/// <returns>Dialogue data including filenames</returns>
-		public override AnyUiDialogueDataOpenFile OpenFileFlyoutShow(
+        /// <summary>
+        /// Show MessageBoxFlyout with contents
+        /// </summary>
+        /// <param name="message">Message on the main screen</param>
+        /// <param name="caption">Caption string (title)</param>
+        /// <param name="buttons">Buttons according to WPF standard messagebox</param>
+        /// <param name="image">Image according to WPF standard messagebox</param>
+        public async Task<AnyUiMessageBoxResult> MessageBoxFlyoutShowAsync(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
+        {
+            AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
+            var evs = FindEventSession(_bi.SessionId);
+            if (evs == null)
+                return r;
+
+            var dd = evs.StartModal(new AnyUiDialogueDataMessageBox(
+                caption, message, buttons, image));
+
+            // trigger display
+            Program.signalNewData(
+                new Program.NewDataAvailableArgs(
+                    Program.DataRedrawMode.None, evs.SessionId));
+
+            // wait modal
+            while (!evs.EventDone)
+            {
+                await Task.Delay(1);
+            }
+            
+            evs.EventOpen = false;
+            evs.EventDone = false;
+
+            // make sure its closed
+            await _jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
+
+            // dialog result
+            if (dd.Result)
+                r = dd.ResultButton;
+
+            return r;
+        }
+
+        /// <summary>
+        /// Shows an open file dialogue
+        /// </summary>
+        /// <param name="caption">Top caption of the dialogue</param>
+        /// <param name="message">Further information to the user</param>
+        /// <param name="filter">Filter specification for certain file extension.</param>
+        /// <param name="proposeFn">Filename, which is initially proposed when the dialogue is opened.</param>
+        /// <returns>Dialogue data including filenames</returns>
+        public override AnyUiDialogueDataOpenFile OpenFileFlyoutShow(
 			string caption, 
             string message, 
             string proposeFn = null,
@@ -695,7 +737,6 @@ namespace AnyUi
             }
 
             // wait modal
-
             while (!evs.EventDone)
             {
                 await Task.Delay(1);

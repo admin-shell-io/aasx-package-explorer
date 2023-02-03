@@ -31,6 +31,7 @@ using BlazorExplorer;
 using ExhaustiveMatching;
 using Extensions;
 using Microsoft.JSInterop;
+using System.Linq;
 
 namespace BlazorUI.Data
 {
@@ -952,6 +953,78 @@ namespace BlazorUI.Data
                 }
 
             };
+        }
+
+        public async Task FileDropped(AnyUiDialogueDataOpenFile ddof, BlazorInput.KeyboardModifiers modi)
+        {
+            // stop complaining
+            await Task.Delay(1);
+
+            // access
+            if (ddof?.OriginalFileName?.HasContent() != true || ddof.TargetFileName.HasContent() != true)
+                return;
+
+            var ext = Path.GetExtension(ddof.OriginalFileName).ToLower();
+
+            // AASX to load (no Ctrl key)
+            if (ext == ".aasx" && (modi & BlazorInput.KeyboardModifiers.Ctrl) == 0)
+            {
+                Log.Singleton.Info($"Load file {ddof.TargetFileName} originally from from {ddof.OriginalFileName} into container ..");
+
+                try
+                {
+                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                        PackageCentral,
+                        ddof.TargetFileName,
+                        ddof.TargetFileName,
+                        overrideLoadResident: true,
+                        runtimeOptions: PackageCentral.CentralRuntimeOptions);
+
+                    if (container == null)
+                        Log.Singleton.Error($"Failed to load AASX from {ddof.TargetFileName}");
+                    else
+                        UiLoadPackageWithNew(PackageCentral.MainItem,
+                            takeOverContainer: container, onlyAuxiliary: false);
+
+                    Log.Singleton.Info($"Successfully loaded AASX {ddof.OriginalFileName}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"When loading {ddof.OriginalFileName}");
+                }
+            }
+
+            // AASX to add (to last repo)
+            var fr = PackageCentral.Repositories?.LastOrDefault();
+            if (ext == ".aasx" 
+                && (modi & BlazorInput.KeyboardModifiers.Ctrl) != 0
+                && fr != null && (fr is PackageContainerListLocal))
+            {
+                // add
+                fr.AddByAasxFn(PackageCentral, ddof.TargetFileName);
+
+                // update
+                Program.signalNewData(
+                        new Program.NewDataAvailableArgs(
+                            Program.DataRedrawMode.None, this.SessionId));
+            }
+
+            // JSON -> Repo
+            if (ext == ".json")
+            {
+                // try handle as repository
+                var newRepo = UiLoadFileRepository(ddof.TargetFileName);
+                if (newRepo != null)
+                {
+                    // add
+                    PackageCentral.Repositories.AddAtTop(newRepo);
+
+                    // redisplay
+                    Program.signalNewData(
+                        new Program.NewDataAvailableArgs(
+                            Program.DataRedrawMode.None, this.SessionId));
+                }
+            }
         }
     }
 }

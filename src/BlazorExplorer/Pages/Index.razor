@@ -10,7 +10,6 @@
 @using BlazorUI.Data
 @using BlazorUI.Pages 
 @using BlazorUI.Utils
-@using BlazorUI.Data
 @using System.Threading
 @using Microsoft.AspNetCore.WebUtilities
 @using AasxPackageLogic.PackageCentral;
@@ -493,16 +492,35 @@
             <div style="margin:2px 2px 0px 1px">
                 <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; word-wrap:break-word;position:sticky;padding:10px">
 
-                    @if (Session.PackageCentral.Repositories != null 
-                         && Session.PackageCentral.Repositories.Count() > 0)
-                    {
-                        var cl0 = Session.PackageCentral.Repositories[0];
+                    <div style="overflow: hidden">
 
-                        <PanelPackageContainerList
-                            ContainerList="cl0"
-                            ContextMenuSelected="ContainerListItemSelected"/>
+                        @* Repositories *@
+                        @if (Session.PackageCentral.Repositories != null)
+                        {
+                            foreach (var repo in Session.PackageCentral.Repositories)
+                            {
+                                <PanelPackageContainerList
+                                    ContainerList="repo"
+                                    ContextMenuSelected="ContainerListItemSelected"/>
+                            }
+                        }
 
-                    }
+                        @* File drop? *@
+                        <div class="drag-drop-zone-blue">
+                            <BlazorInputFile.InputFile OnChange="FileDrop_Handler.FileSelected" />
+                            @FileDrop_Handler.Status
+                        </div>
+
+                        @* Leave some footer space for context menues *@
+		                <div class="col-12 row">
+			                @for (int i = 0; i < 0; i++)
+			                {
+				                <br />
+			                }
+		                </div>
+
+
+                    </div>
 
                 </div>
             </div>
@@ -592,6 +610,9 @@
     protected int _inhibitSelectNodeForPanel = 0;
 
     public string DebugTrash = "";
+
+    // for File Drop
+    protected BlazorInputFileHandler FileDrop_Handler = new BlazorInputFileHandler();
 
     // IList<VisualElementGeneric> ExpandedNodes = new List<VisualElementGeneric>();
 
@@ -1144,6 +1165,14 @@
 
     protected override void OnInitialized()
     {
+        // wire components
+        FileDrop_Handler.FileDropped = async (ddof) =>
+        {
+            var modi = await Layout.GetKeyboardModifiers();
+            await Session.FileDropped(ddof, modi);
+        };
+
+        // set timer
         _timer = new System.Threading.Timer((e) =>
         {
             Session?.MainTimerTick();
@@ -1504,21 +1533,6 @@
         {
             if (cmd == "query" || cmd == "filerepoquery")
             {
-                // start a dedicated repo select
-                DebugTrash = "123";
-
-                //var evs = AnyUiDisplayContextHtml.FindEventSession(Session.SessionId);
-                //evs.DialogueData = new AnyUiDialogueDataTextBox("Bla") ;
-                //evs.EventOpen = true;
-                //this.StateHasChanged();
-
-                //// wait modal
-                //while (!evs.EventDone) { 
-                //    await Task.Delay(1); 
-                //}
-                //evs.EventOpen = false;
-                //evs.EventDone = false;
-
                 var uc = new AnyUiDialogueDataSelectFromRepository("Select from: " + repo.Header);
                 uc.Items = repo.EnumerateItems().ToList();
                 if (await Session.DisplayContext.StartFlyoverModalAsync(uc)
@@ -1528,15 +1542,11 @@
                     // this will update already by itself
                     await Session?.ContainerListItemLoad(repo, fi);
                 }
-
-                //await Session.CommandBinding_GeneralDispatch("filerepoquery",
-                //    new AasxMenuItem() { Header = "FileRepoQuery", Name = "FileRepoQuery" },
-                //    new AasxMenuActionTicket());
             }
 
             if (cmd == "filerepoclose")
             {
-                if (AnyUiMessageBoxResult.OK != Session.DisplayContext.MessageBoxFlyoutShow(
+                if (AnyUiMessageBoxResult.OK != await Session.DisplayContext.MessageBoxFlyoutShowAsync(
                             "Close file repository? Pending changes might be unsaved!",
                             "AASX File Repository",
                             AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
@@ -1549,6 +1559,17 @@
                 }
                 else
                     Log.Singleton.Error("Error when removing repository from list of repositories."); 
+            }
+
+            if (cmd == "filerepoeditname")
+            {
+                var uc = new AnyUiDialogueDataTextBox("Edit name of repository");
+                uc.Text = repo.Header;
+                if (await Session.DisplayContext.StartFlyoverModalAsync(uc))
+                {
+                    repo.Header = uc.Text;
+                    update = true;
+                }
             }
 
             if (cmd == "item-up")
@@ -1582,7 +1603,7 @@
                 if (repo is PackageContainerListLocal frl)
                 {
                     // make sure
-                    if (AnyUiMessageBoxResult.OK != Session.DisplayContext.MessageBoxFlyoutShow(
+                    if (AnyUiMessageBoxResult.OK != await Session.DisplayContext.MessageBoxFlyoutShowAsync(
                             "Make filename relative to the locaton of the file repository? " +
                             "This enables re-locating the repository.",
                             "AASX File Repository",
@@ -1636,7 +1657,7 @@
                 if (veAas == null || veAas.theAas == null || veAas.theEnv == null || veAas.thePackage == null
                     || veEnv == null || !veEnv.thePackageSourceFn.HasContent())
                 {
-                    Session.DisplayContext.MessageBoxFlyoutShow(
+                    await Session.DisplayContext.MessageBoxFlyoutShowAsync(
                         "No valid AAS selected. The application needs to be in edit mode. " +
                         "Aborting.", "AASX File repository",
                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
@@ -1672,7 +1693,7 @@
                 var uc = new AnyUiDialogueDataTextBox("REST endpoint (without \"/server/listaas\"):",
                     symbol: AnyUiMessageBoxImage.Question);
                 uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
-                Session.DisplayContext.StartFlyoverModal(uc);
+                await Session.DisplayContext.StartFlyoverModalAsync(uc);
                 if (!uc.Result)
                     return;
 
