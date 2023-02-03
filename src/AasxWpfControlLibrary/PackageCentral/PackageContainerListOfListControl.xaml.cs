@@ -405,37 +405,39 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             if (btn == PackageContainerListControl.CustomButton.Context)
             {
-                var cm = DynamicContextMenu.CreateNew();
-
-                cm.Add(new DynamicContextItem("FileRepoClose", "\u274c", "Close"));
+                var menu = new AasxMenu()
+                    .AddAction("FileRepoClose", "Close", "\u274c");
 
                 if (!(fr is PackageContainerListLastRecentlyUsed))
                 {
-                    cm.Add(new DynamicContextItem("item-up", "\u25b2", "Move Up"));
-                    cm.Add(new DynamicContextItem("item-down", "\u25bc", "Move Down"));
+                    menu.AddAction("item-up", "Move Up", "\u25b2")
+                        .AddAction("item-down", "Move Down", "\u25bc");
                 }
 
-                cm.Add(new DynamicContextItem("", new Separator()));
-                cm.Add(new DynamicContextItem("FileRepoSaveAs", "\U0001f4be", "Save as .."));
-                cm.Add(new DynamicContextItem("", new Separator()));
+                menu.AddSeparator()
+                    .AddAction("FileRepoSaveAs", "Save as ..", "\U0001f4be")
+                    .AddSeparator();
 
                 if (!(fr is PackageContainerListLastRecentlyUsed))
                 {
                     if (fr is PackageContainerListLocal)
-                        cm.Add(new DynamicContextItem(
-                            "FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."));
+                        menu.AddAction(
+                            "FileRepoMakeRelative", "Make AASX filenames relative ..", "\u2699");
 
-                    cm.Add(new DynamicContextItem("FileRepoAddCurrent", "\u2699", "Add current AAS"));
-                    cm.Add(new DynamicContextItem("FileRepoAddToServer", "\u2699", "Add AASX File to File Repository"));
-                    cm.Add(new DynamicContextItem("FileRepoMultiAdd", "\u2699", "Add multiple AASX files .."));
-                    cm.Add(new DynamicContextItem("FileRepoAddFromServer", "\u2699", "Add from REST server .."));
-                    cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));
+                    menu.AddAction("FileRepoAddCurrent", "Add current AAS", "\u2699")
+                        .AddAction("FileRepoAddToServer", "Add AASX File to File Repository", "\u2699")
+                        .AddAction("FileRepoMultiAdd", "Add multiple AASX files ..", "\u2699")
+                        .AddAction("FileRepoAddFromServer", "Add from REST server ..", "\u2699")
+                        .AddAction("FileRepoPrint", "Print 2D code sheet ..", "\u2699");
                 }
 
-                cm.Start(sender, (tag, o) =>
-                {
-                    CommandBinding_FileRepoAll(senderList, fr, tag);
-                });
+                var cm2 = DynamicContextMenu.CreateNew(
+                    menu.AddLambda((name, mi, ticket) =>
+                    {
+                        CommandBinding_FileRepoAll(senderList, fr, name);
+                    }));
+
+                cm2.Start(sender as Button);
             }
 
             if (btn == PackageContainerListControl.CustomButton.Query)

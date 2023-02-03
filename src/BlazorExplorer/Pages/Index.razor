@@ -591,6 +591,8 @@
 
     protected int _inhibitSelectNodeForPanel = 0;
 
+    public string DebugTrash = "";
+
     // IList<VisualElementGeneric> ExpandedNodes = new List<VisualElementGeneric>();
 
     // in this application: redirect SelectedNode to the DisplayElements class
@@ -890,6 +892,7 @@
                 // trigger redraw (but inhibit for plugin-redraw)
                 _inhibitSelectNodeForPanel += 1;
                 CounterRedraw += 1;
+                var s = "" + DebugTrash;
                 InvokeAsync(() => this.StateHasChanged());
                 // this.StateHasChanged();
 
@@ -1489,7 +1492,8 @@
         // access
         var cmd = args?.MenuItem?.Name?.Trim().ToLower();
         var fi = args?.RepoItem;
-        var list = args?.ContainerList;
+        var repo = args?.ContainerList;
+        var repoList = Session.PackageCentral.Repositories;
         if (args?.ContainerList == null || cmd?.HasContent() != true)
             return;
 
@@ -1498,22 +1502,203 @@
         // header of container list
         if (fi == null)
         {
-            if (cmd == "query")
+            if (cmd == "query" || cmd == "filerepoquery")
             {
-                //// start a dedicated repo select
-                //var uc = new AnyUiDialogueDataSelectFromRepository("Select from: " + list.Header);
-                //uc.Items = list.EnumerateItems().ToList();
-                //if (Session.DisplayContext.StartFlyoverModal(uc)
-                //&& uc.ResultItem != null)
-                //{
-                //    Log.Singleton.Info($"Loading from repository {list.Header} the item {uc.ResultItem.InfoLocation} ..");
-                //    // this will update already by itself
-                //    await Session?.ContainerListItemLoad(list, fi);
-                //}
+                // start a dedicated repo select
+                DebugTrash = "123";
 
-                await Session.CommandBinding_GeneralDispatch("filerepoquery",
-                    new AasxMenuItem() { Header = "FileRepoQuery", Name = "FileRepoQuery" },
-                    new AasxMenuActionTicket());
+                //var evs = AnyUiDisplayContextHtml.FindEventSession(Session.SessionId);
+                //evs.DialogueData = new AnyUiDialogueDataTextBox("Bla") ;
+                //evs.EventOpen = true;
+                //this.StateHasChanged();
+
+                //// wait modal
+                //while (!evs.EventDone) { 
+                //    await Task.Delay(1); 
+                //}
+                //evs.EventOpen = false;
+                //evs.EventDone = false;
+
+                var uc = new AnyUiDialogueDataSelectFromRepository("Select from: " + repo.Header);
+                uc.Items = repo.EnumerateItems().ToList();
+                if (await Session.DisplayContext.StartFlyoverModalAsync(uc)
+                    && uc.ResultItem != null)
+                {
+                    Log.Singleton.Info($"Loading from repository {repo.Header} the item {uc.ResultItem.InfoLocation} ..");
+                    // this will update already by itself
+                    await Session?.ContainerListItemLoad(repo, fi);
+                }
+
+                //await Session.CommandBinding_GeneralDispatch("filerepoquery",
+                //    new AasxMenuItem() { Header = "FileRepoQuery", Name = "FileRepoQuery" },
+                //    new AasxMenuActionTicket());
+            }
+
+            if (cmd == "filerepoclose")
+            {
+                if (AnyUiMessageBoxResult.OK != Session.DisplayContext.MessageBoxFlyoutShow(
+                            "Close file repository? Pending changes might be unsaved!",
+                            "AASX File Repository",
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+                    return;
+
+                if (repoList.Contains(repo))
+                {
+                    repoList.Remove(repo);
+                    update = true;
+                }
+                else
+                    Log.Singleton.Error("Error when removing repository from list of repositories."); 
+            }
+
+            if (cmd == "item-up")
+            {
+                // TODO (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase
+                int i = repoList.IndexOf(repo);
+                if (i > 0)
+                {
+                    repoList.RemoveAt(i);
+                    repoList.Insert(i - 1, repo);
+                }
+            }
+
+            if (cmd == "item-down")
+            {
+                // TODO (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase
+                int i = repoList.IndexOf(repo);
+                if (i < repoList.Count - 1)
+                {
+                    repoList.RemoveAt(i);
+                    repoList.Insert(i + 1, repo);
+                }
+            }        
+
+            if (cmd == "filereposaveas")
+            {
+                Log.Singleton.Error("FileRepoSaveAs not implemented!");
+            }
+
+            if (cmd == "filerepomakerelative")
+                if (repo is PackageContainerListLocal frl)
+                {
+                    // make sure
+                    if (AnyUiMessageBoxResult.OK != Session.DisplayContext.MessageBoxFlyoutShow(
+                            "Make filename relative to the locaton of the file repository? " +
+                            "This enables re-locating the repository.",
+                            "AASX File Repository",
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+                        return;
+
+                    if (!frl.Filename.HasContent())
+                    {
+                        Log.Singleton.Error("AASX file repository has no valid filename!");
+                        return;
+                    }
+
+                    // execute (and display)
+                    try
+                    {
+                        Log.Singleton.Info("Make AASX file names relative to {0}",
+                            System.IO.Path.GetFullPath(System.IO.Path.GetDirectoryName("" + frl.Filename)));
+                        frl.MakeFilenamesRelative();
+                        update = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(
+                            ex, $"When making AASX file names in repository relative.");
+                    }
+                }
+
+            if (cmd == "filerepoprint")
+            {
+                // try print
+                try
+                {
+                    Log.Singleton.Error("Printing not implmented.");
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "When printing, an error occurred");
+                }
+            }
+
+            if (cmd == "filerepoaddcurrent")
+            {
+                // check
+                var veAas = Session.DisplayElements.SelectedItem as VisualElementAdminShell;
+
+                var veEnv = veAas?.FindFirstParent((ve) =>
+                (ve is VisualElementEnvironmentItem vev
+                && vev.theItemType == VisualElementEnvironmentItem.ItemType.Package), includeThis: false)
+                    as VisualElementEnvironmentItem;
+
+                if (veAas == null || veAas.theAas == null || veAas.theEnv == null || veAas.thePackage == null
+                    || veEnv == null || !veEnv.thePackageSourceFn.HasContent())
+                {
+                    Session.DisplayContext.MessageBoxFlyoutShow(
+                        "No valid AAS selected. The application needs to be in edit mode. " +
+                        "Aborting.", "AASX File repository",
+                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                    return;
+                }
+
+                // generate appropriate container
+                var cnt = PackageContainerFactory.GuessAndCreateFor(
+                    null, veEnv.thePackageSourceFn, veEnv.thePackageSourceFn,
+                    overrideLoadResident: false,
+                    containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr));
+                if (cnt is PackageContainerRepoItem ri)
+                {
+                    ri.Env = veAas.thePackage;
+                    ri.CalculateIdsTagAndDesc();
+                    repo.Add(ri);
+                }
+            }
+
+            if (cmd == "filerepoaddtoserver")
+            {
+                Log.Singleton.Error("FileRepoAddToServer not implemented!");
+            }
+
+            if (cmd == "filerepomultiadd")
+            {
+                Log.Singleton.Error("FileRepoMultiAdd not implemented!");
+            }
+
+            if (cmd == "filerepoaddfromserver")
+            {
+                // read server address
+                var uc = new AnyUiDialogueDataTextBox("REST endpoint (without \"/server/listaas\"):",
+                    symbol: AnyUiMessageBoxImage.Question);
+                uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
+                Session.DisplayContext.StartFlyoverModal(uc);
+                if (!uc.Result)
+                    return;
+
+                // execute
+                try
+                {
+                    var conn = new PackageConnectorHttpRest(null, new Uri(uc.Text));
+
+                    var task = Task.Run(() => conn.GenerateRepositoryFromEndpointAsync());
+                    var items = task.Result;
+                    if (items == null || items.Count < 1)
+                    {
+                        Log.Singleton.Error($"When adding file repo items from REST server {uc.Text}," +
+                            $"the function returned NO items!");
+                        return;
+                    }
+
+                    // loop
+                    foreach (var fi2 in items)
+                        repo.Add(fi);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"When adding file repo items from REST server {uc.Text}, " +
+                        $"an error occurred");
+                }
             }
         }
 
@@ -1522,25 +1707,25 @@
         {
             if (cmd == "deletelist")
             {
-                list.Remove(fi);
+                repo.Remove(fi);
                 update = true;
             }
 
             if (cmd == "deletefromrepo")
             {
-                list.DeletePackageFromServer(fi);
+                repo.DeletePackageFromServer(fi);
                 update = true;
             }
 
             if (cmd == "moveup")
             {
-                list.MoveUp(fi);
+                repo.MoveUp(fi);
                 update = true;
             }
 
             if (cmd == "movedown")
             {
-                list.MoveDown(fi);
+                repo.MoveDown(fi);
                 update = true;
             }
 
@@ -1552,7 +1737,7 @@
 
             if (cmd == "recalc")
             {
-                await fi.LoadResidentIfPossible(list.GetFullItemLocation(fi.Location));
+                await fi.LoadResidentIfPossible(repo.GetFullItemLocation(fi.Location));
 
                 if (fi.Env?.AasEnv == null)
                 {
@@ -1566,7 +1751,7 @@
             if (cmd == "doubleclick")
             {
                 // this will update already by itself
-                await Session?.ContainerListItemLoad(list, fi);
+                await Session?.ContainerListItemLoad(repo, fi);
             }
         }
 

@@ -87,15 +87,15 @@ namespace AasxPackageExplorer
                 // context menu
                 uc.ContextMenuCreate = () =>
                 {
-                    var cm = DynamicContextMenu.CreateNew();
-                    cm.Add(new DynamicContextItem(
-                        "CLIP", "\U0001F4CB", "Copy JSON to clipboard"));
+                    var cm = DynamicContextMenu.CreateNew(
+                        new AasxMenu()
+                            .AddAction("Clip", "Copy JSON to clipboard", "\U0001F4CB"));
                     return cm;
                 };
 
-                uc.ContextMenuAction = (tag, obj) =>
+                uc.ContextMenuAction = (cmd, mi, ticket) =>
                 {
-                    if (tag == "CLIP")
+                    if (cmd == "clip")
                     {
                         var text = uc.DiaData.Text;
                         var lines = text?.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);

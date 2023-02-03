@@ -674,6 +674,42 @@ namespace AnyUi
 			//return dialogueData.Result;
 		}
 
+        public async Task<bool> StartFlyoverModalAsync(AnyUiDialogueDataBase dialogueData, Action rerender = null)
+        {
+            var evs = FindEventSession(_bi.SessionId);
+            if (dialogueData == null || evs == null)
+                return false;
+
+            var dd = evs.StartModal(dialogueData);
+
+            // trigger display
+            if (rerender != null)
+            {
+                rerender.Invoke();
+            }   
+            else
+            {
+                Program.signalNewData(
+                    new Program.NewDataAvailableArgs(
+                        Program.DataRedrawMode.None, evs.SessionId));
+            }
+
+            // wait modal
+
+            while (!evs.EventDone)
+            {
+                await Task.Delay(1);
+            }
+
+            evs.EventOpen = false;
+            evs.EventDone = false;
+
+            // make sure its closed
+            await _jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
+
+            return dd.Result;
+        }
+
         /// <summary>
         /// Think, this is deprecated
         /// </summary>

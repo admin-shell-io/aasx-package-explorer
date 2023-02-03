@@ -523,33 +523,24 @@ namespace AasxPackageExplorer
             // options
             if (sender == ButtonToolsFindOptions)
             {
-                var cm = DynamicContextMenu.CreateNew();
                 var op = TheSearchOptions;
 
-                cm.Add(new DynamicContextItem(
-                    "IGNR", "", "Ignore case", checkState: op.IsIgnoreCase));
-                cm.Add(new DynamicContextItem(
-                    "WHOL", "", "Whole word only", checkState: op.IsWholeWord));
-                cm.Add(new DynamicContextItem(
-                    "REGX", "", "Use regex", checkState: op.IsRegex));
+                var menu = new AasxMenu()
+                    .AddAction("IGNR", "Ignore case", isChecked: op.IsIgnoreCase)
+                    .AddAction("WHOL", "Whole word only", isChecked: op.IsWholeWord)
+                    .AddAction("REGX", "Use regex", isChecked: op.IsRegex)
+                    .AddSeparator()
+                    .AddAction("COLL", "Search Collection/ List", isChecked: op.SearchCollection)
+                    .AddAction("PROP", "Search Aas.Property", isChecked: op.SearchProperty)
+                    .AddAction("MLPR", "Search Multilang.Prop.", isChecked: op.SearchMultiLang)
+                    .AddAction("OTHER", "Search all other", isChecked: op.SearchOther)
+                    .AddSeparator()
+                    .AddTextBox("LANG", "", "Language:", 70, op.SearchLanguage, 70);
 
-                cm.Add(DynamicContextItem.CreateSeparator());
-
-                cm.Add(new DynamicContextItem(
-                    "COLL", "", "Search Collection/ List", checkState: op.SearchCollection));
-                cm.Add(new DynamicContextItem(
-                    "PROP", "", "Search Aas.Property", checkState: op.SearchProperty));
-                cm.Add(new DynamicContextItem(
-                    "MLPR", "", "Search Multilang.Prop.", checkState: op.SearchMultiLang));
-                cm.Add(new DynamicContextItem(
-                    "OTHER", "", "Search all other", checkState: op.SearchOther));
-
-                cm.Add(DynamicContextItem.CreateSeparator());
-                cm.Add(DynamicContextItem.CreateTextBox("LANG", "", "Language:", 70, op.SearchLanguage, 70));
-
-                cm.Start(sender as Button, (tag, obj) =>
+                var cm = DynamicContextMenu.CreateNew(menu);
+                cm.Start(sender as Button, (name, mi, ticket) =>
                 {
-                    switch (tag)
+                    switch (name.ToUpper())
                     {
                         case "IGNR": TheSearchOptions.IsIgnoreCase ^= true; break;
                         case "WHOL": TheSearchOptions.IsWholeWord ^= true; break;
@@ -559,8 +550,8 @@ namespace AasxPackageExplorer
                         case "MLPR": TheSearchOptions.SearchMultiLang ^= true; break;
                         case "OTHER": TheSearchOptions.SearchOther ^= true; break;
                         case "LANG":
-                            if (obj is string st)
-                                TheSearchOptions.SearchLanguage = st;
+                            if (mi is AasxMenuTextBox mitb)
+                                TheSearchOptions.SearchLanguage = mitb.TextValue;
                             break;
                     }
                 });

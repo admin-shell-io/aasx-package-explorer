@@ -39,96 +39,87 @@
 
 	<div style="overflow: hidden">
 
-		<form>
-			<div style="">
-				<table class="table container-list-header mb-0" id="tableHeader">
-					<tbody>
-						<tr class="">
-							<td>
-								@*  *@
-								<button type="button" class="w-100 btn btn-tiny-bl-wh"
-									@onclick='() => DotMenuRepoHeader("ContextMenu")'>									
-									&#x22EE
+		<div style="">
+			<table class="table container-list-header mb-0" id="tableHeader">
+				<tbody>
+					<tr class="">
+						<td>
+							@*  
+							<button type="button" class="w-100 btn btn-tiny-bl-wh"
+								@onclick='() => DotMenuRepoHeader("ContextMenu")'>									
+								&#x22EE
+							</button>
+						*@
+
+							<div class="dropdown">
+								<button type="button" class="w-100 btn btn-tiny-bl-wh dropdown-toggle caret-off"
+									data-toggle="dropdown">
+									&#x22ee;
 								</button>
+								<div class="dropdown-menu">
+									<RenderDropdownItems MenuItems="@(DotMenuEnumerateContextMenu(ContainerList))" 
+										OnItemSelected="(mii) => DotMenuRepoItemClicked(null, mii)" />
+								</div>
+							</div>
+						</td>
+						<td>
+							@* > *@
+							<button type="button" class="w-100 btn btn-tiny-bl-wh"
+								@onclick='() => DotMenuRepoHeader("Query")'>
+								Query
+							</button>
+						</td>
+						<td>
+							@icon
+						</td>
+						<td>
+							<div style="white-space: nowrap; min-width: 400px">
+								@("" + ContainerList?.Header)
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		@* List *@
+		<div style="">
+			<table class="table container-list-body table-hover" id="tableRepoItems">
+				<tbody>
+					@foreach (var ri in ContainerList.EnumerateItems())
+					{
+						var currRi = ri;
+						var active = (ri == _selectedEntity) ? "table-active " : "";
+						<tr class="clickable @(active)" @onclick="() => OnSelectRepoItem(currRi)" @ondblclick="@DblHandler">
+							<td>
+								<div class="dropdown">
+									<button type="button" class="btn btn-tiny-bl-wh dropdown-toggle caret-off"
+									style="height: 38px" data-toggle="dropdown">
+										&#x22ee;
+									</button>
+									<div class="dropdown-menu">
+										<RenderDropdownItems MenuItems="@(RepoItemEnumerateContextMenu(currRi))" OnItemSelected="(mii) => DotMenuRepoItemClicked(currRi, mii)"/>
+									</div>
+								</div>
 							</td>
 							<td>
-								@* > *@
-								<button type="button" class="w-100 btn btn-tiny-bl-wh"
-									@onclick='() => DotMenuRepoHeader("Query")'>
-									Query
-								</button>
+								<img src="/image/IDTA_AAS-Logo_128x115_RGB.png" height="38" alt="">
 							</td>
 							<td>
-								@icon
+								<div class="container-list-item-infos" style="width: 20vw;">
+									<MultiLineText InputString="@ri.InfoIds" />
+								</div>
 							</td>
 							<td>
-								<div style="white-space: nowrap; min-width: 400px">
-									@("" + ContainerList?.Header)
+								<div class="container-list-item-location" style="width: 30vw;">
+									<MultiLineText InputString="@(Environment.NewLine + ri.InfoLocation)" />					
 								</div>
 							</td>
 						</tr>
-					</tbody>
-				</table>
-			</div>
-		</form>
-
-		@* List *@
-		<form>
-			@* overflow: hidden *@
-			<div style="">
-				<table class="table container-list-body table-hover" id="tableRepoItems">
-					@*<thead>
-						<tr>
-							<th scope="col">Btn</th>
-							<th scope="col">Icon</th>
-							<th scope="col">Info</th>
-							<th scope="col">Path</th>
-						</tr>
-					</thead>*@
-					<tbody>
-						@foreach (var ri in ContainerList.EnumerateItems())
-						{
-							var currRi = ri;
-							var active = (ri == _selectedEntity) ? "table-active " : "";
-							<tr class="clickable @(active)" @onclick="() => OnSelectRepoItem(currRi)" @ondblclick="@DblHandler">
-								<td>
-	@*								<button class="btn btn-tiny-bl-wh" 
-										style="height: 38px"
-										@onclick="() => DotMenuRepoItem(currRi)">
-										&#x22ee;
-									</button>
-	*@
-									<div class="dropdown">
-										@* without: dropdown-toggle gives no arrow *@
-										<button type="button" class="btn btn-tiny-bl-wh dropdown-toggle caret-off"
-										style="height: 38px" data-toggle="dropdown">
-											&#x22ee;
-										</button>
-										<div class="dropdown-menu">
-											<RenderDropdownItems MenuItems="@(RepoItemEnumerateContextMenu(currRi))" OnItemSelected="(mii) => DotMenuRepoItemClicked(currRi, mii)"/>
-										</div>
-									</div>
-
-								</td>
-								<td>
-									<img src="/image/IDTA_AAS-Logo_128x115_RGB.png" height="38" alt="">
-								</td>
-								<td>
-									<div class="container-list-item-infos" style="width: 20vw;">
-										<MultiLineText InputString="@ri.InfoIds" />
-									</div>
-								</td>
-								<td>
-									<div class="container-list-item-location" style="width: 30vw;">
-										<MultiLineText InputString="@(Environment.NewLine + ri.InfoLocation)" />					
-									</div>
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			</div>
-		</form>
+					}
+				</tbody>
+			</table>
+		</div>
 
 		@* Leave some footer space for context menues *@
 		<div class="col-12 row">
@@ -173,6 +164,38 @@
 		yield return new AasxMenuItem() { Icon = "\u27f3", Header = "Re-calculate ids", Name = "Recalc" };
 		yield return new AasxMenuItem() { Icon = "\u2699", Header = "Properties", Name = "EditProperties" };
 		yield break;
+	}
+
+	protected IEnumerable<AasxMenuItemBase> DotMenuEnumerateContextMenu(PackageContainerListBase fr)
+	{
+		var menu = new AasxMenu()
+			.AddAction("FileRepoClose", "Close", icon: "\u274c");
+
+		if (!(fr is PackageContainerListLastRecentlyUsed))
+		{
+			menu.AddAction("item-up", "Move Up", icon: "\u25b2")
+				.AddAction("item-down", "Move Down", icon: "\u25bc");
+		}
+
+		menu.AddSeparator()
+			.AddAction("FileRepoSaveAs", "Save as ..", icon: "\U0001f4be")
+			.AddSeparator();
+
+		if (!(fr is PackageContainerListLastRecentlyUsed))
+		{
+			if (fr is PackageContainerListLocal)
+				menu.AddAction(
+					"FileRepoMakeRelative", "Make AASX filenames relative ..", icon: "\u2699");
+
+			menu.AddAction("FileRepoAddCurrent", "Add current AAS", icon: "\u2699")
+				.AddAction("FileRepoAddToServer", "Add AASX File to File Repository", icon: "\u2699")
+				.AddAction("FileRepoMultiAdd", "Add multiple AASX files ..", icon: "\u2699")
+				.AddAction("FileRepoAddFromServer", "Add from REST server ..", icon: "\u2699")
+				.AddAction("FileRepoPrint", "Print 2D code sheet ..", icon: "\u2699");
+		}
+
+		foreach (var mi in menu)
+			yield return mi;
 	}
 
 	protected void DotMenuRepoItemClicked(PackageContainerRepoItem ri, AasxMenuItem mii)

@@ -39,7 +39,7 @@ namespace AasxPackageExplorer
         public AnyUiDialogueDataTextEditor DiaData = new AnyUiDialogueDataTextEditor();
 
         public Func<DynamicContextMenu> ContextMenuCreate = null;
-        public Action<string, object> ContextMenuAction = null;
+        public AasxMenuActionDelegate ContextMenuAction = null;
 
         private PluginInstance pluginInstance = null;
         private Control textControl = null;

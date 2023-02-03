@@ -190,6 +190,14 @@ namespace AasxIntegrationBase
         AasxMenuActionTicket ticket);
 
     /// <summary>
+    /// Empty class to be overloaded in order to carry UI specific
+    /// display data, e.g. controls/ widgets.
+    /// </summary>
+    public class AasxMenuDisplayDataBase
+    {
+    }
+
+    /// <summary>
     /// Base class for menu items with a possible action.
     /// </summary>
     public abstract class AasxMenuItemBase
@@ -199,6 +207,11 @@ namespace AasxIntegrationBase
         /// in actions.
         /// </summary>
         public string Name = "";
+
+        /// <summary>
+        /// UI specific display data, e.g. controls/ widgets.
+        /// </summary>
+        public AasxMenuDisplayDataBase DisplayData;
 
         /// <summary>
         /// For which application is this menu item applicable.
@@ -453,28 +466,33 @@ namespace AasxIntegrationBase
         public AasxMenu AddAction(
             string name, string header,
             string help = null,
+            object icon = null,
             AasxMenuActionDelegate action = null,
             AasxMenuActionAsyncDelegate actionAsync = null,
             AasxMenuFilter filter = AasxMenuFilter.Wpf,
             string inputGesture = null,
             AasxMenuArgReqInfo reqs = AasxMenuArgReqInfo.None,
-            AasxMenuListOfArgDefs args = null)
+            AasxMenuListOfArgDefs args = null,
+            bool? isChecked = null)
         {
-            this.Add(new AasxMenuItem()
+            var mi = new AasxMenuItem()
             {
                 Name = name,
                 Header = header,
                 HelpText = help,
+                Icon = icon,
                 Action = action,
                 ActionAsync = actionAsync,
                 Filter = filter,
                 InputGesture = inputGesture,
                 RequiredInfos = reqs,
                 ArgDefs = args
-            });
+            };
+            if (isChecked.HasValue)
+                mi.IsChecked = isChecked.Value;
+            this.Add(mi);
             return this;
         }
-
 
         public AasxMenu AddSeparator(AasxMenuFilter filter = AasxMenuFilter.WpfBlazor)
         {
@@ -509,6 +527,31 @@ namespace AasxIntegrationBase
                 Name = name,
                 InputGesture = gesture
             });
+            return this;
+        }
+
+        public AasxMenu AddTextBox(
+            string name, object icon, string header,
+            double headerWidth, string textValue, double textWidth)
+        {
+            this.Add(new AasxMenuTextBox()
+            {
+                Name = name,
+                Icon = icon,
+                Header = header,
+                HeaderWidth = headerWidth,
+                TextValue = textValue,
+                TextWidth = textWidth
+            });
+            return this;
+        }
+
+        public AasxMenu AddLambda(
+            AasxMenuActionDelegate defaultAction = null,
+            AasxMenuActionAsyncDelegate defaultActionAsync = null)
+        {
+            DefaultAction ??= defaultAction;
+            DefaultActionAsync ??= defaultActionAsync;
             return this;
         }
 
@@ -627,6 +670,28 @@ namespace AasxIntegrationBase
     /// </summary>
     public class AasxMenuSeparator : AasxMenuItemBase
     {
+    }
+
+    /// <summary>
+    /// Carries additional information to allow rendering
+    /// of UI specific menu items having a text box inside.
+    /// </summary>
+    public class AasxMenuTextBox : AasxMenuItem
+    {
+        /// <summary>
+        /// Must be given. Width of the header, before the text box starts.
+        /// </summary>
+        public double HeaderWidth = 100.0;
+
+        /// <summary>
+        /// Value of the edited text string.
+        /// </summary>
+        public string TextValue;
+
+        /// <summary>
+        /// Must be given. Width of the text box, after the header.
+        /// </summary>
+        public double TextWidth = 100.0;
     }
 
     /// <summary>
