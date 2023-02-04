@@ -129,7 +129,7 @@ namespace AasxPackageExplorer
                         // executing
                         _aasxScript.StartEnginBackground(
                             uc.DiaData.Text, Options.Curr.ScriptLoglevel,
-                            _mainMenu?.Menu, this);
+                            MainMenu?.Menu, this);
                     }
                     catch (Exception ex)
                     {
@@ -180,7 +180,7 @@ namespace AasxPackageExplorer
                         // executing
                         _aasxScript.StartEnginBackground(
                             Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel,
-                            _mainMenu?.Menu, this);
+                            MainMenu?.Menu, this);
                     }
                     catch (Exception ex)
                     {
@@ -508,7 +508,7 @@ namespace AasxPackageExplorer
             }
 
             // name of tool, find it
-            var foundMenu = _mainMenu.Menu;
+            var foundMenu = MainMenu.Menu;
             var mi = foundMenu.FindName(toolName);
             if (mi == null)
             {

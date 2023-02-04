@@ -636,13 +636,13 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "editkey")
-                _mainMenu?.SetChecked("EditMenu", _mainMenu?.IsChecked("EditMenu") != true);
+                MainMenu?.SetChecked("EditMenu", MainMenu?.IsChecked("EditMenu") != true);
 
             if (cmd == "hintskey")
-                _mainMenu?.SetChecked("HintsMenu", _mainMenu?.IsChecked("HintsMenu") != true);
+                MainMenu?.SetChecked("HintsMenu", MainMenu?.IsChecked("HintsMenu") != true);
 
             if (cmd == "showirikey")
-                _mainMenu?.SetChecked("ShowIriMenu", _mainMenu?.IsChecked("ShowIriMenu") != true);
+                MainMenu?.SetChecked("ShowIriMenu", MainMenu?.IsChecked("ShowIriMenu") != true);
 
             if (cmd == "editmenu" || cmd == "editkey"
                 || cmd == "hintsmenu" || cmd == "hintskey"
@@ -653,12 +653,12 @@ namespace AasxPackageExplorer
 
                 if (ticket.ScriptMode && cmd == "editmenu" && ticket["Mode"] is bool editMode)
                 {
-                    _mainMenu?.SetChecked("EditMenu", editMode);
+                    MainMenu?.SetChecked("EditMenu", editMode);
                 }
 
                 if (ticket.ScriptMode && cmd == "hintsmenu" && ticket["Mode"] is bool hintsMode)
                 {
-                    _mainMenu?.SetChecked("HintsMenu", hintsMode);
+                    MainMenu?.SetChecked("HintsMenu", hintsMode);
                 }
 
                 // try to remember current selected data object
@@ -906,7 +906,7 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "eventsshowlogkey")
-                _mainMenu?.SetChecked("EventsShowLogMenu", _mainMenu?.IsChecked("EventsShowLogMenu") != true);
+                MainMenu?.SetChecked("EventsShowLogMenu", MainMenu?.IsChecked("EventsShowLogMenu") != true);
 
             if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
             {
@@ -929,7 +929,7 @@ namespace AasxPackageExplorer
 
         public bool PanelConcurrentCheckIsVisible()
         {
-            return _mainMenu?.IsChecked("EventsShowLogMenu") == true;
+            return MainMenu?.IsChecked("EventsShowLogMenu") == true;
         }
 
         public void PanelConcurrentSetVisibleIfRequired(

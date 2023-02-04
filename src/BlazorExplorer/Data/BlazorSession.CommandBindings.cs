@@ -115,6 +115,7 @@ namespace BlazorUI.Data
             // the modal dialogs working
             //
 
+            // REFACTOR: the same
             if (cmd == "open" || cmd == "openaux")
             {
                 // start
@@ -146,7 +147,53 @@ namespace BlazorUI.Data
                         throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
                 }
             }
-        }
+
+            // REFACTOR: the same
+			if (cmd == "save")
+			{
+				// start
+				ticket.StartExec();
+
+				// open?
+				if (!PackageCentral.MainStorable)
+				{
+					Logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
+					return;
+				}
+
+				// do
+				try
+				{
+					// save
+					await PackageCentral.MainItem.SaveAsAsync(runtimeOptions: PackageCentral.CentralRuntimeOptions);
+
+					// backup
+					if (Options.Curr.BackupDir != null)
+						PackageCentral.MainItem.Container.BackupInDir(
+							System.IO.Path.GetFullPath(Options.Curr.BackupDir),
+							Options.Curr.BackupFiles,
+							PackageContainerBase.BackupType.FullCopy);
+
+					// may be was saved to index
+					if (PackageCentral?.MainItem?.Container?.Env?.AasEnv != null)
+						PackageCentral.MainItem.Container.SignificantElements
+							= new IndexOfSignificantAasElements(PackageCentral.MainItem.Container.Env.AasEnv);
+
+					// may be was saved to flush events
+					CheckIfToFlushEvents();
+
+					// as saving changes the structure of pending supplementary files, re-display
+					RedrawAllAasxElements(keepFocus: true);
+				}
+				catch (Exception ex)
+				{
+					Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
+					return;
+				}
+
+				Log.Singleton.Info("AASX saved successfully: {0}", PackageCentral.MainItem.Filename);
+			}
+		}
 
         // ---------------------------------------------------------------------------
         #region Utilities
