@@ -133,6 +133,17 @@ namespace AnyUi
         /// </summary>
         public string ProposeFileName;
 
+        /// <summary>
+        /// If true will offer the user to select a user file (only Blazor) or
+        /// a local file.
+        /// </summary>
+        public bool AllowUserFiles;
+
+        /// <summary>
+        /// True, if a user file name was selected instead of a local file.
+        /// </summary>
+        public bool ResultUserFile;
+
         public AnyUiDialogueDataOpenFile(
             string caption = "",
             double? maxWidth = null,

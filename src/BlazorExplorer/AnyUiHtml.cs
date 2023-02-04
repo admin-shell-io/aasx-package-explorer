@@ -223,6 +223,7 @@ namespace AnyUi
                 sessions.Add(s);
             }
         }
+        
         public static void DeleteEventSession(int sessionNumber)
         {
             lock (staticHtmlDotnetLock)
@@ -240,6 +241,7 @@ namespace AnyUi
                     sessions.Remove(found);
             }
         }
+        
         public static AnyUiHtmlEventSession FindEventSession(int sessionNumber)
         {
             AnyUiHtmlEventSession found = null;
@@ -787,5 +789,6 @@ namespace AnyUi
                 _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", cb.Text);
             }
         }
+
     }
 }

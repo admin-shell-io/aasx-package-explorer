@@ -346,6 +346,16 @@ namespace AasxPackageLogic
             Cmd = "-write-all-json", Arg = "<path>")]
         public string WriteDefaultOptionsFN = null;
 
+        [OptionDescription(Description =
+            "If not null points to the dir, where per user a directory is provided to load/ save files.",
+            Cmd = "-user-dir")]
+        public string UserDir = null;
+
+        [OptionDescription(Description =
+            "Designates the user name. Only [A-Za-z0-9_] allowed. Must be not null in order to access user files.",
+            Cmd = "-user-name")]
+        public string UserName = null;
+
         /// <summary>
         /// Enumeration of generic accent color names
         /// </summary>

@@ -217,8 +217,6 @@ namespace AasxPackageExplorer
                     return;
 
                 // ok
-                RememberForInitialDirectory(fn);
-
                 switch (cmd)
                 {
                     case "open":
@@ -1911,6 +1909,7 @@ namespace AasxPackageExplorer
             if (sourceFn?.HasContent() != true)
             {
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
                 if (caption != null)
@@ -1920,9 +1919,12 @@ namespace AasxPackageExplorer
                 if (filter != null)
                     dlg.Filter = filter;
 
-                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 if (true == dlg.ShowDialog())
+                {
+                    RememberForInitialDirectory(sourceFn);
                     sourceFn = dlg.FileName;
+                }
+                
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
             }
 
@@ -1950,7 +1952,6 @@ namespace AasxPackageExplorer
             if (MenuSelectOpenFilename(ticket, argName, caption, proposeFn, filter, out var sourceFn, msg))
             {
                 ticket[argName] = sourceFn;
-                RememberForInitialDirectory(sourceFn);
                 return true;
             }
             return false;

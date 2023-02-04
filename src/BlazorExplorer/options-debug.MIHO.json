@@ -67,6 +67,8 @@
     "SingleValueFirstTime": true,
     "SingleValueTopic": "Values/aas/{aas}/sm/{sm}/{path}"
   },
+  "UserDir": ".\\userdata",
+  "UserName" : "miho",
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],

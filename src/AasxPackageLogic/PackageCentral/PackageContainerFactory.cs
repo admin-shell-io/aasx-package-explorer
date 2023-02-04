@@ -60,6 +60,16 @@ namespace AasxPackageLogic.PackageCentral
             // Log?
             runtimeOptions?.Log?.Info($"Trying to guess package container for {location} ..");
 
+            // starts with user file scheme
+            if (ll.StartsWith(PackageContainerUserFile.Scheme))
+            {
+				return new PackageContainerGuess()
+				{
+					Location = location.Substring(PackageContainerUserFile.Scheme.Length),
+					GuessedType = typeof(PackageContainerUserFile)
+				};
+			}
+
             // starts with http ?
             if (ll.StartsWith("http://") || ll.StartsWith("https://"))
             {
@@ -99,7 +109,7 @@ namespace AasxPackageLogic.PackageCentral
 
             // if file, try to open (might throw exceptions!)
             if (fi != null)
-                // seems to be a valid (possible) file
+                // seems to be a valid (possible) local file
                 return new PackageContainerGuess()
                 {
                     Location = location,
@@ -183,8 +193,17 @@ namespace AasxPackageLogic.PackageCentral
                 return cnt;
             }
 
-            // check FileInfo for (possible?) local file
-            FileInfo fi = null;
+			if (guess.GuessedType == typeof(PackageContainerUserFile))
+			{
+				var cnt = await PackageContainerUserFile.CreateAndLoadAsync(
+							packageCentral, location, fullItemLocation,
+							overrideLoadResident, takeOver, 
+							containerOptions, runtimeOptions);
+				return cnt;
+			}
+
+			// check FileInfo for (possible?) local file
+			FileInfo fi = null;
             try
             {
                 fi = new FileInfo(location);

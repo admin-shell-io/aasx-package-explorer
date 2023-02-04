@@ -1533,6 +1533,9 @@
         {
             if (cmd == "query" || cmd == "filerepoquery")
             {
+                await Session.CommandBinding_GeneralDispatch("open", new AasxMenuItem(), new AasxMenuActionTicket());
+                return;
+
                 var uc = new AnyUiDialogueDataSelectFromRepository("Select from: " + repo.Header);
                 uc.Items = repo.EnumerateItems().ToList();
                 if (await Session.DisplayContext.StartFlyoverModalAsync(uc)

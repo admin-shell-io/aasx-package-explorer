@@ -109,6 +109,123 @@ namespace BlazorUI.Data
                 Log.Singleton.Info("Time is " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
             }
 
+            //
+            // The following commands should be ideally shared with WPF PackageExplorer
+            //
+
+            if (cmd == "open" || cmd == "openaux")
+            {
+                // start
+                ticket.StartExec();
+
+                // filename
+                var fn = (await MenuSelectOpenFilenameAsync(
+                    ticket, "File",
+                    "Open AASX",
+                    null,
+                    "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
+                        "AAS JSON file (*.json)|*.json|All files (*.*)|*.*",
+                    "Open AASX: No valid filename."))?.TargetFileName;
+                if (fn == null)
+                    return;
+
+                switch (cmd)
+                {
+                    case "open":
+                        UiLoadPackageWithNew(
+                            PackageCentral.MainItem, null, fn, onlyAuxiliary: false,
+                            storeFnToLRU: fn);
+                        break;
+                    case "openaux":
+                        UiLoadPackageWithNew(
+                            PackageCentral.AuxItem, null, fn, onlyAuxiliary: true);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
+                }
+            }
         }
+
+        // ---------------------------------------------------------------------------
+        #region Utilities
+
+        private string lastFnForInitialDirectory = null;
+        public void RememberForInitialDirectory(string fn)
+        {
+            this.lastFnForInitialDirectory = fn;
+        }
+
+        /// <summary>
+        /// Selects a filename to read either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public async Task<AnyUiDialogueDataOpenFile> MenuSelectOpenFilenameAsync(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeFn,
+            string filter,
+            string msg)
+        {
+            // filename
+            var sourceFn = ticket?[argName] as string;
+
+            if (sourceFn?.HasContent() != true)
+            {
+                var uc = new AnyUiDialogueDataOpenFile(
+                    caption: caption, 
+                    message: "Select filename by uploading it or from stored user files.",
+                    filter: filter, proposeFn: proposeFn);
+                uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
+
+				if (await DisplayContext.StartFlyoverModalAsync(uc))
+                {
+                    // house keeping
+                    RememberForInitialDirectory(uc.TargetFileName);
+
+                    // modify
+                    if (uc.ResultUserFile)
+                        uc.TargetFileName = PackageContainerUserFile.Scheme + uc.TargetFileName;
+
+                    // ok
+					return uc;
+                }
+            }
+
+            if (sourceFn?.HasContent() != true)
+            {
+                Logic.LogErrorToTicketOrSilent(ticket, msg);
+                return null;
+            }
+
+            return new AnyUiDialogueDataOpenFile()
+            {
+                OriginalFileName = sourceFn,
+                TargetFileName = sourceFn
+            };
+        }
+
+        /// <summary>
+        /// If ticket does not contain the filename named by <c>argName</c>,
+        /// read it by the user.
+        /// </summary>
+        public async Task<bool> MenuSelectOpenFilenameToTicketAsync(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeFn,
+            string filter,
+            string msg)
+        {
+            var uc = await MenuSelectOpenFilenameAsync(ticket, argName, caption, proposeFn, filter, msg);
+            if (uc.Result)
+            {
+                ticket[argName] = uc.TargetFileName;                
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
     }
 }

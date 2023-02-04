@@ -3,6 +3,8 @@
 @using AnyUi
 @using BlazorUI.Data
 @using BlazorInputFile
+@using AasxPackageLogic
+@using AasxPackageLogic.PackageCentral
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.BlazorSession bi
 
@@ -19,12 +21,32 @@
 			<span aria-hidden="true">&times;</span>
 		</button>
 	</div>
-	<div class="modal-body">
+	<div class="modal-body my-3 row d-flex justify-content-center">
 		<h5>
 			@ddof.Message
 		</h5>
 
-		<div class="drag-drop-zone">
+		@if (ddof.AllowUserFiles)
+		{
+			<span class="col-10 mt-4 px-0">User files:</span>
+			<div class="dropdown col-md-10 px-0">
+				<button class="btn btn btn-secondary dropdown-toggle" 
+					style="width: 100%"
+					type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+					@((_selectedUserFile != null) ? _selectedUserFile : "Select user file ..")
+				</button>
+				<ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton1">
+					@foreach (var ufn in PackageContainerUserFile.EnumerateUserFiles("*.aasx").ToList())
+					{
+						var currUfn = ufn; // save iteration variable
+						<li><a class="dropdown-item" style="display: inline-block; width: 100%" @onclick="() => SetUserFileName(currUfn)">@(currUfn)</a></li>
+					}
+				</ul>
+			</div>
+		}
+
+		<span class="col-10 mt-4 px-0">Local files:</span>
+		<div class="drag-drop-zone col-md-10 mt-4 mx-2">			
 			<BlazorInputFile.InputFile OnChange="HandleFileSelected2" />
 			@status
 		</div>
@@ -48,9 +70,24 @@
 	[Parameter]
 	public AnyUiDialogueDataBase DialogueData { get; set; }
 
+	protected string _selectedUserFile = null;
+
 	const string DefaultStatus = "Drop a file here to upload it, or click to choose a file";
 	const int MaxFileSize = 500 * 1024 * 1024; // 500MB
 	string status = DefaultStatus;
+
+	protected void SetUserFileName(string ufn)
+	{
+		_selectedUserFile = ufn;
+
+		if (DialogueData is AnyUiDialogueDataOpenFile ddof)
+		{
+			ddof.ResultUserFile = true;
+			ddof.OriginalFileName = ufn;
+			ddof.TargetFileName = ufn;
+			LeaveResult(true);
+		}
+	}
 
 	async Task HandleFileSelected2(IFileListEntry[] files)
 	{
@@ -79,6 +116,7 @@
 
 				if (DialogueData is AnyUiDialogueDataOpenFile ddof)
 				{
+					ddof.ResultUserFile = false;
 					ddof.OriginalFileName = file.Name;
 					ddof.TargetFileName = fn;
 					status = System.IO.Path.GetFileName(file.Name) + " uploaded. " + DefaultStatus;
