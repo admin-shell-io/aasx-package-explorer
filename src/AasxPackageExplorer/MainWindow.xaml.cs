@@ -70,7 +70,7 @@ namespace AasxPackageExplorer
 		/// <summary>
 		/// This symbol is only a link to the abstract main-windows class.
 		/// </summary>
-		public PackageCentral _packageCentral
+		public PackageCentral PackageCentral
         {
             get => _logic?.PackageCentral;
             // set { _logic ??= new MainWindowDispatch(); _logic.PackageCentral = value; }
@@ -180,10 +180,10 @@ namespace AasxPackageExplorer
             var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
 
             var t = "AASX Package Explorer V3RC02";  //TODO:jtikekar remove V3RC02
-            if (_packageCentral.MainAvailable)
-                t += " - " + _packageCentral.MainItem.ToString();
-            if (_packageCentral.AuxAvailable)
-                t += " (auxiliary AASX: " + _packageCentral.AuxItem.ToString() + ")";
+            if (PackageCentral.MainAvailable)
+                t += " - " + PackageCentral.MainItem.ToString();
+            if (PackageCentral.AuxAvailable)
+                t += " (auxiliary AASX: " + PackageCentral.AuxItem.ToString() + ")";
             this.Title = t;
 
 #if _log_times
@@ -196,7 +196,7 @@ namespace AasxPackageExplorer
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
-                _packageCentral, PackageCentral.Selector.Main, _mainMenu?.IsChecked("EditMenu") == true,
+                PackageCentral, PackageCentral.Selector.Main, _mainMenu?.IsChecked("EditMenu") == true,
                 lazyLoadingFirst: true);
 
             // ok .. try re-focus!!
@@ -296,7 +296,7 @@ namespace AasxPackageExplorer
                     if (currentFlyoutControl != null && !(currentFlyoutControl is IntegratedConnectFlyout))
                         return AnyUiMessageBoxResult.Cancel;
                     if (currentFlyoutControl == null)
-                        StartFlyover(new IntegratedConnectFlyout(_packageCentral, "Connecting .."));
+                        StartFlyover(new IntegratedConnectFlyout(PackageCentral, "Connecting .."));
 
                     // ok -- perform dialogue in dedicated function / frame
                     var ucic = currentFlyoutControl as IntegratedConnectFlyout;
@@ -343,7 +343,7 @@ namespace AasxPackageExplorer
                 if (info == null)
                     info = loadLocalFilename;
                 Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                if (!packItem.Load(_packageCentral, loadLocalFilename, loadLocalFilename,
+                if (!packItem.Load(PackageCentral, loadLocalFilename, loadLocalFilename,
                     overrideLoadResident: true,
                     PackageContainerOptionsBase.CreateDefault(Options.Curr)))
                 {
@@ -404,7 +404,7 @@ namespace AasxPackageExplorer
             // record in LRU?
             try
             {
-                var lru = _packageCentral?.Repositories?.FindLRU();
+                var lru = PackageCentral?.Repositories?.FindLRU();
                 if (lru != null && storeFnToLRU.HasContent())
                     lru.Push(packItem?.Container as PackageContainerRepoItem, storeFnToLRU);
             }
@@ -470,11 +470,11 @@ namespace AasxPackageExplorer
         public bool UiCheckIfActivateLoadedNavTo()
         {
             // access
-            if (_packageCentral.Main?.AasEnv == null || this.DisplayElements == null)
+            if (PackageCentral.Main?.AasEnv == null || this.DisplayElements == null)
                 return false;
 
             // use convenience function
-            foreach (var sm in _packageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
+            foreach (var sm in PackageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
             {
                 // check for ReferenceElement
                 var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
@@ -487,7 +487,7 @@ namespace AasxPackageExplorer
                 var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(navTo.Value);
 
                 // lookup business objects
-                var bo = _packageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
+                var bo = PackageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
                 if (bo == null)
                     return false;
 
@@ -521,10 +521,10 @@ namespace AasxPackageExplorer
         public void UiAssertFileRepository(bool visible)
         {
             // ALWAYS assert an accessible repo (even if invisble)
-            if (_packageCentral.Repositories == null)
+            if (PackageCentral.Repositories == null)
             {
-                _packageCentral.Repositories = new PackageContainerListOfList();
-                RepoListControl.RepoList = _packageCentral.Repositories;
+                PackageCentral.Repositories = new PackageContainerListOfList();
+                RepoListControl.RepoList = PackageCentral.Repositories;
             }
 
             if (!visible)
@@ -552,7 +552,7 @@ namespace AasxPackageExplorer
             // update element view?
             _dynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                _packageCentral, _displayContext, 
+                PackageCentral, _displayContext, 
                 entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
                 flyoutProvider: this,
                 appEventProvider: this,
@@ -628,7 +628,7 @@ namespace AasxPackageExplorer
 
             // the AAS will cause some more visual effects
             var tvlaas = DisplayElements.SelectedItem as VisualElementAdminShell;
-            if (_packageCentral.MainAvailable && tvlaas != null && tvlaas.theAas != null && tvlaas.theEnv != null)
+            if (PackageCentral.MainAvailable && tvlaas != null && tvlaas.theAas != null && tvlaas.theEnv != null)
             {
                 // AAS
                 // update graphic left
@@ -653,10 +653,10 @@ namespace AasxPackageExplorer
                     try
                     {
                         // identify which stream to use..
-                        if (_packageCentral.MainAvailable)
+                        if (PackageCentral.MainAvailable)
                             try
                             {
-                                using (var thumbStream = _packageCentral.Main.GetLocalThumbnailStream())
+                                using (var thumbStream = PackageCentral.Main.GetLocalThumbnailStream())
                                 {
                                     // load image
                                     if (thumbStream != null)
@@ -715,7 +715,7 @@ namespace AasxPackageExplorer
 
             // for all, prepare the display
             PrepareDispEditEntity(
-                _packageCentral.Main,
+                PackageCentral.Main,
                 DisplayElements.SelectedItems,
                  _mainMenu?.IsChecked("EditMenu") == true,
                  _mainMenu?.IsChecked("HintsMenu") == true,
@@ -731,7 +731,7 @@ namespace AasxPackageExplorer
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // basic AnyUI handling
-			_displayContext = new AnyUiDisplayContextWpf(this, _packageCentral);
+			_displayContext = new AnyUiDisplayContextWpf(this, PackageCentral);
             _logic.AnyUiContext = _displayContext;
             _logic.MainWindow = this;
 
@@ -797,10 +797,10 @@ namespace AasxPackageExplorer
             ToolFindReplace.SetProgressBar += SetProgressBar;
 
             // Package Central starting ..
-            _packageCentral.CentralRuntimeOptions = UiBuildRuntimeOptionsForMainAppLoad();
+            PackageCentral.CentralRuntimeOptions = UiBuildRuntimeOptionsForMainAppLoad();
 
             // start with empty repository and load, if given by options
-            RepoListControl.PackageCentral = _packageCentral;
+            RepoListControl.PackageCentral = PackageCentral;
             RepoListControl.FlyoutProvider = this;
             RepoListControl.ManageVisuElems = DisplayElements;
             this.UiAssertFileRepository(visible: false);
@@ -815,7 +815,7 @@ namespace AasxPackageExplorer
                 if (System.IO.File.Exists(lruFn))
                 {
                     var lru = PackageContainerListLastRecentlyUsed.Load<PackageContainerListLastRecentlyUsed>(lruFn);
-                    _packageCentral?.Repositories.Add(lru);
+                    PackageCentral?.Repositories.Add(lru);
                 }
             }
             catch (Exception ex)
@@ -830,7 +830,7 @@ namespace AasxPackageExplorer
                 if (fr2 != null)
                 {
                     this.UiAssertFileRepository(visible: true);
-                    _packageCentral.Repositories.AddAtTop(fr2);
+                    PackageCentral.Repositories.AddAtTop(fr2);
                 }
             }
 
@@ -891,19 +891,19 @@ namespace AasxPackageExplorer
                     try
                     {
                         var container = await PackageContainerFactory.GuessAndCreateForAsync(
-                            _packageCentral,
+                            PackageCentral,
                             location,
                             location,
                             overrideLoadResident: true,
                             takeOver: fi,
                             fi.ContainerList,
                             containerOptions: copts,
-                            runtimeOptions: _packageCentral.CentralRuntimeOptions);
+                            runtimeOptions: PackageCentral.CentralRuntimeOptions);
 
                         if (container == null)
                             Log.Singleton.Error($"Failed to load AASX from {location}");
                         else
-                            UiLoadPackageWithNew(_packageCentral.MainItem,
+                            UiLoadPackageWithNew(PackageCentral.MainItem,
                                 takeOverContainer: container, onlyAuxiliary: false,
                                 storeFnToLRU: location);
 
@@ -939,7 +939,7 @@ namespace AasxPackageExplorer
                         var newRepo = UiLoadFileRepository(fn);
                         if (newRepo != null)
                         {
-                            _packageCentral.Repositories.AddAtTop(newRepo);
+                            PackageCentral.Repositories.AddAtTop(newRepo);
                         }
                         // no more files ..
                         return;
@@ -949,7 +949,7 @@ namespace AasxPackageExplorer
                     if (fr != null && ext == ".aasx")
                     {
                         // add?
-                        fr.AddByAasxFn(_packageCentral, fn);
+                        fr.AddByAasxFn(PackageCentral, fn);
                     }
                 }
             };
@@ -970,7 +970,7 @@ namespace AasxPackageExplorer
             _mainMenu?.SetChecked("CompressEvents", Options.Curr.CompressEvents);
 
             // the UI application might receive events from items in the package central
-            _packageCentral.ChangeEventHandler = (data) =>
+            PackageCentral.ChangeEventHandler = (data) =>
             {
                 if (data.Reason == PackCntChangeEventReason.Exception)
                     Log.Singleton.Info("PackageCentral events: " + data.Info);
@@ -982,7 +982,7 @@ namespace AasxPackageExplorer
             Log.Singleton.Info("Application started ..");
 
             // start with a new file
-            _packageCentral.MainItem.New();
+            PackageCentral.MainItem.New();
             RedrawAllAasxElements();
 
             // pump all pending log messages (from plugins) into the
@@ -999,17 +999,17 @@ namespace AasxPackageExplorer
                         $"from {location} into container");
 
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
-                        _packageCentral,
+                        PackageCentral,
                         location,
                         location,
                         overrideLoadResident: true,
                         containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr),
-                        runtimeOptions: _packageCentral.CentralRuntimeOptions);
+                        runtimeOptions: PackageCentral.CentralRuntimeOptions);
 
                     if (container == null)
                         Log.Singleton.Error($"Failed to auto-load AASX from {location}");
                     else
-                        UiLoadPackageWithNew(_packageCentral.MainItem,
+                        UiLoadPackageWithNew(PackageCentral.MainItem,
                             takeOverContainer: container, onlyAuxiliary: false, indexItems: true);
 
                     Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
@@ -1228,7 +1228,7 @@ namespace AasxPackageExplorer
                 {
                     // try to find possible environments containing the asset and try making
                     // replacement
-                    foreach (var pe in _packageCentral.GetAllPackageEnv())
+                    foreach (var pe in PackageCentral.GetAllPackageEnv())
                     {
                         if (pe?.AasEnv?.AssetAdministrationShells == null)
                             continue;
@@ -1340,7 +1340,7 @@ namespace AasxPackageExplorer
             Aas.Reference requireReferable = null)
         {
             // access single file repo
-            var fileRepo = _packageCentral.Repositories.FindRepository(fi);
+            var fileRepo = PackageCentral.Repositories.FindRepository(fi);
             if (fileRepo == null)
                 return null;
 
@@ -1355,13 +1355,13 @@ namespace AasxPackageExplorer
             {
                 Log.Singleton.Info($"Auto-load file from repository {location} into container");
                 container = await PackageContainerFactory.GuessAndCreateForAsync(
-                    _packageCentral,
+                    PackageCentral,
                     location,
                     location,
                     overrideLoadResident: true,
                     null, null,
                     PackageContainerOptionsBase.CreateDefault(Options.Curr),
-                    runtimeOptions: _packageCentral.CentralRuntimeOptions);
+                    runtimeOptions: PackageCentral.CentralRuntimeOptions);
             }
             catch (Exception ex)
             {
@@ -1404,7 +1404,7 @@ namespace AasxPackageExplorer
                     fileRepo.StartAnimation(fi, PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
                     // activate
-                    UiLoadPackageWithNew(_packageCentral.MainItem,
+                    UiLoadPackageWithNew(PackageCentral.MainItem,
                         takeOverContainer: container, onlyAuxiliary: false);
 
                     Log.Singleton.Info($"Successfully loaded AASX {location}");
@@ -1487,22 +1487,22 @@ namespace AasxPackageExplorer
                 {
                     // try to find a business object in the package
                     object bo = null;
-                    if (_packageCentral.MainAvailable && _packageCentral.Main.AasEnv != null)
-                        bo = _packageCentral.Main.AasEnv.FindReferableByReference(work);
+                    if (PackageCentral.MainAvailable && PackageCentral.Main.AasEnv != null)
+                        bo = PackageCentral.Main.AasEnv.FindReferableByReference(work);
 
                     // if not, may be in aux package
-                    if (bo == null && _packageCentral.Aux != null && _packageCentral.Aux.AasEnv != null)
-                        bo = _packageCentral.Aux.AasEnv.FindReferableByReference(work);
+                    if (bo == null && PackageCentral.Aux != null && PackageCentral.Aux.AasEnv != null)
+                        bo = PackageCentral.Aux.AasEnv.FindReferableByReference(work);
 
                     // if not, may look into the AASX file repo
-                    if (bo == null && _packageCentral.Repositories != null)
+                    if (bo == null && PackageCentral.Repositories != null)
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
                         if (work.Keys[0].Type == Aas.KeyTypes.GlobalReference) //TODO: jtikekar KeyTypes.AssetInformation
-                            fi = _packageCentral.Repositories.FindByAssetId(work.Keys[0].Value.Trim());
+                            fi = PackageCentral.Repositories.FindByAssetId(work.Keys[0].Value.Trim());
                         if (work.Keys[0].Type == Aas.KeyTypes.AssetAdministrationShell)
-                            fi = _packageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());
+                            fi = PackageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());
 
                         var boInfo = await LoadFromFileRepository(fi, work);
                         bo = boInfo?.BusinessObject;
@@ -1617,7 +1617,7 @@ namespace AasxPackageExplorer
                 if (evSelectEntity != null)
                 {
                     var uc = new SelectAasEntityFlyout(
-                        _packageCentral, PackageCentral.Selector.MainAuxFileRepo,
+                        PackageCentral, PackageCentral.Selector.MainAuxFileRepo,
                         evSelectEntity.filterEntities);
                     this.StartFlyoverModal(uc);
                     if (uc.DiaData.ResultKeys != null)
@@ -1645,7 +1645,7 @@ namespace AasxPackageExplorer
                         dlg = new Microsoft.Win32.SaveFileDialog();
                     else
                         dlg = new Microsoft.Win32.OpenFileDialog();
-                    dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+                    dlg.InitialDirectory = DetermineInitialDirectory(PackageCentral.MainItem.Filename);
                     if (fileSel.Title != null)
                         dlg.Title = fileSel.Title;
                     if (fileSel.FileName != null)
@@ -1791,7 +1791,7 @@ namespace AasxPackageExplorer
                             {
                                 Change = new PackCntChangeEventData()
                                 {
-                                    Container = _packageCentral.MainItem.Container,
+                                    Container = PackageCentral.MainItem.Container,
                                     Reason = PackCntChangeEventReason.ValueUpdateSingle,
                                     ThisElem = prop2,
                                     ParentElem = prop2?.Parent,
@@ -1991,7 +1991,7 @@ namespace AasxPackageExplorer
 
                     // emit it to PackageCentral or to buffer?
                     if (directEmit)
-                        _packageCentral?.PushEvent(ev);
+                        PackageCentral?.PushEvent(ev);
                     else
                         _eventCompressor?.Push(ev);
                 }
@@ -2003,7 +2003,7 @@ namespace AasxPackageExplorer
         private void MainTimer_PeriodicalTaskForSelectedEntity()
         {
             // some container options are required
-            var copts = _packageCentral?.MainItem?.Container?.ContainerOptions;
+            var copts = PackageCentral?.MainItem?.Container?.ContainerOptions;
 
             //
             // Investigate on Update Value Events
@@ -2058,7 +2058,7 @@ namespace AasxPackageExplorer
                                 emptyIsTrue: false, matchMode: MatchMode.Relaxed))
                             {
                                 // take a shortcut
-                                if (_packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp
+                                if (PackageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp
                                     && cntHttp.ConnectorPrimary is PackageConnectorHttpRest connRest)
                                 {
                                     Task.Run(async () =>
@@ -2112,7 +2112,7 @@ namespace AasxPackageExplorer
                 && Options.Curr.StayConnectOptions.HasContent()
                 && Options.Curr.StayConnectOptions.ToUpper().Contains("REST-QUEUE")
                 && !_eventHandling.GetEventsPending
-                && _packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp2
+                && PackageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp2
                 && cntHttp2.ConnectorPrimary is PackageConnectorHttpRest connRest2
                 && (DateTime.Now - _eventHandling.LastQueuedEventRequest).TotalMilliseconds > copts.UpdatePeriod)
             {
@@ -2164,7 +2164,7 @@ namespace AasxPackageExplorer
                     break;
 
                 // access
-                var ev = _packageCentral?.EventBufferEditor?.PopEvent();
+                var ev = PackageCentral?.EventBufferEditor?.PopEvent();
                 if (ev == null)
                     break;
 
@@ -2183,7 +2183,7 @@ namespace AasxPackageExplorer
                 Plugins.PushEventIntoPlugins(ev);
 
                 // to be applicable, the event message Observable has to relate into Main's environment
-                var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
+                var foundObservable = PackageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
                 if (foundObservable == null)
                     return;
 
@@ -2226,12 +2226,12 @@ namespace AasxPackageExplorer
             await MainTimer_HandleEntityPanel();
             await MainTimer_HandleApplicationEvents();
 
-            if (_packageCentral?.MainItem?.Container?.SignificantElements != null)
+            if (PackageCentral?.MainItem?.Container?.SignificantElements != null)
             {
                 MainTimer_CheckDiaryDateToEmitEvents(
                     _mainTimer_LastCheckForDiaryEvents,
-                    _packageCentral.MainItem.Container.Env?.AasEnv,
-                    _packageCentral.MainItem.Container.SignificantElements,
+                    PackageCentral.MainItem.Container.Env?.AasEnv,
+                    PackageCentral.MainItem.Container.SignificantElements,
                     directEmit: !_mainMenu?.IsChecked("CompressEvents") != true);
                 _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
 
@@ -2242,8 +2242,8 @@ namespace AasxPackageExplorer
                 {
                     MainTimer_CheckAnimationElements(
                         deltaSecs,
-                        _packageCentral.MainItem.Container.Env?.AasEnv,
-                        _packageCentral.MainItem.Container.SignificantElements);
+                        PackageCentral.MainItem.Container.Env?.AasEnv,
+                        PackageCentral.MainItem.Container.SignificantElements);
                     _mainTimer_LastCheckForAnimationElements = DateTime.Now;
                 }
             }
@@ -2308,13 +2308,13 @@ namespace AasxPackageExplorer
                 }
 
                 // no? .. is there a way to another file?
-                if (_packageCentral.Repositories != null && hi?.ReferableAasId != null
+                if (PackageCentral.Repositories != null && hi?.ReferableAasId != null
                     && hi.ReferableReference != null)
                 {
                     ;
 
                     // try lookup file in file repository
-                    var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.Trim());
+                    var fi = PackageCentral.Repositories.FindByAasId(hi.ReferableAasId.Trim());
                     if (fi == null)
                     {
                         Log.Singleton.Error(
@@ -2553,7 +2553,7 @@ namespace AasxPackageExplorer
             Log.Singleton.Info("Closing main package ..");
             try
             {
-                _packageCentral?.MainItem?.Close();
+                PackageCentral?.MainItem?.Close();
             }
             catch (Exception ex)
             {
@@ -2563,7 +2563,7 @@ namespace AasxPackageExplorer
             try
             {
                 // save LRU
-                var lru = _packageCentral?.Repositories?.FindLRU();
+                var lru = PackageCentral?.Repositories?.FindLRU();
                 if (lru != null)
                 {
                     Log.Singleton.Info("Saving LRU ..");
@@ -2597,7 +2597,7 @@ namespace AasxPackageExplorer
 
         private void ShowContent_Click(object sender, RoutedEventArgs e)
         {
-            if (sender == ShowContent && this.showContentPackageUri != null && _packageCentral.MainAvailable)
+            if (sender == ShowContent && this.showContentPackageUri != null && PackageCentral.MainAvailable)
             {
                 Log.Singleton.Info("Trying display content {0} ..", this.showContentPackageUri);
                 try
@@ -2609,7 +2609,7 @@ namespace AasxPackageExplorer
                         && !this.showContentPackageUri.ToLower().Trim().StartsWith("https://"))
                     {
                         // make it as file
-                        contentUri = _packageCentral.Main.MakePackageFileAvailableAsTempFile(
+                        contentUri = PackageCentral.Main.MakePackageFileAvailableAsTempFile(
                             this.showContentPackageUri);
                     }
 
@@ -2671,7 +2671,7 @@ namespace AasxPackageExplorer
                 var evs = _eventCompressor?.Flush();
                 if (evs != null)
                     foreach (var ev in evs)
-                        _packageCentral?.PushEvent(ev);
+                        PackageCentral?.PushEvent(ev);
             }
         }
 
@@ -3022,7 +3022,7 @@ namespace AasxPackageExplorer
                     try
                     {
                         UiLoadPackageWithNew(
-                            _packageCentral.MainItem, null, loadLocalFilename: fn, onlyAuxiliary: false);
+                            PackageCentral.MainItem, null, loadLocalFilename: fn, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {
@@ -3040,7 +3040,7 @@ namespace AasxPackageExplorer
             // MIHO 2020-09-14: removed this from the check below
             //// && (Math.Abs(dragStartPoint.X) < 0.001 && Math.Abs(dragStartPoint.Y) < 0.001)
             if (e.LeftButton == MouseButtonState.Pressed && !isDragging && this.showContentPackageUri != null &&
-                _packageCentral.MainAvailable)
+                PackageCentral.MainAvailable)
             {
                 Point position = e.GetPosition(null);
                 if (Math.Abs(position.X - dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
@@ -3057,7 +3057,7 @@ namespace AasxPackageExplorer
                     try
                     {
                         // hastily prepare temp file ..
-                        var tempfile = _packageCentral.Main.MakePackageFileAvailableAsTempFile(
+                        var tempfile = PackageCentral.Main.MakePackageFileAvailableAsTempFile(
                             this.showContentPackageUri, keepFilename: true);
 
                         // Package the data.

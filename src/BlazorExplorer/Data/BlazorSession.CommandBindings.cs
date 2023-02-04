@@ -110,7 +110,9 @@ namespace BlazorUI.Data
             }
 
             //
-            // The following commands should be ideally shared with WPF PackageExplorer
+            // The following commands should be ideally shared with WPF PackageExplorer,
+            // but Blazor (often) seems to require the async options in order to have
+            // the modal dialogs working
             //
 
             if (cmd == "open" || cmd == "openaux")

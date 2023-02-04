@@ -57,7 +57,7 @@ namespace AasxPackageExplorer
             if (cmd == "scripteditlaunch")
             {
                 // trivial things
-                if (!_packageCentral.MainAvailable)
+                if (!PackageCentral.MainAvailable)
                 {
                     MessageBoxFlyoutShow(
                         "An AASX package needs to be available", "Error"
@@ -205,7 +205,7 @@ namespace AasxPackageExplorer
             //
 
             // something to select
-            var pm = _packageCentral?.Main?.AasEnv;
+            var pm = PackageCentral?.Main?.AasEnv;
             if (pm == null)
             {
                 Log.Singleton.Error("Script: Select: No main package AAS environment available!");
