@@ -523,7 +523,7 @@ namespace BlazorUI.Data
                 // _mainMenu?.SetChecked("EditMenu", false);
                 // ClearAllViews();
                 RedrawAllAasxElements();
-                // RedrawElementView();
+                RedrawElementView();
                 // ShowContentBrowser(Options.Curr.ContentHome, silent: true);
                 // _eventHandling.Reset();
             }
@@ -574,6 +574,9 @@ namespace BlazorUI.Data
                     DisplayElements.TrySelectVisualElement(veFound, wishExpanded: wishExpanded);
             }
 
+            // Info box ..
+            RedrawElementView();
+
             // display again
             Program.signalNewData(
                 new Program.NewDataAvailableArgs(
@@ -590,7 +593,10 @@ namespace BlazorUI.Data
             if (DisplayElements == null)
                 return;
 
-            //// the AAS will cause some more visual effects
+            // the AAS will cause some more visual effects
+            if (DisplayElements.SelectedItem is VisualElementAdminShell veaas)
+                InfoBox.SetInfos(veaas.theAas, veaas.thePackage);
+
             //var tvlaas = DisplayElements.SelectedItem as VisualElementAdminShell;
             //if (_packageCentral.MainAvailable && tvlaas != null && tvlaas.theAas != null && tvlaas.theEnv != null)
             //{
@@ -1051,6 +1057,25 @@ namespace BlazorUI.Data
 
             // right side
             // theContentBrowser.GoToContentBrowserAddress(Options.Curr.ContentHome);
+        }
+
+        public void DisplayElements_SelectedItemChanged(object sender, EventArgs e)
+        {
+            // access
+            if (DisplayElements == null || sender != DisplayElements)
+                return;
+
+            // try identify the business object
+            if (DisplayElements.SelectedItem != null)
+            {
+                // ButtonHistory.Push(DisplayElements.SelectedItem);
+            }
+
+            // may be flush events
+            CheckIfToFlushEvents();
+
+            // redraw view
+            RedrawElementView();
         }
     }
 }

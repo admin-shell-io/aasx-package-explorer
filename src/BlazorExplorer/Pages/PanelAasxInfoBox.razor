@@ -8,10 +8,22 @@
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.BlazorSession Session
 
+@{
+    var styleAasId = new StylePile()
+        .SetSpecifics(textWrapping: AnyUiTextWrapping.Wrap, foreground: AnyUiBrushes.White)
+        .Add("font-size:3.3px;line-height:5px; font-weight:normal;font-stretch:normal;font-family:sans-serif");
+
+    var styleAssetId = new StylePile()
+        .SetSpecifics(textWrapping: AnyUiTextWrapping.Wrap, foreground: AnyUiBrushes.Black, 
+            margin: new AnyUiThickness(1, 0, 1, 0))
+        .Add("font-size:3.3px;line-height:5px; font-weight:normal;font-stretch:normal;font-family:sans-serif");
+}
+
 <div style="max-width: 20rem">
+
 <svg
-   width="100%"
-   height="100%"
+   width="77.279922mm"
+   height="131.25754mm"
    viewBox="0 0 77.279922 131.25754"
    version="1.1"
    id="svg5"
@@ -84,77 +96,110 @@
          id="tspan2141-8"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:0.264583"
          x="14.803624"
-         y="46.292679">SubmodelElement</tspan></text><text
+         y="46.292679">SubmodelElement</tspan></text>
+       
+       @* shifted y += 2px *@
+       <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
-       x="6.1472659"
-       y="9.4090834"
-       id="AASID1_text"><tspan
-         id="tspan2212"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
-         x="6.1472659"
-         y="9.4090834">xsaxsabxsbaxbjhsabjxhashjx</tspan></text><text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
-       x="6.0188708"
-       y="13.897632"
-       id="AASID2_text"><tspan
-         id="tspan2212-8"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
-         x="6.0188708"
-         y="13.897632">xsaxsabxsbaxbjhsabjxhashjx</tspan></text><text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52777px;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
-       x="60.218143"
-       y="9.4090757"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.175px;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+       x="59.159809"
+       y="10.3507433"
        id="text2245"><tspan
          id="tspan2243"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
-         x="60.218143"
-         y="9.4090757"> <tspan
-   style="font-size:2.11667px"
-   id="tspan3303"> </tspan>0<tspan
-   style="font-size:2.11667px"
-   id="tspan3315"> </tspan>•   </tspan><tspan
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
-         x="60.218143"
-         y="13.818789"
-         id="tspan2247">•<tspan
-   style="font-size:2.11667px"
-   id="tspan3311"> </tspan>1<tspan
-   style="font-size:2.11667px"
-   id="tspan3319"> </tspan>•<tspan
-   style="font-size:2.11667px"
-   id="tspan3323"> </tspan>0<tspan
-   style="font-size:2.11667px"
-   id="tspan3327"> </tspan>• </tspan></text><path
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.175px;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
+         x="59.159809"
+         y="10.3507433">  0 •   </tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.175px;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
+         x="59.159809"
+         y="14.319493"
+         id="tspan2247">• 1 • 0 • </tspan></text><path
        style="fill:#d9d9d9;fill-opacity:1;stroke:#a2a2a2;stroke-width:0.565;stroke-dasharray:none;stroke-opacity:1"
        d="M 11.290898,63.730851 15.305439,59.967211 H 65.110849 L 68.874479,63.856301 69.125389,133.2326 11.416353,133.10715 Z"
-       id="path2838" /><text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#2b0000;fill-opacity:1;stroke-width:0.264583"
-       x="13.295231"
-       y="68.470306"
-       id="AID1_text"><tspan
-         id="tspan2212-9"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#2b0000;stroke-width:0.264583"
-         x="13.295231"
-         y="68.470306">xsaxsabxsbaxbjhsabjxhashjx</tspan></text><text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#2b0000;fill-opacity:1;stroke-width:0.264583"
-       x="13.420673"
-       y="73.112122"
-       id="AID2_text"><tspan
-         id="tspan2212-9-1"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#2b0000;stroke-width:0.264583"
-         x="13.420673"
-         y="73.112122">xsaxsabxsbaxbjhsabjxhashjx</tspan></text><rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.564999;stroke-dasharray:none;stroke-opacity:1"
-       id="ASSET_box"
+       id="path2838" />
+       
+       <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.535703;stroke-dasharray:none;stroke-opacity:1"
+       id="THUMB_box"
        width="52.565403"
-       height="54.44722"
+       height="48.94722"
        x="14.050892"
-       y="76.527206" /></g></svg>
+       y="82.027206" />
+
+       <switch>
+	        <foreignObject width="52.565403" height="48.94722" x="14.050892" y="82.027206">
+                <div style="margin: 2px;">
+                    <img src=data:image;base64,@(InfoBox?.HtmlImageData)
+                        style="max-width:100%;display:block;margin-left:auto;margin-right:auto; margin-top: auto" alt="Thumbnail Image" />
+                </div>
+		    </foreignObject>
+	   </switch>
+       
+       @* Original SVG from Inkscape: <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';white-space:pre;shape-inside:url(#AASID_box);shape-subtract:url(#rect3710);display:inline;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="-39.769054"
+       y="-0.50181699"
+       id="AASID1_text"><tspan
+         x="5.9824219"
+         y="9.6052194"
+         id="tspan820"><tspan
+           style="font-weight:normal;-inkscape-font-specification:sans-serif"
+           id="tspan818">@(">>" + InfoBox?.AasId)</tspan></tspan><tspan
+         x="5.9824219"
+         y="14.014945"
+         id="tspan824"></tspan></text>
+       <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.594995;stroke-dasharray:none;stroke-opacity:1"
+       id="AASID_box"
+       width="51.155411"
+       height="14.060255"
+       x="5.9821124"
+       y="6.3858228" />*@
+
+		@* see: https://stackoverflow.com/questions/4991171/auto-line-wrapping-in-svg-text *@
+    	<switch>
+	        <foreignObject width="51.155411" height="14.060255" x="5.9821124" y="6.3858228">
+	            <p xmlns="http://www.w3.org/1999/xhtml" style="@styleAasId">
+				    @("" + InfoBox?.AasId)
+		        </p>
+		    </foreignObject>
+	        <text x="5.9821124" y="6.3858228" style="@styleAasId">Your SVG viewer cannot display html.</text>
+	   </switch>
+              
+@*       <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.67243px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';white-space:pre;shape-inside:url(#AID_box);shape-subtract:url(#rect3710);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="-39.769054"
+       y="-0.50181699"
+       id="AID_text"><tspan
+         x="13.96875"
+         y="69.118047"
+         id="tspan832"><tspan
+           style="font-weight:normal;-inkscape-font-specification:sans-serif"
+           id="tspan830">@(">>" + InfoBox?.AssetId)</tspan></tspan><tspan
+         x="13.96875"
+         y="73.708585"
+         id="tspan836"></tspan></text><rect
+       style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.625611;stroke-dasharray:none;stroke-opacity:1"
+       id="AID_box"
+       width="52.574764"
+       height="15.124771"
+       x="13.968978"
+       y="65.767464" />*@
+   
+        @* see: https://stackoverflow.com/questions/4991171/auto-line-wrapping-in-svg-text *@
+    	<switch>
+	        <foreignObject width="52.574764" height="15.124771" x="13.968978" y="65.767464">
+	            <p xmlns="http://www.w3.org/1999/xhtml" style="@styleAssetId">
+				    @("" + InfoBox?.AssetId)
+		        </p>
+		    </foreignObject>
+	        <text x="13.968978" y="65.767464" style="@styleAssetId">Your SVG viewer cannot display html.</text>
+	   </switch>
+   
+   </g></svg>
+
+
 </div>
 
 @code {

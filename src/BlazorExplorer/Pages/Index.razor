@@ -477,7 +477,7 @@
                                 IsExpanded="@(item => item.IsExpanded)"
                                 SetExpanded="@((item, state) => Session.DisplayElements.SetExpanded(item, state))"
                                 IsSelected="@(item => Session.DisplayElements.SelectedItems?.Contains(item) == true)"
-                                NodeClicked="(ve, modi) => { Session.DisplayElements.NotifyTreeSelectionChanged(ve, modi); this.StateHasChanged(); }"
+                                NodeClicked="OnNodeClicked"
                                 />
                                 
                         }
@@ -571,7 +571,7 @@
                         //         style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
                         //}
 
-                        <PanelAasxInfoBox />
+                        <PanelAasxInfoBox InfoBox="Session.InfoBox" />
                     }
                 </div>
             </div>
@@ -1839,4 +1839,12 @@
                     Program.DataRedrawMode.None, Session.SessionId));
         }
     }
+
+    protected void OnNodeClicked(VisualElementGeneric ve, BlazorInput.KeyboardModifiers modi)
+    {
+        Session.DisplayElements.NotifyTreeSelectionChanged(ve, modi);
+        Session.DisplayElements_SelectedItemChanged(Session.DisplayElements, null);
+        this.StateHasChanged();
+    }
+
 }
