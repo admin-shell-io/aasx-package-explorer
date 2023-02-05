@@ -195,7 +195,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "when creating new AASX");
+                    Logic?.LogErrorToTicket(ticket, ex, "when creating new AASX");
                     return;
                 }
             }
@@ -241,7 +241,7 @@ namespace AasxPackageExplorer
                 // open?
                 if (!PackageCentral.MainStorable)
                 {
-                    _logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
+                    Logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
                     return;
                 }
 
@@ -271,7 +271,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
+                    Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
                     return;
                 }
 
@@ -286,7 +286,7 @@ namespace AasxPackageExplorer
                 // open?
                 if (!PackageCentral.MainAvailable || PackageCentral.MainItem.Container == null)
                 {
-                    _logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
+                    Logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
                     return;
                 }
 
@@ -364,7 +364,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
+                    Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
                     return;
                 }
                 Log.Singleton.Info("AASX saved successfully as: {0}", fn);
@@ -403,7 +403,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "when closing AASX");
+                    Logic?.LogErrorToTicket(ticket, ex, "when closing AASX");
                 }
             }
 
@@ -427,7 +427,7 @@ namespace AasxPackageExplorer
                     ticket["UseX509"] = useX509;
 
                     // further to logic
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                     // update
                     RedrawAllAasxElements();
@@ -441,7 +441,7 @@ namespace AasxPackageExplorer
                     ticket.StartExec();
 
                     // further to logic
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                     return;
                 }
 
@@ -503,7 +503,7 @@ namespace AasxPackageExplorer
                 };
 
                 // further to logic
-                _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
             }
 
             if ((cmd == "decrypt") && PackageCentral.Main != null)
@@ -550,7 +550,7 @@ namespace AasxPackageExplorer
                 };
 
                 // further to logic
-                _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
             }
 
             if (cmd == "closeaux" && PackageCentral.AuxAvailable)
@@ -565,7 +565,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "when closing auxiliary AASX");
+                    Logic?.LogErrorToTicket(ticket, ex, "when closing auxiliary AASX");
                 }
             }
 
@@ -741,7 +741,7 @@ namespace AasxPackageExplorer
                 ticket?.StartExec();
 
                 // further to logic
-                _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                 // update
                 RedrawAllAasxElements();
@@ -827,11 +827,11 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "When exporting GenericForms, an error occurred");
+                    Logic?.LogErrorToTicket(ticket, ex, "When exporting GenericForms, an error occurred");
                 }
             }
 
@@ -852,11 +852,11 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "When exporting PredefinedConcepts, an error occurred");
+                    Logic?.LogErrorToTicket(ticket, ex, "When exporting PredefinedConcepts, an error occurred");
                 }
             }
 
@@ -1115,7 +1115,7 @@ namespace AasxPackageExplorer
 
                 if (endpoint?.HasContent() != true)
                 {
-                    _logic?.LogErrorToTicket(ticket, "No endpoint for repository given!");
+                    Logic?.LogErrorToTicket(ticket, "No endpoint for repository given!");
                     return;
                 }
 
@@ -1139,7 +1139,7 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "filerepoquery")
-                _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
             //if (cmd == "filerepoquery")
             //{
@@ -1264,7 +1264,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex,
+                    Logic?.LogErrorToTicket(ticket, ex,
                         $"while initializing last recently used file in {lruFn}.");
                 }
             }
@@ -1394,7 +1394,7 @@ namespace AasxPackageExplorer
 
             if (ticket.AAS == null || ticket.AssetInfo?.GlobalAssetId?.IsValid() != true)
             {
-                _logic?.LogErrorToTicket(ticket,
+                Logic?.LogErrorToTicket(ticket,
                     "No asset selected or no asset identification for printing code sheet.");
                 return;
             }
@@ -1409,7 +1409,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                _logic?.LogErrorToTicket(ticket, ex, "When printing");
+                Logic?.LogErrorToTicket(ticket, ex, "When printing");
             }
         }
 
@@ -1684,11 +1684,11 @@ namespace AasxPackageExplorer
                 // do it
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex,
+                    Logic?.LogErrorToTicket(ticket, ex,
                         "When importing BMEcat, an error occurred");
                 }
             }
@@ -1717,11 +1717,11 @@ namespace AasxPackageExplorer
                 // do it
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex,
+                    Logic?.LogErrorToTicket(ticket, ex,
                         "When importing CSV, an error occurred");
                 }
             }
@@ -1750,7 +1750,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // do it
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                     // redisplay
                     RedrawAllAasxElements();
@@ -1758,7 +1758,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex,
+                    Logic?.LogErrorToTicket(ticket, ex,
                         "When importing OPC UA Nodeset, an error occurred");
                 }
             }
@@ -1883,7 +1883,7 @@ namespace AasxPackageExplorer
 
             if (sm == null || env == null)
             {
-                _logic?.LogErrorToTicket(ticket, "Submodel Read: No valid SubModel selected.");
+                Logic?.LogErrorToTicket(ticket, "Submodel Read: No valid SubModel selected.");
                 return false;
             }
 
@@ -1930,7 +1930,7 @@ namespace AasxPackageExplorer
 
             if (sourceFn?.HasContent() != true)
             {
-                _logic?.LogErrorToTicketOrSilent(ticket, msg);
+                Logic?.LogErrorToTicketOrSilent(ticket, msg);
                 return false;
             }
 
@@ -1998,7 +1998,7 @@ namespace AasxPackageExplorer
 
             if (targetFn?.HasContent() != true)
             {
-                _logic?.LogErrorToTicketOrSilent(ticket, msg);
+                Logic?.LogErrorToTicketOrSilent(ticket, msg);
                 return false;
             }
 
@@ -2056,7 +2056,7 @@ namespace AasxPackageExplorer
 
             if (targetText?.HasContent() != true)
             {
-                _logic?.LogErrorToTicketOrSilent(ticket, msg);
+                Logic?.LogErrorToTicketOrSilent(ticket, msg);
                 return false;
             }
 
@@ -2109,14 +2109,14 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                     RedrawAllAasxElements();
                     RedrawElementView();
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "Submodel Read");
+                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Read");
                 }
             }
 
@@ -2137,11 +2137,11 @@ namespace AasxPackageExplorer
                 // do it directly
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "Submodel Write");
+                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Write");
                 }
             }
 
@@ -2162,11 +2162,11 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "Submodel Put");
+                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Put");
                 }
             }
 
@@ -2187,11 +2187,11 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "Submodel Get");
+                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Get");
                 }
             }
 
@@ -2228,7 +2228,7 @@ namespace AasxPackageExplorer
                     else
                     {
                         // Other element is selected --> error
-                        _logic?.LogErrorToTicket(ticket,
+                        Logic?.LogErrorToTicket(ticket,
                             "Dictionary Import: Please select the administration shell for the submodel import.");
                         return;
                     }
@@ -2242,7 +2242,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "An error occurred during the Dictionary import.");
+                    Logic?.LogErrorToTicket(ticket, ex, "An error occurred during the Dictionary import.");
                 }
 
                 if (dataChanged)
@@ -2277,7 +2277,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "An error occurred during the submodel element import.");
+                    Logic?.LogErrorToTicket(ticket, ex, "An error occurred during the submodel element import.");
                 }
 
                 if (dataChanged)
@@ -2315,12 +2315,12 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                     this.RestartUIafterNewPackage();
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
+                    Logic?.LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
                 }
             }
 
@@ -2342,11 +2342,11 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
+                    Logic?.LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
                 }
             }
         }
@@ -2364,7 +2364,7 @@ namespace AasxPackageExplorer
                 // start
                 ticket?.StartExec();
 
-                _logic?.LogErrorToTicket(ticket, "Currently, this export is only implemented in AasxToolkit!");
+                Logic?.LogErrorToTicket(ticket, "Currently, this export is only implemented in AasxToolkit!");
             }
         }
 
@@ -2399,11 +2399,11 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "When exporting JSON schema, an error occurred");
+                    Logic?.LogErrorToTicket(ticket, ex, "When exporting JSON schema, an error occurred");
                 }
             }
         }
@@ -2433,7 +2433,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // do it
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                     // redisplay
                     RedrawAllAasxElements();
@@ -2441,7 +2441,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex,
+                    Logic?.LogErrorToTicket(ticket, ex,
                         "When importing, an error occurred");
                 }
             }
@@ -2540,7 +2540,7 @@ namespace AasxPackageExplorer
             var rf = ticket.DereferencedMainDataObject as Aas.IReferable;
             if (rf == null)
             {
-                _logic?.LogErrorToTicket(ticket,
+                Logic?.LogErrorToTicket(ticket,
                     "Convert Referable: No valid Referable selected for conversion.");
                 return;
             }
@@ -2551,7 +2551,7 @@ namespace AasxPackageExplorer
                 var offers = AasxPredefinedConcepts.Convert.ConvertPredefinedConcepts.CheckForOffers(rf);
                 if (offers == null || offers.Count < 1)
                 {
-                    _logic?.LogErrorToTicket(ticket,
+                    Logic?.LogErrorToTicket(ticket,
                         "Convert Referable: No valid conversion offers found for this Referable. Aborting.");
                     return;
                 }
@@ -2575,7 +2575,7 @@ namespace AasxPackageExplorer
             try
             {
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
             }
             catch (Exception ex)
@@ -2614,7 +2614,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex,
+                    Logic?.LogErrorToTicket(ticket, ex,
                         $"Import/Export: While displaying html-based help.");
                 }
             };
@@ -2628,7 +2628,7 @@ namespace AasxPackageExplorer
                     var uc = new ExportTableFlyout((cmd == "exporttable")
                         ? "Export SubmodelElements as Table"
                         : "Import SubmodelElements from Table");
-                    uc.Presets = _logic?.GetImportExportTablePreset().Item1;
+                    uc.Presets = Logic?.GetImportExportTablePreset().Item1;
 
                     StartFlyoverModal(uc);
 
@@ -2692,11 +2692,11 @@ namespace AasxPackageExplorer
                 // pass on
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
+                    Logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
                 }
             }
 
@@ -2708,7 +2708,7 @@ namespace AasxPackageExplorer
                     // interactive
                     // handle the export dialogue
                     var uc = new ExportUmlFlyout();
-                    uc.Result = _logic?.GetImportExportTablePreset().Item2 ?? new ExportUmlRecord();
+                    uc.Result = Logic?.GetImportExportTablePreset().Item2 ?? new ExportUmlRecord();
 
                     StartFlyoverModal(uc);
 
@@ -2735,11 +2735,11 @@ namespace AasxPackageExplorer
                 // pass on
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
+                    Logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
                 }
 
                 // copy?
@@ -2763,7 +2763,7 @@ namespace AasxPackageExplorer
                     // interactive
                     // handle the export dialogue
                     var uc = new ImportTimeSeriesFlyout();
-                    uc.Result = _logic?.GetImportExportTablePreset().Item3 ?? new ImportTimeSeriesRecord();
+                    uc.Result = Logic?.GetImportExportTablePreset().Item3 ?? new ImportTimeSeriesRecord();
 
                     StartFlyoverModal(uc);
 
@@ -2799,11 +2799,11 @@ namespace AasxPackageExplorer
                 // pass on
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "Import time series: passing on.");
+                    Logic?.LogErrorToTicket(ticket, ex, "Import time series: passing on.");
                 }
             }
 
@@ -2834,7 +2834,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // delegate futher
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                     // redisplay
                     RedrawAllAasxElements();
@@ -2842,7 +2842,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex,
+                    Logic?.LogErrorToTicket(ticket, ex,
                         "When importing JSON LD for Thing Description, an error occurred");
                 }
             }
@@ -2862,11 +2862,11 @@ namespace AasxPackageExplorer
                 try
                 {
                     // delegate futher
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex,
+                    Logic?.LogErrorToTicket(ticket, ex,
                         "When exporting Thing Description (TD), an error occurred");
                 }
             }
@@ -2882,7 +2882,7 @@ namespace AasxPackageExplorer
 
             // create a list of plugins, which are capable of generating Submodels
             var listOfSm = new List<AnyUiDialogueListItem>();
-            var list = _logic?.GetPotentialGeneratedSubmodels();
+            var list = Logic?.GetPotentialGeneratedSubmodels();
             if (list != null)
                 foreach (var rec in list)
                     listOfSm.Add(new AnyUiDialogueListItem(
@@ -2891,7 +2891,7 @@ namespace AasxPackageExplorer
             // could be nothing
             if (listOfSm.Count < 1)
             {
-                _logic?.LogErrorToTicket(ticket, "New Submodel from plugin: No Submodels available " +
+                Logic?.LogErrorToTicket(ticket, "New Submodel from plugin: No Submodels available " +
                     "to be generated by plugins.");
                 return;
             }
@@ -2912,11 +2912,11 @@ namespace AasxPackageExplorer
             try
             {
                 // delegate futher
-                _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
             }
             catch (Exception ex)
             {
-                _logic?.LogErrorToTicket(ticket, ex,
+                Logic?.LogErrorToTicket(ticket, ex,
                     "When generating Submodel from plugins, an error occurred");
             }
 
@@ -3024,7 +3024,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "when accessing i4AASCS.xml mapping types.");
+                    Logic?.LogErrorToTicket(ticket, ex, "when accessing i4AASCS.xml mapping types.");
                     return;
                 }
                 Log.Singleton.Info("Mapping types loaded.");
@@ -3041,11 +3041,11 @@ namespace AasxPackageExplorer
                 // ReSharper enable PossibleNullReferenceException
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
+                    Logic?.LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
                 }
             }
 
@@ -3063,7 +3063,7 @@ namespace AasxPackageExplorer
                 // do
                 try
                 {
-                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                     // TODO (MIHO, 2022-11-17): not very elegant
                     if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")
@@ -3074,7 +3074,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, "when importing i4AAS based OPC UA mapping.");
+                    Logic?.LogErrorToTicket(ticket, ex, "when importing i4AAS based OPC UA mapping.");
                 }
             }
         }

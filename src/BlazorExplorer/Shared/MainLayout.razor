@@ -44,10 +44,7 @@
                 <div class="col-12">
                     <MainMenu/>
                     <div style="width: 90vw">
-                        <StatusBar 
-                            Message="@_message" 
-                            Foreground="@_msgForeground" 
-                            Background="@_msgBackground"/>
+                        <StatusBar />
                     </div>
                 </div>
             </div>
@@ -64,28 +61,28 @@
 
 @code
 {
-    protected string _message = "Starting ..";
-    protected AnyUiBrush _msgForeground = AnyUiBrushes.Black;
-    protected AnyUiBrush _msgBackground = AnyUiBrushes.Transparent;
+    //protected string _message = "Starting ..";
+    //protected AnyUiBrush _msgForeground = AnyUiBrushes.Black;
+    //protected AnyUiBrush _msgBackground = AnyUiBrushes.Transparent;
 
-    public void UpdateMessage(string message, AnyUiBrush foreground = null, AnyUiBrush background = null)
-    {
-        _message = message;
-        if (foreground != null)
-            _msgForeground = foreground;
-        if (background != null)
-            _msgBackground = background;
-        InvokeAsync(() => StateHasChanged());
-    }
+    //public void UpdateMessage(string message, AnyUiBrush foreground = null, AnyUiBrush background = null)
+    //{
+    //    _message = message;
+    //    if (foreground != null)
+    //        _msgForeground = foreground;
+    //    if (background != null)
+    //        _msgBackground = background;
+    //    InvokeAsync(() => StateHasChanged());
+    //}
 
-    public string Message
-    {
-        get { return _message; }
-        set { 
-            _message = value; 
-            InvokeAsync(() => StateHasChanged()); 
-        }
-    }
+    //public string Message
+    //{
+    //    get { return _message; }
+    //    set { 
+    //        _message = value; 
+    //        InvokeAsync(() => StateHasChanged()); 
+    //    }
+    //}
 
     protected int _showHeader = 3;
     public int ShowHeader { 

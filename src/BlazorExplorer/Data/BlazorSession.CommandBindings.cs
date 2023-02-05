@@ -115,6 +115,35 @@ namespace BlazorUI.Data
             // the modal dialogs working
             //
 
+            if (cmd == "new")
+            {
+                // start
+                ticket.StartExec();
+
+                // check user
+                if (!ticket.ScriptMode
+                    && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+                    "Create new Adminshell environment? This operation can not be reverted!", "AAS-ENV",
+                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                    return;
+
+                // do
+                try
+                {
+                    // clear
+                    ClearAllViews();
+                    // create new AASX package
+                    PackageCentral.MainItem.New();
+                    // redraw
+                    CommandExecution_RedrawAll();
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "when creating new AASX");
+                    return;
+                }
+            }
+
             // REFACTOR: the same
             if (cmd == "open" || cmd == "openaux")
             {

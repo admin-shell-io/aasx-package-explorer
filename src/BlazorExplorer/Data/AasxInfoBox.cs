@@ -29,27 +29,24 @@ using Microsoft.JSInterop;
 namespace BlazorUI.Data
 {
     /// <summary>
-    /// This partial class holds parts which seem to be same with Package Explorer
+    /// The info box is the small figure of the AAS with ids and image inside
     /// </summary>
-    public partial class BlazorSession : IDisposable
+    public class AasxInfoBox
     {
-		private void CheckIfToFlushEvents()
-		{
-			if (MainMenu?.IsChecked("CompressEvents") == true)
-			{
-				var evs = _eventCompressor?.Flush();
-				if (evs != null)
-					foreach (var ev in evs)
-						PackageCentral?.PushEvent(ev);
-			}
-		}
+        /// <summary>
+        /// AAS id to be displayed
+        /// </summary>
+        public string AasId { get; set; }
 
-        private void CommandExecution_RedrawAll()
-        {
-            // redraw everything
-            RedrawAllAasxElements();
-            RedrawElementView();
-        }
+        /// <summary>
+        /// Asset id to be displayed
+        /// </summary>
+        public string AssetId { get; set; }
+
+        /// <summary>
+        /// Converted base64 image data to be displayed
+        /// </summary>
+        public string HtmlImageData { get; set; }
+        
     }
-
 }

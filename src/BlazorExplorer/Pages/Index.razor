@@ -488,7 +488,7 @@
                 </div>
             </div>
             
-            <!-- Details / repo -->
+            <!-- Repo -->
             <div style="margin:2px 2px 0px 1px">
                 <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; word-wrap:break-word;position:sticky;padding:10px">
 
@@ -524,6 +524,58 @@
 
                 </div>
             </div>
+
+            <!-- Details -->
+            <div style="margin:2px 2px 0px 1px">
+                <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; word-wrap:break-word;position:sticky;padding:10px">
+                    @{
+                        //if (bi.env != null && (selectedNode == null || selectedNode.Tag != null))
+                        //{
+                        //    {
+                        //        if (bi.thumbNail == null && bi.env != null)
+                        //        {
+                        //            System.IO.Stream s = null;
+                        //            try
+                        //            {
+                        //                s = bi.env.GetLocalThumbnailStream();
+                        //            }
+                        //            catch
+                        //            {
+                        //                s = null;
+                        //            }
+                        //            if (s != null)
+                        //            {
+                        //                using (var m = new System.IO.MemoryStream())
+                        //                {
+                        //                    s.CopyTo(m);
+                        //                    bi.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                        //                }
+
+                        //                // it is indespensible to properly close the thumbnail stream!
+                        //                s.Close();
+                        //            }
+                        //        }
+                        //        if (bi.thumbNail != null)
+                        //        {
+                        //            <br />
+                        //            <img src=data:image;base64,@bi.thumbNail
+                        //     style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
+                        //        }
+                        //    }
+                        //}
+
+                        //if (Session.thumbNail != null)
+                        //{
+                        //    <br />
+                        //    <img src=data:image;base64,@Session.thumbNail
+                        //         style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
+                        //}
+
+                        <PanelAasxInfoBox />
+                    }
+                </div>
+            </div>
+        
         </div>
     </div>
 
@@ -1176,7 +1228,7 @@
         _timer = new System.Threading.Timer((e) =>
         {
             Session?.MainTimerTick();
-            MainTimer_HandleLogMessages();
+            // MainTimer_HandleLogMessages();
             MainTimer_HandleApplicationEvents();
             MainTimer_HandleElementAnimation();
         }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(100));
@@ -1194,37 +1246,37 @@
 
     private bool _inTimer = false;
 
-    private void MainTimer_HandleLogMessages()
-    {
-        return;
+    //private void MainTimer_HandleLogMessages()
+    //{
+    //    return;
 
-        // check for Stored Prints in Log
-        StoredPrint sp;
-        while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
-        {
-            switch (sp.color)
-            {
-                default:
-                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
-                    break;
-                case StoredPrint.Color.Black:
-                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
-                    break;
-                case StoredPrint.Color.Blue:
-                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.LightBlue);
-                    break;
-                case StoredPrint.Color.Yellow:
-                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Yellow);
-                    break;
-                case StoredPrint.Color.Red:
-                    Layout?.UpdateMessage(sp.msg, AnyUiBrushes.White, AnyUiBrushes.Red);
-                    break;
-            }
+    //    // check for Stored Prints in Log
+    //    StoredPrint sp;
+    //    while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
+    //    {
+    //        switch (sp.color)
+    //        {
+    //            default:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
+    //                break;
+    //            case StoredPrint.Color.Black:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
+    //                break;
+    //            case StoredPrint.Color.Blue:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.LightBlue);
+    //                break;
+    //            case StoredPrint.Color.Yellow:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Yellow);
+    //                break;
+    //            case StoredPrint.Color.Red:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.White, AnyUiBrushes.Red);
+    //                break;
+    //        }
 
-            // message window
-            //_messageReportWindow?.AddStoredPrint(sp);
-        }
-    }
+    //        // message window
+    //        //_messageReportWindow?.AddStoredPrint(sp);
+    //    }
+    //}
 
 
     private void MainTimer_HandleApplicationEvents()

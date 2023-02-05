@@ -61,7 +61,7 @@ namespace AasxPackageExplorer
         /// Abstracted menu functions to be wrapped by functions triggering
         /// more UI feedback.
         /// </summary>
-        protected MainWindowDispatch _logic = new MainWindowDispatch();
+        protected MainWindowDispatch Logic = new MainWindowDispatch();
 
         protected AnyUiDisplayContextWpf _displayContext = null;
 
@@ -72,7 +72,7 @@ namespace AasxPackageExplorer
 		/// </summary>
 		public PackageCentral PackageCentral
         {
-            get => _logic?.PackageCentral;
+            get => Logic?.PackageCentral;
             // set { _logic ??= new MainWindowDispatch(); _logic.PackageCentral = value; }
         }
 
@@ -732,8 +732,8 @@ namespace AasxPackageExplorer
         {
             // basic AnyUI handling
 			_displayContext = new AnyUiDisplayContextWpf(this, PackageCentral);
-            _logic.AnyUiContext = _displayContext;
-            _logic.MainWindow = this;
+            Logic.AnyUiContext = _displayContext;
+            Logic.MainWindow = this;
 
 			// making up "empty" picture
 			this.AasId.Text = "<id unknown!>";

@@ -32,6 +32,7 @@ using ExhaustiveMatching;
 using Extensions;
 using Microsoft.JSInterop;
 using System.Linq;
+using AasxIntegrationBase.AdminShellEvents;
 
 namespace BlazorUI.Data
 {
@@ -91,14 +92,25 @@ namespace BlazorUI.Data
         public AasxMenuBlazor DynamicMenu = new AasxMenuBlazor();
 
         /// <summary>
-        /// The top-most display data required for razor pages to render elements.
+        /// Helper class to "compress events" (group AAS event payloads together).
+        /// No relation to UI stuff.
         /// </summary>
-        public AnyUiDisplayContextHtml DisplayContext = null;
+		private AasEventCompressor _eventCompressor = new AasEventCompressor();
+
+		/// <summary>
+		/// The top-most display data required for razor pages to render elements.
+		/// </summary>
+		public AnyUiDisplayContextHtml DisplayContext = null;
 
         /// <summary>
         /// Holds the stack panel of widgets for active AAS element.
         /// </summary>
         public AnyUiStackPanel ElementPanel = new AnyUiStackPanel();
+
+        /// <summary>
+        /// Helper class to hold data on the AAS preview left side.
+        /// </summary>
+        public AasxInfoBox InfoBox = new AasxInfoBox();
 
         /// <summary>
         /// Position of the dividing column (of 12) between left & right panel
@@ -1025,6 +1037,20 @@ namespace BlazorUI.Data
                             Program.DataRedrawMode.None, this.SessionId));
                 }
             }
+        }
+
+        public void ClearAllViews()
+        {
+            // left side
+            InfoBox.AasId = "<id missing!>";
+            InfoBox.HtmlImageData = "";
+            InfoBox.AssetId = "<id missing!>";
+
+            // middle side
+            DisplayElements.Clear();
+
+            // right side
+            // theContentBrowser.GoToContentBrowserAddress(Options.Curr.ContentHome);
         }
     }
 }

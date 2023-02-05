@@ -1,0 +1,165 @@
+﻿@page "/PanelAasxInfoBox"
+@using AasxIntegrationBase
+@using AnyUi
+@using AasxPredefinedConcepts
+@using AasxPackageLogic
+@using AasxPackageLogic.PackageCentral
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession Session
+
+<div style="max-width: 20rem">
+<svg
+   width="100%"
+   height="100%"
+   viewBox="0 0 77.279922 131.25754"
+   version="1.1"
+   id="svg5"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs2" /><g
+     id="layer2"
+     style="display:inline"
+     transform="translate(-1.7563621,-2.0072688)"><path
+       style="display:inline;fill:#0128cb;fill-opacity:1;stroke-width:0.264583"
+       d="M 1.7563602,6.1472666 5.5199942,2.2581776 74.770839,2.3836326 78.785379,6.3981736 V 71.759931 H 72.638109 L 72.763569,56.454491 68.874479,52.690861 11.66726,52.439951 8.1545382,56.078131 8.0290832,73.641751 H 1.5054532 Z"
+       id="AAS_body" /><rect
+       style="fill:#c0ccff;fill-opacity:1;stroke-width:0.264583"
+       id="SM"
+       width="68.12175"
+       height="6.649085"
+       x="6.1472659"
+       y="22.205431" /><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#2b0000;fill-opacity:1;stroke-width:0.264583"
+       x="7.9036293"
+       y="27.098146"
+       id="SM_text"><tspan
+         id="tspan1757"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#2b0000;fill-opacity:1;stroke-width:0.264583"
+         x="7.9036293"
+         y="27.098146">Submodel</tspan></text><rect
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+       id="SME1_body"
+       width="60.970852"
+       height="6.5236301"
+       x="13.298168"
+       y="32.241795" /><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:0.264583"
+       x="14.678165"
+       y="37.009048"
+       id="SME1_text"><tspan
+         id="tspan1986"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:0.264583"
+         x="14.678165"
+         y="37.009048">SubmodelElement</tspan></text><rect
+       style="display:inline;fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+       id="SME1-6"
+       width="60.970852"
+       height="6.5236301"
+       x="13.423626"
+       y="41.525429" /><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#000000;fill-opacity:0.441065;stroke-width:0.264583"
+       x="14.803624"
+       y="46.292679"
+       id="SME1_text-5"><tspan
+         id="tspan1986-3"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;stroke-width:0.264583"
+         x="14.803624"
+         y="46.292679">SubmodelElement</tspan></text><rect
+       style="display:inline;fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+       id="SME2_body"
+       width="60.970852"
+       height="6.5236301"
+       x="13.423626"
+       y="41.525429" /><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#000000;fill-opacity:1;stroke-width:0.264583"
+       x="14.803624"
+       y="46.292679"
+       id="text2143-6"><tspan
+         id="tspan2141-8"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:0.264583"
+         x="14.803624"
+         y="46.292679">SubmodelElement</tspan></text><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+       x="6.1472659"
+       y="9.4090834"
+       id="AASID1_text"><tspan
+         id="tspan2212"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
+         x="6.1472659"
+         y="9.4090834">xsaxsabxsbaxbjhsabjxhashjx</tspan></text><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+       x="6.0188708"
+       y="13.897632"
+       id="AASID2_text"><tspan
+         id="tspan2212-8"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
+         x="6.0188708"
+         y="13.897632">xsaxsabxsbaxbjhsabjxhashjx</tspan></text><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52777px;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+       x="60.218143"
+       y="9.4090757"
+       id="text2245"><tspan
+         id="tspan2243"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
+         x="60.218143"
+         y="9.4090757"> <tspan
+   style="font-size:2.11667px"
+   id="tspan3303"> </tspan>0<tspan
+   style="font-size:2.11667px"
+   id="tspan3315"> </tspan>•   </tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
+         x="60.218143"
+         y="13.818789"
+         id="tspan2247">•<tspan
+   style="font-size:2.11667px"
+   id="tspan3311"> </tspan>1<tspan
+   style="font-size:2.11667px"
+   id="tspan3319"> </tspan>•<tspan
+   style="font-size:2.11667px"
+   id="tspan3323"> </tspan>0<tspan
+   style="font-size:2.11667px"
+   id="tspan3327"> </tspan>• </tspan></text><path
+       style="fill:#d9d9d9;fill-opacity:1;stroke:#a2a2a2;stroke-width:0.565;stroke-dasharray:none;stroke-opacity:1"
+       d="M 11.290898,63.730851 15.305439,59.967211 H 65.110849 L 68.874479,63.856301 69.125389,133.2326 11.416353,133.10715 Z"
+       id="path2838" /><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#2b0000;fill-opacity:1;stroke-width:0.264583"
+       x="13.295231"
+       y="68.470306"
+       id="AID1_text"><tspan
+         id="tspan2212-9"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#2b0000;stroke-width:0.264583"
+         x="13.295231"
+         y="68.470306">xsaxsabxsbaxbjhsabjxhashjx</tspan></text><text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#2b0000;fill-opacity:1;stroke-width:0.264583"
+       x="13.420673"
+       y="73.112122"
+       id="AID2_text"><tspan
+         id="tspan2212-9-1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#2b0000;stroke-width:0.264583"
+         x="13.420673"
+         y="73.112122">xsaxsabxsbaxbjhsabjxhashjx</tspan></text><rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.564999;stroke-dasharray:none;stroke-opacity:1"
+       id="ASSET_box"
+       width="52.565403"
+       height="54.44722"
+       x="14.050892"
+       y="76.527206" /></g></svg>
+</div>
+
+@code {
+
+	[Parameter]
+	public AasxInfoBox InfoBox { get; set; }
+
+}

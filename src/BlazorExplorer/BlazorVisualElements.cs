@@ -80,6 +80,12 @@ namespace BlazorUI
 
         // public IList<VisualElementGeneric> ExpandedItems = new List<VisualElementGeneric>();
 
+        public void Clear()
+        {
+            TreeItems.Clear();
+            _selectedItems.Clear();
+        }
+
         /// <summary>
         /// Activates the caching of the "expanded" states of the tree, even if the tree is multiple
         /// times rebuilt via <code>RebuildAasxElements</code>.
