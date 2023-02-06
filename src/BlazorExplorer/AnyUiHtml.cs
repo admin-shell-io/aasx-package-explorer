@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using AasxIntegrationBase;
+using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -35,7 +36,6 @@ using BlazorUI.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace AnyUi
 {
@@ -790,5 +790,211 @@ namespace AnyUi
             }
         }
 
-    }
+		private string lastFnForInitialDirectory = null;
+		public void RememberForInitialDirectory(string fn)
+		{
+			this.lastFnForInitialDirectory = fn;
+		}
+
+		/// <summary>
+		/// Selects a filename to read either from user or from ticket.
+		/// </summary>
+		/// <returns>The dialog data containing the filename or <c>null</c></returns>
+		public async Task<AnyUiDialogueDataOpenFile> MenuSelectOpenFilenameAsync(
+			AasxMenuActionTicket ticket,
+			string argName,
+			string caption,
+			string proposeFn,
+			string filter,
+			string msg)
+		{
+			// filename
+			var sourceFn = ticket?[argName] as string;
+
+			if (sourceFn?.HasContent() != true)
+			{
+				var uc = new AnyUiDialogueDataOpenFile(
+					caption: caption,
+					message: "Select filename by uploading it or from stored user files.",
+					filter: filter, proposeFn: proposeFn);
+				uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
+
+				if (await StartFlyoverModalAsync(uc))
+				{
+					// house keeping
+					RememberForInitialDirectory(uc.TargetFileName);
+
+					// modify
+					if (uc.ResultUserFile)
+						uc.TargetFileName = PackageContainerUserFile.Scheme + uc.TargetFileName;
+
+					// ok
+					return uc;
+				}
+			}
+
+			if (sourceFn?.HasContent() != true)
+            {
+				MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
+				return null;
+			}
+
+			return new AnyUiDialogueDataOpenFile()
+			{
+				OriginalFileName = sourceFn,
+				TargetFileName = sourceFn
+			};
+		}
+
+		/// <summary>
+		/// If ticket does not contain the filename named by <c>argName</c>,
+		/// read it by the user.
+		/// </summary>
+		public async Task<bool> MenuSelectOpenFilenameToTicketAsync(
+			AasxMenuActionTicket ticket,
+			string argName,
+			string caption,
+			string proposeFn,
+			string filter,
+			string msg)
+		{
+			var uc = await MenuSelectOpenFilenameAsync(ticket, argName, caption, proposeFn, filter, msg);
+			if (uc?.Result == true)
+			{
+				ticket[argName] = uc.TargetFileName;
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Selects a filename to write either from user or from ticket.
+		/// </summary>
+		/// <returns>The dialog data containing the filename or <c>null</c></returns>
+		public async Task<AnyUiDialogueDataSaveFile> MenuSelectSaveFilenameAsync(
+			AasxMenuActionTicket ticket,
+			string argName,
+			string caption,
+			string proposeFn,
+			string filter,
+			string msg)
+		{
+			// filename
+			var targetFn = ticket?[argName] as string;
+
+			if (targetFn?.HasContent() != true)
+			{
+				var uc = new AnyUiDialogueDataSaveFile(
+					caption: caption,
+					message: "Select filename and how to provide the file. " +
+                    "It might be possible to store files " +
+                    "as user file or on a local file system.",
+					filter: filter, proposeFn: proposeFn);
+				
+                uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
+                uc.AllowLocalFiles = Options.Curr.AllowLocalFiles;
+
+                if (await StartFlyoverModalAsync(uc))
+                {
+                    // house keeping
+                    RememberForInitialDirectory(uc.TargetFileName);
+
+					// ok
+					return uc;
+				}
+			}
+
+			if (targetFn?.HasContent() != true)
+            {
+				MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
+				return null;
+			}
+
+			return new AnyUiDialogueDataSaveFile()
+			{
+				TargetFileName = targetFn
+			};
+		}
+
+		/// <summary>
+		/// If ticket does not contain the filename named by <c>argName</c>,
+		/// read it by the user.
+		/// </summary>
+		public async Task<bool> MenuSelectSaveFilenameToTicketAsync(
+			AasxMenuActionTicket ticket,
+			string argName,
+			string caption,
+			string proposeFn,
+			string filter,
+			string msg,
+			string argFilterIndex = null)
+		{
+            var uc = await MenuSelectSaveFilenameAsync(ticket, argName, caption, proposeFn, filter, msg);
+			
+            if (uc.Result && uc.TargetFileName.HasContent())
+            {
+				ticket[argName] = uc.TargetFileName;
+				if (argFilterIndex?.HasContent() == true)
+					ticket[argFilterIndex] = uc.FilterIndex;
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Selects a text either from user or from ticket.
+		/// </summary>
+		/// <returns>Success</returns>
+		public async Task<AnyUiDialogueDataTextBox> MenuSelectTextAsync(
+			AasxMenuActionTicket ticket,
+			string argName,
+			string caption,
+			string proposeText,
+			string msg)
+		{
+			// filename
+			var targetText = ticket?[argName] as string;
+
+			if (targetText?.HasContent() != true)
+			{
+				var uc = new AnyUiDialogueDataTextBox(caption, symbol: AnyUiMessageBoxImage.Question);
+				uc.Text = proposeText;
+				await StartFlyoverModalAsync(uc);
+				if (uc.Result)
+					targetText = uc.Text;
+			}
+            
+            if (targetText?.HasContent() != true)
+            {
+				MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
+				return null;
+			}
+
+			return new AnyUiDialogueDataTextBox()
+            {
+                Text = targetText
+            };
+		}
+
+		/// <summary>
+		/// Selects a text either from user or from ticket.
+		/// </summary>
+		/// <returns>Success</returns>
+		public async Task<bool> MenuSelectTextToTicket(
+			AasxMenuActionTicket ticket,
+			string argName,
+			string caption,
+			string proposeText,
+			string msg)
+		{
+            var uc = await MenuSelectTextAsync(ticket, argName, caption, proposeText, msg);
+            if (uc.Result)
+			{
+				ticket[argName] = uc.Text;
+				return true;
+			}
+			return false;
+		}
+
+	}
 }

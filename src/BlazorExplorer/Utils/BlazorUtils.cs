@@ -91,5 +91,18 @@ namespace BlazorUI.Utils
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
-    }
+        public static async Task CloseBrowserWindow(IJSRuntime runtime)
+        {
+            if (runtime != null)
+			    await runtime.InvokeVoidAsync($"window.close");
+		}
+
+		public static async Task ShowNewBrowserWindow(IJSRuntime runtime, string url)
+		{
+            if (runtime != null)
+            {
+                await runtime.InvokeAsync<object>("open", url, "_blank");
+			}
+		}
+	}
 }

@@ -91,66 +91,7 @@ namespace AasxPackageExplorer
             RedrawAllAasxElements();
             RedrawElementView();
         }
-
-
-        private void FillSelectedItem(AasxMenuActionTicket ticket = null)
-        {
-            // access
-            if (ticket == null)
-                return;
-
-            // basics
-            var ve = DisplayElements.SelectedItem;
-            if (ve != null)
-            {
-                ticket.MainDataObject = ve.GetMainDataObject();
-                ticket.DereferencedMainDataObject = ve.GetDereferencedMainDataObject();
-            }
-
-            // set
-            if (DisplayElements.SelectedItem is VisualElementEnvironmentItem veei)
-            {
-                ticket.Package = veei.thePackage;
-                ticket.Env = veei.theEnv;
-            }
-
-            if (DisplayElements.SelectedItem is VisualElementAdminShell veaas)
-            {
-                ticket.Package = veaas.thePackage;
-                ticket.Env = veaas.theEnv;
-                ticket.AAS = veaas.theAas;
-            }
-
-            if (DisplayElements.SelectedItem is VisualElementAsset veasset)
-            {
-                ticket.Env = veasset.theEnv;
-                ticket.AssetInfo = veasset.theAsset;
-            }
-
-            if (DisplayElements.SelectedItem is VisualElementSubmodelRef vesmr)
-            {
-                ticket.Package = vesmr.thePackage;
-                ticket.Env = vesmr.theEnv;
-                ticket.Submodel = vesmr.theSubmodel;
-                ticket.SubmodelRef = vesmr.theSubmodelRef;
-            }
-
-            if (DisplayElements.SelectedItem is VisualElementSubmodel vesm)
-            {
-                ticket.Package = PackageCentral?.Main;
-                ticket.Env = vesm.theEnv;
-                ticket.Submodel = vesm.theSubmodel;
-            }
-
-            if (DisplayElements.SelectedItem is VisualElementSubmodelElement vesme)
-            {
-                ticket.Package = PackageCentral?.Main;
-                ticket.Env = vesme.theEnv;
-                ticket.SubmodelElement = vesme.theWrapper;
-            }
-
-        }
-
+        
         private async Task CommandBinding_GeneralDispatch(
             string cmd,
             AasxMenuItemBase menuItem,
@@ -165,7 +106,7 @@ namespace AasxPackageExplorer
 
             var scriptmode = ticket.ScriptMode;
 
-            FillSelectedItem(ticket);
+            Logic?.FillSelectedItem(DisplayElements.SelectedItem, ticket);
 
             //
             // Dispatch

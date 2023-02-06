@@ -80,6 +80,9 @@ namespace BlazorUI
 
         // public IList<VisualElementGeneric> ExpandedItems = new List<VisualElementGeneric>();
 
+        /// <summary>
+        /// Clears tree and selection, but not cache.
+        /// </summary>
         public void Clear()
         {
             TreeItems.Clear();
@@ -87,10 +90,18 @@ namespace BlazorUI
         }
 
         /// <summary>
-        /// Activates the caching of the "expanded" states of the tree, even if the tree is multiple
-        /// times rebuilt via <code>RebuildAasxElements</code>.
+        /// Clears only selection.
         /// </summary>
-        public void ActivateElementStateCache()
+		public void ClearSelection()
+		{
+			_selectedItems.Clear();
+		}
+
+		/// <summary>
+		/// Activates the caching of the "expanded" states of the tree, even if the tree is multiple
+		/// times rebuilt via <code>RebuildAasxElements</code>.
+		/// </summary>
+		public void ActivateElementStateCache()
         {
             this._treeLineCache = new TreeViewLineCache();
         }

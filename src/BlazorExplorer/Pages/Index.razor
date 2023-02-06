@@ -82,6 +82,13 @@
                             DialogueData="evs.DialogueData" />
                     }
 
+                    @if (evs.DialogueData is AnyUiDialogueDataDownloadFile)
+                    {
+                        <AnyUiFlyoutDownloadFile 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
                     @if (evs.DialogueData is AnyUiDialogueDataSelectAasEntity)
                     {
                         <AnyUiFlyoutSelectAasEntity 
@@ -1592,9 +1599,6 @@
         {
             if (cmd == "query" || cmd == "filerepoquery")
             {
-                await Session.CommandBinding_GeneralDispatch("open", new AasxMenuItem(), new AasxMenuActionTicket());
-                return;
-
                 var uc = new AnyUiDialogueDataSelectFromRepository("Select from: " + repo.Header);
                 uc.Items = repo.EnumerateItems().ToList();
                 if (await Session.DisplayContext.StartFlyoverModalAsync(uc)
@@ -1841,9 +1845,7 @@
         // update?
         if (update)
         {
-            Program.signalNewData(
-                new Program.NewDataAvailableArgs(
-                    Program.DataRedrawMode.None, Session.SessionId));
+            Session.RedrawRepos();
         }
     }
 

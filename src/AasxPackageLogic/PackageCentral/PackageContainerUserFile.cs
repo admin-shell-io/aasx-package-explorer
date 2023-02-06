@@ -153,7 +153,7 @@ namespace AasxPackageLogic.PackageCentral
                 createDirIfNeeded: false);
 		}
 
-        protected static string BuildUserFilePath(string fn, bool createDirIfNeeded = false)
+        public static string BuildUserFilePath(string fn, bool createDirIfNeeded = false)
         {
             // strip path information
             if (fn == null)

@@ -81,8 +81,12 @@
     <script src="_content/BlazorInputFile/inputfile.js"></script>
     <script>
         function BlazorDownloadFile(filename, contentType, content) {
-            // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content) to a Uint8Array to create the File
-            const data = base64DecToArr(content);
+            // Blazor .net3
+            // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content) 
+            // to a Uint8Array to create the File
+            // const data = base64DecToArr(content);
+            // For Blazor .net6.0, object marshalling seems to be transparent
+            const data = content;
 
             // Create the URL
 
@@ -104,8 +108,12 @@
         }
 
         function BlazorDisplayFile(filename, contentType, content) {
-            // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content) to a Uint8Array to create the File
-            const data = base64DecToArr(content);
+            // Blazor .net3
+            // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content)
+            // to a Uint8Array to create the File
+            // const data = base64DecToArr(content);
+            // For Blazor .net6.0, object marshalling seems to be transparent
+            const data = content;
 
             // Browser switch: Mozilla blocks display of PDF "block:... denied for scipt", therefore
             // switch to "octet-stream", then, funny enough, Mozilla will also DISPLAY PDF ..

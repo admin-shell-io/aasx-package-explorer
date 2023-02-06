@@ -89,15 +89,21 @@
 					@onclick="() => OnSelectLocationKind(AnyUiDialogueDataSaveFile.LocationKind.Download)" />
 				<label class="btn btn-outline-primary" for="btnradio1">Download</label>
 
-				<input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
+				@if (ddsf.AllowUserFiles)
+				{
+					<input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
 					checked="@(ddsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)"
 					@onclick="() => OnSelectLocationKind(AnyUiDialogueDataSaveFile.LocationKind.User)" />
-				<label class="btn btn-outline-primary" for="btnradio2">User</label>
+					<label class="btn btn-outline-primary" for="btnradio2">User</label>
+				}
 
-				<input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off"
+				@if (ddsf.AllowLocalFiles)
+				{
+					<input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off"
 					checked="@(ddsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Local)"
 					@onclick="() => OnSelectLocationKind(AnyUiDialogueDataSaveFile.LocationKind.Local)" />
-				<label class="btn btn-outline-primary" for="btnradio3">Local</label>
+					<label class="btn btn-outline-primary" for="btnradio3">Local</label>
+				}
 			</div>
 
 			<div class="col-12 mt-2">
@@ -121,13 +127,8 @@
 	[Parameter]
 	public AnyUiDialogueDataBase DialogueData { get; set; }
 
-	protected class FilterItem
-	{
-		public string Name;
-		public string Pattern;
-	}
-
-	protected List<FilterItem> _filterItems = new List<FilterItem>();
+	protected IList<AnyUiDialogueDataOpenFile.FilterItem> _filterItems = 
+		new List<AnyUiDialogueDataOpenFile.FilterItem>();
 
 	protected override void OnParametersSet()
 	{
@@ -142,55 +143,25 @@
 			return;
 
 		// filter items
-		if (ddsf.Filter?.HasContent() == true)
-		{
-			var parts = ddsf.Filter.Split('|');
-			for (int i = 0; i < parts.Length; i += 2)
-				_filterItems.Add(new FilterItem()
-				{
-					Name = parts[i],
-					Pattern = parts[i+1]
-				});
-		}
+		_filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ddsf?.Filter);
 
 		// pre-set filename
 		if (ddsf.ProposeFileName?.HasContent() == true)
 			ddsf.TargetFileName = ddsf.ProposeFileName;
 	}
 
-	protected void ApplyFilterIndexToFilename(bool final = false)
+	protected void ApplyFilterIndexToFilename(int final = 0)
 	{
 		if (DialogueData is AnyUiDialogueDataSaveFile ddsf)
 		{
 			if (ddsf.FilterIndex < 0 || _filterItems == null || ddsf.FilterIndex >= _filterItems.Count)
 				return;
 
-			var fi = _filterItems[ddsf.FilterIndex];
-			var m = Regex.Match(fi.Pattern, @"(\.\w+)");
-			if (!m.Success)
-				return;
-
-			var fiExt = m.Groups[1].ToString();
-			var fnExt = System.IO.Path.GetExtension(ddsf.TargetFileName);
-
-			if (!final)
-			{
-				// behaviour WITHIn the dialogue box
-
-				if (fnExt.HasContent())
-				{
-					ddsf.TargetFileName = ddsf.TargetFileName.Substring(0, ddsf.TargetFileName.Length - fnExt.Length)
-						+ fiExt;
-				}
-			}
-			else
-			{
-				// behaviour at the end
-				if (!fnExt.HasContent() && fiExt != "" && fiExt != "*")
-				{
-					ddsf.TargetFileName += fiExt;
-				}
-			}
+			ddsf.TargetFileName = AnyUiDialogueDataOpenFile.ApplyFilterItem(
+				fi: _filterItems[ddsf.FilterIndex],
+				fn: ddsf.TargetFileName,
+				final: final
+			);
 		}
 	}
 
@@ -228,7 +199,7 @@
 	{
 		if (result)
 		{
-			ApplyFilterIndexToFilename(final: true);
+			ApplyFilterIndexToFilename(final: 1);
 		}
 
 		EventSession?.EndModal(result);

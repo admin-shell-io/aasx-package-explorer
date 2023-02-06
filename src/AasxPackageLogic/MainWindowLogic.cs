@@ -84,7 +84,7 @@ namespace AasxPackageExplorer
         /// Add also to log.
         /// Do nothing, if not in scriptmode
         /// </summary>
-        public void LogErrorToTicketOrSilent(
+        public static void LogErrorToTicketOrSilentStatic(
             AasxMenuActionTicket ticket,
             string message)
         {
@@ -97,7 +97,7 @@ namespace AasxPackageExplorer
             Log.Singleton.Error(message);
         }
 
-        public void LogErrorToTicket(
+        public static void LogErrorToTicketStatic(
             AasxMenuActionTicket ticket,
             Exception ex,
             string where)
@@ -111,10 +111,30 @@ namespace AasxPackageExplorer
             Log.Singleton.Error(ex, where);
         }
 
-        /// <summary>
-        /// String manipulation to form a Json LD (linked data) from an input json.
-        /// </summary>
-        public static string SubTool_makeJsonLD(string json, int count)
+		/// <summary>
+		/// Only in scriptmode, set ticket result and exception to error.
+		/// Add also to log.
+		/// Do nothing, if not in scriptmode
+		/// </summary>
+		public void LogErrorToTicketOrSilent(
+			AasxMenuActionTicket ticket,
+			string message)
+		{
+            MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, message);
+		}
+
+		public void LogErrorToTicket(
+			AasxMenuActionTicket ticket,
+			Exception ex,
+			string where)
+		{
+            MainWindowLogic.LogErrorToTicketStatic(ticket, ex, where);
+		}
+
+		/// <summary>
+		/// String manipulation to form a Json LD (linked data) from an input json.
+		/// </summary>
+		public static string SubTool_makeJsonLD(string json, int count)
         {
             int total = json.Length;
             string header = "";

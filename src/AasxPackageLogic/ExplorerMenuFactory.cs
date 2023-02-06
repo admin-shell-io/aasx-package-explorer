@@ -244,7 +244,7 @@ namespace AasxPackageExplorer
                     .AddWpf(name: "ServerPluginOPCUA", header: "Plugin: OPC UA …")
                     .AddWpf(name: "ServerPluginMQTT", header: "Plugin: MQTT …"))
                 .AddSeparator(filter: AasxMenuFilter.NotBlazor)
-                .AddWpf(name: "Exit", header: "_Exit", inputGesture: "Alt+F4"));
+                .AddWpfBlazor(name: "Exit", header: "_Exit", inputGesture: "Alt+F4"));
 
             //
             // Workspace

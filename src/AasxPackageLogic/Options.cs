@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Web;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
@@ -80,7 +81,7 @@ namespace AasxPackageLogic
             }
         }
 
-        public enum ReportOptionsFormat { Markdown }
+        public enum ReportOptionsFormat { Markdown, Html }
 
         private static string MdEsc(string st)
         {
@@ -90,7 +91,12 @@ namespace AasxPackageLogic
             return st;
         }
 
-        public static string ReportOptions(ReportOptionsFormat fmt,
+		private static string HtmlEsc(string st)
+		{			
+			return HttpUtility.HtmlEncode(st);
+		}
+
+		public static string ReportOptions(ReportOptionsFormat fmt,
             OptionsInformation options = null)
         {
             var sb = new StringBuilder();
@@ -99,7 +105,7 @@ namespace AasxPackageLogic
             // small lambdas
             //
 
-            Action appendTableHeader = () =>
+            Action appendTableHeaderMd = () =>
             {
                 sb.AppendLine($"| {"JSON option",-35} | {"Command line",-20} " +
                                     $"| {"Argument",-20} | Description |");
@@ -107,17 +113,29 @@ namespace AasxPackageLogic
                     $"|-{new String('-', 20)}-|-------------|");
             };
 
-            Action<string, string, string, string> appendTableRow = (json, cmd, arg, description) =>
+            Action<string, string, string, string> appendTableRowMd = (json, cmd, arg, description) =>
             {
                 sb.AppendLine($"| {MdEsc(json),-35} | {MdEsc(cmd),-20} " +
                     $"| {MdEsc(arg),-20} | {MdEsc(description)} |");
             };
 
-            //
-            // Regular options
-            //
+			Action appendTableHeaderHtml = () =>
+			{
+                sb.AppendLine($"<tr><th>JSON option</th><th>Command line</th>" +
+                    $"<th>Argument</th><th>Description</th></tr>");
+			};
 
-            if (fmt == ReportOptionsFormat.Markdown)
+			Action<string, string, string, string> appendTableRowHtml = (json, cmd, arg, description) =>
+			{
+				sb.AppendLine($"<tr><td>{HtmlEsc(json)}</td><td>{HtmlEsc(cmd)}</td>" +
+					$"<td>{HtmlEsc(arg)}</td><td>{HtmlEsc(description)}</td></tr>");
+			};
+
+			//
+			// Regular options
+			//
+
+			if (fmt == ReportOptionsFormat.Markdown)
             {
                 sb.AppendLine("# Regular options for JSON and command line");
                 sb.AppendLine();
@@ -126,6 +144,44 @@ namespace AasxPackageLogic
                     exectable or in a JSON-file for configuration (via the ""-read-json"" option)."));
                 sb.AppendLine();
             }
+
+            if (fmt == ReportOptionsFormat.Html)
+            {
+				var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
+					@"<!doctype html>
+                    <html lang=en>
+                    <head>
+                    <style>
+                    body {
+                      background-color: #FFFFE0;
+                      font-size: small;
+                      font-family: Arial, Helvetica, sans-serif;
+                    }
+                    table {
+                      font-family: arial, sans-serif;
+                      border-collapse: collapse;
+                      width: 100%;
+                    }
+                    tr:nth-child(odd) {
+                      background-color: #FFFFF8;
+                    }
+                    td, th {
+                      border: 1px solid #dddddd;
+                      text-align: left;
+                      padding: 8px;
+                    }
+                    </style>
+                    <meta charset=utf-8>
+                    <title>Options information</title>
+                    </head>
+                    <body>
+                    <h1>Regular options for JSON and command line</h1>
+                    <h4>The following options can be used either directly in the command line of the 
+                    exectable or in a JSON-file for configuration (via the ""-read-json"" option).</h4>
+                    <table>");
+
+                sb.AppendLine(htmlHeader);
+			}
 
             var fields = typeof(OptionsInformation).GetFields(BindingFlags.Public | BindingFlags.Instance);
             var first = true;
@@ -139,14 +195,24 @@ namespace AasxPackageLogic
                             if (first)
                             {
                                 first = false;
-                                appendTableHeader();
+                                appendTableHeaderMd();
                             }
-                            appendTableRow(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
+                            appendTableRowMd(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
                         }
-                    }
+
+						if (fmt == ReportOptionsFormat.Html)
+						{
+							if (first)
+							{
+								first = false;
+								appendTableHeaderHtml();
+							}
+							appendTableRowHtml(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
+						}
+					}
             }
 
-            sb.AppendLine();
+            sb.AppendLine("</table>");
 
             //
             // Special options
@@ -160,13 +226,25 @@ namespace AasxPackageLogic
                     @"The following options are also be provided."));
                 sb.AppendLine();
 
-                appendTableHeader();
-                appendTableRow("", "-read-json", "<path>", "Reads a JSON formatted options file.");
-                appendTableRow("", "-write-json", "<path>", "Writes the currently loaded options " +
+                appendTableHeaderMd();
+                appendTableRowMd("", "-read-json", "<path>", "Reads a JSON formatted options file.");
+                appendTableRowMd("", "-write-json", "<path>", "Writes the currently loaded options " +
                     "into a JSON formatted file.");
             }
 
-            sb.AppendLine();
+            if (fmt == ReportOptionsFormat.Html)
+            {
+				sb.AppendLine("<h1>Special options for JSON and command line</h1>");
+				sb.AppendLine("<h4>The following options are also be provided.</h4>");
+                sb.AppendLine("<table>");
+				appendTableHeaderHtml();
+				appendTableRowHtml("", "-read-json", "<path>", "Reads a JSON formatted options file.");
+				appendTableRowHtml("", "-write-json", "<path>", "Writes the currently loaded options " +
+					"into a JSON formatted file.");
+				sb.AppendLine("</table>");
+			}
+
+			sb.AppendLine();
 
             //
             // Report current options?
@@ -190,13 +268,30 @@ namespace AasxPackageLogic
 
                     sb.AppendLine();
                 }
+
+				sb.AppendLine("<h1>Current options</h1>");
+				sb.AppendLine("<h4>The following options are currently loaded or set by default.</h4>");
+
+				sb.AppendLine("<pre>");
+                sb.AppendLine(HtmlEsc(jsonStr));
+				sb.AppendLine("</pre>");
+			}
+
+            //
+            // Footer
+            //
+
+            if (fmt == ReportOptionsFormat.Markdown)
+            {
+                sb.AppendLine("</body>");
+                sb.AppendLine("</html>");
             }
 
-            //
-            // End of report
-            //
+			//
+			// End of report
+			//
 
-            return sb.ToString();
+			return sb.ToString();
         }
     }
 
@@ -356,10 +451,15 @@ namespace AasxPackageLogic
             Cmd = "-user-name")]
         public string UserName = null;
 
-        /// <summary>
-        /// Enumeration of generic accent color names
-        /// </summary>
-        public enum ColorNames
+		[OptionDescription(Description =
+	        "If true, will allow the storage of local files. The server functions might restrict this.",
+	        Cmd = "-allow-local-files")]
+		public bool AllowLocalFiles = true;
+
+		/// <summary>
+		/// Enumeration of generic accent color names
+		/// </summary>
+		public enum ColorNames
         {
             LightAccentColor = 0, DarkAccentColor, DarkestAccentColor, FocusErrorBrush, FocusErrorColor
         };

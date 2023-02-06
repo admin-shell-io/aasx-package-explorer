@@ -57,6 +57,65 @@ namespace AasxPackageLogic
             return AnyUiMessageBoxResult.Cancel;
         }
 
+        public void FillSelectedItem(
+            VisualElementGeneric selectedItem, AasxMenuActionTicket ticket = null)
+        {
+            // access
+            if (ticket == null || selectedItem == null)
+                return;
+
+            // basics
+            var ve = selectedItem;
+            if (ve != null)
+            {
+                ticket.MainDataObject = ve.GetMainDataObject();
+                ticket.DereferencedMainDataObject = ve.GetDereferencedMainDataObject();
+            }
+
+            // set
+            if (selectedItem is VisualElementEnvironmentItem veei)
+            {
+                ticket.Package = veei.thePackage;
+                ticket.Env = veei.theEnv;
+            }
+
+            if (selectedItem is VisualElementAdminShell veaas)
+            {
+                ticket.Package = veaas.thePackage;
+                ticket.Env = veaas.theEnv;
+                ticket.AAS = veaas.theAas;
+            }
+
+            if (selectedItem is VisualElementAsset veasset)
+            {
+                ticket.Env = veasset.theEnv;
+                ticket.AssetInfo = veasset.theAsset;
+            }
+
+            if (selectedItem is VisualElementSubmodelRef vesmr)
+            {
+                ticket.Package = vesmr.thePackage;
+                ticket.Env = vesmr.theEnv;
+                ticket.Submodel = vesmr.theSubmodel;
+                ticket.SubmodelRef = vesmr.theSubmodelRef;
+            }
+
+            if (selectedItem is VisualElementSubmodel vesm)
+            {
+                ticket.Package = PackageCentral?.Main;
+                ticket.Env = vesm.theEnv;
+                ticket.Submodel = vesm.theSubmodel;
+            }
+
+            if (selectedItem is VisualElementSubmodelElement vesme)
+            {
+                ticket.Package = PackageCentral?.Main;
+                ticket.Env = vesme.theEnv;
+                ticket.SubmodelElement = vesme.theWrapper;
+            }
+
+        }
+
 #pragma warning disable CS1998
         // ReSharper disable CSharpWarnings::CS1998
 

@@ -129,15 +129,29 @@ namespace BlazorUI.Data
         /// </summary>
         public bool HintMode = true;
 
-        ///// <summary>
-        ///// Content of the status line. View model for a blazor component; therefore too frequent
-        ///// updates to be avoided.
-        ///// </summary>
-        //public string Message = "Initialized.";
+		/// <summary>
+		/// Element of stack of editing locations. For faster jumping.
+		/// </summary>
+		protected class EditingLocation
+		{
+			public object MainDataObject;
+			public bool IsExpanded;
+		}
 
-        // old stuff, to be refactored
+        /// <summary>
+        /// Stack of editing location. For faster jumping.
+        /// </summary>
+		protected List<EditingLocation> _editingLocations = new List<EditingLocation>();
 
-        public AdminShellPackageEnv env = null;
+		///// <summary>
+		///// Content of the status line. View model for a blazor component; therefore too frequent
+		///// updates to be avoided.
+		///// </summary>
+		//public string Message = "Initialized.";
+
+		// old stuff, to be refactored
+
+		public AdminShellPackageEnv env = null;
         public IndexOfSignificantAasElements significantElements = null;
 
         public string[] aasxFiles = new string[1];
@@ -707,14 +721,20 @@ namespace BlazorUI.Data
             Log.Singleton.Error("Implement REBUILD TREE");
         }
 
-        /// <summary>
-        /// This functions prepares display data and element panel to be rendered
-        /// by a razor page.
-        /// Note: in BlazorUI was in Index.razor; however complex code and better
-        /// maintained in Session.
-        /// </summary>
-        /// <returns>If contents could be rendered</returns>
-        public bool PrepareDisplayDataAndElementPanel(
+		public void ClearPasteBuffer()
+		{
+			if (helper.theCopyPaste != null)
+				helper.theCopyPaste.Clear();
+		}
+
+		/// <summary>
+		/// This functions prepares display data and element panel to be rendered
+		/// by a razor page.
+		/// Note: in BlazorUI was in Index.razor; however complex code and better
+		/// maintained in Session.
+		/// </summary>
+		/// <returns>If contents could be rendered</returns>
+		public bool PrepareDisplayDataAndElementPanel(
             IJSRuntime jsRuntime,
             AnyUiDisplayContextHtml displayContext, 
             ref DispEditHelperMultiElement helper,
@@ -1077,5 +1097,21 @@ namespace BlazorUI.Data
             // redraw view
             RedrawElementView();
         }
-    }
+
+		public void UiAssertFileRepository(bool visible)
+        {
+            // for Blazor: nothing
+            ;
+        }
+
+        // REFACTOR: for later refactoring
+        public void RedrawRepos()
+        {
+            // Blazor: simply redraw all
+			Program.signalNewData(
+				new Program.NewDataAvailableArgs(
+					Program.DataRedrawMode.None, SessionId));
+		}
+
+	}
 }

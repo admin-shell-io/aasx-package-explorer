@@ -12,12 +12,14 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="LICENSE.txt" />
+    <None Remove="Resources\BuildDate.txt" />
     <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\BuildDate.txt" />
   </ItemGroup>
   
   <ItemGroup>
@@ -50,4 +52,7 @@
     -->
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="echo %25date%25 &gt; &quot;$(ProjectDir)\Resources\BuildDate.txt&quot;" />
+  </Target>
 </Project>
