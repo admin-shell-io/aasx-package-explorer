@@ -980,7 +980,7 @@ namespace AnyUi
 		/// Selects a text either from user or from ticket.
 		/// </summary>
 		/// <returns>Success</returns>
-		public async Task<bool> MenuSelectTextToTicket(
+		public async Task<bool> MenuSelectTextToTicketAsync(
 			AasxMenuActionTicket ticket,
 			string argName,
 			string caption,

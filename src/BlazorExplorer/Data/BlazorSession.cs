@@ -129,10 +129,14 @@ namespace BlazorUI.Data
         /// </summary>
         public bool HintMode = true;
 
-		/// <summary>
-		/// Element of stack of editing locations. For faster jumping.
-		/// </summary>
-		protected class EditingLocation
+        //
+        // PROTECTED
+        //
+
+        /// <summary>
+        /// Element of stack of editing locations. For faster jumping.
+        /// </summary>
+        protected class EditingLocation
 		{
 			public object MainDataObject;
 			public bool IsExpanded;
@@ -143,15 +147,29 @@ namespace BlazorUI.Data
         /// </summary>
 		protected List<EditingLocation> _editingLocations = new List<EditingLocation>();
 
-		///// <summary>
-		///// Content of the status line. View model for a blazor component; therefore too frequent
-		///// updates to be avoided.
-		///// </summary>
-		//public string Message = "Initialized.";
+        /// <summary>
+        /// Remembers user input for menu action
+        /// </summary>
+        protected static string _userLastPutUrl = "http://???:51310";
 
-		// old stuff, to be refactored
+        /// <summary>
+        /// Remembers user input for menu action
+        /// </summary>
+        protected static string _userLastGetUrl = "http://???:51310";
 
-		public AdminShellPackageEnv env = null;
+        //
+        // OLD
+        //
+
+        ///// <summary>
+        ///// Content of the status line. View model for a blazor component; therefore too frequent
+        ///// updates to be avoided.
+        ///// </summary>
+        //public string Message = "Initialized.";
+
+        // old stuff, to be refactored
+
+        public AdminShellPackageEnv env = null;
         public IndexOfSignificantAasElements significantElements = null;
 
         public string[] aasxFiles = new string[1];

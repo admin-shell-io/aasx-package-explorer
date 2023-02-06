@@ -13,9 +13,8 @@ PackageExplorer. Therefore design goals:
 
 ## TODO
 
-* plugins
-* cut-copy does not refresh screen
-* status line?
+* cut-copy does not refresh screen?
+* save repo
 
 ## Notes
 

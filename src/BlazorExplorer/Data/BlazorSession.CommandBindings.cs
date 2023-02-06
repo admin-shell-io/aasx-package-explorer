@@ -21,13 +21,18 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using AnyUi;
 using BlazorExplorer;
 using ImageMagick;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.JSInterop;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
+using AasCore.Aas3_0_RC02;
 
 namespace BlazorUI.Data
 {
@@ -882,13 +887,525 @@ namespace BlazorUI.Data
 						$"while initializing last recently used file in {lruFn}.");
 				}
 			}
-		}
 
+            // REFACTOR: 0% change
+            if (cmd == "opcread")
+            {
+                // start
+                ticket?.StartExec();
 
-		// ---------------------------------------------------------------------------
-		#region Utilities
+                // further to logic
+                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
+                // update
+                RedrawAllAasxElements();
+                RedrawElementView();
+            }
 
-		#endregion
-	}
+            // REFACTOR: 10% change: async
+            if (cmd == "submodelread")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Read Submodel from JSON data",
+                    "Submodel_" + ticket?.Submodel?.IdShort + ".json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    "Submodel Read: No valid filename.")))
+                    return;
+
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Read");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "submodelwrite")
+            {
+                // start
+                ticket.StartExec();
+
+                // filename
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Write Submodel to JSON data",
+                    "Submodel_" + ticket.Submodel?.IdShort + ".json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    "Submodel Read: No valid filename.")))
+                    return;
+
+                // do it directly
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Write");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "submodelput")
+            {
+                // start
+                ticket.StartExec();
+
+                // URL
+                if (!(await DisplayContext.MenuSelectTextToTicketAsync(
+                    ticket, "URL",
+                    "REST server adress:",
+                    _userLastPutUrl,
+                    "Submodel Put: No valid URL selected,")))
+                    return;
+
+                _userLastPutUrl = ticket["URL"] as string;
+
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Put");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "submodelget")
+            {
+                // start
+                ticket?.StartExec();
+
+                // URL
+                if (!(await DisplayContext.MenuSelectTextToTicketAsync(
+                    ticket, "URL",
+                    "REST server adress:",
+                    _userLastGetUrl,
+                    "Submodel Get: No valid URL selected,")))
+                    return;
+
+                _userLastGetUrl = ticket["URL"] as string;
+
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Get");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "rdfread")
+            {
+                // filename
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select RDF file to be imported",
+                    null,
+                    "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*",
+                    "RDF Read: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    // do it
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+
+                    // redisplay
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex,
+                        "When importing, an error occurred");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "bmecatimport")
+            {
+                // filename
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select BMEcat file to be imported",
+                    null,
+                    "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*",
+                    "RDF Read: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex,
+                        "When importing BMEcat, an error occurred");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "csvimport")
+            {
+                // filename
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select CSF file to be imported",
+                    null,
+                    "CSV files (*.CSV)|*.csv|All files (*.*)|*.*",
+                    "CSF inmport: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex,
+                        "When importing CSV, an error occurred");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "submodeltdimport")
+            {
+                // filename
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select Thing Description (TD) file to be imported",
+                    null,
+                    "JSON files (*.JSONLD)|*.jsonld",
+                    "TD import: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    // delegate futher
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+
+                    // redisplay
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex,
+                        "When importing JSON LD for Thing Description, an error occurred");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "submodeltdexport")
+            {
+                // filename
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Thing Description (TD) export",
+                    "Submodel_" + ticket.Submodel?.IdShort + ".jsonld",
+                    "JSON files (*.JSONLD)|*.jsonld",
+                    "Thing Description (TD) export: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    // delegate futher
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex,
+                        "When exporting Thing Description (TD), an error occurred");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "opcuaimportnodeset")
+            {
+                // filename
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select OPC UA Nodeset to be imported",
+                    null,
+                    "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*",
+                    "OPC UA Nodeset import: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    // do it
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+
+                    // redisplay
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex,
+                        "When importing OPC UA Nodeset, an error occurred");
+                }
+            }
+
+            // REFACTOR: WPF required
+            if (cmd == "importdictsubmodel")
+            {
+                Logic.LogErrorToTicket(ticket, "ImportDictSubmodel not implemented, yet.");
+            }
+
+            // REFACTOR: WPF required
+            if (cmd == "importdictsubmodelelements")
+            {
+                Logic.LogErrorToTicket(ticket, "ImportDictSubmodelElements not implemented, yet.");
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "importaml")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select AML file to be imported",
+                    null,
+                    "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*",
+                    "Import AML: No valid filename.")))
+                    return;
+
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    this.RestartUIafterNewPackage();
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "exportaml")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select AML file to be exported",
+                    "new.aml",
+                    "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
+                    "*.aml|All files (*.*)|*.*",
+                    "Export AML: No valid filename.",
+                    argFilterIndex: "FilterIndex")))
+                    return;
+
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
+                }
+            }
+
+            // REFACTOR: TODO
+            if (cmd == "exportcst")
+            {
+                // start
+                ticket?.StartExec();
+
+                Logic?.LogErrorToTicket(ticket, "Currently, this export is only implemented in AasxToolkit!");
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "exportjsonschema")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename prepare
+                var fnPrep = "" + (DisplayElements.SelectedItem?
+                        .GetDereferencedMainDataObject() as Aas.IReferable)?.IdShort;
+                if (!fnPrep.HasContent())
+                    fnPrep = "new";
+
+                // filename
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select JSON schema file for Submodel templates to be written",
+                    $"Submodel_Schema_{fnPrep}.json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    "Export JSON schema: No valid filename.",
+                    argFilterIndex: "FilterIndex")))
+                    return;
+
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "When exporting JSON schema, an error occurred");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "opcuai4aasexport")
+            {
+                // start
+                ticket.StartExec();
+
+                // try to access I4AAS export information
+                try
+                {
+                    var xstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                        "AasxPackageLogic.Resources.i4AASCS.xml");
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "when accessing i4AASCS.xml mapping types.");
+                    return;
+                }
+                Log.Singleton.Info("Mapping types loaded.");
+
+                // filename
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select Nodeset file to be exported",
+                    "new.xml",
+                    "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
+                    "Export i4AAS based OPC UA nodeset: No valid filename.")))
+                    return;
+
+                // ReSharper enable PossibleNullReferenceException
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
+                }
+            }
+
+            // REFACTOR: 10% change: async
+            if (cmd == "opcuai4aasimport")
+            {
+                // filename
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+                ticket, "File",
+                    "Select Nodeset file to be imported",
+                    "Document",
+                    "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
+                    "Import i4AAS based OPC UA nodeset: No valid filename.")))
+                    return;
+
+                // do
+                try
+                {
+                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+
+                    // TODO (MIHO, 2022-11-17): not very elegant
+                    if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")
+                        && ticket.PostResults["TakeOver"] is AdminShellPackageEnv pe)
+                        PackageCentral.MainItem.TakeOver(pe);
+
+                    RestartUIafterNewPackage();
+                }
+                catch (Exception ex)
+                {
+                    Logic?.LogErrorToTicket(ticket, ex, "when importing i4AAS based OPC UA mapping.");
+                }
+            }
+
+            // REFACTOR: WPF required
+            if (cmd == "opcuaexportnodesetuaplugin")
+            {
+                Logic.LogErrorToTicket(ticket, "OpcUaExportNodesetUaPlugin not implemented, yet.");
+            }
+
+            // REFACTOR: WPF required
+            if (cmd == "serverrest"
+                || cmd == "mqttpub"
+                || cmd == "connectintegrated"
+                || cmd == "connectsecure"
+                || cmd == "connectrest")
+            {
+                Logic.LogErrorToTicket(ticket, "Servers not implemented, yet.");
+            }
+
+            // REFACTOR: 20% change: async, other serialization, clipboard
+            if (cmd == "copyclipboardelementjson")
+            {
+                // get the selected element
+                var ve = DisplayElements.SelectedItem;
+
+                // allow only some elements
+                if (!(ve is VisualElementConceptDescription
+                    || ve is VisualElementSubmodelElement
+                    || ve is VisualElementAdminShell
+                    || ve is VisualElementAsset
+                    || ve is VisualElementOperationVariable
+                    || ve is VisualElementReference
+                    || ve is VisualElementSubmodel
+                    || ve is VisualElementSubmodelRef))
+                    ve = null;
+
+                // need to have business object
+                var mdo = ve?.GetMainDataObject();
+
+                if (ve == null || mdo == null || !(mdo is IClass))
+                {
+                    await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "No valid element selected.", "Copy selected elements",
+                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                    return;
+                }
+
+                // ok, for Serialization we just want the plain element with no BLOBs..
+                var jsonStr = Aas.Jsonization.Serialize.ToJsonObject(mdo as IClass)
+                    .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                    {
+                        WriteIndented = true
+                    });
+
+                // copy to clipboard
+                if (jsonStr != "")
+                {
+                    DisplayContext.ClipboardSet(new AnyUiClipboardData(jsonStr));
+                    Log.Singleton.Info("Copied selected element to clipboard.");
+                }
+                else
+                {
+                    Log.Singleton.Info("No JSON text could be generated for selected element.");
+                }
+            }
+        }
+
+    }
 }
