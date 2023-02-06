@@ -23,6 +23,7 @@ using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using BlazorExplorer;
+using ImageMagick;
 using Microsoft.JSInterop;
 
 namespace BlazorUI.Data
@@ -221,6 +222,120 @@ namespace BlazorUI.Data
 				}
 
 				Log.Singleton.Info("AASX saved successfully: {0}", PackageCentral.MainItem.Filename);
+			}
+
+            // REFACTOR: 10% change
+            if (cmd == "saveas")
+            {
+                // start
+                ticket.StartExec();
+
+                // open?
+                if (!PackageCentral.MainAvailable || PackageCentral.MainItem.Container == null)
+                {
+                    Logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
+                    return;
+                }
+
+                var uc = new AnyUiDialogueDataSaveFile("Test Caption", message: "Halli hallo",
+					filter: "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" + 
+                    "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|" +
+				    "All files (*.*)|*.*", proposeFn: "Vorschlag");
+                uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
+                await DisplayContext.StartFlyoverModalAsync(uc);
+
+				//// shall be a local file?!
+				//var isLocalFile = PackageCentral.MainItem.Container is PackageContainerLocalFile;
+				//if (!isLocalFile)
+				//    if (!ticket.ScriptMode 
+				//        && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+				//        "Current AASX file is not a local file. Proceed and convert to local AASX file?",
+				//        "Save", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand))
+				//        return;
+
+				//// filename
+				//if (!MenuSelectSaveFilename(
+				//    ticket, "File",
+				//    "Save AASX package",
+				//    PackageCentral.Main.Filename,
+				//    "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
+				//        (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
+				//        "All files (*.*)|*.*",
+				//    out var fn, out var filterIndex,
+				//    "Save AASX: No valid filename."))
+				//    return;
+
+				//// do
+				//try
+				//{
+				//    // if not local, do a bit of voodoo ..
+				//    if (!isLocalFile && PackageCentral.MainItem.Container != null)
+				//    {
+				//        // establish local
+				//        if (!await PackageCentral.MainItem.Container.SaveLocalCopyAsync(
+				//            fn,
+				//            runtimeOptions: PackageCentral.CentralRuntimeOptions))
+				//        {
+				//            // Abort
+				//            Logic?.LogErrorToTicket(ticket, 
+				//                "Not able to copy current AASX file to local file. Aborting!");
+				//            return;
+				//        }
+
+				//        // re-load
+				//        UiLoadPackageWithNew(
+				//            PackageCentral.MainItem, null, fn, onlyAuxiliary: false,
+				//            storeFnToLRU: fn);
+				//        return;
+				//    }
+
+				//    //
+				//    // ELSE .. already local
+				//    //
+
+				//    // preferred format
+				//    var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
+				//    if (filterIndex == 1)
+				//        prefFmt = AdminShellPackageEnv.SerializationFormat.Xml;
+				//    if (filterIndex == 2)
+				//        prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
+
+				//    // save 
+				//    RememberForInitialDirectory(fn);
+				//    await PackageCentral.MainItem.SaveAsAsync(fn, prefFmt: prefFmt);
+
+				//    // backup (only for AASX)
+				//    if (filterIndex == 0)
+				//        if (Options.Curr.BackupDir != null)
+				//            PackageCentral.MainItem.Container.BackupInDir(
+				//                System.IO.Path.GetFullPath(Options.Curr.BackupDir),
+				//                Options.Curr.BackupFiles,
+				//                PackageContainerBase.BackupType.FullCopy);
+
+				//    // as saving changes the structure of pending supplementary files, re-display
+				//    RedrawAllAasxElements();
+				//}
+				//catch (Exception ex)
+				//{
+				//    Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
+				//    return;
+				//}
+				//Log.Singleton.Info("AASX saved successfully as: {0}", fn);
+
+				//// LRU?
+				//// record in LRU?
+				//try
+				//{
+				//    var lru = PackageCentral?.Repositories?.FindLRU();
+				//    if (lru != null)
+				//        lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, fn);
+				//}
+				//catch (Exception ex)
+				//{
+				//    Log.Singleton.Error(
+				//        ex, $"When managing LRU files");
+				//    return;
+				//}
 			}
 		}
 

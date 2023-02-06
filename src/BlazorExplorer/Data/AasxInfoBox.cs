@@ -58,9 +58,10 @@ namespace BlazorUI.Data
                 return;
 
             // basic data
-            AasId = aas.Id;
+            if (aas.Id?.HasContent() == true)
+                AasId = aas.Id;
             AssetId = "<id missing!>";
-            if (aas.AssetInformation != null)
+            if (aas.AssetInformation?.GlobalAssetId != null)
                 AssetId = aas.AssetInformation.GlobalAssetId.ToStringExtended(2);
 
             // image data?

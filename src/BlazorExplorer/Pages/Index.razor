@@ -70,7 +70,14 @@
 
                     @if (evs.DialogueData is AnyUiDialogueDataOpenFile)
                     {
-                        <AnyUiFlyoutSelectFile 
+                        <AnyUiFlyoutOpenFile 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataSaveFile)
+                    {
+                        <AnyUiFlyoutSaveFile 
                             EventSession="evs"
                             DialogueData="evs.DialogueData" />
                     }

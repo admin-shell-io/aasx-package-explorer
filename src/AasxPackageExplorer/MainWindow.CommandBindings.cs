@@ -322,10 +322,8 @@ namespace AasxPackageExplorer
                             runtimeOptions: PackageCentral.CentralRuntimeOptions))
                         {
                             // Abort
-                            MessageBoxFlyoutLogOrShow(
-                                scriptmode, StoredPrint.Color.Red,
-                                "Not able to copy current AASX file to local file. Aborting!",
-                                "Save", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Hand);
+                            Logic?.LogErrorToTicket(ticket,
+                                "Not able to copy current AASX file to local file. Aborting!");
                             return;
                         }
 

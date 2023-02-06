@@ -128,9 +128,16 @@
        <switch>
 	        <foreignObject width="52.565403" height="48.94722" x="14.050892" y="82.027206">
                 <div style="margin: 2px;">
-                    <img src=data:image;base64,@(InfoBox?.HtmlImageData)
-                        style="max-width:100%;display:block;margin-left:auto;margin-right:auto; margin-top: auto" alt="Thumbnail Image" />
-                </div>
+                    @if (InfoBox?.HtmlImageData?.HasContent() == true)
+                    {
+                        <img src=data:image;base64,@(InfoBox?.HtmlImageData)
+                            style="max-width:100%;display:block;margin-left:auto;margin-right:auto; margin-top: auto" alt="Thumbnail Image" />
+                    }
+                    else
+                    {
+                        <p style="@styleAssetId" >@("<no thumbnail>")</p>
+                    }
+                    </div>
 		    </foreignObject>
 	   </switch>
        

@@ -164,7 +164,68 @@ namespace AnyUi
         }
     }
 
-    public class AnyUiDialogueDataTextBox : AnyUiDialogueDataBase
+	public class AnyUiDialogueDataSaveFile : AnyUiDialogueDataEmpty
+	{
+		/// <summary>
+		/// Filename, under which the file shall be available.
+		/// </summary>
+		public string TargetFileName;
+
+		/// <summary>
+		/// Filter specification for certain file extension. Description and
+		/// filter pattern each delimited by pipe ("|").
+		/// Example: "AASX package files (*.aasx)|*.aasx|All files (*.*)|*.*"
+		/// </summary>
+		public string Filter;
+
+		/// <summary>
+		/// Filename, which is initially proposed when the dialogue is opened.
+		/// </summary>
+		public string ProposeFileName;
+
+		/// <summary>
+		/// If true will offer the user to select a user file (only Blazor) or
+		/// a local file.
+		/// </summary>
+		public bool AllowUserFiles;
+
+        /// <summary>
+        /// This dialog distincts 3 kinds of location, how a "save as" file could
+        /// be provided to the user.
+        /// </summary>
+        public enum LocationKind { Download, User, Local }
+
+        /// <summary>
+        /// Index of the filter selected by the user-
+        /// </summary>
+        public int FilterIndex;
+
+		/// <summary>
+		/// True, if a user file name was selected instead of a local file.
+		/// </summary>
+		public LocationKind Location;
+
+		public AnyUiDialogueDataSaveFile(
+			string caption = "",
+			double? maxWidth = null,
+			string message = null,
+			string filter = null,
+			string proposeFn = null)
+			: base(caption, maxWidth)
+		{
+			HasModalSpecialOperation = true;
+			Caption = "Open file";
+			if (caption != null)
+				Caption = caption;
+			Message = "Please select a file via dedicated dialogue.";
+			if (message != null)
+				Message = message;
+			Filter = filter;
+			ProposeFileName = proposeFn;
+		}
+	}
+
+	public class AnyUiDialogueDataTextBox : AnyUiDialogueDataBase
     {
         public enum DialogueOptions { None, FilterAllControlKeys };
 
