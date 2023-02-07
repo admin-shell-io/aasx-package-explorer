@@ -44,21 +44,48 @@ namespace AasxPackageExplorer
     /// </summary>
     public interface IMainWindow
     {
-		/// <summary>
-		/// This function serve as a kind of unified contact point for all kind
-		/// of business functions to trigger loading an item to PackageExplorer data 
-		/// represented by an item of PackageCentral. This function triggers UI procedures.
-		/// </summary>
-		/// <param name="packItem">PackageCentral item to load to</param>
-		/// <param name="takeOverEnv">Already loaded environment to take over (alternative 1)</param>
-		/// <param name="loadLocalFilename">Local filename to read (alternative 2)</param>
-		/// <param name="info">Human information what is loaded</param>
-		/// <param name="onlyAuxiliary">Treat as auxiliary load, not main item load</param>
-		/// <param name="doNotNavigateAfterLoaded">Disable automatic navigate to behaviour</param>
-		/// <param name="takeOverContainer">Already loaded container to take over (alternative 3)</param>
-		/// <param name="storeFnToLRU">Store this filename into last recently used list</param>
-		/// <param name="indexItems">Index loaded contents, e.g. for animate of event sending</param>
-		void UiLoadPackageWithNew(
+        /// <summary>
+        /// Clear AAS info, tree section, browser window
+        /// </summary>
+        public void ClearAllViews();
+
+        /// <summary>
+        /// Redraw tree elements (middle), AAS entitty (right side)
+        /// </summary>
+        void CommandExecution_RedrawAll();
+
+        /// <summary>
+        /// Redraw window title, AAS info?, entity view (right), element tree (middle)
+        /// </summary>
+        /// <param name="keepFocus">Try remember which element was focussed and focus it after redrawing.</param>
+        /// <param name="nextFocusMdo">Focus a new main data object attached to an tree element.</param>
+        /// <param name="wishExpanded">If focussing, expand this item.</param>
+        public void RedrawAllAasxElements(
+            bool keepFocus = false,
+            object nextFocusMdo = null,
+            bool wishExpanded = true);
+
+        /// <summary>
+        /// Based on save information, will redraw the AAS entity (element) view (right).
+        /// </summary>
+        /// <param name="hightlightField">Highlight field (for find/ replace)</param>
+        public void RedrawElementView(DispEditHighlight.HighlightFieldInfo hightlightField = null);
+
+        /// <summary>
+        /// This function serve as a kind of unified contact point for all kind
+        /// of business functions to trigger loading an item to PackageExplorer data 
+        /// represented by an item of PackageCentral. This function triggers UI procedures.
+        /// </summary>
+        /// <param name="packItem">PackageCentral item to load to</param>
+        /// <param name="takeOverEnv">Already loaded environment to take over (alternative 1)</param>
+        /// <param name="loadLocalFilename">Local filename to read (alternative 2)</param>
+        /// <param name="info">Human information what is loaded</param>
+        /// <param name="onlyAuxiliary">Treat as auxiliary load, not main item load</param>
+        /// <param name="doNotNavigateAfterLoaded">Disable automatic navigate to behaviour</param>
+        /// <param name="takeOverContainer">Already loaded container to take over (alternative 3)</param>
+        /// <param name="storeFnToLRU">Store this filename into last recently used list</param>
+        /// <param name="indexItems">Index loaded contents, e.g. for animate of event sending</param>
+        void UiLoadPackageWithNew(
 			PackageCentralItem packItem,
 			AdminShellPackageEnv takeOverEnv = null,
 			string loadLocalFilename = null,
@@ -68,5 +95,11 @@ namespace AasxPackageExplorer
 			PackageContainerBase takeOverContainer = null,
 			string storeFnToLRU = null,
 			bool indexItems = false);
+
+        /// <summary>
+        /// Check for menu switch and flush events, if required.
+        /// </summary>
+        public void CheckIfToFlushEvents();
+
    }
 }

@@ -20,18 +20,29 @@ end note
 
 MainWindowLogic <|-- MainWindowTools
 
-class MainWindowDispatch {
+class MainWindowHeadless {
   + CommandBinding_GeneralDispatch()
 }
 note right
-  Abstract menu items.
-  Inner core of menu items.
-  Will be wrapped in WPF, HTML, Toolkit.
+  Menu items, which can be
+  executed headless 
+  (without UI).
 end note
 
-MainWindowTools <|-- MainWindowDispatch
+class MainWindowAnyUiDialogs {
+  + CommandBinding_GeneralDispatchAnyUiDialogs()
+}
+note right
+  Menu items using some 
+  AnyUI dialogs and function
+  from main window.
+end note
 
-IMainWindow <--- MainWindowDispatch : uses
+MainWindowTools <|-- MainWindowHeadless
+
+MainWindowHeadless <|-- MainWindowAnyUiDialogs
+
+IMainWindow <--- MainWindowAnyUiDialogs : uses
 
 class IMainWindow {
   UiLoadPackageWithNew()
@@ -70,7 +81,7 @@ class "App.razor" as AppRazor <<Razor*>>
 class BlazorSession
 {
   SessionId : int
-  Logic : MainWindowDispatch
+  Logic : MainWindowAnyUiDialogs
   DisplayElements : BlazorVisualElements
   MainMenu : AasxMenuBlazor
   DynamicMenu : AasxMenuBlazor
@@ -96,7 +107,7 @@ end note
 
 BlazorSession *-- BlazorSessionCommandBindings : partial
 
-MainWindowDispatch <-- BlazorSessionCommandBindings : uses
+MainWindowAnyUiDialogs <-- BlazorSessionCommandBindings : uses
 
 class BlazorVisualElements
 {
@@ -229,7 +240,7 @@ end note
 
 Program *-- "1..n" BlazorSession
 
-MainWindowDispatch <--- BlazorSession
+MainWindowAnyUiDialogs <--- BlazorSession
 IMainWindow <|--- BlazorSession
 
 BlazorSession *-- BlazorVisualElements : DisplayElements

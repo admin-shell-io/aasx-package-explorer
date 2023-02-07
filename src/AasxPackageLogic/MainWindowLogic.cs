@@ -34,6 +34,7 @@ using Newtonsoft.Json.Serialization;
 using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using AasxIntegrationBase.AdminShellEvents;
 
 namespace AasxPackageExplorer
 {
@@ -51,10 +52,10 @@ namespace AasxPackageExplorer
 
         /// <summary>
         /// Will be initialized by the specific main window providing
-        /// access to UI-specific funcitions like modal dialogs or
+        /// access to UI-specific functions like modal dialogs or
         /// clipboard handling.
         /// </summary>
-        public AnyUiContextBase AnyUiContext = null;
+        public AnyUiContextBase DisplayContext = null;
 
         /// <summary>
         /// Via this interface, important state changes for the user
@@ -62,11 +63,11 @@ namespace AasxPackageExplorer
         /// </summary>
         public IMainWindow MainWindow = null;
 
-		/// <summary>
-		/// If in scriptmode, set ticket result and exception to error.
-		/// Add also to log.
-		/// </summary>
-		public void LogErrorToTicket(
+        /// <summary>
+        /// If in scriptmode, set ticket result and exception to error.
+        /// Add also to log.
+        /// </summary>
+        public void LogErrorToTicket(
             AasxMenuActionTicket ticket,
             string message)
         {

@@ -16,6 +16,7 @@ using System.IO;
 using System.IO.Packaging;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using AnyUi;
 
 // ReSharper disable All .. as this is code from others!
@@ -36,7 +37,7 @@ namespace AasxSignature
         /// New files can be added to the package, but they will not be signed,
         /// therefore easy to detect during verification.        
         /// </summary>
-        public static bool SignAll(
+        public async static Task<bool> SignAll(
             string packagePath,
             string certFn,
             string storeName = "My",
@@ -45,7 +46,7 @@ namespace AasxSignature
             // access
             if (!File.Exists(packagePath) || !File.Exists(certFn))
             {
-                invokeMessage?.Invoke(true, "SignAll: invalid package path or certificate filename.");
+                await invokeMessage?.Invoke(true, "SignAll: invalid package path or certificate filename.");
                 return false;
             }
 
@@ -134,7 +135,7 @@ namespace AasxSignature
                 // not running, catch the exception and show an error message.
                 catch (CryptographicException ex)
                 {
-                    invokeMessage?.Invoke(true, "Sign all: cannot sign \n" + ex.Message);
+                    await invokeMessage?.Invoke(true, "Sign all: cannot sign \n" + ex.Message);
                     return false;
                 }
             }

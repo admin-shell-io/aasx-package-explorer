@@ -41,19 +41,21 @@ namespace AasxPackageLogic
 {
     /// <summary>
     /// This class takes menu action tickets with fully provided arguments and dispatches these
-    /// to the functionality pieces provide by the "logic" class
+    /// to the functionality pieces provide by the "logic" class.
+    /// It would be an entry point to headless, commandline only applications.
     /// </summary>
-    public class MainWindowDispatch : MainWindowTools
+    public class MainWindowHeadless : MainWindowTools
     {
         /// <summary>
         /// Standard handler, if not given by ticket.
         /// </summary>
-        public AnyUiMessageBoxResult StandardInvokeMessageDelegate(bool error, string message)
+        public async Task<AnyUiMessageBoxResult> StandardInvokeMessageDelegate(bool error, string message)
         {
             if (error)
                 Log.Singleton.Error(message);
             else
                 Log.Singleton.Info(message);
+            await Task.Yield();
             return AnyUiMessageBoxResult.Cancel;
         }
 
@@ -119,7 +121,10 @@ namespace AasxPackageLogic
 #pragma warning disable CS1998
         // ReSharper disable CSharpWarnings::CS1998
 
-        public async Task CommandBinding_GeneralDispatch(
+        /// <summary>
+        /// General dispatch for menu functions, which are not depending on any UI.
+        /// </summary>
+        public async Task CommandBinding_GeneralDispatchHeadless(
             string cmd,
             AasxMenuActionTicket ticket)
         {
@@ -1149,7 +1154,7 @@ namespace AasxPackageLogic
 				else
 				{
 					// dialogue
-					if (AnyUiContext == null)
+					if (DisplayContext == null)
 					{
 						LogErrorToTicket(ticket, "Repo Query: No AnyUI context found. Could not display.");
 						return;
@@ -1158,7 +1163,7 @@ namespace AasxPackageLogic
 					var uc = new AnyUiDialogueDataSelectFromRepository();
                     uc.Caption = "Select in repository";
                     uc.Items = repoItems;
-					if (AnyUiContext.StartFlyoverModal(uc))
+					if (DisplayContext.StartFlyoverModal(uc))
                     {
 						lambda(uc.ResultItem);
 					}

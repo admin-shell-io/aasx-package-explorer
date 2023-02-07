@@ -1559,6 +1559,7 @@ namespace AnyUi
                 if (res == true)
                 {
                     ddof.Result = true;
+                    ddof.ResultUserFile = false;
                     ddof.OriginalFileName = dlg.FileName;
                     ddof.TargetFileName = dlg.FileName;
 
@@ -1588,6 +1589,8 @@ namespace AnyUi
                 var res = dlg.ShowDialog();
                 if (res == true)
                 {
+                    ddsf.Result = true;
+                    ddsf.Location = AnyUiDialogueDataSaveFile.LocationKind.Local;
                     ddsf.TargetFileName = dlg.FileName;
                 }
             }

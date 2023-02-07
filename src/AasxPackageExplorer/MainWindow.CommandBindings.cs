@@ -85,7 +85,10 @@ namespace AasxPackageExplorer
             return res;
         }
 
-        private void CommandExecution_RedrawAll()
+        /// <summary>
+        /// Redraw tree elements (middle), AAS entitty (right side)
+        /// </summary>
+        public void CommandExecution_RedrawAll()
         {
             // redraw everything
             RedrawAllAasxElements();
@@ -113,452 +116,452 @@ namespace AasxPackageExplorer
             //
 
             // REFACTOR: could be same
-            if (cmd == "new")
-            {
-                // start
-                ticket.StartExec();
+            //if (cmd == "new")
+            //{
+            //    // start
+            //    ticket.StartExec();
 
-                // check user
-                if (!scriptmode
-                    && AnyUiMessageBoxResult.Yes != await DisplayContext?.MessageBoxFlyoutShowAsync(
-                    "Create new Adminshell environment? This operation can not be reverted!", "AAS-ENV",
-                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
-                    return;
+            //    // check user
+            //    if (!scriptmode
+            //        && AnyUiMessageBoxResult.Yes != await DisplayContext?.MessageBoxFlyoutShowAsync(
+            //        "Create new Adminshell environment? This operation can not be reverted!", "AAS-ENV",
+            //        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+            //        return;
 
-                // do
-                try
-                {
-                    // clear
-                    ClearAllViews();
-                    // create new AASX package
-                    PackageCentral.MainItem.New();
-                    // redraw
-                    CommandExecution_RedrawAll();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "when creating new AASX");
-                    return;
-                }
-            }
+            //    // do
+            //    try
+            //    {
+            //        // clear
+            //        ClearAllViews();
+            //        // create new AASX package
+            //        PackageCentral.MainItem.New();
+            //        // redraw
+            //        CommandExecution_RedrawAll();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "when creating new AASX");
+            //        return;
+            //    }
+            //}
 
-            // REFACTOR: the same
-            if (cmd == "open" || cmd == "openaux")
-            {
-                // start
-                ticket.StartExec();
+            //// REFACTOR: the same
+            //if (cmd == "open" || cmd == "openaux")
+            //{
+            //    // start
+            //    ticket.StartExec();
 
-                // filename
-                var fn = (await DisplayContext.MenuSelectOpenFilenameAsync(
-                    ticket, "File",
-                    "Open AASX",
-                    null,
-                    "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
-                        "AAS JSON file (*.json)|*.json|All files (*.*)|*.*",
-                    "Open AASX: No valid filename."))?.TargetFileName;
-                if (fn == null)
-                    return;
+            //    // filename
+            //    var fn = (await DisplayContext.MenuSelectOpenFilenameAsync(
+            //        ticket, "File",
+            //        "Open AASX",
+            //        null,
+            //        "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
+            //            "AAS JSON file (*.json)|*.json|All files (*.*)|*.*",
+            //        "Open AASX: No valid filename."))?.TargetFileName;
+            //    if (fn == null)
+            //        return;
 
-                // ok
-                switch (cmd)
-                {
-                    case "open":
-                        UiLoadPackageWithNew(
-                            PackageCentral.MainItem, null, fn, onlyAuxiliary: false,
-                            storeFnToLRU: fn);
-                        break;
-                    case "openaux":
-                        UiLoadPackageWithNew(
-                            PackageCentral.AuxItem, null, fn, onlyAuxiliary: true);
-                        break;
-                    default:
-                        throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
-                }
-            }
-
-            // REFACTOR: the same
-            if (cmd == "save")
-            {
-                // start
-                ticket.StartExec();
-
-                // open?
-                if (!PackageCentral.MainStorable)
-                {
-                    Logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
-                    return;
-                }
-
-                // do
-                try
-                {
-                    // save
-                    await PackageCentral.MainItem.SaveAsAsync(runtimeOptions: PackageCentral.CentralRuntimeOptions);
-
-                    // backup
-                    if (Options.Curr.BackupDir != null)
-                        PackageCentral.MainItem.Container.BackupInDir(
-                            System.IO.Path.GetFullPath(Options.Curr.BackupDir),
-                            Options.Curr.BackupFiles,
-                            PackageContainerBase.BackupType.FullCopy);
-
-                    // may be was saved to index
-                    if (PackageCentral?.MainItem?.Container?.Env?.AasEnv != null)
-                        PackageCentral.MainItem.Container.SignificantElements
-                            = new IndexOfSignificantAasElements(PackageCentral.MainItem.Container.Env.AasEnv);
-
-                    // may be was saved to flush events
-                    CheckIfToFlushEvents();
-
-                    // as saving changes the structure of pending supplementary files, re-display
-                    RedrawAllAasxElements(keepFocus: true);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
-                    return;
-                }
-
-                Log.Singleton.Info("AASX saved successfully: {0}", PackageCentral.MainItem.Filename);
-            }
-
-            // REFACTOR: the same (!!)
-            if (cmd == "saveas")
-            {
-                // start
-                ticket.StartExec();
-
-                // open?
-                if (!PackageCentral.MainAvailable || PackageCentral.MainItem.Container == null)
-                {
-                    Logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
-                    return;
-                }
-
-                // shall be a local/ user file?!
-                var isLocalFile = PackageCentral.MainItem.Container is PackageContainerLocalFile;
-                var isUserFile = PackageCentral.MainItem.Container is PackageContainerUserFile;
-                if (!isLocalFile && !isUserFile)
-                    if (!ticket.ScriptMode
-                        && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
-                        "Current AASX file is not a local or user file. Proceed and convert to such file?",
-                        "Save", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand))
-                        return;
-
-                // filename
-                var ucsf = await DisplayContext.MenuSelectSaveFilenameAsync(
-                    ticket, "File",
-                    "Save AASX package",
-                    PackageCentral.Main.Filename,
-                    "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
-                        (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
-                        "All files (*.*)|*.*",
-                    "Save AASX: No valid filename.");
-                if (ucsf?.Result != true)
-                    return;
-
-                // do
-                var targetFn = ucsf.TargetFileName;
-                var targetFnForLRU = targetFn;
-
-                try
-                {
-                    // establish target filename
-                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
-                    {
-                        targetFn = PackageContainerUserFile.BuildUserFilePath(ucsf.TargetFileName);
-                        targetFnForLRU = null;
-                    }
-
-                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
-                    {
-                        // produce a .tmp file
-                        targetFn = System.IO.Path.GetTempFileName();
-                        targetFnForLRU = null;
-
-                        // rename better
-                        var _filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ucsf.Filter);
-                        targetFn = AnyUiDialogueDataOpenFile.ApplyFilterItem(
-                            fi: _filterItems[ucsf.FilterIndex],
-                            fn: targetFn,
-                            final: 2);
-                    }
-
-                    // if not local, do a bit of voodoo ..
-                    if (!isLocalFile && PackageCentral.MainItem.Container != null)
-                    {
-                        // establish local
-                        if (!await PackageCentral.MainItem.Container.SaveLocalCopyAsync(
-                            targetFn,
-                            runtimeOptions: PackageCentral.CentralRuntimeOptions))
-                        {
-                            // Abort
-                            Logic?.LogErrorToTicket(ticket,
-                                "Not able to copy current AASX file to local file. Aborting!");
-                            return;
-                        }
-
-                        // re-load
-                        UiLoadPackageWithNew(
-                            PackageCentral.MainItem, null, targetFn, onlyAuxiliary: false,
-                            storeFnToLRU: targetFnForLRU);
-                        return;
-                    }
-
-                    //
-                    // ELSE .. already local
-                    //
-
-                    // preferred format
-                    var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
-                    if (ucsf.FilterIndex == 1)
-                        prefFmt = AdminShellPackageEnv.SerializationFormat.Xml;
-                    if (ucsf.FilterIndex == 2)
-                        prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
-
-                    // save 
-                    DisplayContext.RememberForInitialDirectory(targetFn);
-                    await PackageCentral.MainItem.SaveAsAsync(targetFn, prefFmt: prefFmt);
-
-                    // backup (only for AASX)
-                    if (ucsf.FilterIndex == 0)
-                        if (Options.Curr.BackupDir != null)
-                            PackageCentral.MainItem.Container.BackupInDir(
-                                System.IO.Path.GetFullPath(Options.Curr.BackupDir),
-                                Options.Curr.BackupFiles,
-                                PackageContainerBase.BackupType.FullCopy);
-
-                    // as saving changes the structure of pending supplementary files, re-display
-                    RedrawAllAasxElements();
-
-                    // LRU?
-                    // record in LRU?
-                    try
-                    {
-                        var lru = PackageCentral?.Repositories?.FindLRU();
-                        if (lru != null && targetFnForLRU != null)
-                            lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, targetFnForLRU);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(
-                            ex, $"When managing LRU files");
-                        return;
-                    }
-
-                    // if it is a download, provide link
-                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download
-                        && DisplayContext.WebBrowserServicesAllowed())
-                    {
-                        try
-                        {
-                            await DisplayContext.WebBrowserDisplayOrDownloadFile(targetFn, "application/octet-stream");
-                            Log.Singleton.Info("Download initiated.");
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Singleton.Error(
-                                ex, $"When downloading saved file");
-                            return;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
-                    return;
-                }
-                Log.Singleton.Info("AASX saved successfully as: {0}", targetFn);                
-            }
+            //    // ok
+            //    switch (cmd)
+            //    {
+            //        case "open":
+            //            UiLoadPackageWithNew(
+            //                PackageCentral.MainItem, null, fn, onlyAuxiliary: false,
+            //                storeFnToLRU: fn);
+            //            break;
+            //        case "openaux":
+            //            UiLoadPackageWithNew(
+            //                PackageCentral.AuxItem, null, fn, onlyAuxiliary: true);
+            //            break;
+            //        default:
+            //            throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
+            //    }
+            //}
 
             // REFACTOR: the same
-            if (cmd == "close" && PackageCentral?.Main != null)
-            {
-                // start
-                ticket.StartExec();
+            //if (cmd == "save")
+            //{
+            //    // start
+            //    ticket.StartExec();
 
-                if (!ticket.ScriptMode
-                    && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
-                    "Do you want to close the open package? Please make sure that you have saved before.",
-                    "Close Package?", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                    return;
+            //    // open?
+            //    if (!PackageCentral.MainStorable)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
+            //        return;
+            //    }
 
-                // do
-                try
-                {
-                    PackageCentral.MainItem.Close();
-                    RedrawAllAasxElements();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "when closing AASX");
-                }
-            }
+            //    // do
+            //    try
+            //    {
+            //        // save
+            //        await PackageCentral.MainItem.SaveAsAsync(runtimeOptions: PackageCentral.CentralRuntimeOptions);
 
-            // REFACTOR: the same
-            if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt") && PackageCentral?.Main != null)
-            {
-                // differentiate
-                if (cmd == "sign" && (ticket.Submodel != null || ticket.SubmodelElement != null))
-                {
-                    // start
-                    ticket.StartExec();
+            //        // backup
+            //        if (Options.Curr.BackupDir != null)
+            //            PackageCentral.MainItem.Container.BackupInDir(
+            //                System.IO.Path.GetFullPath(Options.Curr.BackupDir),
+            //                Options.Curr.BackupFiles,
+            //                PackageContainerBase.BackupType.FullCopy);
 
-                    // ask user
-                    var useX509 = false;
-                    if (ticket["UseX509"] is bool buse)
-                        useX509 = buse;
-                    else
-                        useX509 = (AnyUiMessageBoxResult.Yes == await DisplayContext.MessageBoxFlyoutShowAsync(
-                            "Use X509 (yes) or Verifiable Credential (No)?",
-                            "X509 or VerifiableCredential",
-                            AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand));
-                    ticket["UseX509"] = useX509;
+            //        // may be was saved to index
+            //        if (PackageCentral?.MainItem?.Container?.Env?.AasEnv != null)
+            //            PackageCentral.MainItem.Container.SignificantElements
+            //                = new IndexOfSignificantAasElements(PackageCentral.MainItem.Container.Env.AasEnv);
 
-                    // further to logic
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+            //        // may be was saved to flush events
+            //        CheckIfToFlushEvents();
 
-                    // update
-                    RedrawAllAasxElements();
-                    RedrawElementView();
-                    return;
-                }
+            //        // as saving changes the structure of pending supplementary files, re-display
+            //        RedrawAllAasxElements(keepFocus: true);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
+            //        return;
+            //    }
 
-                if (cmd == "validatecertificate" && (ticket.Submodel != null || ticket.SubmodelElement != null))
-                {
-                    // start
-                    ticket.StartExec();
+            //    Log.Singleton.Info("AASX saved successfully: {0}", PackageCentral.MainItem.Filename);
+            //}
 
-                    // further to logic
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
-                    return;
-                }
+            //// REFACTOR: the same (!!)
+            //if (cmd == "saveas")
+            //{
+            //    // start
+            //    ticket.StartExec();
 
-                // Porting (MIHO): this seems to be executed, if above functions are not engaged
-                // suspecting: for whole AAS/ package or so ..
+            //    // open?
+            //    if (!PackageCentral.MainAvailable || PackageCentral.MainItem.Container == null)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
+            //        return;
+            //    }
 
-                // filename source
-                if(!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "Source",
-                    "Select source AASX file to be processed",
-                    null,
-                    "AASX package files (*.aasx)|*.aasx",
-                    "For package sign/ validate/ encrypt: No valid filename for source given!")))
-                    return;
+            //    // shall be a local/ user file?!
+            //    var isLocalFile = PackageCentral.MainItem.Container is PackageContainerLocalFile;
+            //    var isUserFile = PackageCentral.MainItem.Container is PackageContainerUserFile;
+            //    if (!isLocalFile && !isUserFile)
+            //        if (!ticket.ScriptMode
+            //            && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+            //            "Current AASX file is not a local or user file. Proceed and convert to such file?",
+            //            "Save", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand))
+            //            return;
 
-                if (cmd == "encrypt")
-                {
-                    // filename cert
-                    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                        ticket, "Certificate",
-                        "Select certificate file",
-                        null,
-                        ".cer files (*.cer)|*.cer",
-                        "For package sign/ validate/ encrypt: No valid filename for certificate given!")))
-                        return;
+            //    // filename
+            //    var ucsf = await DisplayContext.MenuSelectSaveFilenameAsync(
+            //        ticket, "File",
+            //        "Save AASX package",
+            //        PackageCentral.Main.Filename,
+            //        "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
+            //            (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
+            //            "All files (*.*)|*.*",
+            //        "Save AASX: No valid filename.");
+            //    if (ucsf?.Result != true)
+            //        return;
 
-                    // ask also for target fn
-                    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                        ticket, "Target",
-                        "Write encoded AASX package file",
-                        ticket["Source"] + "2",
-                        "AASX2 encrypted package files (*.aasx2)|*.aasx2",
-                        "For package sign/ validate/ encrypt: No valid filename for target given!")))
-                        return;
+            //    // do
+            //    var targetFn = ucsf.TargetFileName;
+            //    var targetFnForLRU = targetFn;
 
-                }
+            //    try
+            //    {
+            //        // establish target filename
+            //        if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
+            //        {
+            //            targetFn = PackageContainerUserFile.BuildUserFilePath(ucsf.TargetFileName);
+            //            targetFnForLRU = null;
+            //        }
 
-                if (cmd == "sign")
-                {
-                    // filename cert is required here
-                    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                        ticket, "Certificate",
-                        "Select certificate file",
-                        null,
-                        ".pfx files (*.pfx)|*.pfx",
-                        "For package sign/ validate/ encrypt: No valid filename for certificate given!")))
-                        return;
-                }
+            //        if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
+            //        {
+            //            // produce a .tmp file
+            //            targetFn = System.IO.Path.GetTempFileName();
+            //            targetFnForLRU = null;
 
-                // now, generally start
-                ticket.StartExec();
+            //            // rename better
+            //            var _filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ucsf.Filter);
+            //            targetFn = AnyUiDialogueDataOpenFile.ApplyFilterItem(
+            //                fi: _filterItems[ucsf.FilterIndex],
+            //                fn: targetFn,
+            //                final: 2);
+            //        }
 
-                // as OZ designed, put user feedback on the screen
-                ticket.InvokeMessage = (err, msg) =>
-                {
-                    return MessageBoxFlyoutShow(
-                        msg, "Operation", AnyUiMessageBoxButton.OKCancel,
-                        err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
-                };
+            //        // if not local, do a bit of voodoo ..
+            //        if (!isLocalFile && PackageCentral.MainItem.Container != null)
+            //        {
+            //            // establish local
+            //            if (!await PackageCentral.MainItem.Container.SaveLocalCopyAsync(
+            //                targetFn,
+            //                runtimeOptions: PackageCentral.CentralRuntimeOptions))
+            //            {
+            //                // Abort
+            //                Logic?.LogErrorToTicket(ticket,
+            //                    "Not able to copy current AASX file to local file. Aborting!");
+            //                return;
+            //            }
 
-                // further to logic
-                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
-            }
+            //            // re-load
+            //            UiLoadPackageWithNew(
+            //                PackageCentral.MainItem, null, targetFn, onlyAuxiliary: false,
+            //                storeFnToLRU: targetFnForLRU);
+            //            return;
+            //        }
 
-            // REFACTOR: the same
-            if ((cmd == "decrypt") && PackageCentral.Main != null)
-            {
-                // start
-                ticket.StartExec();
+            //        //
+            //        // ELSE .. already local
+            //        //
 
-                // filename source
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "Source",
-                    "Select source encrypted AASX file to be processed",
-                    null,
-                    "AASX2 encrypted package files (*.aasx2)|*.aasx2",
-                    "For package decrypt: No valid filename for source given!")))
-                    return;
+            //        // preferred format
+            //        var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
+            //        if (ucsf.FilterIndex == 1)
+            //            prefFmt = AdminShellPackageEnv.SerializationFormat.Xml;
+            //        if (ucsf.FilterIndex == 2)
+            //            prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
 
-                // filename cert
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "Certificate",
-                    "Select source AASX file to be processed",
-                    null,
-                    ".pfx files (*.pfx)|*.pfx",
-                    "For package decrypt: No valid filename for certificate given!")))
-                    return;
+            //        // save 
+            //        DisplayContext.RememberForInitialDirectory(targetFn);
+            //        await PackageCentral.MainItem.SaveAsAsync(targetFn, prefFmt: prefFmt);
 
-                // ask also for target fn
-                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                    ticket, "Target",
-                    "Write decoded AASX package file",
-                    null,
-                    "AASX package files (*.aasx)|*.aasx",
-                    "For package decrypt: No valid filename for target given!")))
-                    return;
+            //        // backup (only for AASX)
+            //        if (ucsf.FilterIndex == 0)
+            //            if (Options.Curr.BackupDir != null)
+            //                PackageCentral.MainItem.Container.BackupInDir(
+            //                    System.IO.Path.GetFullPath(Options.Curr.BackupDir),
+            //                    Options.Curr.BackupFiles,
+            //                    PackageContainerBase.BackupType.FullCopy);
 
-                // now, generally start
-                ticket.StartExec();
+            //        // as saving changes the structure of pending supplementary files, re-display
+            //        RedrawAllAasxElements();
 
-                // as OZ designed, put user feedback on the screen
-                ticket.InvokeMessage = (err, msg) =>
-                {
-                    return MessageBoxFlyoutShow(
-                        msg, "Operation", AnyUiMessageBoxButton.OKCancel,
-                        err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
-                };
+            //        // LRU?
+            //        // record in LRU?
+            //        try
+            //        {
+            //            var lru = PackageCentral?.Repositories?.FindLRU();
+            //            if (lru != null && targetFnForLRU != null)
+            //                lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, targetFnForLRU);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            Log.Singleton.Error(
+            //                ex, $"When managing LRU files");
+            //            return;
+            //        }
 
-                // further to logic
-                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
-            }
+            //        // if it is a download, provide link
+            //        if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download
+            //            && DisplayContext.WebBrowserServicesAllowed())
+            //        {
+            //            try
+            //            {
+            //                await DisplayContext.WebBrowserDisplayOrDownloadFile(targetFn, "application/octet-stream");
+            //                Log.Singleton.Info("Download initiated.");
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                Log.Singleton.Error(
+            //                    ex, $"When downloading saved file");
+            //                return;
+            //            }
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
+            //        return;
+            //    }
+            //    Log.Singleton.Info("AASX saved successfully as: {0}", targetFn);                
+            //}
 
-            // REFACTOR: the same
-            if (cmd == "closeaux" && PackageCentral.AuxAvailable)
-            {
-                // start
-                ticket.StartExec();
+            //// REFACTOR: the same
+            //if (cmd == "close" && PackageCentral?.Main != null)
+            //{
+            //    // start
+            //    ticket.StartExec();
 
-                //do
-                try
-                {
-                    PackageCentral.AuxItem.Close();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "when closing auxiliary AASX");
-                }
-            }
+            //    if (!ticket.ScriptMode
+            //        && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+            //        "Do you want to close the open package? Please make sure that you have saved before.",
+            //        "Close Package?", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+            //        return;
+
+            //    // do
+            //    try
+            //    {
+            //        PackageCentral.MainItem.Close();
+            //        RedrawAllAasxElements();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "when closing AASX");
+            //    }
+            //}
+
+            //// REFACTOR: the same
+            //if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt") && PackageCentral?.Main != null)
+            //{
+            //    // differentiate
+            //    if (cmd == "sign" && (ticket.Submodel != null || ticket.SubmodelElement != null))
+            //    {
+            //        // start
+            //        ticket.StartExec();
+
+            //        // ask user
+            //        var useX509 = false;
+            //        if (ticket["UseX509"] is bool buse)
+            //            useX509 = buse;
+            //        else
+            //            useX509 = (AnyUiMessageBoxResult.Yes == await DisplayContext.MessageBoxFlyoutShowAsync(
+            //                "Use X509 (yes) or Verifiable Credential (No)?",
+            //                "X509 or VerifiableCredential",
+            //                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand));
+            //        ticket["UseX509"] = useX509;
+
+            //        // further to logic
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+
+            //        // update
+            //        RedrawAllAasxElements();
+            //        RedrawElementView();
+            //        return;
+            //    }
+
+            //    if (cmd == "validatecertificate" && (ticket.Submodel != null || ticket.SubmodelElement != null))
+            //    {
+            //        // start
+            //        ticket.StartExec();
+
+            //        // further to logic
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //        return;
+            //    }
+
+            //    // Porting (MIHO): this seems to be executed, if above functions are not engaged
+            //    // suspecting: for whole AAS/ package or so ..
+
+            //    // filename source
+            //    if(!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "Source",
+            //        "Select source AASX file to be processed",
+            //        null,
+            //        "AASX package files (*.aasx)|*.aasx",
+            //        "For package sign/ validate/ encrypt: No valid filename for source given!")))
+            //        return;
+
+            //    if (cmd == "encrypt")
+            //    {
+            //        // filename cert
+            //        if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //            ticket, "Certificate",
+            //            "Select certificate file",
+            //            null,
+            //            ".cer files (*.cer)|*.cer",
+            //            "For package sign/ validate/ encrypt: No valid filename for certificate given!")))
+            //            return;
+
+            //        // ask also for target fn
+            //        if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //            ticket, "Target",
+            //            "Write encoded AASX package file",
+            //            ticket["Source"] + "2",
+            //            "AASX2 encrypted package files (*.aasx2)|*.aasx2",
+            //            "For package sign/ validate/ encrypt: No valid filename for target given!")))
+            //            return;
+
+            //    }
+
+            //    if (cmd == "sign")
+            //    {
+            //        // filename cert is required here
+            //        if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //            ticket, "Certificate",
+            //            "Select certificate file",
+            //            null,
+            //            ".pfx files (*.pfx)|*.pfx",
+            //            "For package sign/ validate/ encrypt: No valid filename for certificate given!")))
+            //            return;
+            //    }
+
+            //    // now, generally start
+            //    ticket.StartExec();
+
+            //    // as OZ designed, put user feedback on the screen
+            //    ticket.InvokeMessage = async (err, msg) =>
+            //    {
+            //        return await DisplayContext.MessageBoxFlyoutShowAsync(
+            //            msg, "Operation", AnyUiMessageBoxButton.OKCancel,
+            //            err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
+            //    };
+
+            //    // further to logic
+            //    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //}
+
+            //// REFACTOR: the same
+            //if ((cmd == "decrypt") && PackageCentral.Main != null)
+            //{
+            //    // start
+            //    ticket.StartExec();
+
+            //    // filename source
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "Source",
+            //        "Select source encrypted AASX file to be processed",
+            //        null,
+            //        "AASX2 encrypted package files (*.aasx2)|*.aasx2",
+            //        "For package decrypt: No valid filename for source given!")))
+            //        return;
+
+            //    // filename cert
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "Certificate",
+            //        "Select source AASX file to be processed",
+            //        null,
+            //        ".pfx files (*.pfx)|*.pfx",
+            //        "For package decrypt: No valid filename for certificate given!")))
+            //        return;
+
+            //    // ask also for target fn
+            //    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //        ticket, "Target",
+            //        "Write decoded AASX package file",
+            //        null,
+            //        "AASX package files (*.aasx)|*.aasx",
+            //        "For package decrypt: No valid filename for target given!")))
+            //        return;
+
+            //    // now, generally start
+            //    ticket.StartExec();
+
+            //    // as OZ designed, put user feedback on the screen
+            //    ticket.InvokeMessage = async (err, msg) =>
+            //    {
+            //        return await DisplayContext.MessageBoxFlyoutShowAsync(
+            //            msg, "Operation", AnyUiMessageBoxButton.OKCancel,
+            //            err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
+            //    };
+
+            //    // further to logic
+            //    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //}
+
+            //// REFACTOR: the same
+            //if (cmd == "closeaux" && PackageCentral.AuxAvailable)
+            //{
+            //    // start
+            //    ticket.StartExec();
+
+            //    //do
+            //    try
+            //    {
+            //        PackageCentral.AuxItem.Close();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "when closing auxiliary AASX");
+            //    }
+            //}
 
             // REFACTOR: DIFFERENT
             if (cmd == "exit")
@@ -749,7 +752,7 @@ namespace AasxPackageExplorer
                 ticket?.StartExec();
 
                 // further to logic
-                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
                 // update
                 RedrawAllAasxElements();
@@ -836,7 +839,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -862,7 +865,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -939,6 +942,9 @@ namespace AasxPackageExplorer
             {
                 await CommandBinding_ScriptEditLaunch(cmd, menuItem);
             }
+
+            // pass dispatch on to next (lower) level of menu functions
+            await Logic.CommandBinding_GeneralDispatchAnyUiDialogs(cmd, menuItem, ticket);
         }
 
         public class EditingLocation
@@ -1168,7 +1174,7 @@ namespace AasxPackageExplorer
 
             // REFACTOR: SAME
             if (cmd == "filerepoquery")
-                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
             // REFACTOR: SAME
             if (cmd == "filerepocreatelru")
@@ -1621,7 +1627,7 @@ namespace AasxPackageExplorer
                 // do it
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -1655,7 +1661,7 @@ namespace AasxPackageExplorer
                 // do it
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -1689,7 +1695,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // do it
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
                     // redisplay
                     RedrawAllAasxElements();
@@ -2049,7 +2055,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
                     RedrawAllAasxElements();
                     RedrawElementView();
@@ -2078,7 +2084,7 @@ namespace AasxPackageExplorer
                 // do it directly
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2104,7 +2110,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2130,7 +2136,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2261,7 +2267,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                     this.RestartUIafterNewPackage();
                 }
                 catch (Exception ex)
@@ -2289,7 +2295,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2348,7 +2354,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2383,7 +2389,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // do it
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
                     // redisplay
                     RedrawAllAasxElements();
@@ -2529,7 +2535,7 @@ namespace AasxPackageExplorer
             try
             {
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
             }
             catch (Exception ex)
@@ -2644,7 +2650,7 @@ namespace AasxPackageExplorer
                 // pass on
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2687,7 +2693,7 @@ namespace AasxPackageExplorer
                 // pass on
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2751,7 +2757,7 @@ namespace AasxPackageExplorer
                 // pass on
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2787,7 +2793,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // delegate futher
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
                     // redisplay
                     RedrawAllAasxElements();
@@ -2816,7 +2822,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // delegate futher
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2869,7 +2875,7 @@ namespace AasxPackageExplorer
             try
             {
                 // delegate futher
-                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
             }
             catch (Exception ex)
             {
@@ -2998,7 +3004,7 @@ namespace AasxPackageExplorer
                 // ReSharper enable PossibleNullReferenceException
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -3021,7 +3027,7 @@ namespace AasxPackageExplorer
                 // do
                 try
                 {
-                    Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
                     // TODO (MIHO, 2022-11-17): not very elegant
                     if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")

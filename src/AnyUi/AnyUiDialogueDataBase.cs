@@ -15,6 +15,7 @@ using AdminShellNS;
 using Newtonsoft.Json;
 using static AnyUi.AnyUiDialogueDataOpenFile;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace AnyUi
 {
@@ -55,7 +56,7 @@ namespace AnyUi
     /// <param name="error">True, if an error condition is met.</param>
     /// <param name="message">Message string</param>
     /// <returns>On of AnyUiMessageBoxResult</returns>
-    public delegate AnyUiMessageBoxResult AnyUiMinimalInvokeMessageDelegate(bool error, string message);
+    public delegate Task<AnyUiMessageBoxResult> AnyUiMinimalInvokeMessageDelegate(bool error, string message);
 
     public class AnyUiDialogueDataBase
     {

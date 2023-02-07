@@ -61,7 +61,7 @@ namespace AasxPackageExplorer
         /// Abstracted menu functions to be wrapped by functions triggering
         /// more UI feedback.
         /// </summary>
-        protected MainWindowDispatch Logic = new MainWindowDispatch();
+        protected MainWindowAnyUiDialogs Logic = new MainWindowAnyUiDialogs();
 
         /// <summary>
         /// The top-most display data required for WPF to render elements.
@@ -88,8 +88,11 @@ namespace AasxPackageExplorer
 
         private AasxIntegrationBase.IAasxOnlineConnection theOnlineConnection = null;
 
+        /// <summary>
+        /// Helper class to "compress events" (group AAS event payloads together).
+        /// No relation to UI stuff.
+        /// </summary>
         private AasEventCompressor _eventCompressor = new AasEventCompressor();
-
 
         protected AasxMenuWpf _dynamicMenu = new AasxMenuWpf();
 
@@ -175,7 +178,15 @@ namespace AasxPackageExplorer
             theContentBrowser.GoToContentBrowserAddress(Options.Curr.ContentHome);
         }
 
-        public void RedrawAllAasxElements(bool keepFocus = false)
+        /// <summary>
+        /// Redraw window title, AAS info?, entity view (right), element tree (middle)
+        /// </summary>
+        /// <param name="keepFocus">Try remember which element was focussed and focus it after redrawing.</param>
+        /// <param name="nextFocusMdo">Focus a new main data object attached to an tree element.</param>
+        /// <param name="wishExpanded">If focussing, expand this item.</param>
+        public void RedrawAllAasxElements(bool keepFocus = false,
+            object nextFocusMdo = null,
+            bool wishExpanded = true)
         {
             // focus info
             var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
@@ -622,6 +633,10 @@ namespace AasxPackageExplorer
             }
         }
 
+        /// <summary>
+        /// Based on save information, will redraw the AAS entity (element) view (right).
+        /// </summary>
+        /// <param name="hightlightField">Highlight field (for find/ replace)</param>
         public void RedrawElementView(DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             if (DisplayElements == null)
@@ -733,7 +748,7 @@ namespace AasxPackageExplorer
         {
             // basic AnyUI handling
 			DisplayContext = new AnyUiDisplayContextWpf(this, PackageCentral);
-            Logic.AnyUiContext = DisplayContext;
+            Logic.DisplayContext = DisplayContext;
             Logic.MainWindow = this;
 
 			// making up "empty" picture
@@ -2665,7 +2680,10 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.CallUndo();
         }
 
-        private void CheckIfToFlushEvents()
+        /// <summary>
+        /// Check for menu switch and flush events, if required.
+        /// </summary>
+        public void CheckIfToFlushEvents()
         {
             if (MainMenu?.IsChecked("CompressEvents") == true)
             {

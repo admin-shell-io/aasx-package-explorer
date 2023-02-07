@@ -33,7 +33,10 @@ namespace BlazorUI.Data
     /// </summary>
     public partial class BlazorSession : IDisposable
     {
-		private void CheckIfToFlushEvents()
+        /// <summary>
+        /// Check for menu switch and flush events, if required.
+        /// </summary>
+        public void CheckIfToFlushEvents()
 		{
 			if (MainMenu?.IsChecked("CompressEvents") == true)
 			{
@@ -44,7 +47,7 @@ namespace BlazorUI.Data
 			}
 		}
 
-        private void CommandExecution_RedrawAll()
+        public void CommandExecution_RedrawAll()
         {
             // redraw everything
             RedrawAllAasxElements();

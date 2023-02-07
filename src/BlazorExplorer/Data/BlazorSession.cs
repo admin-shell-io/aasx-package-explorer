@@ -63,7 +63,7 @@ namespace BlazorUI.Data
         /// Abstracted menu functions to be wrapped by functions triggering
         /// more UI feedback.
         /// </summary>
-        public MainWindowDispatch Logic = new MainWindowDispatch();
+        public MainWindowAnyUiDialogs Logic = new MainWindowAnyUiDialogs();
 
         /// <summary>
         /// All repositories, files, .. are user-specific and therefore hosted in the session.
@@ -98,10 +98,10 @@ namespace BlazorUI.Data
         /// </summary>
 		private AasEventCompressor _eventCompressor = new AasEventCompressor();
 
-		/// <summary>
-		/// The top-most display data required for razor pages to render elements.
-		/// </summary>
-		public AnyUiDisplayContextHtml DisplayContext = null;
+        /// <summary>
+        /// The top-most display data required for razor pages to render elements.
+        /// </summary>
+        public AnyUiDisplayContextHtml DisplayContext = null;
 
         /// <summary>
         /// Holds the stack panel of widgets for active AAS element.
@@ -217,7 +217,7 @@ namespace BlazorUI.Data
 
             // initalize the abstract main window logic
             DisplayContext = new AnyUiDisplayContextHtml(PackageCentral, this);
-            Logic.AnyUiContext = DisplayContext;
+            Logic.DisplayContext = DisplayContext;
             Logic.MainWindow = this;
 
             // create a new session for plugin / event handling
@@ -572,6 +572,12 @@ namespace BlazorUI.Data
             }
         }
 
+        /// <summary>
+        /// Redraw window title, AAS info?, entity view (right), element tree (middle)
+        /// </summary>
+        /// <param name="keepFocus">Try remember which element was focussed and focus it after redrawing.</param>
+        /// <param name="nextFocusMdo">Focus a new main data object attached to an tree element.</param>
+        /// <param name="wishExpanded">If focussing, expand this item.</param>
         public void RedrawAllAasxElements(
             bool keepFocus = false,
             object nextFocusMdo = null,
@@ -631,6 +637,10 @@ namespace BlazorUI.Data
 #endif
         }
 
+        /// <summary>
+        /// Based on save information, will redraw the AAS entity (element) view (right).
+        /// </summary>
+        /// <param name="hightlightField">Highlight field (for find/ replace)</param>
         public void RedrawElementView(DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             if (DisplayElements == null)
@@ -1094,6 +1104,9 @@ namespace BlazorUI.Data
             }
         }
 
+        /// <summary>
+        /// Clear AAS info, tree section, browser window
+        /// </summary>
         public void ClearAllViews()
         {
             // left side
@@ -1103,9 +1116,6 @@ namespace BlazorUI.Data
 
             // middle side
             DisplayElements.Clear();
-
-            // right side
-            // theContentBrowser.GoToContentBrowserAddress(Options.Curr.ContentHome);
         }
 
         public void DisplayElements_SelectedItemChanged(object sender, EventArgs e)
