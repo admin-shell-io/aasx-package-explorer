@@ -261,9 +261,15 @@ namespace AasxPackageExplorer
                 if (_script._logLevel >= 2)
                     Console.WriteLine($"Execute Select " + string.Join(",", args));
 
+                // which application
+                if (Application.Current == null)
+                {
+                    Log.Singleton.Error("For script execution, Application.Current for Blazor is not available.");
+                }
+                
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
-                var x = Application.Current.Dispatcher.Invoke(() =>
+                var x = Application.Current?.Dispatcher.Invoke(() =>
                 {
                     return _script.Remote?.Select(args);
                 });

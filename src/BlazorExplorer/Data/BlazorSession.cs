@@ -33,6 +33,7 @@ using Extensions;
 using Microsoft.JSInterop;
 using System.Linq;
 using AasxIntegrationBase.AdminShellEvents;
+using AasCore.Aas3_0_RC02;
 
 namespace BlazorUI.Data
 {
@@ -41,7 +42,7 @@ namespace BlazorUI.Data
     /// A session holds almost all data a user concerns with, as multiple users/ roles might use the same
     /// server application.
     /// </summary>
-    public partial class BlazorSession : IDisposable, IMainWindow
+    public partial class BlazorSession : IDisposable, IMainWindow, IAasxScriptRemoteInterface
     {
         /// <summary>
         /// Monotonous index to be counted upwards to generate SessionId
@@ -156,6 +157,16 @@ namespace BlazorUI.Data
         /// Remembers user input for menu action
         /// </summary>
         protected static string _userLastGetUrl = "http://???:51310";
+
+        /// <summary>
+        /// Currently edited script text. Survives multiple start of dialog.
+        /// </summary>
+        protected string _currentScriptText = "";
+
+        /// <summary>
+        /// Script engine
+        /// </summary>
+        protected AasxScript _aasxScript = null;
 
         //
         // OLD
@@ -1140,5 +1151,23 @@ namespace BlazorUI.Data
                     new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: isExpanded)));
         }
 
-	}
+        //
+        // Scripting
+        //
+
+        Task<int> IAasxScriptRemoteInterface.Tool(object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        IReferable IAasxScriptRemoteInterface.Select(object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IAasxScriptRemoteInterface.Location(object[] args)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
