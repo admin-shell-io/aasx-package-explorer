@@ -1142,6 +1142,7 @@ namespace BlazorUI.Data
 					Program.DataRedrawMode.None, SessionId));
 		}
 
+        // REFACTOR: for later refactoring
         public void RedrawAllElementsAndFocus(object nextFocus = null, bool isExpanded = true)
         {
             // Blazor: refer 

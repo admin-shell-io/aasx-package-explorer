@@ -187,7 +187,7 @@ namespace AnyUi
         public static bool DebugFrames = false;
     }
 
-    public class AnyUiDisplayContextHtml : AnyUiContextBase
+    public class AnyUiDisplayContextHtml : AnyUiContextPlusDialogs
     {
         [JsonIgnore]
         public PackageCentral Packages;
@@ -550,7 +550,7 @@ namespace AnyUi
         /// <param name="caption">Caption string (title)</param>
         /// <param name="buttons">Buttons according to WPF standard messagebox</param>
         /// <param name="image">Image according to WPF standard messagebox</param>
-        public async Task<AnyUiMessageBoxResult> MessageBoxFlyoutShowAsync(
+        public async override Task<AnyUiMessageBoxResult> MessageBoxFlyoutShowAsync(
             string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
             AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
@@ -718,7 +718,7 @@ namespace AnyUi
 			//return dialogueData.Result;
 		}
 
-        public async Task<bool> StartFlyoverModalAsync(AnyUiDialogueDataBase dialogueData, Action rerender = null)
+        public async override Task<bool> StartFlyoverModalAsync(AnyUiDialogueDataBase dialogueData, Action rerender = null)
         {
             var evs = FindEventSession(_bi.SessionId);
             if (dialogueData == null || evs == null)
@@ -790,17 +790,15 @@ namespace AnyUi
             }
         }
 
-		private string lastFnForInitialDirectory = null;
-		public void RememberForInitialDirectory(string fn)
-		{
-			this.lastFnForInitialDirectory = fn;
-		}
+        //
+        // Convenience services
+        //
 
 		/// <summary>
 		/// Selects a filename to read either from user or from ticket.
 		/// </summary>
 		/// <returns>The dialog data containing the filename or <c>null</c></returns>
-		public async Task<AnyUiDialogueDataOpenFile> MenuSelectOpenFilenameAsync(
+		public async override Task<AnyUiDialogueDataOpenFile> MenuSelectOpenFilenameAsync(
 			AasxMenuActionTicket ticket,
 			string argName,
 			string caption,
@@ -850,7 +848,7 @@ namespace AnyUi
 		/// If ticket does not contain the filename named by <c>argName</c>,
 		/// read it by the user.
 		/// </summary>
-		public async Task<bool> MenuSelectOpenFilenameToTicketAsync(
+		public async override Task<bool> MenuSelectOpenFilenameToTicketAsync(
 			AasxMenuActionTicket ticket,
 			string argName,
 			string caption,
@@ -871,7 +869,7 @@ namespace AnyUi
 		/// Selects a filename to write either from user or from ticket.
 		/// </summary>
 		/// <returns>The dialog data containing the filename or <c>null</c></returns>
-		public async Task<AnyUiDialogueDataSaveFile> MenuSelectSaveFilenameAsync(
+		public async override Task<AnyUiDialogueDataSaveFile> MenuSelectSaveFilenameAsync(
 			AasxMenuActionTicket ticket,
 			string argName,
 			string caption,
@@ -920,7 +918,7 @@ namespace AnyUi
 		/// If ticket does not contain the filename named by <c>argName</c>,
 		/// read it by the user.
 		/// </summary>
-		public async Task<bool> MenuSelectSaveFilenameToTicketAsync(
+		public async override Task<bool> MenuSelectSaveFilenameToTicketAsync(
 			AasxMenuActionTicket ticket,
 			string argName,
 			string caption,
@@ -945,7 +943,7 @@ namespace AnyUi
 		/// Selects a text either from user or from ticket.
 		/// </summary>
 		/// <returns>Success</returns>
-		public async Task<AnyUiDialogueDataTextBox> MenuSelectTextAsync(
+		public async override Task<AnyUiDialogueDataTextBox> MenuSelectTextAsync(
 			AasxMenuActionTicket ticket,
 			string argName,
 			string caption,
@@ -980,7 +978,7 @@ namespace AnyUi
 		/// Selects a text either from user or from ticket.
 		/// </summary>
 		/// <returns>Success</returns>
-		public async Task<bool> MenuSelectTextToTicketAsync(
+		public async override Task<bool> MenuSelectTextToTicketAsync(
 			AasxMenuActionTicket ticket,
 			string argName,
 			string caption,
@@ -996,5 +994,31 @@ namespace AnyUi
 			return false;
 		}
 
-	}
+        /// <summary>
+        /// The display context tells, if user files are allowable for the application
+        /// </summary>
+        public override bool UserFilesAllowed()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// The display context tells, if web browser services are allowable for the application.
+        /// These are: download files, open new browser window ..
+        /// </summary>
+        public override bool WebBrowserServicesAllowed()
+        {
+            return _jsRuntime != null;
+        }
+
+        /// <summary>
+        /// Initiates in the web browser the display or download of file content
+        /// </summary>
+        public override async Task WebBrowserDisplayOrDownloadFile(string fn, string mimeType = null)
+        {
+            if (_jsRuntime == null)
+                return;
+            await BlazorUI.Utils.BlazorUtils.DisplayOrDownloadFile(_jsRuntime, fn, mimeType);
+        }
+    }
 }

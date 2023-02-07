@@ -15,7 +15,8 @@ PackageExplorer. Therefore design goals:
 
 * cut-copy does not refresh screen?
 * save repo
- DPDM Nameplate convert into new version: crash
+* DPDM Nameplate convert into new version: crash
+* Edit script / JSON clipboard
 
 ## Notes
 

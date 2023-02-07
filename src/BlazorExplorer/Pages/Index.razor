@@ -23,7 +23,10 @@
 @implements IDisposable
 
 @{
-// resharper disable all
+    // resharper disable all
+
+    // update as soon as possible
+    Session.DisplayContext.SetJsRuntime(JSRuntime);
 }
 
 <div class="col-12 row">
@@ -631,7 +634,6 @@
         <div class="sticky-top" style="margin-top:-16px; word-wrap: break-word; width: 100%; overflow: hidden">
             @{
                 // call prepare function (the ref's make clear, which session data is altered)
-                Session.DisplayContext.SetJsRuntime(JSRuntime);                
                 if (Session?.PrepareDisplayDataAndElementPanel(
                     JSRuntime,
                     Session.DisplayContext,

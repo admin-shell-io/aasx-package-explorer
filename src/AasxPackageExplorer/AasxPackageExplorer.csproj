@@ -123,7 +123,6 @@
     </None>
     <None Remove="i4AASCS.xml" />
     <None Remove="Resources\IDTA_AAS-Logo_312x281_RGB.png" />
-    <EmbeddedResource Include="Resources\i4AASCS.xml" />
     <None Update="Opc.Ua.SampleClient.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

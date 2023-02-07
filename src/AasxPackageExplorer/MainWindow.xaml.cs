@@ -3436,5 +3436,20 @@ namespace AasxPackageExplorer
             BrowserDisplayLocalFile(htmlfn, System.Net.Mime.MediaTypeNames.Text.Html,
                                     preferInternal: true);
         }
+
+        // REFACTOR: for later refactoring
+        public void RedrawRepos()
+        {
+            // nothing here required
+            ;
+        }
+
+        // REFACTOR: for later refactoring
+        public void RedrawAllElementsAndFocus(object nextFocus = null, bool isExpanded = true)
+        {
+            // WPF: inject
+            DispEditEntityPanel.AddWishForOutsideAction(
+                new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: isExpanded));
+        }
     }
 }

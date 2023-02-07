@@ -52,25 +52,26 @@ namespace AasxPackageExplorer
         protected string _currentScriptText = "";
         protected AasxScript _aasxScript = null;
 
-        public void CommandBinding_ScriptEditLaunch(string cmd, AasxMenuItemBase menuItem)
+        public async Task CommandBinding_ScriptEditLaunch(string cmd, AasxMenuItemBase menuItem)
         {
+            // REFACTOR: SAME
             if (cmd == "scripteditlaunch")
             {
                 // trivial things
                 if (!PackageCentral.MainAvailable)
                 {
-                    MessageBoxFlyoutShow(
-                        "An AASX package needs to be available", "Error"
-                        , AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                    await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "An AASX package needs to be available", "Error", 
+                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
                     return;
                 }
 
                 // trivial things
                 if (_aasxScript?.IsExecuting == true)
                 {
-                    if (AnyUiMessageBoxResult.No == MessageBoxFlyoutShow(
-                        "An AASX script is already executed! Continue anyway?", "Warning"
-                        , AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                    if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "An AASX script is already executed! Continue anyway?", "Warning",
+                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
                         return;
                     else
                         // brutal
@@ -78,13 +79,13 @@ namespace AasxPackageExplorer
                 }
 
                 // prompt for the script
-                var uc = new TextEditorFlyout();
-                uc.DiaData.MimeType = "application/csharp";
-                uc.DiaData.Caption = "Edit script to be launched ..";
-                uc.DiaData.Presets = Options.Curr.ScriptPresets;
-                uc.DiaData.Text = _currentScriptText;
+                var uc = new AnyUiDialogueDataTextEditor("Edit script to be launched ..");
+                uc.MimeType = "application/csharp";
+                uc.Presets = Options.Curr.ScriptPresets;
+                uc.Text = _currentScriptText;
 
                 // context menu
+#if feature_not_available
                 uc.ContextMenuCreate = () =>
                 {
                     var cm = DynamicContextMenu.CreateNew(
@@ -114,11 +115,16 @@ namespace AasxPackageExplorer
                         Log.Singleton.Info("Copied JSON to clipboard.");
                     }
                 };
+#endif
 
                 // execute
-                this.StartFlyoverModal(uc);
-                _currentScriptText = uc.DiaData.Text;
-                if (uc.DiaData.Result && uc.DiaData.Text.HasContent())
+                await DisplayContext.StartFlyoverModalAsync(uc);
+
+                // always remember script
+                _currentScriptText = uc.Text;
+
+                // execute?
+                if (uc.Result && uc.Text.HasContent())
                 {
                     try
                     {
@@ -128,7 +134,7 @@ namespace AasxPackageExplorer
 
                         // executing
                         _aasxScript.StartEnginBackground(
-                            uc.DiaData.Text, Options.Curr.ScriptLoglevel,
+                            uc.Text, Options.Curr.ScriptLoglevel,
                             MainMenu?.Menu, this);
                     }
                     catch (Exception ex)
@@ -138,6 +144,7 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: SAME
             for (int i = 0; i < 9; i++)
                 if (cmd == $"launchscript{i}"
                     && Options.Curr.ScriptPresets != null)
@@ -151,9 +158,9 @@ namespace AasxPackageExplorer
                     // still running?
                     if (_aasxScript?.IsExecuting == true)
                     {
-                        if (AnyUiMessageBoxResult.No == MessageBoxFlyoutShow(
-                            "An AASX script is already executed! Continue anyway?", "Warning"
-                            , AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                        if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
+                            "An AASX script is already executed! Continue anyway?", "Warning",
+                            AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
                             return;
                         else
                             // brutal
@@ -163,7 +170,7 @@ namespace AasxPackageExplorer
                     // prompting
                     if (!Options.Curr.ScriptLaunchWithoutPrompt)
                     {
-                        if (AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
                             $"Executing script preset #{1 + scriptIndex} " +
                             $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?",
                             "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))

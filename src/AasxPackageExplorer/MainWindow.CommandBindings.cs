@@ -112,6 +112,7 @@ namespace AasxPackageExplorer
             // Dispatch
             //
 
+            // REFACTOR: could be same
             if (cmd == "new")
             {
                 // start
@@ -119,7 +120,7 @@ namespace AasxPackageExplorer
 
                 // check user
                 if (!scriptmode
-                    && AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
+                    && AnyUiMessageBoxResult.Yes != await DisplayContext?.MessageBoxFlyoutShowAsync(
                     "Create new Adminshell environment? This operation can not be reverted!", "AAS-ENV",
                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                     return;
@@ -141,20 +142,21 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: the same
             if (cmd == "open" || cmd == "openaux")
             {
                 // start
                 ticket.StartExec();
 
                 // filename
-                if (!MenuSelectOpenFilename(
+                var fn = (await DisplayContext.MenuSelectOpenFilenameAsync(
                     ticket, "File",
                     "Open AASX",
                     null,
                     "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
                         "AAS JSON file (*.json)|*.json|All files (*.*)|*.*",
-                    out var fn,
-                    "Open AASX: No valid filename."))
+                    "Open AASX: No valid filename."))?.TargetFileName;
+                if (fn == null)
                     return;
 
                 // ok
@@ -174,6 +176,7 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: the same
             if (cmd == "save")
             {
                 // start
@@ -219,6 +222,7 @@ namespace AasxPackageExplorer
                 Log.Singleton.Info("AASX saved successfully: {0}", PackageCentral.MainItem.Filename);
             }
 
+            // REFACTOR: the same (!!)
             if (cmd == "saveas")
             {
                 // start
@@ -231,35 +235,61 @@ namespace AasxPackageExplorer
                     return;
                 }
 
-                // shall be a local file?!
+                // shall be a local/ user file?!
                 var isLocalFile = PackageCentral.MainItem.Container is PackageContainerLocalFile;
-                if (!isLocalFile)
-                    if (!scriptmode && AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
-                        "Current AASX file is not a local file. Proceed and convert to local AASX file?",
+                var isUserFile = PackageCentral.MainItem.Container is PackageContainerUserFile;
+                if (!isLocalFile && !isUserFile)
+                    if (!ticket.ScriptMode
+                        && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "Current AASX file is not a local or user file. Proceed and convert to such file?",
                         "Save", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand))
                         return;
 
                 // filename
-                if (!MenuSelectSaveFilename(
+                var ucsf = await DisplayContext.MenuSelectSaveFilenameAsync(
                     ticket, "File",
                     "Save AASX package",
                     PackageCentral.Main.Filename,
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
                         (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
                         "All files (*.*)|*.*",
-                    out var fn, out var filterIndex,
-                    "Save AASX: No valid filename."))
+                    "Save AASX: No valid filename.");
+                if (ucsf?.Result != true)
                     return;
 
                 // do
+                var targetFn = ucsf.TargetFileName;
+                var targetFnForLRU = targetFn;
+
                 try
                 {
+                    // establish target filename
+                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
+                    {
+                        targetFn = PackageContainerUserFile.BuildUserFilePath(ucsf.TargetFileName);
+                        targetFnForLRU = null;
+                    }
+
+                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
+                    {
+                        // produce a .tmp file
+                        targetFn = System.IO.Path.GetTempFileName();
+                        targetFnForLRU = null;
+
+                        // rename better
+                        var _filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ucsf.Filter);
+                        targetFn = AnyUiDialogueDataOpenFile.ApplyFilterItem(
+                            fi: _filterItems[ucsf.FilterIndex],
+                            fn: targetFn,
+                            final: 2);
+                    }
+
                     // if not local, do a bit of voodoo ..
                     if (!isLocalFile && PackageCentral.MainItem.Container != null)
                     {
                         // establish local
                         if (!await PackageCentral.MainItem.Container.SaveLocalCopyAsync(
-                            fn,
+                            targetFn,
                             runtimeOptions: PackageCentral.CentralRuntimeOptions))
                         {
                             // Abort
@@ -270,8 +300,8 @@ namespace AasxPackageExplorer
 
                         // re-load
                         UiLoadPackageWithNew(
-                            PackageCentral.MainItem, null, fn, onlyAuxiliary: false,
-                            storeFnToLRU: fn);
+                            PackageCentral.MainItem, null, targetFn, onlyAuxiliary: false,
+                            storeFnToLRU: targetFnForLRU);
                         return;
                     }
 
@@ -281,17 +311,17 @@ namespace AasxPackageExplorer
 
                     // preferred format
                     var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
-                    if (filterIndex == 1)
+                    if (ucsf.FilterIndex == 1)
                         prefFmt = AdminShellPackageEnv.SerializationFormat.Xml;
-                    if (filterIndex == 2)
+                    if (ucsf.FilterIndex == 2)
                         prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
 
                     // save 
-                    RememberForInitialDirectory(fn);
-                    await PackageCentral.MainItem.SaveAsAsync(fn, prefFmt: prefFmt);
+                    DisplayContext.RememberForInitialDirectory(targetFn);
+                    await PackageCentral.MainItem.SaveAsAsync(targetFn, prefFmt: prefFmt);
 
                     // backup (only for AASX)
-                    if (filterIndex == 0)
+                    if (ucsf.FilterIndex == 0)
                         if (Options.Curr.BackupDir != null)
                             PackageCentral.MainItem.Container.BackupInDir(
                                 System.IO.Path.GetFullPath(Options.Curr.BackupDir),
@@ -300,36 +330,55 @@ namespace AasxPackageExplorer
 
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();
+
+                    // LRU?
+                    // record in LRU?
+                    try
+                    {
+                        var lru = PackageCentral?.Repositories?.FindLRU();
+                        if (lru != null && targetFnForLRU != null)
+                            lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, targetFnForLRU);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(
+                            ex, $"When managing LRU files");
+                        return;
+                    }
+
+                    // if it is a download, provide link
+                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download
+                        && DisplayContext.WebBrowserServicesAllowed())
+                    {
+                        try
+                        {
+                            await DisplayContext.WebBrowserDisplayOrDownloadFile(targetFn, "application/octet-stream");
+                            Log.Singleton.Info("Download initiated.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(
+                                ex, $"When downloading saved file");
+                            return;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
                     Logic?.LogErrorToTicket(ticket, ex, "when saving AASX");
                     return;
                 }
-                Log.Singleton.Info("AASX saved successfully as: {0}", fn);
-
-                // LRU?
-                // record in LRU?
-                try
-                {
-                    var lru = PackageCentral?.Repositories?.FindLRU();
-                    if (lru != null)
-                        lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, fn);
-                }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(
-                        ex, $"When managing LRU files");
-                    return;
-                }
+                Log.Singleton.Info("AASX saved successfully as: {0}", targetFn);                
             }
 
+            // REFACTOR: the same
             if (cmd == "close" && PackageCentral?.Main != null)
             {
                 // start
                 ticket.StartExec();
 
-                if (!scriptmode && AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
+                if (!ticket.ScriptMode
+                    && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
                     "Do you want to close the open package? Please make sure that you have saved before.",
                     "Close Package?", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
                     return;
@@ -346,6 +395,7 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: the same
             if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt") && PackageCentral?.Main != null)
             {
                 // differentiate
@@ -359,7 +409,7 @@ namespace AasxPackageExplorer
                     if (ticket["UseX509"] is bool buse)
                         useX509 = buse;
                     else
-                        useX509 = (AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
+                        useX509 = (AnyUiMessageBoxResult.Yes == await DisplayContext.MessageBoxFlyoutShowAsync(
                             "Use X509 (yes) or Verifiable Credential (No)?",
                             "X509 or VerifiableCredential",
                             AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand));
@@ -388,32 +438,32 @@ namespace AasxPackageExplorer
                 // suspecting: for whole AAS/ package or so ..
 
                 // filename source
-                if (!MenuSelectOpenFilenameToTicket(
+                if(!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "Source",
                     "Select source AASX file to be processed",
                     null,
                     "AASX package files (*.aasx)|*.aasx",
-                    "For package sign/ validate/ encrypt: No valid filename for source given!"))
+                    "For package sign/ validate/ encrypt: No valid filename for source given!")))
                     return;
 
                 if (cmd == "encrypt")
                 {
                     // filename cert
-                    if (!MenuSelectOpenFilenameToTicket(
+                    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                         ticket, "Certificate",
                         "Select certificate file",
                         null,
                         ".cer files (*.cer)|*.cer",
-                        "For package sign/ validate/ encrypt: No valid filename for certificate given!"))
+                        "For package sign/ validate/ encrypt: No valid filename for certificate given!")))
                         return;
 
                     // ask also for target fn
-                    if (!MenuSelectSaveFilenameToTicket(
+                    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                         ticket, "Target",
                         "Write encoded AASX package file",
                         ticket["Source"] + "2",
                         "AASX2 encrypted package files (*.aasx2)|*.aasx2",
-                        "For package sign/ validate/ encrypt: No valid filename for target given!"))
+                        "For package sign/ validate/ encrypt: No valid filename for target given!")))
                         return;
 
                 }
@@ -421,12 +471,12 @@ namespace AasxPackageExplorer
                 if (cmd == "sign")
                 {
                     // filename cert is required here
-                    if (!MenuSelectOpenFilenameToTicket(
+                    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                         ticket, "Certificate",
                         "Select certificate file",
                         null,
                         ".pfx files (*.pfx)|*.pfx",
-                        "For package sign/ validate/ encrypt: No valid filename for certificate given!"))
+                        "For package sign/ validate/ encrypt: No valid filename for certificate given!")))
                         return;
                 }
 
@@ -445,36 +495,37 @@ namespace AasxPackageExplorer
                 Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
             }
 
+            // REFACTOR: the same
             if ((cmd == "decrypt") && PackageCentral.Main != null)
             {
                 // start
                 ticket.StartExec();
 
                 // filename source
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "Source",
                     "Select source encrypted AASX file to be processed",
                     null,
                     "AASX2 encrypted package files (*.aasx2)|*.aasx2",
-                    "For package decrypt: No valid filename for source given!"))
+                    "For package decrypt: No valid filename for source given!")))
                     return;
 
                 // filename cert
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "Certificate",
                     "Select source AASX file to be processed",
                     null,
                     ".pfx files (*.pfx)|*.pfx",
-                    "For package decrypt: No valid filename for certificate given!"))
+                    "For package decrypt: No valid filename for certificate given!")))
                     return;
 
                 // ask also for target fn
-                if (!MenuSelectSaveFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                     ticket, "Target",
                     "Write decoded AASX package file",
                     null,
                     "AASX package files (*.aasx)|*.aasx",
-                    "For package decrypt: No valid filename for target given!"))
+                    "For package decrypt: No valid filename for target given!")))
                     return;
 
                 // now, generally start
@@ -492,6 +543,7 @@ namespace AasxPackageExplorer
                 Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
             }
 
+            // REFACTOR: the same
             if (cmd == "closeaux" && PackageCentral.AuxAvailable)
             {
                 // start
@@ -508,6 +560,7 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: DIFFERENT
             if (cmd == "exit")
             {
                 // start
@@ -523,6 +576,7 @@ namespace AasxPackageExplorer
                     "via OPC UA or similar.",
                     "Connect", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Hand);
 
+            // REFACTOR: DIFFERENT
             if (cmd == "about")
             {
                 // start
@@ -533,6 +587,7 @@ namespace AasxPackageExplorer
                 ab.ShowDialog();
             }
 
+            // REFACTOR: DIFFERENT
             if (cmd == "helpgithub")
             {
                 // start
@@ -542,6 +597,7 @@ namespace AasxPackageExplorer
                 ShowHelp();
             }
 
+            // REFACTOR: DIFFERENT
             if (cmd == "faqgithub")
             {
                 // start
@@ -552,6 +608,7 @@ namespace AasxPackageExplorer
                     @"https://github.com/admin-shell-io/questions-and-answers/blob/master/README.md");
             }
 
+            // REFACTOR: DIFFERENT
             if (cmd == "helpissues")
             {
                 // start
@@ -562,6 +619,7 @@ namespace AasxPackageExplorer
                     @"https://github.com/admin-shell-io/aasx-package-explorer/issues");
             }
 
+            // REFACTOR: DIFFERENT
             if (cmd == "helpoptionsinfo")
             {
                 // start
@@ -573,6 +631,10 @@ namespace AasxPackageExplorer
                     windowTitle: "Report on active and possible options");
                 dlg.ShowDialog();
             }
+
+            //
+            // Flag handling .. (no refactor)
+            //
 
             if (cmd == "editkey")
                 MainMenu?.SetChecked("EditMenu", MainMenu?.IsChecked("EditMenu") != true);
@@ -616,6 +678,7 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: DIFFERENT
             if (cmd == "test")
             {
                 // start
@@ -625,6 +688,7 @@ namespace AasxPackageExplorer
                 DisplayElements.Test();
             }
 
+            // REFACTOR: 10% DIFFERENT
             if (cmd == "bufferclear")
             {
                 // start
@@ -636,6 +700,7 @@ namespace AasxPackageExplorer
                     "enabled.");
             }
 
+            // REFACTOR: SAME .. move vars!
             if (cmd == "locationpush"
                 && _editingLocations != null
                 && DisplayElements.SelectedItem is VisualElementGeneric vege
@@ -652,6 +717,7 @@ namespace AasxPackageExplorer
                 Log.Singleton.Info("Editing Locations: pushed location.");
             }
 
+            // REFACTOR: SAME .. move vars!
             if (cmd == "locationpop"
                 && _editingLocations != null
                 && _editingLocations.Count > 0)
@@ -665,15 +731,18 @@ namespace AasxPackageExplorer
                 DisplayElements.TrySelectMainDataObject(loc.MainDataObject, wishExpanded: loc.IsExpanded);
             }
 
+            // REFACTOR: LEAVE HERE
             if (cmd == "exportsmd")
                 CommandBinding_ExportSMD(ticket);
 
+            // REFACTOR: LEAVE HERE
             if (cmd == "printasset")
                 CommandBinding_PrintAsset(ticket);
 
             if (cmd.StartsWith("filerepo"))
                 await CommandBinding_FileRepoAll(cmd, ticket);
 
+            // REFACTOR: SAME
             if (cmd == "opcread")
             {
                 // start
@@ -689,37 +758,37 @@ namespace AasxPackageExplorer
 
             if (cmd == "submodelread" || cmd == "submodelwrite"
                 || cmd == "submodelput" || cmd == "submodelget")
-                CommandBinding_SubmodelReadWritePutGet(cmd, ticket);
+                await CommandBinding_SubmodelReadWritePutGet(cmd, ticket);
 
             if (cmd == "rdfread")
-                CommandBinding_RDFRead(cmd, ticket);
+                await CommandBinding_RDFRead(cmd, ticket);
 
             if (cmd == "bmecatimport")
-                CommandBinding_BMEcatImport(cmd, ticket);
+                await CommandBinding_BMEcatImport(cmd, ticket);
 
             if (cmd == "csvimport")
-                CommandBinding_CSVImport(cmd, ticket);
+                await CommandBinding_CSVImport(cmd, ticket);
 
             if (cmd == "submodeltdimport" || cmd == "submodeltdexport")
-                CommandBinding_SubmodelTdExportImport(cmd, ticket);
+                await CommandBinding_SubmodelTdExportImport(cmd, ticket);
 
             if (cmd == "opcuaimportnodeset")
-                CommandBinding_OpcUaImportNodeSet(cmd, ticket);
+                await CommandBinding_OpcUaImportNodeSet(cmd, ticket);
 
             if (cmd == "importdictsubmodel" || cmd == "importdictsubmodelelements")
                 CommandBinding_ImportDictToSubmodel(cmd, ticket);
 
             if (cmd == "importaml" || cmd == "exportaml")
-                CommandBinding_ImportExportAML(cmd, ticket);
+                await CommandBinding_ImportExportAML(cmd, ticket);
 
             if (cmd == "exportcst")
                 CommandBinding_ExportCst(cmd, ticket);
 
             if (cmd == "exportjsonschema")
-                CommandBinding_ExportJsonSchema(cmd, ticket);
+                await CommandBinding_ExportJsonSchema(cmd, ticket);
 
             if (cmd == "opcuai4aasimport" || cmd == "opcuai4aasexport")
-                CommandBinding_ExportOPCUANodeSet(cmd, ticket);
+                await CommandBinding_ExportOPCUANodeSet(cmd, ticket);
 
             // TODO (MIHO, 2022-11-19): stays in WPF (tightly integrated, command line shall do own version)
             if (cmd == "opcuaexportnodesetuaplugin")
@@ -749,19 +818,20 @@ namespace AasxPackageExplorer
             if (cmd == "copyclipboardelementjson")
                 CommandBinding_CopyClipboardElementJson();
 
+            // REFACTOR: SAME
             if (cmd == "exportgenericforms")
             {
                 // start
                 ticket?.StartExec();
 
                 // filename
-                if (!MenuSelectSaveFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                     ticket, "File",
                     "Select options file for GenericForms to be exported",
                     "new.add-options.json",
                     "Options file for GenericForms (*.add-options.json)|*.add-options.json|All files (*.*)|*.*",
                     "Export GenericForms: No valid filename.",
-                    argFilterIndex: "FilterIndex"))
+                    argFilterIndex: "FilterIndex")))
                     return;
 
                 try
@@ -774,19 +844,20 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: SAME
             if (cmd == "exportpredefineconcepts")
             {
                 // start
                 ticket?.StartExec();
 
                 // filename
-                if (!MenuSelectSaveFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                     ticket, "File",
                     "Select text file for PredefinedConcepts to be exported",
                     "new.txt",
                     "Text file for PredefinedConcepts (*.txt)|*.txt|All files (*.*)|*.*",
                     "Export PredefinedConcepts: No valid filename.",
-                    argFilterIndex: "FilterIndex"))
+                    argFilterIndex: "FilterIndex")))
                     return;
 
                 try
@@ -799,43 +870,53 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: STAYS HERE
             if (cmd == "exporttable")
                 CommandBinding_ExportImportTableUml(cmd, ticket, import: false);
 
+            // REFACTOR: STAYS HERE
             if (cmd == "importtable")
                 CommandBinding_ExportImportTableUml(cmd, ticket, import: true);
 
+            // REFACTOR: STAYS HERE
             if (cmd == "exportuml")
                 CommandBinding_ExportImportTableUml(cmd, ticket, exportUml: true);
 
+            // REFACTOR: STAYS HERE
             if (cmd == "importtimeseries")
                 CommandBinding_ExportImportTableUml(cmd, ticket, importTimeSeries: true);
 
+            // REFACTOR: STAYS HERE
             if (cmd == "serverpluginemptysample")
                 CommandBinding_ExecutePluginServer(
                     "EmptySample", "server-start", "server-stop", "Empty sample plug-in.");
 
+            // REFACTOR: STAYS HERE
             if (cmd == "serverpluginopcua")
                 CommandBinding_ExecutePluginServer(
                     "AasxPluginUaNetServer", "server-start", "server-stop", "Plug-in for OPC UA Server for AASX.");
 
+            // REFACTOR: STAYS HERE
             if (cmd == "serverpluginmqtt")
                 CommandBinding_ExecutePluginServer(
                     "AasxPluginMqttServer", "MQTTServer-start", "server-stop", "Plug-in for MQTT Server for AASX.");
 
             if (cmd == "newsubmodelfromplugin")
-                CommandBinding_NewSubmodelFromPlugin(cmd, ticket);
+                await CommandBinding_NewSubmodelFromPlugin(cmd, ticket);
 
             if (cmd == "convertelement")
-                CommandBinding_ConvertElement(cmd, ticket);
+                await CommandBinding_ConvertElement(cmd, ticket);
 
+            // REFACTOR: STAYS
             if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward"
                 || cmd == "toolsreplacetext" || cmd == "toolsreplacestay" || cmd == "toolsreplaceforward"
                 || cmd == "toolsreplaceall") await CommandBinding_ToolsFind(cmd, ticket);
 
+            // REFACTOR: STAYS
             if (cmd == "checkandfix")
                 CommandBinding_CheckAndFix();
 
+            // REFACTOR: STAYS
             if (cmd == "eventsresetlocks")
             {
                 Log.Singleton.Info($"Event interlocking reset. Status was: " +
@@ -844,9 +925,11 @@ namespace AasxPackageExplorer
                 _eventHandling.Reset();
             }
 
+            // REFACTOR: STAYS
             if (cmd == "eventsshowlogkey")
                 MainMenu?.SetChecked("EventsShowLogMenu", MainMenu?.IsChecked("EventsShowLogMenu") != true);
 
+            // REFACTOR: STAYS
             if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
             {
                 PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
@@ -854,7 +937,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "scripteditlaunch" || cmd.StartsWith("launchscript"))
             {
-                CommandBinding_ScriptEditLaunch(cmd, menuItem);
+                await CommandBinding_ScriptEditLaunch(cmd, menuItem);
             }
         }
 
@@ -999,6 +1082,7 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: SAME
             if (cmd == "filereponew")
             {
                 ticket.StartExec();
@@ -1015,27 +1099,30 @@ namespace AasxPackageExplorer
                 PackageCentral.Repositories.AddAtTop(new PackageContainerListLocal());
             }
 
+            // REFACTOR: SAME
             if (cmd == "filerepoopen")
             {
                 // start
                 ticket.StartExec();
 
                 // filename
-                if (!MenuSelectOpenFilename(
+                var ucof = await DisplayContext.MenuSelectOpenFilenameAsync(
                     ticket, "File",
                     "Select AASX file repository JSON file",
                     null,
                     "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    out var repoFn,
-                    "AASX file repository open: No valid filename."))
+                    "AASX file repository open: No valid filename.");
+                if (ucof?.Result != true)
                     return;
 
                 // ok
-                var fr = this.UiLoadFileRepository(repoFn);
+                var fr = this.UiLoadFileRepository(ucof.TargetFileName);
                 this.UiAssertFileRepository(visible: true);
                 PackageCentral.Repositories.AddAtTop(fr);
+                RedrawRepos();
             }
 
+            // REFACTOR: SAME
             if (cmd == "filerepoconnectrepository")
             {
                 ticket.StartExec();
@@ -1044,10 +1131,10 @@ namespace AasxPackageExplorer
                 var endpoint = ticket["Endpoint"] as string;
                 if (endpoint?.HasContent() != true)
                 {
-                    var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):",
-                            AnyUiMessageBoxImage.Question);
-                    uc.Text = "" + Options.Curr.DefaultConnectRepositoryLocation;
-                    this.StartFlyoverModal(uc);
+                    var uc = new AnyUiDialogueDataTextBox("REST endpoint (without \"/server/listaas\"):",
+                    symbol: AnyUiMessageBoxImage.Question);
+                    uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
+                    await DisplayContext.StartFlyoverModalAsync(uc);
                     if (!uc.Result)
                         return;
                     endpoint = uc.Text;
@@ -1075,110 +1162,19 @@ namespace AasxPackageExplorer
                     await fr.SyncronizeFromServerAsync();
                     this.UiAssertFileRepository(visible: true);
                     PackageCentral.Repositories.AddAtTop(fr);
+                    RedrawRepos();
                 }
             }
 
+            // REFACTOR: SAME
             if (cmd == "filerepoquery")
                 Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
-            //if (cmd == "filerepoquery")
-            //{
-            //    ticket.StartExec();
-
-            //    // access
-            //    if (_packageCentral.Repositories == null || _packageCentral.Repositories.Count < 1)
-            //    {
-            //        _logic?.LogErrorToTicket(ticket,
-            //            "AASX File Repository: No repository currently available! Please open.");
-            //        return;
-            //    }
-
-            //    // make a lambda
-            //    Action<PackageContainerRepoItem> lambda = (ri) =>
-            //    {
-            //        var fr = _packageCentral.Repositories?.FindRepository(ri);
-
-            //        if (fr != null && ri?.Location != null)
-            //        {
-            //            // which file?
-            //            var loc = fr?.GetFullItemLocation(ri.Location);
-            //            if (loc == null)
-            //                return;
-
-            //            // start animation
-            //            fr.StartAnimation(ri,
-            //                PackageContainerRepoItem.VisualStateEnum.ReadFrom);
-
-            //            try
-            //            {
-            //                // load
-            //                Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
-            //                UiLoadPackageWithNew(
-            //                    _packageCentral.MainItem, null, loc, onlyAuxiliary: false);
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                Log.Singleton.Error(
-            //                    ex, $"When switching to AASX repository location {loc}.");
-            //            }
-            //        }
-            //    };
-
-            //    // get the list of items
-            //    var repoItems = _packageCentral.Repositories.EnumerateItems().ToList();
-
-            //    // scripted?
-            //    if (ticket["Index"] is int)
-            //    {
-            //        var ri = (int)ticket["Index"];
-            //        if (ri < 0 || ri >= repoItems.Count)
-            //        {
-            //            _logic?.LogErrorToTicket(ticket, "Repo Query: Index out of bounds");
-            //            return;
-            //        }
-            //        lambda(repoItems[ri]);
-            //    }
-            //    else
-            //    if (ticket["AAS"] is string aasid)
-            //    {
-            //        var ri = _packageCentral.Repositories.FindByAasId(aasid);
-            //        if (ri == null)
-            //        {
-            //            _logic?.LogErrorToTicket(ticket, "Repo Query: AAS-Id not found");
-            //            return;
-            //        }
-            //        lambda(ri);
-            //    }
-            //    else
-            //    if (ticket["Asset"] is string aid)
-            //    {
-            //        var ri = _packageCentral.Repositories.FindByAssetId(aid);
-            //        if (ri == null)
-            //        {
-            //            _logic?.LogErrorToTicket(ticket, "Repo Query: Asset-Id not found");
-            //            return;
-            //        }
-            //        lambda(ri);
-            //    }
-            //    else
-            //    {
-            //        // dialogue
-            //        var uc = new SelectFromRepositoryFlyout();
-            //        uc.Margin = new Thickness(10);
-            //        if (uc.LoadAasxRepoFile(items: repoItems))
-            //        {
-            //            uc.ControlClosed += () =>
-            //            {
-            //                lambda(uc.ResultItem);
-            //            };
-            //            this.StartFlyover(uc);
-            //        }
-            //    }
-            //}
-
+            // REFACTOR: SAME
             if (cmd == "filerepocreatelru")
             {
-                if (ticket.ScriptMode != true && AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
+                if (ticket.ScriptMode != true
+                    && AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
                         "Create new (empty) \"Last Recently Used (LRU)\" list? " +
                         "It will be added to list of repos on the lower/ left of the screen. " +
                         "It will be saved under \"last-recently-used.json\" in the binaries folder. " +
@@ -1201,6 +1197,7 @@ namespace AasxPackageExplorer
                     lruNew.SaveAs(lruFn);
                     this.UiAssertFileRepository(visible: true);
                     PackageCentral?.Repositories?.AddAtTop(lruNew);
+                    RedrawRepos();
                 }
                 catch (Exception ex)
                 {
@@ -1601,7 +1598,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_BMEcatImport(
+        public async Task CommandBinding_BMEcatImport(
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
@@ -1609,17 +1606,17 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: SAME
             if (cmd == "bmecatimport")
             {
                 // filename
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "File",
                     "Select BMEcat file to be imported",
                     null,
                     "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*",
-                    "RDF Read: No valid filename."))
+                    "RDF Read: No valid filename.")))
                     return;
-
 
                 // do it
                 try
@@ -1634,7 +1631,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_CSVImport(
+        public async Task CommandBinding_CSVImport(
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
@@ -1642,15 +1639,16 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: THE SAME
             if (cmd == "csvimport")
             {
                 // filename
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "File",
                     "Select CSF file to be imported",
                     null,
                     "CSV files (*.CSV)|*.csv|All files (*.*)|*.*",
-                    "CSF inmport: No valid filename."))
+                    "CSF inmport: No valid filename.")))
                     return;
 
 
@@ -1667,7 +1665,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_OpcUaImportNodeSet(
+        public async Task CommandBinding_OpcUaImportNodeSet(
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
@@ -1675,15 +1673,16 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // THE SAME
             if (cmd == "opcuaimportnodeset")
             {
                 // filename
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "File",
                     "Select OPC UA Nodeset to be imported",
                     null,
                     "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*",
-                    "OPC UA Nodeset import: No valid filename."))
+                    "OPC UA Nodeset import: No valid filename.")))
                     return;
 
                 // do it
@@ -2025,7 +2024,7 @@ namespace AasxPackageExplorer
         protected static string _userLastPutUrl = "http://???:51310";
         protected static string _userLastGetUrl = "http://???:51310";
 
-        public void CommandBinding_SubmodelReadWritePutGet(
+        public async Task CommandBinding_SubmodelReadWritePutGet(
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
@@ -2033,18 +2032,19 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: SAME
             if (cmd == "submodelread")
             {
                 // start
                 ticket?.StartExec();
 
                 // filename
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "File",
                     "Read Submodel from JSON data",
                     "Submodel_" + ticket?.Submodel?.IdShort + ".json",
                     "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    "Submodel Read: No valid filename."))
+                    "Submodel Read: No valid filename.")))
                     return;
 
                 try
@@ -2060,18 +2060,19 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: SAME
             if (cmd == "submodelwrite")
             {
                 // start
                 ticket.StartExec();
 
                 // filename
-                if (!MenuSelectSaveFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                     ticket, "File",
                     "Write Submodel to JSON data",
                     "Submodel_" + ticket.Submodel?.IdShort + ".json",
                     "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    "Submodel Read: No valid filename."))
+                    "Submodel Read: No valid filename.")))
                     return;
 
                 // do it directly
@@ -2085,17 +2086,18 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: SAME
             if (cmd == "submodelput")
             {
                 // start
                 ticket.StartExec();
 
                 // URL
-                if (!MenuSelectTextToTicket(
+                if (!(await DisplayContext.MenuSelectTextToTicketAsync(
                     ticket, "URL",
                     "REST server adress:",
                     _userLastPutUrl,
-                    "Submodel Put: No valid URL selected,"))
+                    "Submodel Put: No valid URL selected,")))
                     return;
 
                 _userLastPutUrl = ticket["URL"] as string;
@@ -2110,17 +2112,18 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: SAME
             if (cmd == "submodelget")
             {
                 // start
                 ticket?.StartExec();
 
                 // URL
-                if (!MenuSelectTextToTicket(
+                if (!(await DisplayContext.MenuSelectTextToTicketAsync(
                     ticket, "URL",
                     "REST server adress:",
                     _userLastGetUrl,
-                    "Submodel Get: No valid URL selected,"))
+                    "Submodel Get: No valid URL selected,")))
                     return;
 
                 _userLastGetUrl = ticket["URL"] as string;
@@ -2143,6 +2146,7 @@ namespace AasxPackageExplorer
         {
             // These 2 functions are using WPF and cannot migrated to PackageLogic
 
+            // REFACTOR: NO
             if (cmd == "importdictsubmodel")
             {
                 // start
@@ -2194,6 +2198,7 @@ namespace AasxPackageExplorer
 #endif
                 }
 
+            // REFACTOR: NO
             if (cmd == "importdictsubmodelelements")
             {
                 // start
@@ -2231,7 +2236,7 @@ namespace AasxPackageExplorer
         }
 
 
-        public void CommandBinding_ImportExportAML(
+        public async Task CommandBinding_ImportExportAML(
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
@@ -2239,18 +2244,19 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: SAME
             if (cmd == "importaml")
             {
                 // start
                 ticket?.StartExec();
 
                 // filename
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "File",
                     "Select AML file to be imported",
                     null,
                     "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*",
-                    "Import AML: No valid filename."))
+                    "Import AML: No valid filename.")))
                     return;
 
                 try
@@ -2264,20 +2270,21 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: SAME
             if (cmd == "exportaml")
             {
                 // start
                 ticket?.StartExec();
 
                 // filename
-                if (!MenuSelectSaveFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                     ticket, "File",
                     "Select AML file to be exported",
                     "new.aml",
                     "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
                     "*.aml|All files (*.*)|*.*",
                     "Export AML: No valid filename.",
-                    argFilterIndex: "FilterIndex"))
+                    argFilterIndex: "FilterIndex")))
                     return;
 
                 try
@@ -2299,6 +2306,7 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: MOVE .. BUT TODO
             if (cmd == "exportcst")
             {
                 // start
@@ -2308,7 +2316,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_ExportJsonSchema(
+        public async Task CommandBinding_ExportJsonSchema(
         string cmd,
         AasxMenuActionTicket ticket = null)
         {
@@ -2316,6 +2324,7 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: SAME
             if (cmd == "exportjsonschema")
             {
                 // start
@@ -2328,13 +2337,13 @@ namespace AasxPackageExplorer
                     fnPrep = "new";
 
                 // filename
-                if (!MenuSelectSaveFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                     ticket, "File",
                     "Select JSON schema file for Submodel templates to be written",
                     $"Submodel_Schema_{fnPrep}.json",
                     "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
                     "Export JSON schema: No valid filename.",
-                    argFilterIndex: "FilterIndex"))
+                    argFilterIndex: "FilterIndex")))
                     return;
 
                 try
@@ -2349,7 +2358,7 @@ namespace AasxPackageExplorer
         }
 
 
-        public void CommandBinding_RDFRead(
+        public async Task CommandBinding_RDFRead(
             string cmd,
             AasxMenuActionTicket ticket = null)
 
@@ -2358,15 +2367,16 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: SAME
             if (cmd == "rdfread")
             {
                 // filename
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "File",
                     "Select RDF file to be imported",
                     null,
                     "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*",
-                    "RDF Read: No valid filename."))
+                    "RDF Read: No valid filename.")))
                     return;
 
                 // do it
@@ -2468,13 +2478,15 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_ConvertElement(
+        public async Task CommandBinding_ConvertElement(
             string cmd,
             AasxMenuActionTicket ticket)
         {
             // rely on ticket availability
             if (ticket == null)
                 return;
+
+            // REFACTOR: SAME
 
             // check
             var rf = ticket.DereferencedMainDataObject as Aas.IReferable;
@@ -2503,12 +2515,14 @@ namespace AasxPackageExplorer
 
                 // show a list
                 // prompt for this list
-                var uc = new SelectFromListFlyout();
-                uc.DiaData.Caption = "Select Conversion action to be executed ..";
-                uc.DiaData.ListOfItems = fol;
-                this.StartFlyoverModal(uc);
-                if (uc.DiaData.ResultItem != null)
-                    ticket["Record"] = uc.DiaData.ResultItem.Tag;
+                var uc = new AnyUiDialogueDataSelectFromList(
+                        "Select Conversion action to be executed ..");
+                uc.ListOfItems = fol;
+                if (!(await DisplayContext.StartFlyoverModalAsync(uc))
+                    || uc.ResultItem == null)
+                    return;
+
+                ticket["Record"] = uc.ResultItem.Tag;
             }
 
             // pass on
@@ -2524,9 +2538,7 @@ namespace AasxPackageExplorer
             }
 
             // redisplay
-            // add to "normal" event quoue
-            DispEditEntityPanel.AddWishForOutsideAction(
-                new AnyUiLambdaActionRedrawAllElements(ticket.MainDataObject));
+            RedrawAllElementsAndFocus(nextFocus: ticket.MainDataObject);
         }
 
         public void CommandBinding_ExportImportTableUml(
@@ -2751,7 +2763,7 @@ namespace AasxPackageExplorer
             CommandExecution_RedrawAll();
         }
 
-        public void CommandBinding_SubmodelTdExportImport(
+        public async Task CommandBinding_SubmodelTdExportImport(
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
@@ -2759,15 +2771,16 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: SAME
             if (cmd == "submodeltdimport")
             {
                 // filename
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                     ticket, "File",
                     "Select Thing Description (TD) file to be imported",
                     null,
                     "JSON files (*.JSONLD)|*.jsonld",
-                    "TD import: No valid filename."))
+                    "TD import: No valid filename.")))
                     return;
 
                 // do it
@@ -2787,15 +2800,16 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: SAME
             if (cmd == "submodeltdexport")
             {
                 // filename
-                if (!MenuSelectSaveFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                     ticket, "File",
                     "Thing Description (TD) export",
                     "Submodel_" + ticket.Submodel?.IdShort + ".jsonld",
                     "JSON files (*.JSONLD)|*.jsonld",
-                    "Thing Description (TD) export: No valid filename."))
+                    "Thing Description (TD) export: No valid filename.")))
                     return;
 
                 // do it
@@ -2812,13 +2826,15 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_NewSubmodelFromPlugin(
+        public async Task CommandBinding_NewSubmodelFromPlugin(
             string cmd,
             AasxMenuActionTicket ticket)
         {
             // rely on ticket availability
             if (ticket == null)
                 return;
+
+            // REFACTOR: SAME
 
             // create a list of plugins, which are capable of generating Submodels
             var listOfSm = new List<AnyUiDialogueListItem>();
@@ -2839,13 +2855,14 @@ namespace AasxPackageExplorer
             // prompt if no name is given
             if (ticket["Name"] == null)
             {
-                var uc = new SelectFromListFlyout();
-                uc.DiaData.Caption = "Select Plug-in and Submodel to be generated ..";
-                uc.DiaData.ListOfItems = listOfSm;
-                this.StartFlyoverModal(uc);
-                if (uc.DiaData.ResultItem == null)
+                var uc = new AnyUiDialogueDataSelectFromList(
+                    "Select Plug-in and Submodel to be generated ..");
+                uc.ListOfItems = listOfSm;
+                if (!(await DisplayContext.StartFlyoverModalAsync(uc))
+                    || uc.ResultItem == null)
                     return;
-                ticket["Record"] = uc.DiaData.ResultItem.Tag;
+
+                ticket["Record"] = uc.ResultItem.Tag;
             }
 
             // do it
@@ -2861,8 +2878,7 @@ namespace AasxPackageExplorer
             }
 
             // redisplay
-            // add to "normal" event quoue
-            DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(ticket["SmRef"]));
+            RedrawAllElementsAndFocus(nextFocus: ticket["SmRef"]);
         }
 
         public async Task CommandBinding_ToolsFind(
@@ -2943,7 +2959,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_ExportOPCUANodeSet(
+        public async Task CommandBinding_ExportOPCUANodeSet(
             string cmd,
             AasxMenuActionTicket ticket)
         {
@@ -2951,6 +2967,7 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // REFACTOR: SAME
             if (cmd == "opcuai4aasexport")
             {
                 // start
@@ -2960,7 +2977,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     var xstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                        "AasxPackageExplorer.Resources.i4AASCS.xml");
+                        "AasxPackageLogic.Resources.i4AASCS.xml");
                 }
                 catch (Exception ex)
                 {
@@ -2970,12 +2987,12 @@ namespace AasxPackageExplorer
                 Log.Singleton.Info("Mapping types loaded.");
 
                 // filename
-                if (!MenuSelectSaveFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                     ticket, "File",
                     "Select Nodeset file to be exported",
                     "new.xml",
                     "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
-                    "Export i4AAS based OPC UA nodeset: No valid filename."))
+                    "Export i4AAS based OPC UA nodeset: No valid filename.")))
                     return;
 
                 // ReSharper enable PossibleNullReferenceException
@@ -2989,15 +3006,16 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // REFACTOR: SAME
             if (cmd == "opcuai4aasimport")
             {
                 // filename
-                if (!MenuSelectOpenFilenameToTicket(
+                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
                 ticket, "File",
                     "Select Nodeset file to be imported",
                     "Document",
                     "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
-                    "Import i4AAS based OPC UA nodeset: No valid filename."))
+                    "Import i4AAS based OPC UA nodeset: No valid filename.")))
                     return;
 
                 // do

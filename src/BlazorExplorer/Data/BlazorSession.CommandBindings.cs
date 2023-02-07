@@ -244,13 +244,6 @@ namespace BlazorUI.Data
                     return;
                 }
 
-                //var uc = new AnyUiDialogueDataSaveFile("Test Caption", message: "Halli hallo",
-                // filter: "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" + 
-                //    "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|" +
-                // "All files (*.*)|*.*", proposeFn: "Vorschlag");
-                //uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
-                //await DisplayContext.StartFlyoverModalAsync(uc);
-
                 // shall be a local/ user file?!
                 var isLocalFile = PackageCentral.MainItem.Container is PackageContainerLocalFile;
                 var isUserFile = PackageCentral.MainItem.Container is PackageContainerUserFile;
@@ -285,7 +278,8 @@ namespace BlazorUI.Data
 						targetFn = PackageContainerUserFile.BuildUserFilePath(ucsf.TargetFileName);
                         targetFnForLRU = null;
 					}
-					if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
+					
+                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
                     {
                         // produce a .tmp file
 						targetFn = System.IO.Path.GetTempFileName();
@@ -363,33 +357,12 @@ namespace BlazorUI.Data
 
                     // if it is a download, provide link
                     if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download
-                        && renderJsRuntime != null)
+                        && DisplayContext.WebBrowserServicesAllowed())
                     {
                         try
                         {
-                            // prepare
-                            //byte[] file = System.IO.File.ReadAllBytes(targetFn);
-                            //string onlyFn = System.IO.Path.GetFileName(targetFn);
-
-                            // send the data to JS to actually download the file
-                            // await renderJsRuntime.InvokeVoidAsync("BlazorDownloadFile", targetFn, "application/octet-stream", file);
-
-                            //InvokeAsync(async () =>
-                            //{
-                            await BlazorUI.Utils.BlazorUtils.DisplayOrDownloadFile(renderJsRuntime, targetFn, "application/octet-stream");
-                            //    this.StateHasChanged();
-                            //});
-
-                            //await Task.Delay(5000);
-
-                            //var uc = new AnyUiDialogueDataDownloadFile(
-                            //    caption: "Save file as download ..",
-                            //    message: "Please activate download!",
-                            //    source: targetFn);
-                            //await DisplayContext.StartFlyoverModalAsync(uc);
-
+                            await DisplayContext.WebBrowserDisplayOrDownloadFile(targetFn, "application/octet-stream");
                             Log.Singleton.Info("Download initiated.");
-
                         } catch (Exception ex)
 						{
 							Log.Singleton.Error(
@@ -412,7 +385,8 @@ namespace BlazorUI.Data
                 // start
                 ticket.StartExec();
 
-                if (!ticket.ScriptMode && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+                if (!ticket.ScriptMode 
+                    && AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
                     "Do you want to close the open package? Please make sure that you have saved before.",
                     "Close Package?", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
                     return;
@@ -1230,7 +1204,7 @@ namespace BlazorUI.Data
                 }
             }
 
-            // REFACTOR: TODO
+            // REFACTOR: MOVE .. BUT TODO
             if (cmd == "exportcst")
             {
                 // start
@@ -1608,8 +1582,8 @@ namespace BlazorUI.Data
                 if (!PackageCentral.MainAvailable)
                 {
                     await DisplayContext.MessageBoxFlyoutShowAsync(
-                        "An AASX package needs to be available", "Error"
-                        , AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                        "An AASX package needs to be available", "Error", 
+                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
                     return;
                 }
 
@@ -1617,8 +1591,8 @@ namespace BlazorUI.Data
                 if (_aasxScript?.IsExecuting == true)
                 {
                     if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
-                        "An AASX script is already executed! Continue anyway?", "Warning"
-                        , AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                        "An AASX script is already executed! Continue anyway?", "Warning", 
+                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
                         return;
                     else
                         // brutal
@@ -1691,6 +1665,7 @@ namespace BlazorUI.Data
                 }
             }
 
+            // REFACTOR: SAME
             for (int i = 0; i < 9; i++)
                 if (cmd == $"launchscript{i}"
                     && Options.Curr.ScriptPresets != null)
