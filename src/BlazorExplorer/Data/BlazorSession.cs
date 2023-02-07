@@ -1131,5 +1131,14 @@ namespace BlazorUI.Data
 					Program.DataRedrawMode.None, SessionId));
 		}
 
+        public void RedrawAllElementsAndFocus(object nextFocus = null, bool isExpanded = true)
+        {
+            // Blazor: refer 
+            Program.signalNewData(
+                new Program.NewDataAvailableArgs(
+                    Program.DataRedrawMode.RebuildTreeKeepOpen, SessionId,
+                    new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: isExpanded)));
+        }
+
 	}
 }
