@@ -36,7 +36,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public enum CustomButton { Query, Context }
 
-        public event Action<Control, PackageContainerListBase, CustomButton, Button>
+        public event Func<Control, PackageContainerListBase, CustomButton, Button, Task>
             ButtonClick;
         public event Action<Control, PackageContainerListBase, PackageContainerRepoItem>
             FileDoubleClick;
@@ -131,12 +131,12 @@ namespace AasxWpfControlLibrary.PackageCentral
                     this.RepoList.SelectedItem as PackageContainerRepoItem);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             if (sender == this.ButtonQuery)
-                this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Query, this.ButtonQuery);
+                await this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Query, this.ButtonQuery);
             if (sender == this.ButtonContext)
-                this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Context, this.ButtonContext);
+                await this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Context, this.ButtonContext);
         }
 
         private void RepoList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)

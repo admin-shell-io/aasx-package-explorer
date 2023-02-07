@@ -94,11 +94,18 @@ namespace AasxWpfControlLibrary.PackageCentral
             StackPanelRepos.ItemsSource = RepoList;
         }
 
+        protected void RedrawListFull()
+        {
+            var onoff = RepoList;
+            RepoList = null;
+            RepoList = onoff;
+        }
+
         //
         // UI higher-level stuff (taken over and maintained in from MainWindow.CommandBindings.cs)
         //
 
-        public void CommandBinding_FileRepoAll(Control senderList, PackageContainerListBase fr, string cmd)
+        public async Task CommandBinding_FileRepoAll(Control senderList, PackageContainerListBase fr, string cmd)
         {
             // access
             if (cmd == null || _flyout == null)
@@ -110,13 +117,26 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 if (cmd == "filerepoclose")
                 {
-                    if (AnyUiMessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
+                    if (AnyUiMessageBoxResult.OK != await _flyout?.GetDisplayContext()?.MessageBoxFlyoutShowAsync(
                             "Close file repository? Pending changes might be unsaved!",
                             "AASX File Repository",
                             AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                         return;
 
                     RepoList.Remove(fr);
+                }
+
+                if (cmd == "filerepoeditname")
+                {
+                    var uc = new AnyUiDialogueDataTextBox("Edit name of repository");
+                    uc.Text = fr.Header;
+                    if (await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc))
+                    {
+                        fr.Header = uc.Text;
+
+                        // damage full repo list
+                        RedrawListFull();
+                    }
                 }
 
                 if (cmd == "item-up")
@@ -143,29 +163,21 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 if (cmd == "filereposaveas")
                 {
-                    // prepare dialogue
-                    var outputDlg = new Microsoft.Win32.SaveFileDialog();
-                    outputDlg.Title = "Select AASX file repository to be saved";
-                    outputDlg.FileName = "new-aasx-repo.json";
+                    var uc = new AnyUiDialogueDataSaveFile(
+                        caption: "Save AASX repository",
+                        message: "Select AASX file repository to be saved.",
+                        filter: "AASX repository files (*.json)|*.json|All files (*.*)|*.*",
+                        proposeFn: "new-aasx-repo.json");
 
                     if (fr is PackageContainerListLocal frl && frl.Filename.HasContent())
-                    {
-                        outputDlg.InitialDirectory = Path.GetDirectoryName(frl.Filename);
-                        outputDlg.FileName = Path.GetFileName(frl.Filename);
-                    }
+                        uc.ProposeFileName = frl.Filename;
 
-                    outputDlg.DefaultExt = "*.json";
-                    outputDlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
-
-                    if (Options.Curr.UseFlyovers && _flyout != null) _flyout.StartFlyover(new EmptyFlyout());
-                    var res = outputDlg.ShowDialog();
-                    if (Options.Curr.UseFlyovers && _flyout != null) _flyout.CloseFlyover();
-
-                    if (res != true)
+                    if (!(await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc))
+                        || !uc.Result)
                         return;
 
                     // OK!
-                    var fn = outputDlg.FileName;
+                    var fn = uc.TargetFileName;
                     try
                     {
                         Log.Singleton.Info($"Saving AASX file repository to {fn} ..");
@@ -182,33 +194,31 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (cmd == "filerepoquery")
                 {
                     // dialogue
-                    var uc = new SelectFromRepositoryFlyout();
-                    uc.DiaData.Items = fr.EnumerateItems().ToList();
+                    var uc = new AnyUiDialogueDataSelectFromRepository("Select from: " + fr.Header);
+                    uc.Items = fr.EnumerateItems().ToList();
+                    if (await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc)
+                        && uc.ResultItem != null)
                     {
-                        uc.ControlClosed += () =>
+                        var fi = uc.ResultItem;
+                        var fn = fi?.Location;
+                        if (fn != null)
                         {
-                            var fi = uc.DiaData.ResultItem;
-                            var fn = fi?.Location;
-                            if (fn != null)
-                            {
-                                // start animation
-                                fr.StartAnimation(fi,
-                                    PackageContainerRepoItem.VisualStateEnum.ReadFrom);
+                            // start animation
+                            fr.StartAnimation(fi,
+                                PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
-                                try
-                                {
-                                    // load
-                                    Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
-                                    FileDoubleClick?.Invoke(senderList, fr, fi);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Singleton.Error(
-                                        ex, $"When switching to AASX repository file {fn}.");
-                                }
+                            try
+                            {
+                                // load
+                                Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
+                                FileDoubleClick?.Invoke(senderList, fr, fi);
                             }
-                        };
-                        _flyout.StartFlyover(uc);
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"When switching to AASX repository file {fn}.");
+                            }
+                        }
                     }
                 }
 
@@ -216,7 +226,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     if (fr is PackageContainerListLocal frl)
                     {
                         // make sure
-                        if (AnyUiMessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.OK != await _flyout.GetDisplayContext()?.MessageBoxFlyoutShowAsync(
                                 "Make filename relative to the locaton of the file repository? " +
                                 "This enables re-locating the repository.",
                                 "AASX File Repository",
@@ -270,7 +280,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     if (veAas == null || veAas.theAas == null || veAas.theEnv == null || veAas.thePackage == null
                         || veEnv == null || !veEnv.thePackageSourceFn.HasContent())
                     {
-                        _flyout.MessageBoxFlyoutShow(
+                        await _flyout?.GetDisplayContext()?.MessageBoxFlyoutShowAsync(
                             "No valid AAS selected. The application needs to be in edit mode. " +
                             "Aborting.", "AASX File repository",
                             AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
@@ -292,22 +302,31 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 if (cmd == "filerepoaddtoserver")
                 {
-                    var inputDialog = new Microsoft.Win32.OpenFileDialog();
-                    inputDialog.Title = "AASX Package File to be uploaded in the file repository";
-                    inputDialog.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
-                    _flyout.StartFlyover(new EmptyFlyout());
-                    var okClicked = inputDialog.ShowDialog();
-                    _flyout.CloseFlyover();
+                    var uc = new AnyUiDialogueDataOpenFile(
+                        caption: "AASX Package File upload",
+                        message: "Select the AASX Package File to be uploaded in the file repository.",
+                        filter: "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*");
 
-                    if (okClicked != true)
-                    {
+                    if (!(await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc))
+                        || !uc.Result)
                         return;
-                    }
 
-                    if (inputDialog.FileName.Length < 1 || inputDialog.FileNames.Length > 1)
-                    {
-                        return;
-                    }
+                    //var inputDialog = new Microsoft.Win32.OpenFileDialog();
+                    //inputDialog.Title = "AASX Package File to be uploaded in the file repository";
+                    //inputDialog.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
+                    //_flyout.StartFlyover(new EmptyFlyout());
+                    //var okClicked = inputDialog.ShowDialog();
+                    //_flyout.CloseFlyover();
+
+                    //if (okClicked != true)
+                    //{
+                    //    return;
+                    //}
+
+                    //if (inputDialog.FileName.Length < 1 || inputDialog.FileNames.Length > 1)
+                    //{
+                    //    return;
+                    //}
 
                     //Add file to package explorer's unnamed repo
 
@@ -324,33 +343,55 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (cmd == "filerepomultiadd")
                 {
                     // get the input files
-                    var inputDlg = new Microsoft.Win32.OpenFileDialog();
-                    inputDlg.Title = "Multi-select AASX package files to be in repository";
-                    inputDlg.Filter = "AASX package files (*.aasx)|*.aasx" +
-                        "|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
-                    inputDlg.Multiselect = true;
+                    var uc = new AnyUiDialogueDataOpenFile(
+                        caption: "AASX Package File upload",
+                        message: "Multi-select AASX package files to be in repository.",
+                        filter: "AASX package files (*.aasx)|*.aasx" +
+                                "|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*");
+                    uc.Multiselect = true;
 
-                    _flyout.StartFlyover(new EmptyFlyout());
-                    var res = inputDlg.ShowDialog();
-                    _flyout.CloseFlyover();
-
-                    if (res != true || inputDlg.FileNames.Length < 1)
+                    if (!(await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc))
+                        || !uc.Result)
                         return;
 
+                    //var inputDlg = new Microsoft.Win32.OpenFileDialog();
+                    //inputDlg.Title = "Multi-select AASX package files to be in repository";
+                    //inputDlg.Filter = "AASX package files (*.aasx)|*.aasx" +
+                    //    "|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
+                    //inputDlg.Multiselect = true;
+
+                    //_flyout.StartFlyover(new EmptyFlyout());
+                    //var res = inputDlg.ShowDialog();
+                    //_flyout.CloseFlyover();
+
+                    //if (res != true || inputDlg.FileNames.Length < 1)
+                    //    return;
+
+                    //// loop
+                    //foreach (var fn in inputDlg.FileNames)
+                    //    fr.AddByAasxFn(_packageCentral, fn);
+
                     // loop
-                    foreach (var fn in inputDlg.FileNames)
+                    foreach (var fn in uc.Filenames)
                         fr.AddByAasxFn(_packageCentral, fn);
                 }
 
                 if (cmd == "filerepoaddfromserver")
                 {
                     // read server address
-                    var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):",
-                        AnyUiMessageBoxImage.Question);
+                    var uc = new AnyUiDialogueDataTextBox("REST endpoint (without \"/server/listaas\"):",
+                        symbol: AnyUiMessageBoxImage.Question);
                     uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
-                    _flyout.StartFlyoverModal(uc);
+                    await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc);
                     if (!uc.Result)
                         return;
+
+                    //var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):",
+                    //    AnyUiMessageBoxImage.Question);
+                    //uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
+                    //_flyout.StartFlyoverModal(uc);
+                    //if (!uc.Result)
+                    //    return;
 
                     // execute
                     try
@@ -398,7 +439,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             FileDoubleClick?.Invoke(senderList, fr, fi);
         }
 
-        private void PackageContainerListControl_ButtonClick(
+        private async Task PackageContainerListControl_ButtonClick(
             Control senderList,
             PackageContainerListBase fr, PackageContainerListControl.CustomButton btn,
             Button sender)
@@ -406,7 +447,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (btn == PackageContainerListControl.CustomButton.Context)
             {
                 var menu = new AasxMenu()
-                    .AddAction("FileRepoClose", "Close", "\u274c");
+                    .AddAction("FileRepoClose", "Close", "\u274c")
+                    .AddAction("FileRepoEditName", "Edit name", "\u270e");
 
                 if (!(fr is PackageContainerListLastRecentlyUsed))
                 {
@@ -432,9 +474,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }
 
                 var cm2 = DynamicContextMenu.CreateNew(
-                    menu.AddLambda((name, mi, ticket) =>
+                    menu.AddLambda(async (name, mi, ticket) =>
                     {
-                        CommandBinding_FileRepoAll(senderList, fr, name);
+                        await CommandBinding_FileRepoAll(senderList, fr, name);
                     }));
 
                 cm2.Start(sender as Button);
@@ -442,7 +484,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             if (btn == PackageContainerListControl.CustomButton.Query)
             {
-                CommandBinding_FileRepoAll(senderList, fr, "FileRepoQuery");
+                await CommandBinding_FileRepoAll(senderList, fr, "FileRepoQuery");
             }
         }
 

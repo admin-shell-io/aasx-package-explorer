@@ -155,6 +155,16 @@ namespace AnyUi
         /// </summary>
         public bool ResultUserFile;
 
+        /// <summary>
+        /// Selection of multiple files is allowed.
+        /// </summary>
+        public bool Multiselect = false;
+
+        /// <summary>
+        /// If <c>Multiselect</c>, all selected filenames are listed here.
+        /// </summary>
+        public List<string> Filenames = new List<string>();
+
         public AnyUiDialogueDataOpenFile(
             string caption = "",
             double? maxWidth = null,

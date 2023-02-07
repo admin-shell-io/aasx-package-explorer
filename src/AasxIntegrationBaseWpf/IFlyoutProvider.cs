@@ -45,6 +45,12 @@ namespace AasxIntegrationBase
         void StartFlyoverModal(UserControl uc, Action closingAction = null);
 
         /// <summary>
+        /// Start UserControl as modal flyout. The UserControl has to implement
+        /// the interface IFlyoutControl
+        /// </summary>
+        Task StartFlyoverModalAsync(UserControl uc, Action closingAction = null);
+
+        /// <summary>
         /// Show MessageBoxFlyout with contents
         /// </summary>
         /// <param name="message">Message on the main screen</param>
@@ -56,8 +62,24 @@ namespace AasxIntegrationBase
             string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image);
 
         /// <summary>
+        /// Show MessageBoxFlyout with contents
+        /// </summary>
+        /// <param name="message">Message on the main screen</param>
+        /// <param name="caption">Caption string (title)</param>
+        /// <param name="buttons">Buttons according to WPF standard messagebox</param>
+        /// <param name="image">Image according to WPF standard messagebox</param>
+        /// <returns></returns>
+        Task<AnyUiMessageBoxResult> MessageBoxFlyoutShowAsync(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image);
+
+        /// <summary>
         /// Returns the window for advanced modal dialogues
         /// </summary>
         Window GetWin32Window();
+
+        /// <summary>
+        /// Gets the display context, e.g. to use UI-abstracted forms of dialogues
+        /// </summary>
+        AnyUiContextBase GetDisplayContext();
     }
 }

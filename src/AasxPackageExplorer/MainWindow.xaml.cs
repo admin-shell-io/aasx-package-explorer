@@ -63,9 +63,10 @@ namespace AasxPackageExplorer
         /// </summary>
         protected MainWindowDispatch Logic = new MainWindowDispatch();
 
-        protected AnyUiDisplayContextWpf _displayContext = null;
-
-		// public PackageCentral _packageCentral = new PackageCentral();
+        /// <summary>
+        /// The top-most display data required for WPF to render elements.
+        /// </summary>
+        protected AnyUiDisplayContextWpf DisplayContext = null;
 
 		/// <summary>
 		/// This symbol is only a link to the abstract main-windows class.
@@ -552,7 +553,7 @@ namespace AasxPackageExplorer
             // update element view?
             _dynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                PackageCentral, _displayContext, 
+                PackageCentral, DisplayContext, 
                 entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
                 flyoutProvider: this,
                 appEventProvider: this,
@@ -731,8 +732,8 @@ namespace AasxPackageExplorer
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // basic AnyUI handling
-			_displayContext = new AnyUiDisplayContextWpf(this, PackageCentral);
-            Logic.AnyUiContext = _displayContext;
+			DisplayContext = new AnyUiDisplayContextWpf(this, PackageCentral);
+            Logic.AnyUiContext = DisplayContext;
             Logic.MainWindow = this;
 
 			// making up "empty" picture
@@ -2862,6 +2863,10 @@ namespace AasxPackageExplorer
                 Dispatcher.BeginInvoke(lambda);
         }
 
+        //
+        // SYNCRONOUS
+        //
+
         public void StartFlyoverModal(UserControl uc, Action closingAction = null)
         {
             // uc needs to implement IFlyoverControl
@@ -2989,13 +2994,94 @@ namespace AasxPackageExplorer
                 return MessageBoxFlyoutShow(message, caption, buttons, image);
         }
 
+        //
+        // ASYNC (are async versions of the WPF modals required)
+        //
+
+        public async Task StartFlyoverModalAsync(UserControl uc, Action closingAction = null)
+        {
+            // uc needs to implement IFlyoverControl
+            var ucfoc = uc as IFlyoutControl;
+            if (ucfoc == null)
+                return;
+
+            // blur the normal grid
+            this.InnerGrid.IsEnabled = false;
+            var blur = new BlurEffect();
+            blur.Radius = 5;
+            this.InnerGrid.Opacity = 0.5;
+            this.InnerGrid.Effect = blur;
+
+            // populate the flyover grid
+            this.GridFlyover.Visibility = Visibility.Visible;
+            this.GridFlyover.Children.Clear();
+            this.GridFlyover.Children.Add(uc);
+
+            // register the frame
+            var frame = new DispatcherFrame();
+            ucfoc.ControlClosed += () =>
+            {
+                frame.Continue = false; // stops the frame
+            };
+
+            // main application needs to know
+            currentFlyoutControl = ucfoc;
+
+            // agent behaviour
+            var preventClosingAction = false;
+            ucfoc.ControlStart();
+
+            // This will "block" execution of the current dispatcher frame
+            // and run our frame until the dialog is closed.
+            Dispatcher.PushFrame(frame);
+
+            // call the closing action (before releasing!)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (closingAction != null && !preventClosingAction)
+                closingAction();
+
+            // blur the normal grid
+            this.InnerGrid.Opacity = 1.0;
+            this.InnerGrid.Effect = null;
+            this.InnerGrid.IsEnabled = true;
+
+            // un-populate the flyover grid
+            this.GridFlyover.Children.Clear();
+            this.GridFlyover.Visibility = Visibility.Hidden;
+
+            // unregister
+            currentFlyoutControl = null;
+
+            // relieve task
+            await Task.Yield();
+        }
+
+        public async Task<AnyUiMessageBoxResult> MessageBoxFlyoutShowAsync(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
+        {
+            if (!Options.Curr.UseFlyovers)
+            {
+                return AnyUiMessageBoxResult.Cancel;
+            }
+
+            var uc = new MessageBoxFlyout(message, caption, buttons, image);
+            await StartFlyoverModalAsync(uc);
+            return uc.Result;
+        }
+
+
         public Window GetWin32Window()
         {
             return this;
         }
 
-#endregion
-#region Drag&Drop
+        public AnyUiContextBase GetDisplayContext()
+        {
+            return DisplayContext;
+        }
+
+        #endregion
+        #region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)

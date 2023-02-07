@@ -1003,7 +1003,8 @@ namespace AasxPackageExplorer
             {
                 ticket.StartExec();
 
-                if (ticket.ScriptMode != true && AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
+                if (ticket.ScriptMode != true 
+                    && AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
                         "Create new (empty) file repository? It will be added to list of repos on the lower/ " +
                         "left of the screen.",
                         "AASX File Repository",

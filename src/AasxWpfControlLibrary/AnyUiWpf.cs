@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -1410,6 +1411,22 @@ namespace AnyUi
             return FlyoutProvider.MessageBoxFlyoutShow(message, caption, buttons, image);
         }
 
+        /// <summary>
+        /// Show MessageBoxFlyout with contents
+        /// </summary>
+        /// <param name="message">Message on the main screen</param>
+        /// <param name="caption">Caption string (title)</param>
+        /// <param name="buttons">Buttons according to WPF standard messagebox</param>
+        /// <param name="image">Image according to WPF standard messagebox</param>
+        /// <returns></returns>
+        public override async Task<AnyUiMessageBoxResult> MessageBoxFlyoutShowAsync(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
+        {
+            if (FlyoutProvider == null)
+                return AnyUiMessageBoxResult.Cancel;
+            return await FlyoutProvider.MessageBoxFlyoutShowAsync(message, caption, buttons, image);
+        }
+
         private UserControl DispatchFlyout(AnyUiDialogueDataBase dialogueData)
         {
             // access
@@ -1423,6 +1440,22 @@ namespace AnyUi
             {
                 var uc = new EmptyFlyout();
                 uc.DiaData = ddem;
+                res = uc;
+            }
+
+            if (dialogueData is AnyUiDialogueDataOpenFile ddof)
+            {
+                // see below: PerformSpecialOps()
+                var uc = new EmptyFlyout();
+                uc.DiaData = ddof;
+                res = uc;
+            }
+
+            if (dialogueData is AnyUiDialogueDataSaveFile ddsf)
+            {
+                // see below: PerformSpecialOps()
+                var uc = new EmptyFlyout();
+                uc.DiaData = ddsf;
                 res = uc;
             }
 
@@ -1505,11 +1538,57 @@ namespace AnyUi
             if (modal && dialogueData is AnyUiDialogueDataOpenFile ddof)
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
+
+                if (ddof.Filter != null)
+                    dlg.Filter = ddof.Filter;
+                if (ddof.ProposeFileName != null)
+                    dlg.FileName = ddof.ProposeFileName;
+                if (ddof.TargetFileName != null)
+                    dlg.FileName = ddof.TargetFileName;
+
+                dlg.Multiselect = ddof.Multiselect;
+
+                var idir = System.IO.Path.GetDirectoryName(dlg.FileName);
+                if (idir.HasContent())
+                {
+                    dlg.InitialDirectory = idir;
+                    dlg.FileName = System.IO.Path.GetFileName(dlg.FileName);
+                }
+
                 var res = dlg.ShowDialog();
                 if (res == true)
                 {
                     ddof.Result = true;
+                    ddof.OriginalFileName = dlg.FileName;
                     ddof.TargetFileName = dlg.FileName;
+
+                    if (ddof.Multiselect && dlg.FileNames != null)
+                        ddof.Filenames = dlg.FileNames.ToList();
+                }
+            }
+
+            if (modal && dialogueData is AnyUiDialogueDataSaveFile ddsf)
+            {
+                var dlg = new Microsoft.Win32.SaveFileDialog();
+
+                if (ddsf.Filter != null)
+                    dlg.Filter = ddsf.Filter;
+                if (ddsf.ProposeFileName != null)
+                    dlg.FileName = ddsf.ProposeFileName;
+                if (ddsf.TargetFileName != null)
+                    dlg.FileName = ddsf.TargetFileName;
+
+                var idir = System.IO.Path.GetDirectoryName(dlg.FileName);
+                if (idir.HasContent())
+                {
+                    dlg.InitialDirectory = idir;
+                    dlg.FileName = System.IO.Path.GetFileName(dlg.FileName);
+                }
+
+                var res = dlg.ShowDialog();
+                if (res == true)
+                {
+                    ddsf.TargetFileName = dlg.FileName;
                 }
             }
         }
@@ -1541,6 +1620,53 @@ namespace AnyUi
                         FlyoutProvider?.StartFlyover(uc);
                     else
                         FlyoutProvider?.StartFlyoverModal(uc);
+                }
+
+                // now, in case
+                PerformSpecialOps(modal: true, dialogueData: dialogueData);
+
+                // may be close?
+                if (dialogueData.HasModalSpecialOperation)
+                    // start WITHOUT modal
+                    FlyoutProvider?.CloseFlyover();
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, $"while showing modal AnyUI dialogue {dialogueData.GetType().ToString()}");
+            }
+
+            // result
+            return dialogueData.Result;
+        }
+
+        /// <summary>
+        /// Shows specified dialogue hardware-independent. The technology implementation will show the
+        /// dialogue based on the type of provided <c>dialogueData</c>. 
+        /// Modal dialogue: this function will block, until user ends dialogue.
+        /// </summary>
+        /// <param name="dialogueData"></param>
+        /// <returns>If the dialogue was end with "OK" or similar success.</returns>
+        public override async Task<bool> StartFlyoverModalAsync(AnyUiDialogueDataBase dialogueData, Action rerender = null)
+        {
+            // note: rerender not required in this UI platform
+            // access
+            if (dialogueData == null || FlyoutProvider == null)
+                return false;
+
+            // make sure to reset
+            dialogueData.Result = false;
+
+            // beware of exceptions
+            try
+            {
+                var uc = DispatchFlyout(dialogueData);
+                if (uc != null)
+                {
+                    if (dialogueData.HasModalSpecialOperation)
+                        // start WITHOUT modal
+                        FlyoutProvider?.StartFlyover(uc);
+                    else
+                        await FlyoutProvider?.StartFlyoverModalAsync(uc);
                 }
 
                 // now, in case

@@ -112,9 +112,6 @@ namespace BlazorUI.Data
 
             // dispatching directly to PackageLogic
 
-            if (cmd == "filerepoquery")
-                Logic?.CommandBinding_GeneralDispatch(cmd, ticket);
-
             if (cmd == "XXXXX")
             {
                 Log.Singleton.Info("Time is " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
