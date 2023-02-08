@@ -142,5 +142,29 @@ namespace AasxPackageExplorer
             MainWindowLogic.LogErrorToTicketStatic(ticket, ex, where);
 		}
 
+        //
+        // Scripting
+        //
+
+        public void StartScriptFile(string fn, AasxMenu menu, IAasxScriptRemoteInterface remote)
+        {
+            if (_aasxScript == null)
+                _aasxScript = new AasxScript();
+            var script = System.IO.File.ReadAllText(Options.Curr.ScriptFn);
+            _aasxScript.StartEnginBackground(
+                script, Options.Curr.ScriptLoglevel,
+                menu, remote);
+        }
+
+        public void StartScriptCommand(string command, AasxMenu menu, IAasxScriptRemoteInterface remote)
+        {
+            if (_aasxScript == null)
+                if (_aasxScript == null)
+                    _aasxScript = new AasxScript();
+            _aasxScript.StartEnginBackground(
+                command, Options.Curr.ScriptLoglevel,
+                menu, remote);
+        }
+
     }
 }

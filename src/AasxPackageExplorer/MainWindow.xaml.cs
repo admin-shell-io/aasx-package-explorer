@@ -1050,12 +1050,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     Log.Singleton.Info("Opening and executing '{0}' for script commands.", Options.Curr.ScriptFn);
-                    if (_aasxScript == null)
-                        _aasxScript = new AasxScript();
-                    var script = System.IO.File.ReadAllText(Options.Curr.ScriptFn);
-                    _aasxScript.StartEnginBackground(
-                        script, Options.Curr.ScriptLoglevel,
-                        MainMenu?.Menu, this);
+                    Logic?.StartScriptFile(Options.Curr.ScriptFn, MainMenu?.Menu, this);
                 }
                 catch (Exception ex)
                 {
@@ -1069,11 +1064,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     Log.Singleton.Info("Executing '{0}' as direct script commands.", Options.Curr.ScriptCmd);
-                    if (_aasxScript == null)
-                        _aasxScript = new AasxScript();
-                    _aasxScript.StartEnginBackground(
-                        Options.Curr.ScriptCmd, Options.Curr.ScriptLoglevel,
-                        MainMenu?.Menu, this);
+                    Logic?.StartScriptCommand(Options.Curr.ScriptCmd, MainMenu?.Menu, this);
                 }
                 catch (Exception ex)
                 {
