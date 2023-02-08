@@ -64,6 +64,16 @@ namespace AasxPackageExplorer
         public IMainWindow MainWindow = null;
 
         /// <summary>
+        /// Currently edited script text. Survives multiple start of dialog.
+        /// </summary>
+        protected string _currentScriptText = "";
+
+        /// <summary>
+        /// Script engine
+        /// </summary>
+        protected AasxScript _aasxScript = null;
+
+        /// <summary>
         /// If in scriptmode, set ticket result and exception to error.
         /// Add also to log.
         /// </summary>

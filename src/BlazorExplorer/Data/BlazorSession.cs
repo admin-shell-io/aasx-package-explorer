@@ -134,29 +134,29 @@ namespace BlazorUI.Data
         // PROTECTED
         //
 
-        /// <summary>
-        /// Element of stack of editing locations. For faster jumping.
-        /// </summary>
-        protected class EditingLocation
-		{
-			public object MainDataObject;
-			public bool IsExpanded;
-		}
+  //      /// <summary>
+  //      /// Element of stack of editing locations. For faster jumping.
+  //      /// </summary>
+  //      protected class EditingLocation
+		//{
+		//	public object MainDataObject;
+		//	public bool IsExpanded;
+		//}
 
-        /// <summary>
-        /// Stack of editing location. For faster jumping.
-        /// </summary>
-		protected List<EditingLocation> _editingLocations = new List<EditingLocation>();
+  //      /// <summary>
+  //      /// Stack of editing location. For faster jumping.
+  //      /// </summary>
+		//protected List<EditingLocation> _editingLocations = new List<EditingLocation>();
 
-        /// <summary>
-        /// Remembers user input for menu action
-        /// </summary>
-        protected static string _userLastPutUrl = "http://???:51310";
+  //      /// <summary>
+  //      /// Remembers user input for menu action
+  //      /// </summary>
+  //      protected static string _userLastPutUrl = "http://???:51310";
 
-        /// <summary>
-        /// Remembers user input for menu action
-        /// </summary>
-        protected static string _userLastGetUrl = "http://???:51310";
+  //      /// <summary>
+  //      /// Remembers user input for menu action
+  //      /// </summary>
+  //      protected static string _userLastGetUrl = "http://???:51310";
 
         /// <summary>
         /// Currently edited script text. Survives multiple start of dialog.
@@ -275,7 +275,7 @@ namespace BlazorUI.Data
             // Repository pointed by the Options
             if (Options.Curr.AasxRepositoryFn.HasContent())
             {
-                var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
+                var fr2 = Logic.UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
                 if (fr2 != null)
                 {
                     // this.UiAssertFileRepository(visible: true);
@@ -525,33 +525,9 @@ namespace BlazorUI.Data
 
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);
-        }
+        }        
 
-        public PackageContainerListBase UiLoadFileRepository(string fn)
-        {
-            try
-            {
-                Log.Singleton.Info(
-                    $"Loading aasx file repository {fn} ..");
-
-                var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
-
-                if (fr != null)
-                    return fr;
-                else
-                    Log.Singleton.Info(
-                        $"File not found when loading aasx file repository {fn}");
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(
-                    ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
-            }
-
-            return null;
-        }
-
-        private void RestartUIafterNewPackage(bool onlyAuxiliary = false)
+        public void RestartUIafterNewPackage(bool onlyAuxiliary = false)
         {
             if (onlyAuxiliary)
             {
@@ -1090,7 +1066,7 @@ namespace BlazorUI.Data
             if (ext == ".json")
             {
                 // try handle as repository
-                var newRepo = UiLoadFileRepository(ddof.TargetFileName);
+                var newRepo = Logic.UiLoadFileRepository(ddof.TargetFileName);
                 if (newRepo != null)
                 {
                     // add
@@ -1137,14 +1113,19 @@ namespace BlazorUI.Data
             RedrawElementView();
         }
 
-		public void UiAssertFileRepository(bool visible)
+        /// <summary>
+        /// Make sure the file repo is visible
+        /// </summary>
+		public void UiShowRepositories(bool visible)
         {
             // for Blazor: nothing
             ;
         }
 
-        // REFACTOR: for later refactoring
-        public void RedrawRepos()
+        /// <summary>
+        /// Give a signal to redraw the repositories (because something has changed)
+        /// </summary>
+        public void RedrawRepositories()
         {
             // Blazor: simply redraw all
 			Program.signalNewData(
@@ -1153,6 +1134,9 @@ namespace BlazorUI.Data
 		}
 
         // REFACTOR: for later refactoring
+        /// <summary>
+        /// Signal a redrawing and execute focussing afterwards.
+        /// </summary>
         public void RedrawAllElementsAndFocus(object nextFocus = null, bool isExpanded = true)
         {
             // Blazor: refer 
@@ -1162,9 +1146,32 @@ namespace BlazorUI.Data
                     new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: isExpanded)));
         }
 
+        /// <summary>
+        /// Gets the interface to the components which manages the AAS tree elements (middle section)
+        /// </summary>
+        public IDisplayElements GetDisplayElements() => DisplayElements;
+
         //
         // Scripting
         //
+
+        /// <summary>
+        /// Returns the <c>AasxMenu</c> of the main menu of the application.
+        /// Purpose: script automation
+        /// </summary>
+        public AasxMenu GetMainMenu()
+        {
+            return MainMenu?.Menu;
+        }
+
+        // <summary>
+        /// Returns the quite concise script interface of the application
+        /// to allow script automation.
+        /// </summary>
+        public IAasxScriptRemoteInterface GetRemoteInterface()
+        {
+            return this;
+        }
 
         Task<int> IAasxScriptRemoteInterface.Tool(object[] args)
         {

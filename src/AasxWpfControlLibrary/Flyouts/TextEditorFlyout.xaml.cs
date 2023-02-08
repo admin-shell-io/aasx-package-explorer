@@ -195,8 +195,22 @@ namespace AasxPackageExplorer
 
             if (sender == ButtonContextMenu)
             {
-                // somethink available?
+                // first attempt: directly attached to the flyout
                 var cm = ContextMenuCreate?.Invoke();
+                var cma = ContextMenuAction;
+
+                // 2nd attempt: within the dia data?
+                if (DiaData is AnyUiDialogueDataTextEditorWithContextMenu ddcm)
+                {
+                    var am = ddcm.ContextMenuCreate?.Invoke();
+                    if (am != null)
+                    {
+                        cm = DynamicContextMenu.CreateNew(am);
+                        cma = ddcm.ContextMenuAction;
+                    }
+                }
+
+                // still not?
                 if (cm == null)
                     return;
 
@@ -204,7 +218,7 @@ namespace AasxPackageExplorer
                 PrepareResult();
 
                 // show
-                cm.Start(sender as Button, ContextMenuAction);
+                cm.Start(sender as Button, cma);
             }
         }
 

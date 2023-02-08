@@ -233,7 +233,11 @@ namespace AasxPackageExplorer
 #endif
         }
 
-        private void RestartUIafterNewPackage(bool onlyAuxiliary = false)
+        /// <summary>
+        /// Large extend. Basially redraws everything after new package has been loaded.
+        /// </summary>
+        /// <param name="onlyAuxiliary">Only tghe AUX package has been altered.</param>
+        public void RestartUIafterNewPackage(bool onlyAuxiliary = false)
         {
             if (onlyAuxiliary)
             {
@@ -451,29 +455,29 @@ namespace AasxPackageExplorer
             Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
-        public PackageContainerListBase UiLoadFileRepository(string fn)
-        {
-            try
-            {
-                Log.Singleton.Info(
-                    $"Loading aasx file repository {fn} ..");
+        //public PackageContainerListBase UiLoadFileRepository(string fn)
+        //{
+        //    try
+        //    {
+        //        Log.Singleton.Info(
+        //            $"Loading aasx file repository {fn} ..");
 
-                var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+        //        var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
 
-                if (fr != null)
-                    return fr;
-                else
-                    Log.Singleton.Info(
-                        $"File not found when loading aasx file repository {fn}");
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(
-                    ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
-            }
+        //        if (fr != null)
+        //            return fr;
+        //        else
+        //            Log.Singleton.Info(
+        //                $"File not found when loading aasx file repository {fn}");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Singleton.Error(
+        //            ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         /// <summary>
         /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
@@ -530,7 +534,7 @@ namespace AasxPackageExplorer
         }
 
 
-        public void UiAssertFileRepository(bool visible)
+        public void UiShowRepositories(bool visible)
         {
             // ALWAYS assert an accessible repo (even if invisble)
             if (PackageCentral.Repositories == null)
@@ -819,7 +823,7 @@ namespace AasxPackageExplorer
             RepoListControl.PackageCentral = PackageCentral;
             RepoListControl.FlyoutProvider = this;
             RepoListControl.ManageVisuElems = DisplayElements;
-            this.UiAssertFileRepository(visible: false);
+            this.UiShowRepositories(visible: false);
 
             // event viewer
             UserContrlEventCollection.FlyoutProvider = this;
@@ -842,10 +846,10 @@ namespace AasxPackageExplorer
             // Repository pointed by the Options
             if (Options.Curr.AasxRepositoryFn.HasContent())
             {
-                var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
+                var fr2 = Logic.UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
                 if (fr2 != null)
                 {
-                    this.UiAssertFileRepository(visible: true);
+                    this.UiShowRepositories(visible: true);
                     PackageCentral.Repositories.AddAtTop(fr2);
                 }
             }
@@ -952,7 +956,7 @@ namespace AasxPackageExplorer
                     if (ext == ".json")
                     {
                         // try handle as repository
-                        var newRepo = UiLoadFileRepository(fn);
+                        var newRepo = Logic.UiLoadFileRepository(fn);
                         if (newRepo != null)
                         {
                             PackageCentral.Repositories.AddAtTop(newRepo);
@@ -3456,7 +3460,7 @@ namespace AasxPackageExplorer
         }
 
         // REFACTOR: for later refactoring
-        public void RedrawRepos()
+        public void RedrawRepositories()
         {
             // nothing here required
             ;
@@ -3468,6 +3472,29 @@ namespace AasxPackageExplorer
             // WPF: inject
             DispEditEntityPanel.AddWishForOutsideAction(
                 new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: isExpanded));
+        }
+
+        /// <summary>
+        /// Gets the interface to the components which manages the AAS tree elements (middle section)
+        /// </summary>
+        public IDisplayElements GetDisplayElements() => DisplayElements;
+
+        /// <summary>
+        /// Returns the <c>AasxMenu</c> of the main menu of the application.
+        /// Purpose: script automation
+        /// </summary>
+        public AasxMenu GetMainMenu()
+        {
+            return MainMenu?.Menu;
+        }
+
+        /// <summary>
+        /// Returns the quite concise script interface of the application
+        /// to allow script automation.
+        /// </summary>
+        public IAasxScriptRemoteInterface GetRemoteInterface()
+        {
+            return this;
         }
     }
 }

@@ -54,146 +54,146 @@ namespace AasxPackageExplorer
 
         public async Task CommandBinding_ScriptEditLaunch(string cmd, AasxMenuItemBase menuItem)
         {
-            // REFACTOR: SAME
-            if (cmd == "scripteditlaunch")
-            {
-                // trivial things
-                if (!PackageCentral.MainAvailable)
-                {
-                    await DisplayContext.MessageBoxFlyoutShowAsync(
-                        "An AASX package needs to be available", "Error", 
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                    return;
-                }
+//            // REFACTOR: SAME
+//            if (cmd == "scripteditlaunch")
+//            {
+//                // trivial things
+//                if (!PackageCentral.MainAvailable)
+//                {
+//                    await DisplayContext.MessageBoxFlyoutShowAsync(
+//                        "An AASX package needs to be available", "Error", 
+//                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+//                    return;
+//                }
 
-                // trivial things
-                if (_aasxScript?.IsExecuting == true)
-                {
-                    if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
-                        "An AASX script is already executed! Continue anyway?", "Warning",
-                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                        return;
-                    else
-                        // brutal
-                        _aasxScript = null;
-                }
+//                // trivial things
+//                if (_aasxScript?.IsExecuting == true)
+//                {
+//                    if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
+//                        "An AASX script is already executed! Continue anyway?", "Warning",
+//                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+//                        return;
+//                    else
+//                        // brutal
+//                        _aasxScript = null;
+//                }
 
-                // prompt for the script
-                var uc = new AnyUiDialogueDataTextEditor("Edit script to be launched ..");
-                uc.MimeType = "application/csharp";
-                uc.Presets = Options.Curr.ScriptPresets;
-                uc.Text = _currentScriptText;
+//                // prompt for the script
+//                var uc = new AnyUiDialogueDataTextEditor("Edit script to be launched ..");
+//                uc.MimeType = "application/csharp";
+//                uc.Presets = Options.Curr.ScriptPresets;
+//                uc.Text = _currentScriptText;
 
-                // context menu
-#if feature_not_available
-                uc.ContextMenuCreate = () =>
-                {
-                    var cm = DynamicContextMenu.CreateNew(
-                        new AasxMenu()
-                            .AddAction("Clip", "Copy JSON to clipboard", "\U0001F4CB"));
-                    return cm;
-                };
+//                // context menu
+//#if feature_not_available
+//                uc.ContextMenuCreate = () =>
+//                {
+//                    var cm = DynamicContextMenu.CreateNew(
+//                        new AasxMenu()
+//                            .AddAction("Clip", "Copy JSON to clipboard", "\U0001F4CB"));
+//                    return cm;
+//                };
 
-                uc.ContextMenuAction = (cmd, mi, ticket) =>
-                {
-                    if (cmd == "clip")
-                    {
-                        var text = uc.DiaData.Text;
-                        var lines = text?.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                        var sb = new StringBuilder();
-                        sb.AppendLine("[");
-                        if (lines != null)
-                            foreach (var ln in lines)
-                            {
-                                var ln2 = ln.Replace("\"", "\\\"");
-                                ln2 = ln2.Replace("\t", "    ");
-                                sb.AppendLine($"\"{ln2}\",");
-                            }
-                        sb.AppendLine("]");
-                        var jsonStr = sb.ToString();
-                        System.Windows.Clipboard.SetText(jsonStr);
-                        Log.Singleton.Info("Copied JSON to clipboard.");
-                    }
-                };
-#endif
+//                uc.ContextMenuAction = (cmd, mi, ticket) =>
+//                {
+//                    if (cmd == "clip")
+//                    {
+//                        var text = uc.DiaData.Text;
+//                        var lines = text?.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+//                        var sb = new StringBuilder();
+//                        sb.AppendLine("[");
+//                        if (lines != null)
+//                            foreach (var ln in lines)
+//                            {
+//                                var ln2 = ln.Replace("\"", "\\\"");
+//                                ln2 = ln2.Replace("\t", "    ");
+//                                sb.AppendLine($"\"{ln2}\",");
+//                            }
+//                        sb.AppendLine("]");
+//                        var jsonStr = sb.ToString();
+//                        System.Windows.Clipboard.SetText(jsonStr);
+//                        Log.Singleton.Info("Copied JSON to clipboard.");
+//                    }
+//                };
+//#endif
 
-                // execute
-                await DisplayContext.StartFlyoverModalAsync(uc);
+//                // execute
+//                await DisplayContext.StartFlyoverModalAsync(uc);
 
-                // always remember script
-                _currentScriptText = uc.Text;
+//                // always remember script
+//                _currentScriptText = uc.Text;
 
-                // execute?
-                if (uc.Result && uc.Text.HasContent())
-                {
-                    try
-                    {
-                        // create first
-                        if (_aasxScript == null)
-                            _aasxScript = new AasxScript();
+//                // execute?
+//                if (uc.Result && uc.Text.HasContent())
+//                {
+//                    try
+//                    {
+//                        // create first
+//                        if (_aasxScript == null)
+//                            _aasxScript = new AasxScript();
 
-                        // executing
-                        _aasxScript.StartEnginBackground(
-                            uc.Text, Options.Curr.ScriptLoglevel,
-                            MainMenu?.Menu, this);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "when executing script");
-                    }
-                }
-            }
+//                        // executing
+//                        _aasxScript.StartEnginBackground(
+//                            uc.Text, Options.Curr.ScriptLoglevel,
+//                            MainMenu?.Menu, this);
+//                    }
+//                    catch (Exception ex)
+//                    {
+//                        Log.Singleton.Error(ex, "when executing script");
+//                    }
+//                }
+//            }
 
-            // REFACTOR: SAME
-            for (int i = 0; i < 9; i++)
-                if (cmd == $"launchscript{i}"
-                    && Options.Curr.ScriptPresets != null)
-                {
-                    // order in human sense
-                    var scriptIndex = (i == 0) ? 9 : (i - 1);
-                    if (scriptIndex >= Options.Curr.ScriptPresets.Count
-                        || Options.Curr.ScriptPresets[scriptIndex]?.Text?.HasContent() != true)
-                        return;
+//            // REFACTOR: SAME
+//            for (int i = 0; i < 9; i++)
+//                if (cmd == $"launchscript{i}"
+//                    && Options.Curr.ScriptPresets != null)
+//                {
+//                    // order in human sense
+//                    var scriptIndex = (i == 0) ? 9 : (i - 1);
+//                    if (scriptIndex >= Options.Curr.ScriptPresets.Count
+//                        || Options.Curr.ScriptPresets[scriptIndex]?.Text?.HasContent() != true)
+//                        return;
 
-                    // still running?
-                    if (_aasxScript?.IsExecuting == true)
-                    {
-                        if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
-                            "An AASX script is already executed! Continue anyway?", "Warning",
-                            AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                            return;
-                        else
-                            // brutal
-                            _aasxScript = null;
-                    }
+//                    // still running?
+//                    if (_aasxScript?.IsExecuting == true)
+//                    {
+//                        if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
+//                            "An AASX script is already executed! Continue anyway?", "Warning",
+//                            AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+//                            return;
+//                        else
+//                            // brutal
+//                            _aasxScript = null;
+//                    }
 
-                    // prompting
-                    if (!Options.Curr.ScriptLaunchWithoutPrompt)
-                    {
-                        if (AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
-                            $"Executing script preset #{1 + scriptIndex} " +
-                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?",
-                            "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                            return;
-                    }
+//                    // prompting
+//                    if (!Options.Curr.ScriptLaunchWithoutPrompt)
+//                    {
+//                        if (AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+//                            $"Executing script preset #{1 + scriptIndex} " +
+//                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?",
+//                            "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+//                            return;
+//                    }
 
-                    // execute
-                    try
-                    {
-                        // create first
-                        if (_aasxScript == null)
-                            _aasxScript = new AasxScript();
+//                    // execute
+//                    try
+//                    {
+//                        // create first
+//                        if (_aasxScript == null)
+//                            _aasxScript = new AasxScript();
 
-                        // executing
-                        _aasxScript.StartEnginBackground(
-                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel,
-                            MainMenu?.Menu, this);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "when executing script");
-                    }
-                }
+//                        // executing
+//                        _aasxScript.StartEnginBackground(
+//                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel,
+//                            MainMenu?.Menu, this);
+//                    }
+//                    catch (Exception ex)
+//                    {
+//                        Log.Singleton.Error(ex, "when executing script");
+//                    }
+//                }
         }
 
 

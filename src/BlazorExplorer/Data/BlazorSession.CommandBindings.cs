@@ -691,36 +691,36 @@ namespace BlazorUI.Data
 					"enabled.");
 			}
 
-			// REFACTOR: 0% change
-			if (cmd == "locationpush"
-				&& _editingLocations != null
-				&& DisplayElements.SelectedItem is VisualElementGeneric vege
-				&& vege.GetMainDataObject() != null)
-			{
-				ticket.StartExec();
+			//// REFACTOR: 0% change
+			//if (cmd == "locationpush"
+			//	&& _editingLocations != null
+			//	&& DisplayElements.SelectedItem is VisualElementGeneric vege
+			//	&& vege.GetMainDataObject() != null)
+			//{
+			//	ticket.StartExec();
 
-				var loc = new EditingLocation()
-				{
-					MainDataObject = vege.GetMainDataObject(),
-					IsExpanded = vege.IsExpanded
-				};
-				_editingLocations.Add(loc);
-				Log.Singleton.Info("Editing Locations: pushed location.");
-			}
+			//	var loc = new EditingLocation()
+			//	{
+			//		MainDataObject = vege.GetMainDataObject(),
+			//		IsExpanded = vege.IsExpanded
+			//	};
+			//	_editingLocations.Add(loc);
+			//	Log.Singleton.Info("Editing Locations: pushed location.");
+			//}
 
-			// REFACTOR: 0% change
-			if (cmd == "locationpop"
-				&& _editingLocations != null
-				&& _editingLocations.Count > 0)
-			{
-				ticket.StartExec();
+			//// REFACTOR: 0% change
+			//if (cmd == "locationpop"
+			//	&& _editingLocations != null
+			//	&& _editingLocations.Count > 0)
+			//{
+			//	ticket.StartExec();
 
-				var loc = _editingLocations.Last();
-				_editingLocations.Remove(loc);
-				Log.Singleton.Info("Editing Locations: popping location.");
-				DisplayElements.ClearSelection();
-				DisplayElements.TrySelectMainDataObject(loc.MainDataObject, wishExpanded: loc.IsExpanded);
-			}
+			//	var loc = _editingLocations.Last();
+			//	_editingLocations.Remove(loc);
+			//	Log.Singleton.Info("Editing Locations: popping location.");
+			//	DisplayElements.ClearSelection();
+			//	DisplayElements.TrySelectMainDataObject(loc.MainDataObject, wishExpanded: loc.IsExpanded);
+			//}
 
 			// REFACTOR: TODO
 			if (cmd == "exportsmd")
@@ -738,409 +738,409 @@ namespace BlazorUI.Data
 			// File repo
 			//
 
-			// REFACTOR: 10% change (async)
-			if (cmd == "filereponew")
-			{
-				ticket.StartExec();
+			//// REFACTOR: 10% change (async)
+			//if (cmd == "filereponew")
+			//{
+			//	ticket.StartExec();
 
-				if (ticket.ScriptMode != true 
-                    && AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
-						"Create new (empty) file repository? It will be added to list of repos on the lower/ " +
-						"left of the screen.",
-						"AASX File Repository",
-						AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
-					return;
+			//	if (ticket.ScriptMode != true 
+   //                 && AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
+			//			"Create new (empty) file repository? It will be added to list of repos on the lower/ " +
+			//			"left of the screen.",
+			//			"AASX File Repository",
+			//			AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+			//		return;
 
-				this.UiAssertFileRepository(visible: true);
-				PackageCentral.Repositories.AddAtTop(new PackageContainerListLocal());
-			}
+			//	this.UiAssertFileRepository(visible: true);
+			//	PackageCentral.Repositories.AddAtTop(new PackageContainerListLocal());
+			//}
 
-            // REFACTOR: 10% change: async, RedrawRepos()
-            if (cmd == "filerepoopen")
-			{
-				// start
-				ticket.StartExec();
+   //         // REFACTOR: 10% change: async, RedrawRepos()
+   //         if (cmd == "filerepoopen")
+			//{
+			//	// start
+			//	ticket.StartExec();
 
-                // filename
-                var ucof = await DisplayContext.MenuSelectOpenFilenameAsync(
-                    ticket, "File",
-                    "Select AASX file repository JSON file",
-                    null,
-                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    "AASX file repository open: No valid filename.");
-                if (ucof?.Result != true)
-					return;
+   //             // filename
+   //             var ucof = await DisplayContext.MenuSelectOpenFilenameAsync(
+   //                 ticket, "File",
+   //                 "Select AASX file repository JSON file",
+   //                 null,
+   //                 "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+   //                 "AASX file repository open: No valid filename.");
+   //             if (ucof?.Result != true)
+			//		return;
 
-				// ok
-				var fr = this.UiLoadFileRepository(ucof.TargetFileName);
-				this.UiAssertFileRepository(visible: true);
-				PackageCentral.Repositories.AddAtTop(fr);
-                RedrawRepos();
-			}
+			//	// ok
+			//	var fr = Logic.UiLoadFileRepository(ucof.TargetFileName);
+			//	this.UiAssertFileRepository(visible: true);
+			//	PackageCentral.Repositories.AddAtTop(fr);
+   //             RedrawRepos();
+			//}
 
-            // REFACTOR: 20% change: use AnyUiTextBox, RedrawRepos()
-            if (cmd == "filerepoconnectrepository")
-			{
-				ticket.StartExec();
+//            // REFACTOR: 20% change: use AnyUiTextBox, RedrawRepos()
+//            if (cmd == "filerepoconnectrepository")
+//			{
+//				ticket.StartExec();
 
-				// read server address
-				var endpoint = ticket["Endpoint"] as string;
-				if (endpoint?.HasContent() != true)
-				{
-                    var uc = new AnyUiDialogueDataTextBox("REST endpoint (without \"/server/listaas\"):",
-                    symbol: AnyUiMessageBoxImage.Question);
-                    uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
-                    await DisplayContext.StartFlyoverModalAsync(uc);
-                    if (!uc.Result)
-                        return;
-					endpoint = uc.Text;
-				}
+//				// read server address
+//				var endpoint = ticket["Endpoint"] as string;
+//				if (endpoint?.HasContent() != true)
+//				{
+//                    var uc = new AnyUiDialogueDataTextBox("REST endpoint (without \"/server/listaas\"):",
+//                    symbol: AnyUiMessageBoxImage.Question);
+//                    uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
+//                    await DisplayContext.StartFlyoverModalAsync(uc);
+//                    if (!uc.Result)
+//                        return;
+//					endpoint = uc.Text;
+//				}
 
-				if (endpoint?.HasContent() != true)
-				{
-					Logic?.LogErrorToTicket(ticket, "No endpoint for repository given!");
-					return;
-				}
+//				if (endpoint?.HasContent() != true)
+//				{
+//					Logic?.LogErrorToTicket(ticket, "No endpoint for repository given!");
+//					return;
+//				}
 
-				// ok
-				if (endpoint.Contains("asp.net"))
-				{
-#if TODO
-                    var fileRepository = new PackageContainerAasxFileRepository(endpoint);
-                    fileRepository.GeneratePackageRepository();
-                    this.UiAssertFileRepository(visible: true);
-                    _packageCentral.Repositories.AddAtTop(fileRepository);
-#endif
-				}
-				else
-				{
-					var fr = new PackageContainerListHttpRestRepository(endpoint);
-					await fr.SyncronizeFromServerAsync();
-					this.UiAssertFileRepository(visible: true);
-					PackageCentral.Repositories.AddAtTop(fr);
-                    RedrawRepos();
-                }
-			}
+//				// ok
+//				if (endpoint.Contains("asp.net"))
+//				{
+//#if TODO
+//                    var fileRepository = new PackageContainerAasxFileRepository(endpoint);
+//                    fileRepository.GeneratePackageRepository();
+//                    this.UiAssertFileRepository(visible: true);
+//                    _packageCentral.Repositories.AddAtTop(fileRepository);
+//#endif
+//				}
+//				else
+//				{
+//					var fr = new PackageContainerListHttpRestRepository(endpoint);
+//					await fr.SyncronizeFromServerAsync();
+//					this.UiShowRepositories(visible: true);
+//					PackageCentral.Repositories.AddAtTop(fr);
+//                    RedrawRepositories();
+//                }
+//			}
 
-            // REFACTOR: 0% change
-            if (cmd == "filerepoquery")
-				Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+    //        // REFACTOR: 0% change
+    //        if (cmd == "filerepoquery")
+				//Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
-            // REFACTOR: 10% change: async, RedrawRepos()
-            if (cmd == "filerepocreatelru")
-			{
-				if (ticket.ScriptMode != true 
-                    && AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
-						"Create new (empty) \"Last Recently Used (LRU)\" list? " +
-						"It will be added to list of repos on the lower/ left of the screen. " +
-						"It will be saved under \"last-recently-used.json\" in the binaries folder. " +
-						"It will replace an existing LRU list w/o prompt!",
-						"Last Recently Used AASX Packages",
-						AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
-					return;
+   //         // REFACTOR: 10% change: async, RedrawRepos()
+   //         if (cmd == "filerepocreatelru")
+			//{
+			//	if (ticket.ScriptMode != true 
+   //                 && AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
+			//			"Create new (empty) \"Last Recently Used (LRU)\" list? " +
+			//			"It will be added to list of repos on the lower/ left of the screen. " +
+			//			"It will be saved under \"last-recently-used.json\" in the binaries folder. " +
+			//			"It will replace an existing LRU list w/o prompt!",
+			//			"Last Recently Used AASX Packages",
+			//			AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+			//		return;
 
-				ticket.StartExec();
+			//	ticket.StartExec();
 
-				var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
-				try
-				{
-					this.UiAssertFileRepository(visible: true);
-					var lruExist = PackageCentral?.Repositories?.FindLRU();
-					if (lruExist != null)
-						PackageCentral.Repositories.Remove(lruExist);
-					var lruNew = new PackageContainerListLastRecentlyUsed();
-					lruNew.Header = "Last Recently Used";
-					lruNew.SaveAs(lruFn);
-					this.UiAssertFileRepository(visible: true);
-					PackageCentral?.Repositories?.AddAtTop(lruNew);
-                    RedrawRepos();
-                }
-				catch (Exception ex)
-				{
-					Logic?.LogErrorToTicket(ticket, ex,
-						$"while initializing last recently used file in {lruFn}.");
-				}
-			}
+			//	var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
+			//	try
+			//	{
+			//		this.UiShowRepositories(visible: true);
+			//		var lruExist = PackageCentral?.Repositories?.FindLRU();
+			//		if (lruExist != null)
+			//			PackageCentral.Repositories.Remove(lruExist);
+			//		var lruNew = new PackageContainerListLastRecentlyUsed();
+			//		lruNew.Header = "Last Recently Used";
+			//		lruNew.SaveAs(lruFn);
+			//		this.UiShowRepositories(visible: true);
+			//		PackageCentral?.Repositories?.AddAtTop(lruNew);
+   //                 RedrawRepositories();
+   //             }
+			//	catch (Exception ex)
+			//	{
+			//		Logic?.LogErrorToTicket(ticket, ex,
+			//			$"while initializing last recently used file in {lruFn}.");
+			//	}
+			//}
 
-            // REFACTOR: 0% change
-            if (cmd == "opcread")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: 0% change
+            //if (cmd == "opcread")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // further to logic
-                Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    // further to logic
+            //    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
-                // update
-                RedrawAllAasxElements();
-                RedrawElementView();
-            }
+            //    // update
+            //    RedrawAllAasxElements();
+            //    RedrawElementView();
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "submodelread")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "submodelread")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // filename
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "File",
-                    "Read Submodel from JSON data",
-                    "Submodel_" + ticket?.Submodel?.IdShort + ".json",
-                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    "Submodel Read: No valid filename.")))
-                    return;
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Read Submodel from JSON data",
+            //        "Submodel_" + ticket?.Submodel?.IdShort + ".json",
+            //        "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+            //        "Submodel Read: No valid filename.")))
+            //        return;
 
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
-                    RedrawAllAasxElements();
-                    RedrawElementView();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Read");
-                }
-            }
+            //        RedrawAllAasxElements();
+            //        RedrawElementView();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "Submodel Read");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "submodelwrite")
-            {
-                // start
-                ticket.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "submodelwrite")
+            //{
+            //    // start
+            //    ticket.StartExec();
 
-                // filename
-                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                    ticket, "File",
-                    "Write Submodel to JSON data",
-                    "Submodel_" + ticket.Submodel?.IdShort + ".json",
-                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    "Submodel Read: No valid filename.")))
-                    return;
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Write Submodel to JSON data",
+            //        "Submodel_" + ticket.Submodel?.IdShort + ".json",
+            //        "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+            //        "Submodel Read: No valid filename.")))
+            //        return;
 
-                // do it directly
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Write");
-                }
-            }
+            //    // do it directly
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "Submodel Write");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "submodelput")
-            {
-                // start
-                ticket.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "submodelput")
+            //{
+            //    // start
+            //    ticket.StartExec();
 
-                // URL
-                if (!(await DisplayContext.MenuSelectTextToTicketAsync(
-                    ticket, "URL",
-                    "REST server adress:",
-                    _userLastPutUrl,
-                    "Submodel Put: No valid URL selected,")))
-                    return;
+            //    // URL
+            //    if (!(await DisplayContext.MenuSelectTextToTicketAsync(
+            //        ticket, "URL",
+            //        "REST server adress:",
+            //        _userLastPutUrl,
+            //        "Submodel Put: No valid URL selected,")))
+            //        return;
 
-                _userLastPutUrl = ticket["URL"] as string;
+            //    _userLastPutUrl = ticket["URL"] as string;
 
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Put");
-                }
-            }
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "Submodel Put");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "submodelget")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "submodelget")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // URL
-                if (!(await DisplayContext.MenuSelectTextToTicketAsync(
-                    ticket, "URL",
-                    "REST server adress:",
-                    _userLastGetUrl,
-                    "Submodel Get: No valid URL selected,")))
-                    return;
+            //    // URL
+            //    if (!(await DisplayContext.MenuSelectTextToTicketAsync(
+            //        ticket, "URL",
+            //        "REST server adress:",
+            //        _userLastGetUrl,
+            //        "Submodel Get: No valid URL selected,")))
+            //        return;
 
-                _userLastGetUrl = ticket["URL"] as string;
+            //    _userLastGetUrl = ticket["URL"] as string;
 
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "Submodel Get");
-                }
-            }
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "Submodel Get");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "rdfread")
-            {
-                // filename
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select RDF file to be imported",
-                    null,
-                    "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*",
-                    "RDF Read: No valid filename.")))
-                    return;
+            //// REFACTOR: 10% change: async
+            //if (cmd == "rdfread")
+            //{
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select RDF file to be imported",
+            //        null,
+            //        "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*",
+            //        "RDF Read: No valid filename.")))
+            //        return;
 
-                // do it
-                try
-                {
-                    // do it
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    // do it
+            //    try
+            //    {
+            //        // do it
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
-                    // redisplay
-                    RedrawAllAasxElements();
-                    RedrawElementView();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex,
-                        "When importing, an error occurred");
-                }
-            }
+            //        // redisplay
+            //        RedrawAllAasxElements();
+            //        RedrawElementView();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex,
+            //            "When importing, an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "bmecatimport")
-            {
-                // filename
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select BMEcat file to be imported",
-                    null,
-                    "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*",
-                    "RDF Read: No valid filename.")))
-                    return;
+            //// REFACTOR: 10% change: async
+            //if (cmd == "bmecatimport")
+            //{
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select BMEcat file to be imported",
+            //        null,
+            //        "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*",
+            //        "RDF Read: No valid filename.")))
+            //        return;
 
-                // do it
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex,
-                        "When importing BMEcat, an error occurred");
-                }
-            }
+            //    // do it
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex,
+            //            "When importing BMEcat, an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "csvimport")
-            {
-                // filename
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select CSF file to be imported",
-                    null,
-                    "CSV files (*.CSV)|*.csv|All files (*.*)|*.*",
-                    "CSF inmport: No valid filename.")))
-                    return;
+            //// REFACTOR: 10% change: async
+            //if (cmd == "csvimport")
+            //{
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select CSF file to be imported",
+            //        null,
+            //        "CSV files (*.CSV)|*.csv|All files (*.*)|*.*",
+            //        "CSF inmport: No valid filename.")))
+            //        return;
 
-                // do it
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex,
-                        "When importing CSV, an error occurred");
-                }
-            }
+            //    // do it
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex,
+            //            "When importing CSV, an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "submodeltdimport")
-            {
-                // filename
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select Thing Description (TD) file to be imported",
-                    null,
-                    "JSON files (*.JSONLD)|*.jsonld",
-                    "TD import: No valid filename.")))
-                    return;
+            //// REFACTOR: 10% change: async
+            //if (cmd == "submodeltdimport")
+            //{
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select Thing Description (TD) file to be imported",
+            //        null,
+            //        "JSON files (*.JSONLD)|*.jsonld",
+            //        "TD import: No valid filename.")))
+            //        return;
 
-                // do it
-                try
-                {
-                    // delegate futher
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    // do it
+            //    try
+            //    {
+            //        // delegate futher
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
-                    // redisplay
-                    RedrawAllAasxElements();
-                    RedrawElementView();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex,
-                        "When importing JSON LD for Thing Description, an error occurred");
-                }
-            }
+            //        // redisplay
+            //        RedrawAllAasxElements();
+            //        RedrawElementView();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex,
+            //            "When importing JSON LD for Thing Description, an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "submodeltdexport")
-            {
-                // filename
-                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                    ticket, "File",
-                    "Thing Description (TD) export",
-                    "Submodel_" + ticket.Submodel?.IdShort + ".jsonld",
-                    "JSON files (*.JSONLD)|*.jsonld",
-                    "Thing Description (TD) export: No valid filename.")))
-                    return;
+            //// REFACTOR: 10% change: async
+            //if (cmd == "submodeltdexport")
+            //{
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Thing Description (TD) export",
+            //        "Submodel_" + ticket.Submodel?.IdShort + ".jsonld",
+            //        "JSON files (*.JSONLD)|*.jsonld",
+            //        "Thing Description (TD) export: No valid filename.")))
+            //        return;
 
-                // do it
-                try
-                {
-                    // delegate futher
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex,
-                        "When exporting Thing Description (TD), an error occurred");
-                }
-            }
+            //    // do it
+            //    try
+            //    {
+            //        // delegate futher
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex,
+            //            "When exporting Thing Description (TD), an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "opcuaimportnodeset")
-            {
-                // filename
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select OPC UA Nodeset to be imported",
-                    null,
-                    "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*",
-                    "OPC UA Nodeset import: No valid filename.")))
-                    return;
+            //// REFACTOR: 10% change: async
+            //if (cmd == "opcuaimportnodeset")
+            //{
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select OPC UA Nodeset to be imported",
+            //        null,
+            //        "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*",
+            //        "OPC UA Nodeset import: No valid filename.")))
+            //        return;
 
-                // do it
-                try
-                {
-                    // do it
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    // do it
+            //    try
+            //    {
+            //        // do it
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
-                    // redisplay
-                    RedrawAllAasxElements();
-                    RedrawElementView();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex,
-                        "When importing OPC UA Nodeset, an error occurred");
-                }
-            }
+            //        // redisplay
+            //        RedrawAllAasxElements();
+            //        RedrawElementView();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex,
+            //            "When importing OPC UA Nodeset, an error occurred");
+            //    }
+            //}
 
             // REFACTOR: WPF required
             if (cmd == "importdictsubmodel")
@@ -1154,168 +1154,168 @@ namespace BlazorUI.Data
                 Logic.LogErrorToTicket(ticket, "ImportDictSubmodelElements not implemented, yet.");
             }
 
-            // REFACTOR: 10% change: async
-            if (cmd == "importaml")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "importaml")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // filename
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select AML file to be imported",
-                    null,
-                    "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*",
-                    "Import AML: No valid filename.")))
-                    return;
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select AML file to be imported",
+            //        null,
+            //        "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*",
+            //        "Import AML: No valid filename.")))
+            //        return;
 
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                    this.RestartUIafterNewPackage();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
-                }
-            }
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //        this.RestartUIafterNewPackage();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "exportaml")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "exportaml")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // filename
-                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select AML file to be exported",
-                    "new.aml",
-                    "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
-                    "*.aml|All files (*.*)|*.*",
-                    "Export AML: No valid filename.",
-                    argFilterIndex: "FilterIndex")))
-                    return;
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select AML file to be exported",
+            //        "new.aml",
+            //        "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
+            //        "*.aml|All files (*.*)|*.*",
+            //        "Export AML: No valid filename.",
+            //        argFilterIndex: "FilterIndex")))
+            //        return;
 
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
-                }
-            }
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: MOVE .. BUT TODO
-            if (cmd == "exportcst")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: MOVE .. BUT TODO
+            //if (cmd == "exportcst")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                Logic?.LogErrorToTicket(ticket, "Currently, this export is only implemented in AasxToolkit!");
-            }
+            //    Logic?.LogErrorToTicket(ticket, "Currently, this export is only implemented in AasxToolkit!");
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "exportjsonschema")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "exportjsonschema")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // filename prepare
-                var fnPrep = "" + (DisplayElements.SelectedItem?
-                        .GetDereferencedMainDataObject() as Aas.IReferable)?.IdShort;
-                if (!fnPrep.HasContent())
-                    fnPrep = "new";
+            //    // filename prepare
+            //    var fnPrep = "" + (DisplayElements.SelectedItem?
+            //            .GetDereferencedMainDataObject() as Aas.IReferable)?.IdShort;
+            //    if (!fnPrep.HasContent())
+            //        fnPrep = "new";
 
-                // filename
-                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select JSON schema file for Submodel templates to be written",
-                    $"Submodel_Schema_{fnPrep}.json",
-                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    "Export JSON schema: No valid filename.",
-                    argFilterIndex: "FilterIndex")))
-                    return;
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select JSON schema file for Submodel templates to be written",
+            //        $"Submodel_Schema_{fnPrep}.json",
+            //        "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+            //        "Export JSON schema: No valid filename.",
+            //        argFilterIndex: "FilterIndex")))
+            //        return;
 
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "When exporting JSON schema, an error occurred");
-                }
-            }
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "When exporting JSON schema, an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "opcuai4aasexport")
-            {
-                // start
-                ticket.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "opcuai4aasexport")
+            //{
+            //    // start
+            //    ticket.StartExec();
 
-                // try to access I4AAS export information
-                try
-                {
-                    var xstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                        "AasxPackageLogic.Resources.i4AASCS.xml");
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "when accessing i4AASCS.xml mapping types.");
-                    return;
-                }
-                Log.Singleton.Info("Mapping types loaded.");
+            //    // try to access I4AAS export information
+            //    try
+            //    {
+            //        var xstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+            //            "AasxPackageLogic.Resources.i4AASCS.xml");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "when accessing i4AASCS.xml mapping types.");
+            //        return;
+            //    }
+            //    Log.Singleton.Info("Mapping types loaded.");
 
-                // filename
-                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select Nodeset file to be exported",
-                    "new.xml",
-                    "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
-                    "Export i4AAS based OPC UA nodeset: No valid filename.")))
-                    return;
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select Nodeset file to be exported",
+            //        "new.xml",
+            //        "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
+            //        "Export i4AAS based OPC UA nodeset: No valid filename.")))
+            //        return;
 
-                // ReSharper enable PossibleNullReferenceException
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
-                }
-            }
+            //    // ReSharper enable PossibleNullReferenceException
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "opcuai4aasimport")
-            {
-                // filename
-                if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                ticket, "File",
-                    "Select Nodeset file to be imported",
-                    "Document",
-                    "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
-                    "Import i4AAS based OPC UA nodeset: No valid filename.")))
-                    return;
+            //// REFACTOR: 10% change: async
+            //if (cmd == "opcuai4aasimport")
+            //{
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //    ticket, "File",
+            //        "Select Nodeset file to be imported",
+            //        "Document",
+            //        "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
+            //        "Import i4AAS based OPC UA nodeset: No valid filename.")))
+            //        return;
 
-                // do
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    // do
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
 
-                    // TODO (MIHO, 2022-11-17): not very elegant
-                    if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")
-                        && ticket.PostResults["TakeOver"] is AdminShellPackageEnv pe)
-                        PackageCentral.MainItem.TakeOver(pe);
+            //        // TODO (MIHO, 2022-11-17): not very elegant
+            //        if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")
+            //            && ticket.PostResults["TakeOver"] is AdminShellPackageEnv pe)
+            //            PackageCentral.MainItem.TakeOver(pe);
 
-                    RestartUIafterNewPackage();
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "when importing i4AAS based OPC UA mapping.");
-                }
-            }
+            //        RestartUIafterNewPackage();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "when importing i4AAS based OPC UA mapping.");
+            //    }
+            //}
 
             // REFACTOR: WPF required
             if (cmd == "opcuaexportnodesetuaplugin")
@@ -1333,104 +1333,104 @@ namespace BlazorUI.Data
                 Logic.LogErrorToTicket(ticket, "Some dialogs not implemented, yet.");
             }
 
-            // REFACTOR: 20% change: async, other serialization, clipboard
-            if (cmd == "copyclipboardelementjson")
-            {
-                // get the selected element
-                var ve = DisplayElements.SelectedItem;
+            //// REFACTOR: 20% change: async, other serialization, clipboard
+            //if (cmd == "copyclipboardelementjson")
+            //{
+            //    // get the selected element
+            //    var ve = DisplayElements.SelectedItem;
 
-                // allow only some elements
-                if (!(ve is VisualElementConceptDescription
-                    || ve is VisualElementSubmodelElement
-                    || ve is VisualElementAdminShell
-                    || ve is VisualElementAsset
-                    || ve is VisualElementOperationVariable
-                    || ve is VisualElementReference
-                    || ve is VisualElementSubmodel
-                    || ve is VisualElementSubmodelRef))
-                    ve = null;
+            //    // allow only some elements
+            //    if (!(ve is VisualElementConceptDescription
+            //        || ve is VisualElementSubmodelElement
+            //        || ve is VisualElementAdminShell
+            //        || ve is VisualElementAsset
+            //        || ve is VisualElementOperationVariable
+            //        || ve is VisualElementReference
+            //        || ve is VisualElementSubmodel
+            //        || ve is VisualElementSubmodelRef))
+            //        ve = null;
 
-                // need to have business object
-                var mdo = ve?.GetMainDataObject();
+            //    // need to have business object
+            //    var mdo = ve?.GetMainDataObject();
 
-                if (ve == null || mdo == null || !(mdo is IClass))
-                {
-                    await DisplayContext.MessageBoxFlyoutShowAsync(
-                        "No valid element selected.", "Copy selected elements",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                    return;
-                }
+            //    if (ve == null || mdo == null || !(mdo is IClass))
+            //    {
+            //        await DisplayContext.MessageBoxFlyoutShowAsync(
+            //            "No valid element selected.", "Copy selected elements",
+            //            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+            //        return;
+            //    }
 
-                // ok, for Serialization we just want the plain element with no BLOBs..
-                var jsonStr = Aas.Jsonization.Serialize.ToJsonObject(mdo as IClass)
-                    .ToJsonString(new System.Text.Json.JsonSerializerOptions()
-                    {
-                        WriteIndented = true
-                    });
+            //    // ok, for Serialization we just want the plain element with no BLOBs..
+            //    var jsonStr = Aas.Jsonization.Serialize.ToJsonObject(mdo as IClass)
+            //        .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+            //        {
+            //            WriteIndented = true
+            //        });
 
-                // copy to clipboard
-                if (jsonStr != "")
-                {
-                    DisplayContext.ClipboardSet(new AnyUiClipboardData(jsonStr));
-                    Log.Singleton.Info("Copied selected element to clipboard.");
-                }
-                else
-                {
-                    Log.Singleton.Info("No JSON text could be generated for selected element.");
-                }
-            }
+            //    // copy to clipboard
+            //    if (jsonStr != "")
+            //    {
+            //        DisplayContext.ClipboardSet(new AnyUiClipboardData(jsonStr));
+            //        Log.Singleton.Info("Copied selected element to clipboard.");
+            //    }
+            //    else
+            //    {
+            //        Log.Singleton.Info("No JSON text could be generated for selected element.");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "exportgenericforms")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "exportgenericforms")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // filename
-                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select options file for GenericForms to be exported",
-                    "new.add-options.json",
-                    "Options file for GenericForms (*.add-options.json)|*.add-options.json|All files (*.*)|*.*",
-                    "Export GenericForms: No valid filename.",
-                    argFilterIndex: "FilterIndex")))
-                    return;
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select options file for GenericForms to be exported",
+            //        "new.add-options.json",
+            //        "Options file for GenericForms (*.add-options.json)|*.add-options.json|All files (*.*)|*.*",
+            //        "Export GenericForms: No valid filename.",
+            //        argFilterIndex: "FilterIndex")))
+            //        return;
 
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "When exporting GenericForms, an error occurred");
-                }
-            }
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "When exporting GenericForms, an error occurred");
+            //    }
+            //}
 
-            // REFACTOR: 10% change: async
-            if (cmd == "exportpredefineconcepts")
-            {
-                // start
-                ticket?.StartExec();
+            //// REFACTOR: 10% change: async
+            //if (cmd == "exportpredefineconcepts")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // filename
-                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                    ticket, "File",
-                    "Select text file for PredefinedConcepts to be exported",
-                    "new.txt",
-                    "Text file for PredefinedConcepts (*.txt)|*.txt|All files (*.*)|*.*",
-                    "Export PredefinedConcepts: No valid filename.",
-                    argFilterIndex: "FilterIndex")))
-                    return;
+            //    // filename
+            //    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //        ticket, "File",
+            //        "Select text file for PredefinedConcepts to be exported",
+            //        "new.txt",
+            //        "Text file for PredefinedConcepts (*.txt)|*.txt|All files (*.*)|*.*",
+            //        "Export PredefinedConcepts: No valid filename.",
+            //        argFilterIndex: "FilterIndex")))
+            //        return;
 
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "When exporting PredefinedConcepts, an error occurred");
-                }
-            }
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "When exporting PredefinedConcepts, an error occurred");
+            //    }
+            //}
 
             // REFACTOR: WPF required
             if (cmd == "exporttable"
@@ -1449,109 +1449,109 @@ namespace BlazorUI.Data
                 Logic.LogErrorToTicket(ticket, "Some servers not implemented, yet.");
             }
 
-            // REFACTOR: 15% change: async, RedrawAllElementsAndFocus()
-            if (cmd == "newsubmodelfromplugin")
-            {
-                // create a list of plugins, which are capable of generating Submodels
-                var listOfSm = new List<AnyUiDialogueListItem>();
-                var list = Logic?.GetPotentialGeneratedSubmodels();
-                if (list != null)
-                    foreach (var rec in list)
-                        listOfSm.Add(new AnyUiDialogueListItem(
-                            "" + rec.Item1.name + " | " + "" + rec.Item2, rec));
+            //// REFACTOR: 15% change: async, RedrawAllElementsAndFocus()
+            //if (cmd == "newsubmodelfromplugin")
+            //{
+            //    // create a list of plugins, which are capable of generating Submodels
+            //    var listOfSm = new List<AnyUiDialogueListItem>();
+            //    var list = Logic?.GetPotentialGeneratedSubmodels();
+            //    if (list != null)
+            //        foreach (var rec in list)
+            //            listOfSm.Add(new AnyUiDialogueListItem(
+            //                "" + rec.Item1.name + " | " + "" + rec.Item2, rec));
 
-                // could be nothing
-                if (listOfSm.Count < 1)
-                {
-                    Logic?.LogErrorToTicket(ticket, "New Submodel from plugin: No Submodels available " +
-                        "to be generated by plugins.");
-                    return;
-                }
+            //    // could be nothing
+            //    if (listOfSm.Count < 1)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, "New Submodel from plugin: No Submodels available " +
+            //            "to be generated by plugins.");
+            //        return;
+            //    }
 
-                // prompt if no name is given
-                if (ticket["Name"] == null)
-                {
-                    var uc = new AnyUiDialogueDataSelectFromList(
-                        "Select Plug-in and Submodel to be generated ..");
-                    uc.ListOfItems = listOfSm;
-                    if (!(await DisplayContext.StartFlyoverModalAsync(uc))
-                        || uc.ResultItem == null)
-                        return;
+            //    // prompt if no name is given
+            //    if (ticket["Name"] == null)
+            //    {
+            //        var uc = new AnyUiDialogueDataSelectFromList(
+            //            "Select Plug-in and Submodel to be generated ..");
+            //        uc.ListOfItems = listOfSm;
+            //        if (!(await DisplayContext.StartFlyoverModalAsync(uc))
+            //            || uc.ResultItem == null)
+            //            return;
 
-                    ticket["Record"] = uc.ResultItem.Tag;
-                }
+            //        ticket["Record"] = uc.ResultItem.Tag;
+            //    }
 
-                // do it
-                try
-                {
-                    // delegate futher
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex,
-                        "When generating Submodel from plugins, an error occurred");
-                }
+            //    // do it
+            //    try
+            //    {
+            //        // delegate futher
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex,
+            //            "When generating Submodel from plugins, an error occurred");
+            //    }
 
-                // redisplay
-                RedrawAllElementsAndFocus(nextFocus: ticket["SmRef"]);
-            }
+            //    // redisplay
+            //    RedrawAllElementsAndFocus(nextFocus: ticket["SmRef"]);
+            //}
 
-            // REFACTOR: 15% change: async, RedrawAllElementsAndFocus()
-            if (cmd == "convertelement")
-            {
-                // check
-                var rf = ticket.DereferencedMainDataObject as Aas.IReferable;
-                if (rf == null)
-                {
-                    Logic?.LogErrorToTicket(ticket,
-                        "Convert Referable: No valid Referable selected for conversion.");
-                    return;
-                }
+            //// REFACTOR: 15% change: async, RedrawAllElementsAndFocus()
+            //if (cmd == "convertelement")
+            //{
+            //    // check
+            //    var rf = ticket.DereferencedMainDataObject as Aas.IReferable;
+            //    if (rf == null)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket,
+            //            "Convert Referable: No valid Referable selected for conversion.");
+            //        return;
+            //    }
 
-                // try to get offers?
-                if ((ticket["Name"] as string)?.HasContent() != true)
-                {
-                    var offers = AasxPredefinedConcepts.Convert.ConvertPredefinedConcepts.CheckForOffers(rf);
-                    if (offers == null || offers.Count < 1)
-                    {
-                        Logic?.LogErrorToTicket(ticket,
-                            "Convert Referable: No valid conversion offers found for this Referable. Aborting.");
-                        return;
-                    }
+            //    // try to get offers?
+            //    if ((ticket["Name"] as string)?.HasContent() != true)
+            //    {
+            //        var offers = AasxPredefinedConcepts.Convert.ConvertPredefinedConcepts.CheckForOffers(rf);
+            //        if (offers == null || offers.Count < 1)
+            //        {
+            //            Logic?.LogErrorToTicket(ticket,
+            //                "Convert Referable: No valid conversion offers found for this Referable. Aborting.");
+            //            return;
+            //        }
 
-                    // convert these to list items
-                    var fol = new List<AnyUiDialogueListItem>();
-                    foreach (var o in offers)
-                        fol.Add(new AnyUiDialogueListItem(o.OfferDisplay, o));
+            //        // convert these to list items
+            //        var fol = new List<AnyUiDialogueListItem>();
+            //        foreach (var o in offers)
+            //            fol.Add(new AnyUiDialogueListItem(o.OfferDisplay, o));
 
-                    // show a list
-                    // prompt for this list
-                    var uc = new AnyUiDialogueDataSelectFromList(
-                        "Select Conversion action to be executed ..");
-                    uc.ListOfItems = fol;
-                    if (!(await DisplayContext.StartFlyoverModalAsync(uc))
-                        || uc.ResultItem == null)
-                        return;
+            //        // show a list
+            //        // prompt for this list
+            //        var uc = new AnyUiDialogueDataSelectFromList(
+            //            "Select Conversion action to be executed ..");
+            //        uc.ListOfItems = fol;
+            //        if (!(await DisplayContext.StartFlyoverModalAsync(uc))
+            //            || uc.ResultItem == null)
+            //            return;
 
-                    ticket["Record"] = uc.ResultItem.Tag;
-                }
+            //        ticket["Record"] = uc.ResultItem.Tag;
+            //    }
 
-                // pass on
-                try
-                {
-                    {
-                        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, "Executing user defined conversion");
-                }
+            //    // pass on
+            //    try
+            //    {
+            //        {
+            //            Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Log.Singleton.Error(ex, "Executing user defined conversion");
+            //    }
 
-                // redisplay
-                RedrawAllElementsAndFocus(nextFocus: ticket.MainDataObject);
-            }
+            //    // redisplay
+            //    RedrawAllElementsAndFocus(nextFocus: ticket.MainDataObject);
+            //}
 
             // REFACTOR: Find/ replace not in blazor
             if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward"
@@ -1575,149 +1575,149 @@ namespace BlazorUI.Data
                 Logic.LogErrorToTicket(ticket, "Showing events not implemented, yet.");
             }
 
-            //
-            // Scripting : allow for server?
-            //
+//            //
+//            // Scripting : allow for server?
+//            //
 
-            if (cmd == "scripteditlaunch")
-            {
-                // trivial things
-                if (!PackageCentral.MainAvailable)
-                {
-                    await DisplayContext.MessageBoxFlyoutShowAsync(
-                        "An AASX package needs to be available", "Error", 
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                    return;
-                }
+//            if (cmd == "scripteditlaunch")
+//            {
+//                // trivial things
+//                if (!PackageCentral.MainAvailable)
+//                {
+//                    await DisplayContext.MessageBoxFlyoutShowAsync(
+//                        "An AASX package needs to be available", "Error", 
+//                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+//                    return;
+//                }
 
-                // trivial things
-                if (_aasxScript?.IsExecuting == true)
-                {
-                    if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
-                        "An AASX script is already executed! Continue anyway?", "Warning", 
-                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                        return;
-                    else
-                        // brutal
-                        _aasxScript = null;
-                }
+//                // trivial things
+//                if (_aasxScript?.IsExecuting == true)
+//                {
+//                    if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
+//                        "An AASX script is already executed! Continue anyway?", "Warning", 
+//                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+//                        return;
+//                    else
+//                        // brutal
+//                        _aasxScript = null;
+//                }
 
-                // prompt for the script
-                var uc = new AnyUiDialogueDataTextEditor("Edit script to be launched ..");
-                uc.MimeType = "application/csharp";
-                uc.Presets = Options.Curr.ScriptPresets;
-                uc.Text = _currentScriptText;
+//                // prompt for the script
+//                var uc = new AnyUiDialogueDataTextEditor("Edit script to be launched ..");
+//                uc.MimeType = "application/csharp";
+//                uc.Presets = Options.Curr.ScriptPresets;
+//                uc.Text = _currentScriptText;
 
-                // context menu
-#if feature_not_available
-                uc.ContextMenuCreate = () =>
-                {
-                    var cm = DynamicContextMenu.CreateNew(
-                        new AasxMenu()
-                            .AddAction("Clip", "Copy JSON to clipboard", "\U0001F4CB"));
-                    return cm;
-                };
+//                // context menu
+//#if feature_not_available
+//                uc.ContextMenuCreate = () =>
+//                {
+//                    var cm = DynamicContextMenu.CreateNew(
+//                        new AasxMenu()
+//                            .AddAction("Clip", "Copy JSON to clipboard", "\U0001F4CB"));
+//                    return cm;
+//                };
 
-                uc.ContextMenuAction = (cmd, mi, ticket) =>
-                {
-                    if (cmd == "clip")
-                    {
-                        var text = uc.DiaData.Text;
-                        var lines = text?.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                        var sb = new StringBuilder();
-                        sb.AppendLine("[");
-                        if (lines != null)
-                            foreach (var ln in lines)
-                            {
-                                var ln2 = ln.Replace("\"", "\\\"");
-                                ln2 = ln2.Replace("\t", "    ");
-                                sb.AppendLine($"\"{ln2}\",");
-                            }
-                        sb.AppendLine("]");
-                        var jsonStr = sb.ToString();
-                        System.Windows.Clipboard.SetText(jsonStr);
-                        Log.Singleton.Info("Copied JSON to clipboard.");
-                    }
-                };
-#endif
+//                uc.ContextMenuAction = (cmd, mi, ticket) =>
+//                {
+//                    if (cmd == "clip")
+//                    {
+//                        var text = uc.DiaData.Text;
+//                        var lines = text?.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+//                        var sb = new StringBuilder();
+//                        sb.AppendLine("[");
+//                        if (lines != null)
+//                            foreach (var ln in lines)
+//                            {
+//                                var ln2 = ln.Replace("\"", "\\\"");
+//                                ln2 = ln2.Replace("\t", "    ");
+//                                sb.AppendLine($"\"{ln2}\",");
+//                            }
+//                        sb.AppendLine("]");
+//                        var jsonStr = sb.ToString();
+//                        System.Windows.Clipboard.SetText(jsonStr);
+//                        Log.Singleton.Info("Copied JSON to clipboard.");
+//                    }
+//                };
+//#endif
 
-                // execute
-                await DisplayContext.StartFlyoverModalAsync(uc);
+//                // execute
+//                await DisplayContext.StartFlyoverModalAsync(uc);
 
-                // always remember script
-                _currentScriptText = uc.Text;
+//                // always remember script
+//                _currentScriptText = uc.Text;
 
-                // execute?
-                if (uc.Result && uc.Text.HasContent())
-                {
-                    try
-                    {
-                        // create first
-                        if (_aasxScript == null)
-                            _aasxScript = new AasxScript();
+//                // execute?
+//                if (uc.Result && uc.Text.HasContent())
+//                {
+//                    try
+//                    {
+//                        // create first
+//                        if (_aasxScript == null)
+//                            _aasxScript = new AasxScript();
 
-                        // executing
-                        _aasxScript.StartEnginBackground(
-                            uc.Text, Options.Curr.ScriptLoglevel,
-                            MainMenu?.Menu, this);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "when executing script");
-                    }
-                }
-            }
+//                        // executing
+//                        _aasxScript.StartEnginBackground(
+//                            uc.Text, Options.Curr.ScriptLoglevel,
+//                            MainMenu?.Menu, this);
+//                    }
+//                    catch (Exception ex)
+//                    {
+//                        Log.Singleton.Error(ex, "when executing script");
+//                    }
+//                }
+//            }
 
-            // REFACTOR: SAME
-            for (int i = 0; i < 9; i++)
-                if (cmd == $"launchscript{i}"
-                    && Options.Curr.ScriptPresets != null)
-                {
-                    // order in human sense
-                    var scriptIndex = (i == 0) ? 9 : (i - 1);
-                    if (scriptIndex >= Options.Curr.ScriptPresets.Count
-                        || Options.Curr.ScriptPresets[scriptIndex]?.Text?.HasContent() != true)
-                        return;
+//            // REFACTOR: SAME
+//            for (int i = 0; i < 9; i++)
+//                if (cmd == $"launchscript{i}"
+//                    && Options.Curr.ScriptPresets != null)
+//                {
+//                    // order in human sense
+//                    var scriptIndex = (i == 0) ? 9 : (i - 1);
+//                    if (scriptIndex >= Options.Curr.ScriptPresets.Count
+//                        || Options.Curr.ScriptPresets[scriptIndex]?.Text?.HasContent() != true)
+//                        return;
 
-                    // still running?
-                    if (_aasxScript?.IsExecuting == true)
-                    {
-                        if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
-                            "An AASX script is already executed! Continue anyway?", "Warning", 
-                            AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                            return;
-                        else
-                            // brutal
-                            _aasxScript = null;
-                    }
+//                    // still running?
+//                    if (_aasxScript?.IsExecuting == true)
+//                    {
+//                        if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
+//                            "An AASX script is already executed! Continue anyway?", "Warning", 
+//                            AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+//                            return;
+//                        else
+//                            // brutal
+//                            _aasxScript = null;
+//                    }
 
-                    // prompting
-                    if (!Options.Curr.ScriptLaunchWithoutPrompt)
-                    {
-                        if (AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
-                            $"Executing script preset #{1 + scriptIndex} " +
-                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?",
-                            "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                            return;
-                    }
+//                    // prompting
+//                    if (!Options.Curr.ScriptLaunchWithoutPrompt)
+//                    {
+//                        if (AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+//                            $"Executing script preset #{1 + scriptIndex} " +
+//                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?",
+//                            "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+//                            return;
+//                    }
 
-                    // execute
-                    try
-                    {
-                        // create first
-                        if (_aasxScript == null)
-                            _aasxScript = new AasxScript();
+//                    // execute
+//                    try
+//                    {
+//                        // create first
+//                        if (_aasxScript == null)
+//                            _aasxScript = new AasxScript();
 
-                        // executing
-                        _aasxScript.StartEnginBackground(
-                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel,
-                            MainMenu?.Menu, this);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "when executing script");
-                    }
-                }
+//                        // executing
+//                        _aasxScript.StartEnginBackground(
+//                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel,
+//                            MainMenu?.Menu, this);
+//                    }
+//                    catch (Exception ex)
+//                    {
+//                        Log.Singleton.Error(ex, "when executing script");
+//                    }
+//                }
 
             // pass dispatch on to next (lower) level of menu functions
             await Logic.CommandBinding_GeneralDispatchAnyUiDialogs(cmd, menuItem, ticket);

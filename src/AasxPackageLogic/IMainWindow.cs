@@ -45,9 +45,24 @@ namespace AasxPackageExplorer
     public interface IMainWindow
     {
         /// <summary>
+        /// Gets the interface to the components which manages the AAS tree elements (middle section)
+        /// </summary>
+        IDisplayElements GetDisplayElements();
+
+        /// <summary>
         /// Clear AAS info, tree section, browser window
         /// </summary>
-        public void ClearAllViews();
+        void ClearAllViews();
+
+        /// <summary>
+        /// Make sure the file repo is visible
+        /// </summary>
+		void UiShowRepositories(bool visible);
+
+        /// <summary>
+        /// Give a signal to redraw the repositories (because something has changed)
+        /// </summary>
+        public void RedrawRepositories();
 
         /// <summary>
         /// Redraw tree elements (middle), AAS entitty (right side)
@@ -60,7 +75,7 @@ namespace AasxPackageExplorer
         /// <param name="keepFocus">Try remember which element was focussed and focus it after redrawing.</param>
         /// <param name="nextFocusMdo">Focus a new main data object attached to an tree element.</param>
         /// <param name="wishExpanded">If focussing, expand this item.</param>
-        public void RedrawAllAasxElements(
+        void RedrawAllAasxElements(
             bool keepFocus = false,
             object nextFocusMdo = null,
             bool wishExpanded = true);
@@ -69,7 +84,19 @@ namespace AasxPackageExplorer
         /// Based on save information, will redraw the AAS entity (element) view (right).
         /// </summary>
         /// <param name="hightlightField">Highlight field (for find/ replace)</param>
-        public void RedrawElementView(DispEditHighlight.HighlightFieldInfo hightlightField = null);
+        void RedrawElementView(DispEditHighlight.HighlightFieldInfo hightlightField = null);
+
+        // REFACTOR: for later refactoring
+        /// <summary>
+        /// Signal a redrawing and execute focussing afterwards.
+        /// </summary>
+        public void RedrawAllElementsAndFocus(object nextFocus = null, bool isExpanded = true);
+
+        /// <summary>
+        /// Large extend. Basially redraws everything after new package has been loaded.
+        /// </summary>
+        /// <param name="onlyAuxiliary">Only tghe AUX package has been altered.</param>
+        void RestartUIafterNewPackage(bool onlyAuxiliary = false);
 
         /// <summary>
         /// This function serve as a kind of unified contact point for all kind
@@ -101,5 +128,16 @@ namespace AasxPackageExplorer
         /// </summary>
         public void CheckIfToFlushEvents();
 
-   }
+        /// <summary>
+        /// Returns the <c>AasxMenu</c> of the main menu of the application.
+        /// Purpose: script automation
+        /// </summary>
+        public AasxMenu GetMainMenu();
+
+        /// <summary>
+        /// Returns the quite concise script interface of the application
+        /// to allow script automation.
+        /// </summary>
+        public IAasxScriptRemoteInterface GetRemoteInterface();
+    }
 }

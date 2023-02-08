@@ -42,7 +42,7 @@ namespace AasxPackageExplorer
         bool IsSelected { get; set; }
     }
 
-    public partial class DiplayVisualAasxElements : UserControl, IManageVisualAasxElements
+    public partial class DiplayVisualAasxElements : UserControl, IManageVisualAasxElements, IDisplayElements
     {
         private ListOfVisualElement displayedTreeViewLines = new ListOfVisualElement();
         private TreeViewLineCache treeViewLineCache = null;
@@ -95,6 +95,9 @@ namespace AasxPackageExplorer
             return x;
         }
 
+        /// <summary>
+        /// If it boils down to one item, which is the selected item.
+        /// </summary>
         public VisualElementGeneric GetSelectedItem()
         {
             return this.SelectedItem;

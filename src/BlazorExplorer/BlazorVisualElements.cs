@@ -32,13 +32,14 @@ using AasxIntegrationBase;
 using AnyUi;
 using BlazorUI.Data;
 using System.Windows.Controls;
+using AasxPackageExplorer;
 
 namespace BlazorUI
 {
     /// <summary>
     /// This class "hosts" the collection of visual elements
     /// </summary>
-    public class BlazorVisualElements
+    public class BlazorVisualElements : IDisplayElements
     {
         public ListOfVisualElement TreeItems = new ListOfVisualElement();
         private TreeViewLineCache _treeLineCache = null;
@@ -65,6 +66,11 @@ namespace BlazorUI
             }
         }
         // private VisualElementGeneric _selectedItem = null;
+
+        /// <summary>
+        /// If it boils down to one item, which is the selected item.
+        /// </summary>
+        public VisualElementGeneric GetSelectedItem() => SelectedItem;
 
         /// <summary>
         /// In case of multiple selected items, use this list.
@@ -333,6 +339,10 @@ namespace BlazorUI
             return true;
         }
 
+        /// <summary>
+        /// Carefully checks and tries to select a tree item which is identified
+        /// by the main data object (e.g. an AAS, SME, ..)
+        /// </summary>
         public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
         {
             // access?

@@ -35,6 +35,7 @@ using AdminShellNS;
 using Extensions;
 using System.Windows;
 using Microsoft.VisualBasic.Logging;
+using AasCore.Aas3_0_RC02;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -46,6 +47,33 @@ namespace AasxPackageLogic
     /// </summary>
     public class MainWindowAnyUiDialogs : MainWindowHeadless
     {
+        /// <summary>
+        /// Element of stack of editing locations. For faster jumping.
+        /// </summary>
+        protected class EditingLocation
+        {
+            public object MainDataObject;
+            public bool IsExpanded;
+        }
+
+        /// <summary>
+        /// Stack of editing location. For faster jumping.
+        /// </summary>
+		protected List<EditingLocation> _editingLocations = new List<EditingLocation>();
+
+        /// <summary>
+        /// Remembers user input for menu action
+        /// </summary>
+        protected static string _userLastPutUrl = "http://???:51310";
+
+        /// <summary>
+        /// Remembers user input for menu action
+        /// </summary>
+        protected static string _userLastGetUrl = "http://???:51310";
+
+        /// <summary>
+        /// Display context with more features for UI
+        /// </summary>
         public AnyUiContextPlusDialogs DisplayContextPlus
         {
             get => DisplayContext as AnyUiContextPlusDialogs;
@@ -504,6 +532,949 @@ namespace AasxPackageLogic
                     LogErrorToTicket(ticket, ex, "when closing auxiliary AASX");
                 }
             }
+
+            if (cmd == "locationpush"
+                && _editingLocations != null
+                && MainWindow.GetDisplayElements()?.GetSelectedItem() is VisualElementGeneric vege
+                && vege.GetMainDataObject() != null)
+            {
+                ticket.StartExec();
+
+                var loc = new EditingLocation()
+                {
+                    MainDataObject = vege.GetMainDataObject(),
+                    IsExpanded = vege.IsExpanded
+                };
+                _editingLocations.Add(loc);
+                Log.Singleton.Info("Editing Locations: pushed location.");
+            }
+
+            if (cmd == "locationpop"
+                && _editingLocations != null
+                && _editingLocations.Count > 0)
+            {
+                ticket.StartExec();
+
+                var loc = _editingLocations.Last();
+                _editingLocations.Remove(loc);
+                Log.Singleton.Info("Editing Locations: popping location.");
+                MainWindow.GetDisplayElements()?.ClearSelection();
+                MainWindow.GetDisplayElements()?.TrySelectMainDataObject(loc.MainDataObject, wishExpanded: loc.IsExpanded);
+            }
+
+            if (cmd == "filereponew")
+            {
+                ticket.StartExec();
+
+                if (ticket.ScriptMode != true
+                    && AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "Create new (empty) file repository? It will be added to list of repos on the lower/ " +
+                        "left of the screen.",
+                        "AASX File Repository",
+                        AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+                    return;
+
+                MainWindow.UiShowRepositories(visible: true);
+                PackageCentral.Repositories.AddAtTop(new PackageContainerListLocal());
+            }
+
+            if (cmd == "filerepoopen")
+            {
+                // start
+                ticket.StartExec();
+
+                // filename
+                var ucof = await DisplayContextPlus.MenuSelectOpenFilenameAsync(
+                    ticket, "File",
+                    "Select AASX file repository JSON file",
+                    null,
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    "AASX file repository open: No valid filename.");
+                if (ucof?.Result != true)
+                    return;
+
+                // ok
+                var fr = this.UiLoadFileRepository(ucof.TargetFileName);
+                MainWindow.UiShowRepositories(visible: true);
+                PackageCentral.Repositories.AddAtTop(fr);
+                MainWindow.RedrawRepositories();
+            }
+
+            if (cmd == "filerepoconnectrepository")
+            {
+                ticket.StartExec();
+
+                // read server address
+                var endpoint = ticket["Endpoint"] as string;
+                if (endpoint?.HasContent() != true)
+                {
+                    var uc = new AnyUiDialogueDataTextBox("REST endpoint (without \"/server/listaas\"):",
+                    symbol: AnyUiMessageBoxImage.Question);
+                    uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
+                    await DisplayContext.StartFlyoverModalAsync(uc);
+                    if (!uc.Result)
+                        return;
+                    endpoint = uc.Text;
+                }
+
+                if (endpoint?.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket, "No endpoint for repository given!");
+                    return;
+                }
+
+                // ok
+                if (endpoint.Contains("asp.net"))
+                {
+#if TODO
+                    var fileRepository = new PackageContainerAasxFileRepository(endpoint);
+                    fileRepository.GeneratePackageRepository();
+                    this.UiAssertFileRepository(visible: true);
+                    _packageCentral.Repositories.AddAtTop(fileRepository);
+#endif
+                }
+                else
+                {
+                    var fr = new PackageContainerListHttpRestRepository(endpoint);
+                    await fr.SyncronizeFromServerAsync();
+                    MainWindow.UiShowRepositories(visible: true);
+                    PackageCentral.Repositories.AddAtTop(fr);
+                    MainWindow.RedrawRepositories();
+                }
+            }
+
+            if (cmd == "filerepoquery")
+                // TODO (MIHO, 2023-02-08): move the referred code here, as it is UI related
+                await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+
+            if (cmd == "filerepocreatelru")
+            {
+                if (ticket.ScriptMode != true
+                    && AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "Create new (empty) \"Last Recently Used (LRU)\" list? " +
+                        "It will be added to list of repos on the lower/ left of the screen. " +
+                        "It will be saved under \"last-recently-used.json\" in the binaries folder. " +
+                        "It will replace an existing LRU list w/o prompt!",
+                        "Last Recently Used AASX Packages",
+                        AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+                    return;
+
+                ticket.StartExec();
+
+                var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
+                try
+                {
+                    MainWindow.UiShowRepositories(visible: true);
+                    var lruExist = PackageCentral?.Repositories?.FindLRU();
+                    if (lruExist != null)
+                        PackageCentral.Repositories.Remove(lruExist);
+                    var lruNew = new PackageContainerListLastRecentlyUsed();
+                    lruNew.Header = "Last Recently Used";
+                    lruNew.SaveAs(lruFn);
+                    MainWindow.UiShowRepositories(visible: true);
+                    PackageCentral?.Repositories?.AddAtTop(lruNew);
+                    MainWindow.RedrawRepositories();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        $"while initializing last recently used file in {lruFn}.");
+                }
+            }
+
+            if (cmd == "opcread")
+            {
+                // start
+                ticket?.StartExec();
+
+                // further to logic
+                await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+
+                // update
+                MainWindow.RedrawAllAasxElements();
+                MainWindow.RedrawElementView();
+            }
+
+            if (cmd == "submodelread")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Read Submodel from JSON data",
+                    "Submodel_" + ticket?.Submodel?.IdShort + ".json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    "Submodel Read: No valid filename.")))
+                    return;
+
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+
+                    MainWindow.RedrawAllAasxElements();
+                    MainWindow.RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "Submodel Read");
+                }
+            }
+
+            if (cmd == "submodelwrite")
+            {
+                // start
+                ticket.StartExec();
+
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Write Submodel to JSON data",
+                    "Submodel_" + ticket.Submodel?.IdShort + ".json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    "Submodel Read: No valid filename.")))
+                    return;
+
+                // do it directly
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "Submodel Write");
+                }
+            }
+
+            if (cmd == "submodelput")
+            {
+                // start
+                ticket.StartExec();
+
+                // URL
+                if (!(await DisplayContextPlus.MenuSelectTextToTicketAsync(
+                    ticket, "URL",
+                    "REST server adress:",
+                    _userLastPutUrl,
+                    "Submodel Put: No valid URL selected,")))
+                    return;
+
+                _userLastPutUrl = ticket["URL"] as string;
+
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "Submodel Put");
+                }
+            }
+
+            if (cmd == "submodelget")
+            {
+                // start
+                ticket?.StartExec();
+
+                // URL
+                if (!(await DisplayContextPlus.MenuSelectTextToTicketAsync(
+                    ticket, "URL",
+                    "REST server adress:",
+                    _userLastGetUrl,
+                    "Submodel Get: No valid URL selected,")))
+                    return;
+
+                _userLastGetUrl = ticket["URL"] as string;
+
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "Submodel Get");
+                }
+            }
+
+            if (cmd == "rdfread")
+            {
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select RDF file to be imported",
+                    null,
+                    "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*",
+                    "RDF Read: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    // do it
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+
+                    // redisplay
+                    MainWindow.RedrawAllAasxElements();
+                    MainWindow.RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When importing, an error occurred");
+                }
+            }
+
+            if (cmd == "bmecatimport")
+            {
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select BMEcat file to be imported",
+                    null,
+                    "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*",
+                    "RDF Read: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When importing BMEcat, an error occurred");
+                }
+            }
+
+            if (cmd == "csvimport")
+            {
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select CSF file to be imported",
+                    null,
+                    "CSV files (*.CSV)|*.csv|All files (*.*)|*.*",
+                    "CSF import: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When importing CSV, an error occurred");
+                }
+            }
+
+            if (cmd == "submodeltdimport")
+            {
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select Thing Description (TD) file to be imported",
+                    null,
+                    "JSON files (*.JSONLD)|*.jsonld",
+                    "TD import: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    // delegate futher
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+
+                    // redisplay
+                    MainWindow.RedrawAllAasxElements();
+                    MainWindow.RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When importing JSON LD for Thing Description, an error occurred");
+                }
+            }
+
+            if (cmd == "submodeltdexport")
+            {
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Thing Description (TD) export",
+                    "Submodel_" + ticket.Submodel?.IdShort + ".jsonld",
+                    "JSON files (*.JSONLD)|*.jsonld",
+                    "Thing Description (TD) export: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    // delegate futher
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When exporting Thing Description (TD), an error occurred");
+                }
+            }
+
+            if (cmd == "opcuaimportnodeset")
+            {
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select OPC UA Nodeset to be imported",
+                    null,
+                    "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*",
+                    "OPC UA Nodeset import: No valid filename.")))
+                    return;
+
+                // do it
+                try
+                {
+                    // do it
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+
+                    // redisplay
+                    MainWindow.RedrawAllAasxElements();
+                    MainWindow.RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When importing OPC UA Nodeset, an error occurred");
+                }
+            }
+
+            if (cmd == "importaml")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select AML file to be imported",
+                    null,
+                    "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*",
+                    "Import AML: No valid filename.")))
+                    return;
+
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    MainWindow.RestartUIafterNewPackage();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
+                }
+            }
+
+            if (cmd == "exportaml")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select AML file to be exported",
+                    "new.aml",
+                    "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
+                    "*.aml|All files (*.*)|*.*",
+                    "Export AML: No valid filename.",
+                    argFilterIndex: "FilterIndex")))
+                    return;
+
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
+                }
+            }
+
+            // TODO (MIHO, 2023-02-08): Take over from AasxToolkit sources
+            if (cmd == "exportcst")
+            {
+                // start
+                ticket?.StartExec();
+
+                LogErrorToTicket(ticket, "Currently, this export is only implemented in AasxToolkit!");
+            }
+
+            if (cmd == "exportjsonschema")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename prepare
+                var fnPrep = "" + (MainWindow.GetDisplayElements()?.GetSelectedItem()?
+                        .GetDereferencedMainDataObject() as Aas.IReferable)?.IdShort;
+                if (!fnPrep.HasContent())
+                    fnPrep = "new";
+
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select JSON schema file for Submodel templates to be written",
+                    $"Submodel_Schema_{fnPrep}.json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    "Export JSON schema: No valid filename.",
+                    argFilterIndex: "FilterIndex")))
+                    return;
+
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When exporting JSON schema, an error occurred");
+                }
+            }
+
+            if (cmd == "opcuai4aasexport")
+            {
+                // start
+                ticket.StartExec();
+
+                // try to access I4AAS export information
+                try
+                {
+                    var xstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                        "AasxPackageLogic.Resources.i4AASCS.xml");
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "when accessing i4AASCS.xml mapping types.");
+                    return;
+                }
+                Log.Singleton.Info("Mapping types loaded.");
+
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select Nodeset file to be exported",
+                    "new.xml",
+                    "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
+                    "Export i4AAS based OPC UA nodeset: No valid filename.")))
+                    return;
+
+                // ReSharper enable PossibleNullReferenceException
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
+                }
+            }
+            
+            if (cmd == "opcuai4aasimport")
+            {
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+                ticket, "File",
+                    "Select Nodeset file to be imported",
+                    "Document",
+                    "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
+                    "Import i4AAS based OPC UA nodeset: No valid filename.")))
+                    return;
+
+                // do
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+
+                    // TODO (MIHO, 2022-11-17): not very elegant
+                    if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")
+                        && ticket.PostResults["TakeOver"] is AdminShellPackageEnv pe)
+                        PackageCentral.MainItem.TakeOver(pe);
+
+                    MainWindow.RestartUIafterNewPackage();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "when importing i4AAS based OPC UA mapping.");
+                }
+            }
+
+            if (cmd == "copyclipboardelementjson")
+            {
+                // get the selected element
+                var ve = MainWindow.GetDisplayElements()?.GetSelectedItem();
+
+                // allow only some elements
+                if (!(ve is VisualElementConceptDescription
+                    || ve is VisualElementSubmodelElement
+                    || ve is VisualElementAdminShell
+                    || ve is VisualElementAsset
+                    || ve is VisualElementOperationVariable
+                    || ve is VisualElementReference
+                    || ve is VisualElementSubmodel
+                    || ve is VisualElementSubmodelRef))
+                    ve = null;
+
+                // need to have business object
+                var mdo = ve?.GetMainDataObject();
+
+                if (ve == null || mdo == null || !(mdo is IClass))
+                {
+                    await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "No valid element selected.", "Copy selected elements",
+                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                    return;
+                }
+
+                // ok, for Serialization we just want the plain element with no BLOBs..
+                var jsonStr = Aas.Jsonization.Serialize.ToJsonObject(mdo as IClass)
+                    .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                    {
+                        WriteIndented = true
+                    });
+
+                // copy to clipboard
+                if (jsonStr != "")
+                {
+                    DisplayContext.ClipboardSet(new AnyUiClipboardData(jsonStr));
+                    Log.Singleton.Info("Copied selected element to clipboard.");
+                }
+                else
+                {
+                    Log.Singleton.Info("No JSON text could be generated for selected element.");
+                }
+            }
+
+            if (cmd == "exportgenericforms")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select options file for GenericForms to be exported",
+                    "new.add-options.json",
+                    "Options file for GenericForms (*.add-options.json)|*.add-options.json|All files (*.*)|*.*",
+                    "Export GenericForms: No valid filename.",
+                    argFilterIndex: "FilterIndex")))
+                    return;
+
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When exporting GenericForms, an error occurred");
+                }
+            }
+
+            if (cmd == "exportpredefineconcepts")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(
+                    ticket, "File",
+                    "Select text file for PredefinedConcepts to be exported",
+                    "new.txt",
+                    "Text file for PredefinedConcepts (*.txt)|*.txt|All files (*.*)|*.*",
+                    "Export PredefinedConcepts: No valid filename.",
+                    argFilterIndex: "FilterIndex")))
+                    return;
+
+                try
+                {
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When exporting PredefinedConcepts, an error occurred");
+                }
+            }
+
+            if (cmd == "newsubmodelfromplugin")
+            {
+                // create a list of plugins, which are capable of generating Submodels
+                var listOfSm = new List<AnyUiDialogueListItem>();
+                var list = GetPotentialGeneratedSubmodels();
+                if (list != null)
+                    foreach (var rec in list)
+                        listOfSm.Add(new AnyUiDialogueListItem(
+                            "" + rec.Item1.name + " | " + "" + rec.Item2, rec));
+
+                // could be nothing
+                if (listOfSm.Count < 1)
+                {
+                    LogErrorToTicket(ticket, "New Submodel from plugin: No Submodels available " +
+                        "to be generated by plugins.");
+                    return;
+                }
+
+                // prompt if no name is given
+                if (ticket["Name"] == null)
+                {
+                    var uc = new AnyUiDialogueDataSelectFromList(
+                        "Select Plug-in and Submodel to be generated ..");
+                    uc.ListOfItems = listOfSm;
+                    if (!(await DisplayContext.StartFlyoverModalAsync(uc))
+                        || uc.ResultItem == null)
+                        return;
+
+                    ticket["Record"] = uc.ResultItem.Tag;
+                }
+
+                // do it
+                try
+                {
+                    // delegate futher
+                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When generating Submodel from plugins, an error occurred");
+                }
+
+                // redisplay
+                MainWindow.RedrawAllElementsAndFocus(nextFocus: ticket["SmRef"]);
+            }
+
+            if (cmd == "convertelement")
+            {
+                // check
+                var rf = ticket.DereferencedMainDataObject as Aas.IReferable;
+                if (rf == null)
+                {
+                    LogErrorToTicket(ticket,
+                        "Convert Referable: No valid Referable selected for conversion.");
+                    return;
+                }
+
+                // try to get offers?
+                if ((ticket["Name"] as string)?.HasContent() != true)
+                {
+                    var offers = AasxPredefinedConcepts.Convert.ConvertPredefinedConcepts.CheckForOffers(rf);
+                    if (offers == null || offers.Count < 1)
+                    {
+                        LogErrorToTicket(ticket,
+                            "Convert Referable: No valid conversion offers found for this Referable. Aborting.");
+                        return;
+                    }
+
+                    // convert these to list items
+                    var fol = new List<AnyUiDialogueListItem>();
+                    foreach (var o in offers)
+                        fol.Add(new AnyUiDialogueListItem(o.OfferDisplay, o));
+
+                    // show a list
+                    // prompt for this list
+                    var uc = new AnyUiDialogueDataSelectFromList(
+                        "Select Conversion action to be executed ..");
+                    uc.ListOfItems = fol;
+                    if (!(await DisplayContext.StartFlyoverModalAsync(uc))
+                        || uc.ResultItem == null)
+                        return;
+
+                    ticket["Record"] = uc.ResultItem.Tag;
+                }
+
+                // pass on
+                try
+                {
+                    {
+                        await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "Executing user defined conversion");
+                }
+
+                // redisplay
+                MainWindow.RedrawAllElementsAndFocus(nextFocus: ticket.MainDataObject);
+            }
+
+            //
+            // Scripting : allow for server?
+            //
+
+            if (cmd == "scripteditlaunch")
+            {
+                // trivial things
+                if (!PackageCentral.MainAvailable)
+                {
+                    await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "An AASX package needs to be available", "Error",
+                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                    return;
+                }
+
+                // trivial things
+                if (_aasxScript?.IsExecuting == true)
+                {
+                    if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
+                        "An AASX script is already executed! Continue anyway?", "Warning",
+                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                        return;
+                    else
+                        // brutal
+                        _aasxScript = null;
+                }
+
+                // prompt for the script
+                var uc = new AnyUiDialogueDataTextEditorWithContextMenu("Edit script to be launched ..");
+                uc.MimeType = "application/csharp";
+                uc.Presets = Options.Curr.ScriptPresets;
+                uc.Text = _currentScriptText;
+
+                // context menu
+                uc.ContextMenuCreate = () =>
+                {
+                    return new AasxMenu()
+                            .AddAction("Clip", "Copy JSON to clipboard", "\U0001F4CB");
+                };
+
+                uc.ContextMenuAction = (cmd, mi, ticket) =>
+                {
+                    if (cmd == "clip")
+                    {
+                        var text = uc.Text;
+                        var lines = text?.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                        var sb = new StringBuilder();
+                        sb.AppendLine("[");
+                        if (lines != null)
+                            foreach (var ln in lines)
+                            {
+                                var ln2 = ln.Replace("\"", "\\\"");
+                                ln2 = ln2.Replace("\t", "    ");
+                                sb.AppendLine($"\"{ln2}\",");
+                            }
+                        sb.AppendLine("]");
+                        var jsonStr = sb.ToString();
+                        DisplayContext.ClipboardSet(new AnyUiClipboardData(jsonStr));
+                        Log.Singleton.Info("Copied JSON to clipboard.");
+                    }
+                };
+
+                // execute
+                await DisplayContext.StartFlyoverModalAsync(uc);
+
+                // always remember script
+                _currentScriptText = uc.Text;
+
+                // execute?
+                if (uc.Result && uc.Text.HasContent())
+                {
+                    try
+                    {
+                        // create first
+                        if (_aasxScript == null)
+                            _aasxScript = new AasxScript();
+
+                        // executing
+                        _aasxScript.StartEnginBackground(
+                            uc.Text, Options.Curr.ScriptLoglevel,
+                            MainWindow.GetMainMenu(), MainWindow.GetRemoteInterface());
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, "when executing script");
+                    }
+                }
+            }
+
+            // REFACTOR: SAME
+            for (int i = 0; i < 9; i++)
+                if (cmd == $"launchscript{i}"
+                    && Options.Curr.ScriptPresets != null)
+                {
+                    // order in human sense
+                    var scriptIndex = (i == 0) ? 9 : (i - 1);
+                    if (scriptIndex >= Options.Curr.ScriptPresets.Count
+                        || Options.Curr.ScriptPresets[scriptIndex]?.Text?.HasContent() != true)
+                        return;
+
+                    // still running?
+                    if (_aasxScript?.IsExecuting == true)
+                    {
+                        if (AnyUiMessageBoxResult.No == await DisplayContext.MessageBoxFlyoutShowAsync(
+                            "An AASX script is already executed! Continue anyway?", "Warning",
+                            AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                            return;
+                        else
+                            // brutal
+                            _aasxScript = null;
+                    }
+
+                    // prompting
+                    if (!Options.Curr.ScriptLaunchWithoutPrompt)
+                    {
+                        if (AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+                            $"Executing script preset #{1 + scriptIndex} " +
+                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?",
+                            "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                            return;
+                    }
+
+                    // execute
+                    try
+                    {
+                        // create first
+                        if (_aasxScript == null)
+                            _aasxScript = new AasxScript();
+
+                        // executing
+                        _aasxScript.StartEnginBackground(
+                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel,
+                            MainWindow.GetMainMenu(), MainWindow.GetRemoteInterface());
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, "when executing script");
+                    }
+                }
+
+        }
+
+        //
+        // some functions in close relation to UI menu functions
+        //
+
+        public PackageContainerListBase UiLoadFileRepository(string fn)
+        {
+            try
+            {
+                Log.Singleton.Info(
+                    $"Loading aasx file repository {fn} ..");
+
+                var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+
+                if (fr != null)
+                    return fr;
+                else
+                    Log.Singleton.Info(
+                        $"File not found when loading aasx file repository {fn}");
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(
+                    ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+            }
+
+            return null;
         }
 
     }
