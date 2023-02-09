@@ -10,49 +10,39 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+// resharper disable EmptyEmbeddedStatement
+// resharper disable FunctionNeverReturns
+// resharper disable UnusedVariable
+// resharper disable TooWideLocalVariableScope
+// resharper disable EmptyConstructor
+
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+using System.Windows;
+using System.Windows.Input;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
-using AnyUi;
 using BlazorExplorer;
-using BlazorExplorer.Shared;
+using BlazorUI.Pages;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 
-namespace BlazorUI.Data
+namespace AnyUi
 {
     /// <summary>
-    /// This partial class holds parts which seem to be same with Package Explorer
+    /// Requiest to view to clear the status line
     /// </summary>
-    public partial class BlazorSession : IDisposable
+    public class AnyUiLambdaActionStatusLineClear : AnyUiLambdaActionBase
     {
-        /// <summary>
-        /// Check for menu switch and flush events, if required.
-        /// </summary>
-        public void CheckIfToFlushEvents()
-		{
-			if (MainMenu?.IsChecked("CompressEvents") == true)
-			{
-				var evs = _eventCompressor?.Flush();
-				if (evs != null)
-					foreach (var ev in evs)
-						PackageCentral?.PushEvent(ev);
-			}
-		}
-
-        public void CommandExecution_RedrawAll()
-        {
-            // redraw everything
-            RedrawAllAasxElements();
-            RedrawElementView();
-        }
     }
-
 }

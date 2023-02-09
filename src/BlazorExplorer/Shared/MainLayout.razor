@@ -44,7 +44,7 @@
                 <div class="col-12">
                     <MainMenu/>
                     <div style="width: 90vw">
-                        <StatusBar />
+                        <StatusBar @ref="childStatusBar" />
                     </div>
                 </div>
             </div>
@@ -83,6 +83,14 @@
     //        InvokeAsync(() => StateHasChanged()); 
     //    }
     //}
+
+    protected StatusBar childStatusBar;
+
+    public void StatusLineClear()
+    {
+        if (childStatusBar != null)
+            childStatusBar.StatusLineClear();
+    }
 
     protected int _showHeader = 3;
     public int ShowHeader { 

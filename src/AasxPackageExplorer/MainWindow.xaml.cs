@@ -60,8 +60,10 @@ namespace AasxPackageExplorer
         /// <summary>
         /// Abstracted menu functions to be wrapped by functions triggering
         /// more UI feedback.
+        /// Remark: "Scripting" is only the highest of the functionality levels
+        /// of the "stacked classes"
         /// </summary>
-        protected MainWindowAnyUiDialogs Logic = new MainWindowAnyUiDialogs();
+        protected MainWindowScripting Logic = new MainWindowScripting();
 
         /// <summary>
         /// The top-most display data required for WPF to render elements.
@@ -94,7 +96,7 @@ namespace AasxPackageExplorer
         /// </summary>
         private AasEventCompressor _eventCompressor = new AasEventCompressor();
 
-        protected AasxMenuWpf _dynamicMenu = new AasxMenuWpf();
+        public AasxMenuWpf DynamicMenu = new AasxMenuWpf();
 
         #endregion
         #region Init Component
@@ -566,14 +568,14 @@ namespace AasxPackageExplorer
                 VisualElementEnvironmentItem;
 
             // update element view?
-            _dynamicMenu.Menu.Clear();
+            DynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
                 PackageCentral, DisplayContext, 
                 entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
                 flyoutProvider: this,
                 appEventProvider: this,
                 hightlightField: hightlightField,
-                superMenu: _dynamicMenu.Menu);
+                superMenu: DynamicMenu.Menu);
 
             // panels
             var panelHeight = 48;
@@ -1050,7 +1052,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     Log.Singleton.Info("Opening and executing '{0}' for script commands.", Options.Curr.ScriptFn);
-                    Logic?.StartScriptFile(Options.Curr.ScriptFn, MainMenu?.Menu, this);
+                    Logic?.StartScriptFile(Options.Curr.ScriptFn, MainMenu?.Menu, Logic);
                 }
                 catch (Exception ex)
                 {
@@ -1064,7 +1066,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     Log.Singleton.Info("Executing '{0}' as direct script commands.", Options.Curr.ScriptCmd);
-                    Logic?.StartScriptCommand(Options.Curr.ScriptCmd, MainMenu?.Menu, this);
+                    Logic?.StartScriptCommand(Options.Curr.ScriptCmd, MainMenu?.Menu, Logic);
                 }
                 catch (Exception ex)
                 {
@@ -2388,22 +2390,24 @@ namespace AasxPackageExplorer
             }
         }
 
-        protected MessageReportWindow _messageReportWindow = null;
-
-        private void ButtonReport_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Clears the status line and pending errors.
+        /// </summary>
+        public void StatusLineClear()
         {
-            if (sender == ButtonClear)
-            {
-                Log.Singleton.ClearNumberErrors();
-                Message.Content = "";
-                Message.Background = Brushes.White;
-                Message.Foreground = Brushes.Black;
-                Message.FontWeight = FontWeights.Normal;
-                SetProgressBar();
-            }
+            Log.Singleton.ClearNumberErrors();
+            Message.Content = "";
+            Message.Background = Brushes.White;
+            Message.Foreground = Brushes.Black;
+            Message.FontWeight = FontWeights.Normal;
+            SetProgressBar();
+        }
 
-            if (sender == ButtonReport)
-            {
+        /// <summary>
+        /// Show log in a window / list perceivable for the user.
+        /// </summary>
+        public void LogShow()
+        {
 #if __disabled
                 // report on message / exception
                 var head = @"
@@ -2457,32 +2461,46 @@ namespace AasxPackageExplorer
                 dlg.ShowDialog();
 #endif
 
-                // show only if not present
-                if (_messageReportWindow != null)
-                    return;
+            // show only if not present
+            if (_messageReportWindow != null)
+                return;
 
-                // Collect all the stored log prints
-                IEnumerable<StoredPrint> Prints()
+            // Collect all the stored log prints
+            IEnumerable<StoredPrint> Prints()
+            {
+                var prints = Log.Singleton.GetStoredLongTermPrints();
+                if (prints != null)
                 {
-                    var prints = Log.Singleton.GetStoredLongTermPrints();
-                    if (prints != null)
+                    foreach (var sp in prints)
                     {
-                        foreach (var sp in prints)
-                        {
-                            yield return sp;
-                            if (sp.stackTrace != null)
-                                yield return new StoredPrint("    Stacktrace: " + sp.stackTrace);
-                        }
+                        yield return sp;
+                        if (sp.stackTrace != null)
+                            yield return new StoredPrint("    Stacktrace: " + sp.stackTrace);
                     }
                 }
+            }
 
-                // show (non modal)
-                _messageReportWindow = new MessageReportWindow(Prints());
-                _messageReportWindow.Closed += (s2, e2) =>
-                {
-                    _messageReportWindow = null;
-                };
-                _messageReportWindow.Show();
+            // show (non modal)
+            _messageReportWindow = new MessageReportWindow(Prints());
+            _messageReportWindow.Closed += (s2, e2) =>
+            {
+                _messageReportWindow = null;
+            };
+            _messageReportWindow.Show();
+        }
+
+        protected MessageReportWindow _messageReportWindow = null;
+
+        private void ButtonReport_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == ButtonClear)
+            {
+                StatusLineClear();
+            }
+
+            if (sender == ButtonLogShow)
+            {
+                LogShow();
             }
         }
 
@@ -2739,7 +2757,7 @@ namespace AasxPackageExplorer
             // DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
 
             // global handling
-            var la = _dynamicMenu?.HandleGlobalKeyDown(e, preview: true);
+            var la = DynamicMenu?.HandleGlobalKeyDown(e, preview: true);
             if (la != null && !(la is AnyUiLambdaActionNone))
             {
                 // add to "normal" event quoue
@@ -3368,7 +3386,7 @@ namespace AasxPackageExplorer
                 lambdaMenu(MainMenu.Menu);
 
                 html.AppendLine("<h3>Displayed entity and script commands</h3>");
-                lambdaMenu(_dynamicMenu.Menu);
+                lambdaMenu(DynamicMenu.Menu);
 
                 //
                 // Script command
@@ -3480,12 +3498,30 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
+        /// Returns the <c>AasxMenu</c> of the dynmaically built menu of the application.
+        /// Purpose: script automation
+        /// </summary>
+        public AasxMenu GetDynamicMenu()
+        {
+            return DynamicMenu?.Menu;
+        }
+
+        /// <summary>
         /// Returns the quite concise script interface of the application
         /// to allow script automation.
         /// </summary>
         public IAasxScriptRemoteInterface GetRemoteInterface()
         {
-            return this;
+            return Logic;
+        }
+
+        /// <summary>
+        /// Allows an other class to inject a lambda action.
+        /// This will be perceived by the main window, most likely.
+        /// </summary>
+        public void AddWishForToplevelAction(AnyUiLambdaActionBase action)
+        {
+            DispEditEntityPanel.AddWishForOutsideAction(action);
         }
     }
 }

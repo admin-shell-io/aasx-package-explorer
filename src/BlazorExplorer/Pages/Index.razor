@@ -726,14 +726,6 @@
             // normal rendering
             //
 
-            Session.RebuildTree();
-            //SubmodelService.buildTree(Session);
-            //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
-            // StateHasChanged();
-
-            //ExpandedNodes.Add(Items.Skip(1).First());
-            //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
-
             SubmodelService.NewDataAvailable += NotifyForNewData;
 
             //
@@ -970,6 +962,12 @@
                         Session.RedrawAllAasxElements(keepFocus: true, nextFocusMdo: lapcc.NextFocus);
                         _onlyUpdatePluginUi = false;
                     }
+                }
+
+                // some actions special to Blazor
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionStatusLineClear)
+                {
+                    Layout.StatusLineClear();
                 }
 
                 // re-create items

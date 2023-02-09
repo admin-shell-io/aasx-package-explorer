@@ -35,7 +35,7 @@ namespace AasxPackageExplorer
     {
         Task<int> Tool(object[] args);
         Aas.IReferable Select(object[] args);
-        bool Location(object[] args);
+        Task<bool> Location(object[] args);
     }
 
     public class AasxScript
@@ -199,7 +199,7 @@ namespace AasxPackageExplorer
                         .Add("<value>", "Arbitrary type and value for that argument."));
             }
 
-            public override object Invoke(IScriptContext context, object[] args)
+            public override async Task<object> Invoke(IScriptContext context, object[] args)
             {
                 // access
                 if (_script == null)
@@ -217,14 +217,24 @@ namespace AasxPackageExplorer
 
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
-                var x = Application.Current.Dispatcher.Invoke(async () =>
+                Task<int> x = null;
+                if (Application.Current != null)
                 {
-                    if (_script?.Remote == null)
-                        return -1;
-                    return await _script?.Remote?.Tool(args);
-                });
-                if (x != null)
-                    Log.Singleton.Silent("" + x);
+                    // WPF case
+                    x = Application.Current.Dispatcher.Invoke(async () =>
+                    {
+                        if (_script?.Remote == null)
+                            return -1;
+                        return await _script?.Remote?.Tool(args);
+                    });
+                    if (x != null)
+                        Log.Singleton.Silent("" + x);
+                }
+                else
+                {
+                    // Blazor case
+                    await _script?.Remote?.Tool(args);
+                }
 
                 // done
                 return 0;
@@ -266,15 +276,25 @@ namespace AasxPackageExplorer
                 {
                     Log.Singleton.Error("For script execution, Application.Current for Blazor is not available.");
                 }
-                
+
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
-                var x = Application.Current?.Dispatcher.Invoke(() =>
+                Aas.IReferable x = null;
+                if (Application.Current != null)
                 {
-                    return _script.Remote?.Select(args);
-                });
-                if (x != null)
-                    Log.Singleton.Silent("" + x.IdShort);
+                    // WPF case
+                    x = Application.Current?.Dispatcher.Invoke(() =>
+                    {
+                        return _script.Remote?.Select(args);
+                    });
+                    if (x != null)
+                        Log.Singleton.Silent("" + x.IdShort);
+                }
+                else
+                {
+                    // Blazor?? case
+                    x = _script.Remote?.Select(args);
+                }
 
                 // done
                 return x;
@@ -291,7 +311,7 @@ namespace AasxPackageExplorer
                         .Add("<cmd>", "Either 'Push' or 'Pop'."));
             }
 
-            public override object Invoke(IScriptContext context, object[] args)
+            public async override Task<object> Invoke(IScriptContext context, object[] args)
             {
                 // access
                 if (_script == null)
@@ -319,12 +339,22 @@ namespace AasxPackageExplorer
 
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
-                var x = Application.Current.Dispatcher.Invoke(() =>
+                bool x = false;
+                if (Application.Current != null)
                 {
-                    return _script.Remote?.Location(args);
-                });
-                if (x != null)
+                    // WPF case
+                    x = await Application.Current.Dispatcher.Invoke(async () =>
+                    {
+                        return await _script.Remote?.Location(args);
+                    });
                     Log.Singleton.Silent("" + x);
+                }
+                else
+                {
+                    // Blazor case
+                    x = await _script.Remote?.Location(args);
+                }
+                
                 // done
                 return 0;
             }

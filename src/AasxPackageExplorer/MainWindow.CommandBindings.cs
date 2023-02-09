@@ -40,7 +40,7 @@ namespace AasxPackageExplorer
     /// This partial class contains all command bindings, such as for the main menu, in order to reduce the
     /// complexity of MainWindow.xaml.cs
     /// </summary>
-    public partial class MainWindow : Window, IFlyoutProvider, IAasxScriptRemoteInterface
+    public partial class MainWindow : Window, IFlyoutProvider
     {
         private string lastFnForInitialDirectory = null;
 
@@ -268,7 +268,7 @@ namespace AasxPackageExplorer
 
             // TODO (MIHO, 2022-11-19): stays in WPF (tightly integrated, command line shall do own version)
             if (cmd == "opcuaexportnodesetuaplugin")
-                CommandBinding_ExportNodesetUaPlugin(cmd, ticket);
+                await CommandBinding_ExportNodesetUaPlugin(cmd, ticket);
 
             // stays in WPF
             if (cmd == "serverrest")
@@ -292,19 +292,19 @@ namespace AasxPackageExplorer
 
             // REFACTOR: STAYS HERE
             if (cmd == "exporttable")
-                CommandBinding_ExportImportTableUml(cmd, ticket, import: false);
+                await CommandBinding_ExportImportTableUml(cmd, ticket, import: false);
 
             // REFACTOR: STAYS HERE
             if (cmd == "importtable")
-                CommandBinding_ExportImportTableUml(cmd, ticket, import: true);
+                await CommandBinding_ExportImportTableUml(cmd, ticket, import: true);
 
             // REFACTOR: STAYS HERE
             if (cmd == "exportuml")
-                CommandBinding_ExportImportTableUml(cmd, ticket, exportUml: true);
+                await CommandBinding_ExportImportTableUml(cmd, ticket, exportUml: true);
 
             // REFACTOR: STAYS HERE
             if (cmd == "importtimeseries")
-                CommandBinding_ExportImportTableUml(cmd, ticket, importTimeSeries: true);
+                await CommandBinding_ExportImportTableUml(cmd, ticket, importTimeSeries: true);
 
             // REFACTOR: STAYS HERE
             if (cmd == "serverpluginemptysample")

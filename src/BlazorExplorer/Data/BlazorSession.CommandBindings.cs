@@ -95,6 +95,7 @@ namespace BlazorUI.Data
                 // edit mode affects the total element view
                 RedrawAllAasxElements(nextFocusMdo: currMdo);
 
+                return;
             }
 
             // dispatching directly to PackageLogic
@@ -102,6 +103,7 @@ namespace BlazorUI.Data
             if (cmd == "XXXXX")
             {
                 Log.Singleton.Info("Time is " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                return;
             }
 
             // REFACTOR: 80% change
@@ -155,6 +157,8 @@ namespace BlazorUI.Data
 					await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
 					"https://github.com/admin-shell-io/aasx-package-explorer/");
 				}
+
+                return;
             }
 
 			// REFACTOR: 100% change
@@ -166,6 +170,8 @@ namespace BlazorUI.Data
 				// do
 				await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
 				    "https://github.com/admin-shell/aasx-package-explorer/blob/master/help/index.md");
+
+                return;
 			}
 
 			// REFACTOR: 100% change
@@ -177,7 +183,9 @@ namespace BlazorUI.Data
 				// do
 				await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
 					"https://github.com/admin-shell-io/questions-and-answers/blob/master/README.md");
-			}
+
+                return;
+            }
 
 			// REFACTOR: 100% change
 			if (cmd == "helpissues")
@@ -188,7 +196,9 @@ namespace BlazorUI.Data
 				// do
 				await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
 					"https://github.com/admin-shell-io/aasx-package-explorer/issues");
-			}
+
+                return;
+            }
 
 			// REFACTOR: 70% change
 			if (cmd == "helpoptionsinfo")
@@ -213,7 +223,9 @@ namespace BlazorUI.Data
                 {
                     Log.Singleton.Error(ex, "Generating options information");
                 }
-			}
+
+                return;
+            }
 
 			// REFACTOR: 10% change, no good entity for ClearPasteBuffer()
 			if (cmd == "bufferclear")
@@ -225,36 +237,48 @@ namespace BlazorUI.Data
 				ClearPasteBuffer();
 				Log.Singleton.Info("Internal copy/ paste buffer cleared. Pasting of external JSON elements " +
 					"enabled.");
-			}
+
+                return;
+            }
 
 			// REFACTOR: TODO
 			if (cmd == "exportsmd")
             {
                 Logic.LogErrorToTicket(ticket, "ExportSmd not implemented, yet.");
+
+                return;
             }
 
 			// REFACTOR: TODO
 			if (cmd == "printasset")
 			{
 				Logic.LogErrorToTicket(ticket, "PrintAsset not implemented, yet.");
-			}
+
+                return;
+            }
 
             // REFACTOR: WPF required
             if (cmd == "importdictsubmodel")
             {
                 Logic.LogErrorToTicket(ticket, "ImportDictSubmodel not implemented, yet.");
+
+                return;
             }
 
             // REFACTOR: WPF required
             if (cmd == "importdictsubmodelelements")
             {
                 Logic.LogErrorToTicket(ticket, "ImportDictSubmodelElements not implemented, yet.");
+
+                return;
             }
 
             // REFACTOR: WPF required
             if (cmd == "opcuaexportnodesetuaplugin")
             {
                 Logic.LogErrorToTicket(ticket, "OpcUaExportNodesetUaPlugin not implemented, yet.");
+
+                return;
             }
 
             // REFACTOR: WPF required
@@ -265,6 +289,8 @@ namespace BlazorUI.Data
                 || cmd == "connectrest")
             {
                 Logic.LogErrorToTicket(ticket, "Some dialogs not implemented, yet.");
+
+                return;
             }
 
 
@@ -275,6 +301,8 @@ namespace BlazorUI.Data
                 || cmd == "importtimeseries")
             {
                 Logic.LogErrorToTicket(ticket, "ExportInport Table UML not implemented, yet.");
+
+                return;
             }
 
             // REFACTOR: WPF required
@@ -283,6 +311,8 @@ namespace BlazorUI.Data
                 || cmd == "serverpluginmqtt")
             {
                 Logic.LogErrorToTicket(ticket, "Some servers not implemented, yet.");
+
+                return;
             }
 
             // REFACTOR: Find/ replace not in blazor
@@ -291,12 +321,16 @@ namespace BlazorUI.Data
                 || cmd == "toolsreplaceall")
             {
                 Logic.LogErrorToTicket(ticket, "Find/ replace not implemented, yet.");
+
+                return;
             }
 
             // REFACTOR: What does AAS core provide?
             if (cmd == "checkandfix")
             {
                 Logic.LogErrorToTicket(ticket, "Check&fix not implemented, yet. AAS core might provide other means.");
+
+                return;
             }
 
             // REFACTOR: WPF required
@@ -305,6 +339,8 @@ namespace BlazorUI.Data
                 || cmd == "eventsshowlogmenu")
             {
                 Logic.LogErrorToTicket(ticket, "Showing events not implemented, yet.");
+
+                return;
             }
 
             // pass dispatch on to next (lower) level of menu functions

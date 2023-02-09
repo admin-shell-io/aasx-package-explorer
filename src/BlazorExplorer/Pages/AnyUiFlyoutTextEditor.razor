@@ -18,8 +18,17 @@
 	<div class="modal-body">
 		 <form>
           <div class="mb-3">
-			<textarea class="form-control form-control-lg" id="message-text" @bind="TextLines"
-					  style="resize: none; height: 60vh; font-family: monospace,monospace;" />
+			@if (ddte.ReadOnly)
+			{
+				<textarea readonly
+					class="form-control form-control-lg" id="message-text" @bind="TextLines"
+					style="resize: none; height: 60vh; font-family: monospace,monospace;" />
+			}
+			else
+			{
+				<textarea class="form-control form-control-lg" id="message-text" @bind="TextLines"
+					style="resize: none; height: 60vh; font-family: monospace,monospace;" />
+			}
           </div>
         </form>
 	</div>

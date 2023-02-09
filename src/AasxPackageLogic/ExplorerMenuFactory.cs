@@ -296,6 +296,9 @@ namespace AasxPackageExplorer
                 .AddSeparator()
                 .AddMenu(header: "Buffer …", childs: (new AasxMenu())
                     .AddWpfBlazor(name: "BufferClear", header: "Clear internal paste buffer"))
+                .AddMenu(header: "Log …", childs: (new AasxMenu())
+                    .AddWpfBlazor(name: "LogShow", header: "Show log")
+                    .AddWpfBlazor(name: "StatusClear", header: "Clear status line and errors"))
                 .AddSeparator(filter: AasxMenuFilter.NotBlazor)
                 .AddMenu(header: "Events …", childs: (new AasxMenu())
                     .AddWpf(name: "EventsShowLogMenu", header: "_Event log", inputGesture: "Ctrl+L",

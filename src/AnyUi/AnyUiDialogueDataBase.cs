@@ -404,6 +404,7 @@ namespace AnyUi
         public string MimeType = "application/text";
         public string Text = "";
         public List<Preset> Presets;
+        public bool ReadOnly = false;
        
         public AnyUiDialogueDataTextEditor(
             string caption = "",

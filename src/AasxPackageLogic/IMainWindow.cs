@@ -55,6 +55,16 @@ namespace AasxPackageExplorer
         void ClearAllViews();
 
         /// <summary>
+        /// Clears the status line and pending errors.
+        /// </summary>
+        void StatusLineClear();
+
+        /// <summary>
+        /// Show log in a window / list perceivable for the user.
+        /// </summary>
+        void LogShow();
+
+        /// <summary>
         /// Make sure the file repo is visible
         /// </summary>
 		void UiShowRepositories(bool visible);
@@ -135,9 +145,22 @@ namespace AasxPackageExplorer
         public AasxMenu GetMainMenu();
 
         /// <summary>
+        /// Returns the <c>AasxMenu</c> of the dynmaically built menu of the application.
+        /// Purpose: script automation
+        /// </summary>
+        public AasxMenu GetDynamicMenu();
+
+        /// <summary>
         /// Returns the quite concise script interface of the application
         /// to allow script automation.
         /// </summary>
         public IAasxScriptRemoteInterface GetRemoteInterface();
+
+        /// <summary>
+        /// Allows an other class to inject a lambda action.
+        /// This will be perceived by the main window, most likely.
+        /// </summary>
+        void AddWishForToplevelAction(AnyUiLambdaActionBase action);
+
     }
 }

@@ -1,8 +1,8 @@
-/*
-Copyright (c) 2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+﻿/*
+Copyright (c) 2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
-Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>
+Copyright (c) 2022 Phoenix Contact GmbH & Co. KG <>
 Author: Andreas Orzelski
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -10,44 +10,41 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPackageExplorer;
+using AasxPackageLogic.PackageCentral;
+using AasxPredefinedConcepts.Convert;
+using AasxSignature;
+using AnyUi;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
+using System.Xml.Linq;
 using System.Xml.Serialization;
-using AasxIntegrationBase;
-using AasxIntegrationBaseWpf;
-using AasxPackageLogic;
-using AasxPackageLogic.PackageCentral;
-using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
-using AasxSignature;
-using AnyUi;
-using Jose;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using System.Windows;
+using Microsoft.VisualBasic.Logging;
+using AasCore.Aas3_0_RC02;
 
-namespace AasxPackageExplorer
+// ReSharper disable MethodHasAsyncOverload
+
+namespace AasxPackageLogic
 {
     /// <summary>
-    /// This partial class contains the necessary scripting support for the UI application
+    /// This class sits above the abstract dialogs and attaches scripting the abstract functions.
     /// </summary>
-    public partial class MainWindow : Window, IFlyoutProvider, IAasxScriptRemoteInterface
+    public class MainWindowScripting : MainWindowAnyUiDialogs, IAasxScriptRemoteInterface
     {
         public enum ScriptSelectRefType { None = 0, This, AAS, SM, SME, CD };
 
@@ -85,7 +82,7 @@ namespace AasxPackageExplorer
             // TODO (MIHO, 2022-12-16): Some cases are not implemented
 
             // selected items by user
-            var siThis = DisplayElements.SelectedItem;
+            var siThis = MainWindow?.GetDisplayElements()?.GetSelectedItem();
             var siSM = siThis?.FindFirstParent(
                     (ve) => ve is VisualElementSubmodelRef, includeThis: true) as VisualElementSubmodelRef;
             var siAAS = siThis?.FindFirstParent(
@@ -348,8 +345,8 @@ namespace AasxPackageExplorer
             // well-defined result?
             if (selEval != null && selEval.Item1 != null && selEval.Item2 != null)
             {
-                DisplayElements.ClearSelection();
-                DisplayElements.TrySelectMainDataObject(selEval.Item2, wishExpanded: true);
+                MainWindow?.GetDisplayElements()?.ClearSelection();
+                MainWindow?.GetDisplayElements()?.TrySelectMainDataObject(selEval.Item2, wishExpanded: true);
                 return selEval.Item1;
             }
 
@@ -367,11 +364,11 @@ namespace AasxPackageExplorer
             }
 
             // name of tool, find it
-            var foundMenu = MainMenu.Menu;
+            var foundMenu = MainWindow?.GetMainMenu();
             var mi = foundMenu.FindName(toolName);
             if (mi == null)
             {
-                foundMenu = _dynamicMenu.Menu;
+                foundMenu = MainWindow?.GetDynamicMenu();
                 mi = foundMenu.FindName(toolName);
             }
             if (mi == null)
@@ -428,24 +425,25 @@ namespace AasxPackageExplorer
             if (ticket.UiLambdaAction != null && !(ticket.UiLambdaAction is AnyUiLambdaActionNone))
             {
                 // add to "normal" event quoue
-                DispEditEntityPanel.AddWishForOutsideAction(ticket.UiLambdaAction);
+                MainWindow.AddWishForToplevelAction(ticket.UiLambdaAction);
             }
 
             return 0;
         }
 
-        bool IAasxScriptRemoteInterface.Location(object[] args)
+        async Task<bool> IAasxScriptRemoteInterface.Location(object[] args)
         {
             // access
             if (args == null || args.Length < 1 || !(args[0] is string cmd))
                 return false;
 
             // delegate
-            CommandBinding_GeneralDispatch(
+            await CommandBinding_GeneralDispatchAnyUiDialogs(
                 "location" + cmd.Trim().ToLower(),
                 null,
-                ticket: new AasxMenuActionTicket()).GetAwaiter().GetResult();
+                ticket: new AasxMenuActionTicket());
             return true;
         }
+
     }
 }

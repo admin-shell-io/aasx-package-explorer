@@ -562,6 +562,18 @@ namespace AasxPackageLogic
                 MainWindow.GetDisplayElements()?.TrySelectMainDataObject(loc.MainDataObject, wishExpanded: loc.IsExpanded);
             }
 
+            if (cmd == "statusclear")
+            {
+                ticket.StartExec();
+                MainWindow?.StatusLineClear();
+            }
+
+            if (cmd == "logshow")
+            {
+                ticket.StartExec();
+                MainWindow?.LogShow();
+            }
+
             if (cmd == "filereponew")
             {
                 ticket.StartExec();
@@ -1371,6 +1383,10 @@ namespace AasxPackageLogic
 
                 // execute
                 await DisplayContext.StartFlyoverModalAsync(uc);
+
+                // HACK: wait for modal window to close
+                // TODO: remove
+                await Task.Delay(1000);
 
                 // always remember script
                 _currentScriptText = uc.Text;

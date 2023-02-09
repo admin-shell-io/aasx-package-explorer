@@ -38,11 +38,22 @@ note right
   from main window.
 end note
 
+class MainWindowScripting {
+  + CommandBinding_GeneralDispatchAnyUiDialogs()
+}
+note right
+  Scripting sits above
+  the abstract menu
+  functions.
+end note
+
 MainWindowTools <|-- MainWindowHeadless
 
 MainWindowHeadless <|-- MainWindowAnyUiDialogs
 
-IMainWindow <--- MainWindowAnyUiDialogs : uses
+MainWindowAnyUiDialogs <|-- MainWindowScripting
+
+IMainWindow <--- MainWindowScripting : uses
 
 class IMainWindow {
   UiLoadPackageWithNew()
@@ -81,7 +92,7 @@ class "App.razor" as AppRazor <<Razor*>>
 class BlazorSession
 {
   SessionId : int
-  Logic : MainWindowAnyUiDialogs
+  Logic : MainWindowScripting
   DisplayElements : BlazorVisualElements
   MainMenu : AasxMenuBlazor
   DynamicMenu : AasxMenuBlazor
@@ -107,7 +118,7 @@ end note
 
 BlazorSession *-- BlazorSessionCommandBindings : partial
 
-MainWindowAnyUiDialogs <-- BlazorSessionCommandBindings : uses
+MainWindowScripting <-- BlazorSessionCommandBindings : uses
 
 class BlazorVisualElements
 {
@@ -240,7 +251,7 @@ end note
 
 Program *-- "1..n" BlazorSession
 
-MainWindowAnyUiDialogs <--- BlazorSession
+MainWindowScripting <--- BlazorSession
 IMainWindow <|--- BlazorSession
 
 BlazorSession *-- BlazorVisualElements : DisplayElements

@@ -57,6 +57,14 @@
         _timer?.Dispose();
     }
 
+    public void StatusLineClear()
+    {
+        Message = "";
+        Foreground = AnyUiBrushes.Black;
+        Background = AnyUiBrushes.Transparent;
+        InvokeAsync(() => StateHasChanged());
+    }
+
     public void UpdateMessage(string message, AnyUiBrush foreground, AnyUiBrush background)
     {
         Message = message;

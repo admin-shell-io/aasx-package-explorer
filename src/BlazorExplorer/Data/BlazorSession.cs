@@ -42,7 +42,7 @@ namespace BlazorUI.Data
     /// A session holds almost all data a user concerns with, as multiple users/ roles might use the same
     /// server application.
     /// </summary>
-    public partial class BlazorSession : IDisposable, IMainWindow, IAasxScriptRemoteInterface
+    public partial class BlazorSession : IDisposable
     {
         /// <summary>
         /// Monotonous index to be counted upwards to generate SessionId
@@ -62,8 +62,10 @@ namespace BlazorUI.Data
         /// <summary>
         /// Abstracted menu functions to be wrapped by functions triggering
         /// more UI feedback.
+        /// Remark: "Scripting" is only the highest of the functionality levels
+        /// of the "stacked classes"
         /// </summary>
-        public MainWindowAnyUiDialogs Logic = new MainWindowAnyUiDialogs();
+        public MainWindowScripting Logic = new MainWindowScripting();
 
         /// <summary>
         /// All repositories, files, .. are user-specific and therefore hosted in the session.
@@ -133,40 +135,6 @@ namespace BlazorUI.Data
         //
         // PROTECTED
         //
-
-  //      /// <summary>
-  //      /// Element of stack of editing locations. For faster jumping.
-  //      /// </summary>
-  //      protected class EditingLocation
-		//{
-		//	public object MainDataObject;
-		//	public bool IsExpanded;
-		//}
-
-  //      /// <summary>
-  //      /// Stack of editing location. For faster jumping.
-  //      /// </summary>
-		//protected List<EditingLocation> _editingLocations = new List<EditingLocation>();
-
-  //      /// <summary>
-  //      /// Remembers user input for menu action
-  //      /// </summary>
-  //      protected static string _userLastPutUrl = "http://???:51310";
-
-  //      /// <summary>
-  //      /// Remembers user input for menu action
-  //      /// </summary>
-  //      protected static string _userLastGetUrl = "http://???:51310";
-
-        /// <summary>
-        /// Currently edited script text. Survives multiple start of dialog.
-        /// </summary>
-        protected string _currentScriptText = "";
-
-        /// <summary>
-        /// Script engine
-        /// </summary>
-        protected AasxScript _aasxScript = null;
 
         //
         // OLD
@@ -412,329 +380,7 @@ namespace BlazorUI.Data
             {
                 LogInternally.That.CompletelyIgnoredError(ex);
             }
-        }
-
-        private PackCntRuntimeOptions UiBuildRuntimeOptionsForMainAppLoad()
-        {
-            var ro = new PackCntRuntimeOptions()
-            {
-                Log = Log.Singleton,
-                ProgressChanged = (state, tfs, tbd) =>
-                {
-                    ;
-                },
-                ShowMesssageBox = (content, text, title, buttons) =>
-                {
-                    return AnyUiMessageBoxResult.Cancel;
-                }
-            };
-            return ro;
-        }
-
-        public void UiLoadPackageWithNew(
-            PackageCentralItem packItem,
-            AdminShellPackageEnv takeOverEnv = null,
-            string loadLocalFilename = null,
-            string info = null,
-            bool onlyAuxiliary = false,
-            bool doNotNavigateAfterLoaded = false,
-            PackageContainerBase takeOverContainer = null,
-            string storeFnToLRU = null,
-            bool indexItems = false)
-        {
-            // access
-            if (packItem == null)
-                return;
-
-            if (loadLocalFilename != null)
-            {
-                if (info == null)
-                    info = loadLocalFilename;
-                Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                if (!packItem.Load(PackageCentral, loadLocalFilename, loadLocalFilename,
-                    overrideLoadResident: true,
-                    PackageContainerOptionsBase.CreateDefault(Options.Curr)))
-                {
-                    Log.Singleton.Error($"Loading local-file {info} as auxiliary {onlyAuxiliary} did not " +
-                        $"return any result!");
-                    return;
-                }
-            }
-            else
-            if (takeOverEnv != null)
-            {
-                Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                packItem.TakeOver(takeOverEnv);
-            }
-            else
-            if (takeOverContainer != null)
-            {
-                Log.Singleton.Info("Loading new AASX from container: {0} as auxiliary {1} ..",
-                    "" + takeOverContainer.ToString(), onlyAuxiliary);
-                packItem.TakeOver(takeOverContainer);
-            }
-            else
-            {
-                Log.Singleton.Error("UiLoadPackageWithNew(): no information what to load!");
-                return;
-            }
-
-            // displaying
-            try
-            {
-                RestartUIafterNewPackage(onlyAuxiliary);
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(
-                    ex, $"When displaying element tree of {info}, an error occurred");
-                return;
-            }
-
-            // further actions
-            try
-            {
-                // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
-                //if (!doNotNavigateAfterLoaded)
-                //    UiCheckIfActivateLoadedNavTo();
-
-                if (indexItems && packItem?.Container?.Env?.AasEnv != null)
-                    packItem.Container.SignificantElements
-                        = new IndexOfSignificantAasElements(packItem.Container.Env.AasEnv);
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(
-                    ex, $"When performing actions after load of {info}, an error occurred");
-                return;
-            }
-
-            // record in LRU?
-            try
-            {
-                var lru = PackageCentral?.Repositories?.FindLRU();
-                if (lru != null && storeFnToLRU.HasContent())
-                    lru.Push(packItem?.Container as PackageContainerRepoItem, storeFnToLRU);
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(
-                    ex, $"When managing LRU files");
-                return;
-            }
-
-            // done
-            Log.Singleton.Info("AASX {0} loaded.", info);
-        }        
-
-        public void RestartUIafterNewPackage(bool onlyAuxiliary = false)
-        {
-            if (onlyAuxiliary)
-            {
-                // reduced, in the background
-                RedrawAllAasxElements();
-            }
-            else
-            {
-                // visually a new content
-                // switch off edit mode -> will will cause the browser to show the AAS as selected element
-                // and -> this will update the left side of the screen correctly!
-                // _mainMenu?.SetChecked("EditMenu", false);
-                // ClearAllViews();
-                RedrawAllAasxElements();
-                RedrawElementView();
-                // ShowContentBrowser(Options.Curr.ContentHome, silent: true);
-                // _eventHandling.Reset();
-            }
-        }
-
-        /// <summary>
-        /// Redraw window title, AAS info?, entity view (right), element tree (middle)
-        /// </summary>
-        /// <param name="keepFocus">Try remember which element was focussed and focus it after redrawing.</param>
-        /// <param name="nextFocusMdo">Focus a new main data object attached to an tree element.</param>
-        /// <param name="wishExpanded">If focussing, expand this item.</param>
-        public void RedrawAllAasxElements(
-            bool keepFocus = false,
-            object nextFocusMdo = null,
-            bool wishExpanded = true)
-        {
-            // focus info
-            var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
-
-            // TODO: Can we set title of the browser tab?
-            //var t = "AASX Package Explorer V3RC02";  //TODO:jtikekar remove V3RC02
-            //if (PackageCentral.MainAvailable)
-            //    t += " - " + PackageCentral.MainItem.ToString();
-            //if (PackageCentral.AuxAvailable)
-            //    t += " (auxiliary AASX: " + PackageCentral.AuxItem.ToString() + ")";            
-            // this.Title = t;
-
-#if _log_times
-            Log.Singleton.Info("Time 10 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
-#endif
-
-            // clear the right section, first (might be rebuild by callback from below)
-            // DispEditEntityPanel.ClearDisplayDefautlStack();
-            // ContentTakeOver.IsEnabled = false;
-
-            // rebuild middle section
-            DisplayElements.RebuildAasxElements(
-                PackageCentral, PackageCentral.Selector.Main, this.EditMode,
-                lazyLoadingFirst: true);
-
-            // ok .. try re-focus!!
-            if (keepFocus || nextFocusMdo != null)
-            {
-                // make sure that Submodel is expanded
-                this.DisplayElements.ExpandAllItems();
-
-                // still proceed?
-                var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(
-                    (nextFocusMdo != null) ? nextFocusMdo : focusMdo,
-                    alsoDereferenceObjects: true);
-
-                // select?
-                if (veFound != null)
-                    DisplayElements.TrySelectVisualElement(veFound, wishExpanded: wishExpanded);
-            }
-
-            // Info box ..
-            RedrawElementView();
-
-            // display again
-            Program.signalNewData(
-                new Program.NewDataAvailableArgs(
-                    Program.DataRedrawMode.None, this.SessionId));
-            DisplayElements.Refresh();            
-
-#if _log_times
-            Log.Singleton.Info("Time 90 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
-#endif
-        }
-
-        /// <summary>
-        /// Based on save information, will redraw the AAS entity (element) view (right).
-        /// </summary>
-        /// <param name="hightlightField">Highlight field (for find/ replace)</param>
-        public void RedrawElementView(DispEditHighlight.HighlightFieldInfo hightlightField = null)
-        {
-            if (DisplayElements == null)
-                return;
-
-            // the AAS will cause some more visual effects
-            if (DisplayElements.SelectedItem is VisualElementAdminShell veaas)
-                InfoBox.SetInfos(veaas.theAas, veaas.thePackage);
-
-            //var tvlaas = DisplayElements.SelectedItem as VisualElementAdminShell;
-            //if (_packageCentral.MainAvailable && tvlaas != null && tvlaas.theAas != null && tvlaas.theEnv != null)
-            //{
-            //    // AAS
-            //    // update graphic left
-
-            //    // what is AAS specific?
-            //    this.AasId.Text = WpfStringAddWrapChars(
-            //        AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.Id, "<id missing!>"));
-
-            //    // what is asset specific?
-            //    this.AssetPic.Source = null;
-            //    this.AssetId.Text = "<id missing!>";
-            //    var asset = tvlaas.theAas.AssetInformation;
-            //    if (asset != null)
-            //    {
-
-            //        // text id
-            //        if (asset.GlobalAssetId != null)
-            //            this.AssetId.Text = WpfStringAddWrapChars(
-            //                AdminShellUtil.EvalToNonNullString("{0}", asset.GlobalAssetId.GetAsIdentifier()));
-
-            //        // asset thumbnail
-            //        try
-            //        {
-            //            // identify which stream to use..
-            //            if (_packageCentral.MainAvailable)
-            //                try
-            //                {
-            //                    using (var thumbStream = _packageCentral.Main.GetLocalThumbnailStream())
-            //                    {
-            //                        // load image
-            //                        if (thumbStream != null)
-            //                        {
-            //                            var bi = new BitmapImage();
-            //                            bi.BeginInit();
-
-            //                            // See https://stackoverflow.com/a/5346766/1600678
-            //                            bi.CacheOption = BitmapCacheOption.OnLoad;
-
-            //                            bi.StreamSource = thumbStream;
-            //                            bi.EndInit();
-            //                            this.AssetPic.Source = bi;
-            //                        }
-            //                    }
-            //                }
-            //                catch (Exception ex)
-            //                {
-            //                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            //                }
-
-            //            if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
-            //                this.theOnlineConnection.IsConnected())
-            //                try
-            //                {
-            //                    using (var thumbStream = this.theOnlineConnection.GetThumbnailStream())
-            //                    {
-            //                        if (thumbStream != null)
-            //                        {
-            //                            using (var ms = new MemoryStream())
-            //                            {
-            //                                thumbStream.CopyTo(ms);
-            //                                ms.Flush();
-            //                                var bitmapdata = ms.ToArray();
-
-            //                                var bi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
-            //                                this.AssetPic.Source = bi;
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //                catch (Exception ex)
-            //                {
-            //                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            //                }
-
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            // no error, intended behaviour, as thumbnail might not exist / be faulty in some way
-            //            // (not violating the spec)
-            //            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            //        }
-            //    }
-            //}
-
-            //// for all, prepare the display
-            //PrepareDispEditEntity(
-            //    _packageCentral.Main,
-            //    DisplayElements.SelectedItems,
-            //     _mainMenu?.IsChecked("EditMenu") == true,
-            //     _mainMenu?.IsChecked("HintsMenu") == true,
-            //     _mainMenu?.IsChecked("ShowIriMenu") == true,
-            //    hightlightField: hightlightField);
-
-        }
-
-
-        public void StartSession()
-        {
-            
-
-
-        }
-
-        public void RebuildTree()
-        {
-            Log.Singleton.Error("Implement REBUILD TREE");
-        }
+        }       
 
 		public void ClearPasteBuffer()
 		{
@@ -1080,76 +726,6 @@ namespace BlazorUI.Data
             }
         }
 
-        /// <summary>
-        /// Clear AAS info, tree section, browser window
-        /// </summary>
-        public void ClearAllViews()
-        {
-            // left side
-            InfoBox.AasId = "<id missing!>";
-            InfoBox.HtmlImageData = "";
-            InfoBox.AssetId = "<id missing!>";
-
-            // middle side
-            DisplayElements.Clear();
-        }
-
-        public void DisplayElements_SelectedItemChanged(object sender, EventArgs e)
-        {
-            // access
-            if (DisplayElements == null || sender != DisplayElements)
-                return;
-
-            // try identify the business object
-            if (DisplayElements.SelectedItem != null)
-            {
-                // ButtonHistory.Push(DisplayElements.SelectedItem);
-            }
-
-            // may be flush events
-            CheckIfToFlushEvents();
-
-            // redraw view
-            RedrawElementView();
-        }
-
-        /// <summary>
-        /// Make sure the file repo is visible
-        /// </summary>
-		public void UiShowRepositories(bool visible)
-        {
-            // for Blazor: nothing
-            ;
-        }
-
-        /// <summary>
-        /// Give a signal to redraw the repositories (because something has changed)
-        /// </summary>
-        public void RedrawRepositories()
-        {
-            // Blazor: simply redraw all
-			Program.signalNewData(
-				new Program.NewDataAvailableArgs(
-					Program.DataRedrawMode.None, SessionId));
-		}
-
-        // REFACTOR: for later refactoring
-        /// <summary>
-        /// Signal a redrawing and execute focussing afterwards.
-        /// </summary>
-        public void RedrawAllElementsAndFocus(object nextFocus = null, bool isExpanded = true)
-        {
-            // Blazor: refer 
-            Program.signalNewData(
-                new Program.NewDataAvailableArgs(
-                    Program.DataRedrawMode.RebuildTreeKeepOpen, SessionId,
-                    new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: isExpanded)));
-        }
-
-        /// <summary>
-        /// Gets the interface to the components which manages the AAS tree elements (middle section)
-        /// </summary>
-        public IDisplayElements GetDisplayElements() => DisplayElements;
 
         //
         // Scripting
@@ -1164,28 +740,22 @@ namespace BlazorUI.Data
             return MainMenu?.Menu;
         }
 
+        /// <summary>
+        /// Returns the <c>AasxMenu</c> of the dynmaically built menu of the application.
+        /// Purpose: script automation
+        /// </summary>
+        public AasxMenu GetDynamicMenu()
+        {
+            return DynamicMenu?.Menu;
+        }
+
         // <summary>
         /// Returns the quite concise script interface of the application
         /// to allow script automation.
         /// </summary>
         public IAasxScriptRemoteInterface GetRemoteInterface()
         {
-            return this;
-        }
-
-        Task<int> IAasxScriptRemoteInterface.Tool(object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
-        IReferable IAasxScriptRemoteInterface.Select(object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool IAasxScriptRemoteInterface.Location(object[] args)
-        {
-            throw new NotImplementedException();
+            return Logic;
         }
     }
 }
