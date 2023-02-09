@@ -22,11 +22,15 @@ jobs:
         run: powershell .\CheckLicenses.ps1
         if: always()
 
-      - name: Install .NET core
+      - name: Install .NET core 6.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+          
+      - name: Install .NET core 3.0
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
-        if: always()
 
       - name: Install tools for style
         working-directory: src

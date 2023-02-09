@@ -23,10 +23,15 @@ jobs:
         run: |
           Write-Host "The repository is: ${env:REPOSITORY}"
 
-      - name: Install .NET core
+      - name: Install .NET core 6.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '6.0.x'
+          
+      - name: Install .NET core 3.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
 
       - name: Install tools for build-test-inspect
         working-directory: src
