@@ -23,10 +23,17 @@ jobs:
           $timestamp = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH-mm-ssZ")
           Write-Output "::set-output name=timestamp::$timestamp"
 
-      - name: Install .NET core
+      - name: Install .NET core 3.1
+        if: ${{ !contains(github.ref, 'V3') }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
+
+      - name: Install .NET core 6.0
+        if: ${{ contains(github.ref, 'V3') || contains(github.ref, 'V3') }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
 
       - name: Install build dependencies
         working-directory: src

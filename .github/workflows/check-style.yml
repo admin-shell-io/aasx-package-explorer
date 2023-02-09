@@ -22,11 +22,17 @@ jobs:
         run: powershell .\CheckLicenses.ps1
         if: always()
 
-      - name: Install .NET core
+      - name: Install .NET core 3.1
+        if: ${{ !contains(github.ref, 'V3') }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
-        if: always()
+
+      - name: Install .NET core 6.0
+        if: ${{ contains(github.ref, 'V3') || contains(github.ref, 'V3') }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
 
       - name: Install tools for style
         working-directory: src
