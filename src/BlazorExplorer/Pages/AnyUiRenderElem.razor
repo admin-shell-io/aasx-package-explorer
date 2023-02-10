@@ -313,13 +313,18 @@
         {
             style += "width: 100%";
             style += "box-sizing: border-box";
+
+            style.SetMinMaxWidthHeight(Element);
         }
 
-        <input style="@style" value="@chtb.Text"
-               @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+        @* onchange only when focus changes.
+           @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), false))" *@
+
+        <input type="text" style="@style" value="@chtb.Text"           
+            @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
 
         @code {
-            private void MyTextInput(AnyUiTextBox chtb, string value)
+            private void MyTextInput(AnyUiTextBox chtb, string value, bool direct)
             {
                 Program.EvalSetValueLambdaAndHandleReturn(Session.SessionId, chtb, value);
             }
@@ -345,8 +350,12 @@
                     AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm, DisplayData._context);
                     return;
                 }
-                // chbt.setValueLambda?.Invoke(chbt.Content);
-                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
+
+                if (chbt.DirectInvoke)
+                    // chbt.setValueLambda?.Invoke(chbt.Content);
+                    Program.EvalSetValueLambdaAndHandleReturn(Session.SessionId, chbt, chbt.Content);
+                else
+                    AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
             }
         }
     }

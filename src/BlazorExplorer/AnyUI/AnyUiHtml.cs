@@ -421,14 +421,15 @@ namespace AnyUi
 						// simply treat woodoo as error!
 						evs.JsRuntime = dc._jsRuntime;
 
-						if (evs.EventOpen)
-						{
-							Log.Singleton.Error("Error in starting special action as some modal dialogue " +
-								"is still active. Aborting!!");
-							return;
-						}
+                        // temporarily deactivated (develop modal panel)
+                        if (evs.EventOpen)
+                        {
+                            Log.Singleton.Error("Error in starting special action as some modal dialogue " +
+                                "is still active. Aborting!!");
+                            return;
+                        }
 
-						evs.BackgroundAction = AnyUiHtmlBackgroundActionType.SetValue;
+                        evs.BackgroundAction = AnyUiHtmlBackgroundActionType.SetValue;
                         evs.ResetModal();
                         evs.SpecialAction = new AnyUiSpecialActionSetValue(uiElement, argument);
 					}

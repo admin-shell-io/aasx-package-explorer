@@ -494,6 +494,16 @@ namespace AnyUi
     }
 
     /// <summary>
+    /// This event causes to call again the <c>RenderPanel</c> lambda of
+    /// a <c>AnyUiDialogueDataModalPanel</c>. This could be used to adopt
+    /// the modal panel depending on data.
+    /// </summary>
+    public class AnyUiLambdaActionModalPanelReRender : AnyUiLambdaActionBase
+    {
+        public AnyUiDialogueDataModalPanel DiaDataPanel;
+    }
+
+    /// <summary>
     /// Requests the main application to display a content file or external link
     /// </summary>
     public class AnyUiLambdaActionDisplayContentFile : AnyUiLambdaActionBase
@@ -669,7 +679,7 @@ namespace AnyUi
             if (cntl == null)
                 return null;
 
-            // crude test
+            // simply set lambdas
             cntl.setValueLambda = setValue;
             cntl.takeOverLambda = takeOverLambda;
 
@@ -720,6 +730,104 @@ namespace AnyUi
                 foreach (var child in en.GetChildren())
                     foreach (var x in child.FindAll(predicate))
                         yield return x;
+        }
+
+        public static T SetIntFromControl<T>(
+            T cntl, Action<int> setValue)
+            where T : AnyUiUIElement
+        {
+            // access
+            if (cntl == null)
+                return null;
+
+            // de-tour set value lambda
+            cntl.setValueLambda = (o) =>
+            {
+                if (o is int di)
+                    setValue?.Invoke(di);
+                else
+                if (cntl is AnyUiComboBox cb)
+                {
+                    if (cb.SelectedIndex.HasValue)
+                        setValue?.Invoke(cb.SelectedIndex.Value);
+                }
+                else
+                {
+                    if (o is string ostr)
+                    {
+                        if (int.TryParse(ostr, out var i))
+                            setValue?.Invoke(i);
+                        else
+                            setValue?.Invoke(0);
+                    }
+                }
+                return new AnyUiLambdaActionNone();
+            };
+
+            return cntl;
+        }
+
+        public static T SetDoubleFromControl<T>(
+            T cntl, Action<double> setValue)
+            where T : AnyUiUIElement
+        {
+            // access
+            if (cntl == null)
+                return null;
+
+            // de-tour set value lambda
+            cntl.setValueLambda = (o) =>
+            {
+                if (o is string ostr)
+                {
+                    if (double.TryParse(ostr, NumberStyles.Float, 
+                        CultureInfo.InvariantCulture, out var i))
+                        setValue?.Invoke(i);
+                    else
+                        setValue?.Invoke(0.0);
+                }
+                return new AnyUiLambdaActionNone();
+            };
+
+            return cntl;
+        }
+
+        public static T SetBoolFromControl<T>(
+            T cntl, Action<bool> setValue)
+            where T : AnyUiUIElement
+        {
+            // access
+            if (cntl == null)
+                return null;
+
+            // de-tour set value lambda
+            cntl.setValueLambda = (o) =>
+            {
+                if (o is bool ob)
+                    setValue?.Invoke(ob);
+                return new AnyUiLambdaActionNone();
+            };
+
+            return cntl;
+        }
+
+        public static T SetStringFromControl<T>(
+            T cntl, Action<string> setValue)
+            where T : AnyUiUIElement
+        {
+            // access
+            if (cntl == null)
+                return null;
+
+            // de-tour set value lambda
+            cntl.setValueLambda = (o) =>
+            {
+                if (o is string ostr)
+                    setValue?.Invoke(ostr);
+                return new AnyUiLambdaActionNone();
+            };
+
+            return cntl;
         }
     }
 
@@ -1175,6 +1283,13 @@ namespace AnyUi
 
         public new string Content = null;
         public string ToolTip = null;
+
+        /// <summary>
+        /// If set to true, Blazor will not create a special action session
+        /// for executing all the implications of the lambda. This special
+        /// case is ONLY for modifying already displayed modal dialogs!!
+        /// </summary>
+        public bool DirectInvoke;
 
         public AnyUiSpecialActionBase SpecialAction;
     }

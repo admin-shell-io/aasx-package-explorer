@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using Newtonsoft.Json;
@@ -54,6 +55,16 @@ namespace AasxPackageLogic
                 return mi.Invoke(plugObj, args);
             }
 
+            public async Task<object> BasicInvokeMethodAsync(string mname, params object[] args)
+            {
+                var mi = plugType.GetMethod(mname);
+                if (mi == null)
+                    return null;
+                // see: https://stackoverflow.com/questions/16153047/net-invoke-async-method-and-await
+                var promise = (Task<object>)mi.Invoke(plugObj, args);
+                return await promise;
+            }
+
             public AasxPluginActionDescriptionBase[] ListActions()
             {
                 // ReSharper disable RedundantExplicitParamsArrayCreation
@@ -80,12 +91,13 @@ namespace AasxPackageLogic
                 return pi;
             }
 
-            public AasxPluginActionDescriptionBase FindAction(string name)
+            public AasxPluginActionDescriptionBase FindAction(string name, bool useAsync = false)
             {
                 if (actions == null || actions.Length < 1)
                     return null;
                 foreach (var a in this.actions)
-                    if (a.name.Trim().ToLower() == name.Trim().ToLower())
+                    if (a.name.Trim().ToLower() == name.Trim().ToLower()
+                        && a.UseAsync == useAsync)
                         return a;
                 return null;
             }
@@ -108,6 +120,14 @@ namespace AasxPackageLogic
                 if (a == null)
                     return null;
                 return this.BasicInvokeMethod("ActivateAction", name, args);
+            }
+
+            public Task<object> InvokeActionAsync(string name, params object[] args)
+            {
+                var a = this.FindAction(name, useAsync: true);
+                if (a == null)
+                    return null;
+                return this.BasicInvokeMethodAsync("ActivateActionAsync", name, args);
             }
         }
 

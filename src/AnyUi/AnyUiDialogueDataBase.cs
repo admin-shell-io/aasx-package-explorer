@@ -510,4 +510,40 @@ namespace AnyUi
         }
     }
 
+	/// <summary>
+	/// Display a <c>AnyUiStackPanel</c> instead of the <c>Message</c>.
+	/// Note: <c>Message</c> and <c>Image</c>
+	/// </summary>
+	public class AnyUiDialogueDataModalPanel : AnyUiDialogueDataMessageBox
+	{
+        public AnyUiStackPanel Panel;
+
+        protected Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> _renderPanel;
+        public Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> RenderPanel
+        {
+            get => _renderPanel;
+        }
+
+        public object Data;
+
+        /// <summary>
+        /// Will execute the renderPanel lambda based on provided data object.
+        /// Will store the result as <c>Panel</c> and the initial <c>Data</c>.
+        /// </summary>
+        public void ActivateRenderPanel(
+            object data,
+            Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> renderPanel)
+        {
+            Data = data;
+            _renderPanel = renderPanel;
+            Panel = _renderPanel?.Invoke(this);
+        }
+
+		public AnyUiDialogueDataModalPanel(
+			string caption = "",
+			double? maxWidth = null)
+			: base(caption, maxWidth: maxWidth)
+		{
+		}
+	}
 }

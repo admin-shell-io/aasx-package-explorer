@@ -43,7 +43,15 @@
 
                 <Modal @bind-Open="evs.EventOpen" Close="OnClose2">                    
 
-                    @if (evs.DialogueData is AnyUiDialogueDataMessageBox)
+                    @if (evs.DialogueData is AnyUiDialogueDataModalPanel)
+                    {
+                        // child class of AnyUiDialogueDataMessageBox!
+                        <AnyUiFlyoutModalPanel 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+                    else
+                    if (evs.DialogueData is AnyUiDialogueDataMessageBox)
                     {
                         <AnyUiFlyoutMessageBox 
                             EventSession="evs" 
@@ -112,7 +120,7 @@
                         <AnyUiFlyoutSelectFromRepository 
                             EventSession="evs"
                             DialogueData="evs.DialogueData"/>
-                    }
+                    }                    
 
                     @if (evs.SpecialAction is AnyUiSpecialActionContextMenu)
                     {                        
@@ -961,6 +969,21 @@
                         // and the panel shall be updated (because of index)
                         Session.RedrawAllAasxElements(keepFocus: true, nextFocusMdo: lapcc.NextFocus);
                         _onlyUpdatePluginUi = false;
+                    }
+                }
+
+                // re-rendering modal dialogs
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionModalPanelReRender lamprr
+                    && lamprr.DiaDataPanel != null)
+                {
+                    try
+                    {
+                        lamprr.DiaDataPanel.Panel = 
+                            lamprr.DiaDataPanel.RenderPanel.Invoke(lamprr.DiaDataPanel);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogInternally.That.SilentlyIgnoredError(ex);
                     }
                 }
 

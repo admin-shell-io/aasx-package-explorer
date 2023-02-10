@@ -334,7 +334,8 @@ namespace AnyUi
         public AnyUiButton AddSmallButtonTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
-            double? setHeight = null, AnyUiVerticalAlignment? verticalAlignment = null)
+            double? setHeight = null, AnyUiVerticalAlignment? verticalAlignment = null,
+            bool? directInvoke = null)
         {
             var but = new AnyUiButton();
             but.Margin = margin;
@@ -350,6 +351,8 @@ namespace AnyUi
                 but.MinHeight = setHeight.Value;
                 but.MaxHeight = setHeight.Value;
             }
+            if (directInvoke.HasValue)
+                but.DirectInvoke = directInvoke.Value;
             but.Content = content;
             AnyUiGrid.SetRow(but, row);
             AnyUiGrid.SetColumn(but, col);

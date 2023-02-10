@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using Aas = AasCore.Aas3_0_RC02;
 using AnyUi;
+using System.Threading.Tasks;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -21,14 +22,20 @@ namespace AasxIntegrationBase
         public string name = "";
         public string info = "";
 
+        /// <summary>
+        /// If <c>true</c> will use <c>ActivateActionAsync</c> to call the plugin in async mode.
+        /// </summary>
+        public bool UseAsync = false;
+
         public AasxPluginActionDescriptionBase()
         {
         }
 
-        public AasxPluginActionDescriptionBase(string name, string info)
+        public AasxPluginActionDescriptionBase(string name, string info, bool useAsync = false)
         {
             this.name = name;
             this.info = info;
+            UseAsync = useAsync;
         }
     }
 
@@ -215,6 +222,15 @@ namespace AasxIntegrationBase
         /// <param name="args">Array of arguments. Will be checked and type-casted by the plugin</param>
         /// <returns>Any result to be derived from AasxPluginResultBase</returns>
         AasxPluginResultBase ActivateAction(string action, params object[] args);
+
+        /// <summary>
+        /// Activate a specific action. Async variant.
+        /// Note: for some reason of type conversion, it has to return <c>Task<object></c>.
+        /// </summary>
+        /// <param name="action">Name of the action as describe in AasxPluginActionDescriptionBase record</param>
+        /// <param name="args">Array of arguments. Will be checked and type-casted by the plugin</param>
+        /// <returns>Any result to be derived from AasxPluginResultBase</returns>
+        // Task<object> ActivateActionAsync(string action, params object[] args);
     }
 
     /// <summary>
@@ -278,6 +294,12 @@ namespace AasxIntegrationBase
 
         public AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
+            throw new NotImplementedException();
+        }
+
+        public async Task<object> ActivateActionAsync(string action, params object[] args)
+        {
+            await Task.Yield();
             throw new NotImplementedException();
         }
 

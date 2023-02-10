@@ -80,6 +80,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("export-uml", "Exports a Submodel to an UML file."));
             res.Add(new AasxPluginActionDescriptionBase(
+                "export-uml-dialogs", "Exports a Submodel to an UML file using AnyUI modal dialogs.",
+                useAsync: true));
+            res.Add(new AasxPluginActionDescriptionBase(
                 "import-time-series", "Import time series data from a table file."));
             return res.ToArray();
         }
@@ -168,8 +171,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     // use functionality
                     ExportUml.ExportUmlToFile(env, sm, record, fn);
                     _log.Info($"Export UML data to file: {fn}");
-
-
                 }
             }
 
@@ -187,6 +188,35 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     // use functionality
                     _log.Info($"Importing time series from file: {fn} ..");
                     ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, record, fn, _log);
+                }
+            }            
+
+            // default
+            return null;
+        }
+
+        /// <summary>
+        /// Async variant of <c>ActivateAction</c>.
+        /// Note: for some reason of type conversion, it has to return <c>Task<object></c>.
+        /// </summary>
+        public new async Task<object> ActivateActionAsync(string action, params object[] args)
+        {
+            if (action == "export-uml-dialogs")
+            {
+                if (args != null && args.Length >= 3
+                    && args[0] is Aas.Environment env
+                    && args[1] is Aas.Submodel sm
+                    && args[2] is AnyUiContextBase displayContext)
+                {
+                    // the Submodel elements need to have parents
+                    sm.SetAllParents();
+
+                    // use functionality                    
+                    _log.Info($"Starting test ..");
+
+                    await TestExportUmlDialogBased(env, sm, displayContext);
+
+                    return new AasxPluginResultBase();
                 }
             }
 
@@ -371,6 +401,87 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 _log?.Error(ex, "When exporting table, an error occurred");
             }
 
+        }
+
+        private async Task TestExportUmlDialogBased(Aas.Environment env, Aas.Submodel sm, AnyUiContextBase displayContext)
+        {
+            // data
+            var data = new ExportUmlRecord();
+
+            // panel
+            Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> renderPanel = (uci) =>
+            {
+                // create panel
+                var panel = new AnyUiStackPanel();
+
+                panel.Add(new AnyUiLabel() { Content = "Hallo!" });
+
+                //var helper = new DispEditHelperBasics();
+
+                //var g = helper.AddSmallGrid(4, 4, new[] { "150:", "*", "200:" });
+                //panel.Add(g);
+
+                //// Row 0 : Format
+                //helper.AddSmallLabelTo(g, 0, 0, content: "Format:",
+                //    verticalAlignment: AnyUiVerticalAlignment.Center,
+                //    verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                //AnyUiUIElement.SetIntFromControl(
+                //    helper.AddSmallComboBoxTo(g, 0, 1, maxWidth: 400,
+                //        items: ExportUmlRecord.FormatNames,
+                //    selectedIndex: (int)data.Format),
+                //    (i) => { data.Format = (ExportUmlRecord.ExportFormat)i; });
+
+                //// Row 1 : limiting of values im UML
+                //helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
+                //    verticalAlignment: AnyUiVerticalAlignment.Center,
+                //    verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                //AnyUiUIElement.SetIntFromControl(
+                //    helper.Set(
+                //        helper.AddSmallTextBoxTo(g, 1, 1,
+                //            margin: new AnyUiThickness(4, 2, 2, 2),
+                //            text: $"{data.LimitInitialValue:D}"),
+                //        maxWidth: 400),
+                //    (i) => { data.LimitInitialValue = i; });
+                //helper.AddSmallLabelTo(g, 1, 2,
+                //    content: "(0 disables values, -1 = unlimited)",
+                //    margin: new AnyUiThickness(10, 0, 0, 0),
+                //    verticalAlignment: AnyUiVerticalAlignment.Center,
+                //    verticalContentAlignment: AnyUiVerticalAlignment.Center);
+
+                //// Row 2 : Copy to paste buffer
+                //helper.AddSmallLabelTo(g, 2, 0, content: "Copy to paste buffer:",
+                //    verticalAlignment: AnyUiVerticalAlignment.Center,
+                //    verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                //AnyUiUIElement.SetBoolFromControl(
+                //    helper.Set(
+                //        helper.AddSmallCheckBoxTo(g, 2, 1,
+                //            content: "(after export, file will be copied to paste buffer)",
+                //            isChecked: data.CopyToPasteBuffer),
+                //        colSpan: 2),
+                //    (b) => { data.CopyToPasteBuffer = b; });
+
+                //// Test
+                //AnyUiUIElement.RegisterControl(
+                //    helper.AddSmallButtonTo(g, 3, 0, content: "Test!", directInvoke: true),
+                //    (o) =>
+                //    {
+                //        return new AnyUiLambdaActionModalPanelReRender() 
+                //            { DiaDataPanel = uci };
+                //    });
+                //if (data.LimitInitialValue >= 1 && data.LimitInitialValue <= 3)
+                //    for (int i = 0; i < data.LimitInitialValue - 1; i++)
+                //        helper.AddSmallLabelTo(g, 3, 1 + i, content: "" + i);
+
+                // give back
+                return panel;
+            };
+
+            // dialog
+            var uc = new AnyUiDialogueDataModalPanel("Export UML ..");
+            // uc.Panel = panel;                
+            // uc.Data = data;
+            uc.ActivateRenderPanel(data, renderPanel);
+            var res = await displayContext.StartFlyoverModalAsync(uc);
         }
     }
 }

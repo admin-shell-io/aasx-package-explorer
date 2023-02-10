@@ -1320,6 +1320,91 @@ namespace AasxPackageLogic
             }
 
             //
+            // Any UI panels
+            //
+
+            if (cmd == "exportuml")
+            {
+                // start
+                ticket?.StartExec();
+
+                // data
+                var data = new ExportUmlRecord();
+
+                // panel
+                Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> renderPanel = (uci) =>
+                {
+                    // create panel
+                    var panel = new AnyUiStackPanel();
+                    var helper = new DispEditHelperBasics();
+
+                    var g = helper.AddSmallGrid(4, 4, new[] { "150:", "*", "200:" });
+                    panel.Add(g);
+
+                    // Row 0 : Format
+                    helper.AddSmallLabelTo(g, 0, 0, content: "Format:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    AnyUiUIElement.SetIntFromControl(
+                        helper.AddSmallComboBoxTo(g, 0, 1, maxWidth: 400,
+                            items: ExportUmlRecord.FormatNames,
+                        selectedIndex: (int)data.Format),
+                        (i) => { data.Format = (ExportUmlRecord.ExportFormat)i; });
+
+                    // Row 1 : limiting of values im UML
+                    helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    AnyUiUIElement.SetIntFromControl(
+                        helper.Set(
+                            helper.AddSmallTextBoxTo(g, 1, 1,
+                                margin: new AnyUiThickness(4, 2, 2, 2),
+                                text: $"{data.LimitInitialValue:D}"),
+                            maxWidth: 400),
+                        (i) => { data.LimitInitialValue = i; });
+                    helper.AddSmallLabelTo(g, 1, 2,
+                        content: "(0 disables values, -1 = unlimited)",
+                        margin: new AnyUiThickness(10, 0, 0, 0),
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+
+                    // Row 2 : Copy to paste buffer
+                    helper.AddSmallLabelTo(g, 2, 0, content: "Copy to paste buffer:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.Set(
+                            helper.AddSmallCheckBoxTo(g, 2, 1,
+                                content: "(after export, file will be copied to paste buffer)",
+                                isChecked: data.CopyToPasteBuffer),
+                            colSpan: 2),
+                        (b) => { data.CopyToPasteBuffer = b; });
+
+                    //// Test
+                    //AnyUiUIElement.RegisterControl(
+                    //    helper.AddSmallButtonTo(g, 3, 0, content: "Test!", directInvoke: true),
+                    //    (o) =>
+                    //    {
+                    //        return new AnyUiLambdaActionModalPanelReRender() 
+                    //            { DiaDataPanel = uci };
+                    //    });
+                    //if (data.LimitInitialValue >= 1 && data.LimitInitialValue <= 3)
+                    //    for (int i = 0; i < data.LimitInitialValue - 1; i++)
+                    //        helper.AddSmallLabelTo(g, 3, 1 + i, content: "" + i);
+
+                    // give back
+                    return panel;
+                };
+
+                // dialog
+                var uc = new AnyUiDialogueDataModalPanel("Export UML ..");
+                // uc.Panel = panel;                
+                // uc.Data = data;
+                uc.ActivateRenderPanel(data, renderPanel);
+                var res = await DisplayContext.StartFlyoverModalAsync(uc);
+            }
+
+            //
             // Scripting : allow for server?
             //
 
