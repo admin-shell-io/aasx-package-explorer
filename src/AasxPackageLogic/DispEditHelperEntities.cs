@@ -210,7 +210,8 @@ namespace AasxPackageLogic
             
             // Thumbnail: File [0..1]
 
-            this.AddGroup(stack, "DefaultThumbnail: Resource element", this.levelColors.SubSection, repo,
+            this.AddGroup(stack, "DefaultThumbnail: Resource element", this.levelColors.SubSection, 
+                requestAuxButton: repo != null,
                 auxButtonTitle: (asset.DefaultThumbnail == null) ? null : "Delete",
                 auxButtonLambda: (o) =>
                 {
@@ -1358,7 +1359,8 @@ namespace AasxPackageLogic
             // Asset linked with AAS
             //
 
-            this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection, repo,
+            this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection, 
+                requestAuxButton: repo != null,
                 auxButtonTitle: (aas.AssetInformation == null) ? null : "Delete",
                 auxButtonLambda: (o) =>
                 {

@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -17,6 +18,11 @@ namespace AnyUi
 {
     public class AnyUiSmallWidgetToolkit
     {
+        /// <summary>
+        /// Automatically replace labes starting with IRI with active links
+        /// </summary>
+        public bool showIriMode = false;
+
         public AnyUiGrid AddSmallGrid(int rows, int cols,
             string[] colWidths = null, string[] rowHeights = null,
             AnyUiThickness margin = null, AnyUiBrush background = null)
@@ -539,6 +545,212 @@ namespace AnyUi
 
             // chain
             return fe;
+        }
+
+        //
+        // small widget handling
+        //
+
+        public void AddVerticalSpace(AnyUiStackPanel view, double height = 5)
+        {
+            var space = new AnyUiBorder()
+            {
+                BorderBrush = AnyUiBrushes.Transparent,
+                BorderThickness = new AnyUiThickness(height),
+                Height = height
+            };
+            view.Add(space);
+        }
+
+        public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrushTuple colors,
+            bool requestAuxButton = false,
+            string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
+        {
+            AddGroup(view, name, colors?.Bg, colors?.Fg, requestAuxButton,
+                auxButtonTitle, auxButtonLambda,
+                auxContextHeader, auxContextLambda);
+        }
+
+        public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrush background, AnyUiBrush foreground,
+            bool requestAuxButton = false,
+            string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
+        {
+            var g = AddSmallGrid(1, 4, new[] { "*", "#", "#", "#" }, margin: new AnyUiThickness(0, 13, 0, 0));
+
+            var auxButton = requestAuxButton && auxButtonTitle != null && auxButtonLambda != null;
+
+            // manually add label (legacy?)
+            var l = new AnyUiLabel();
+            l.Margin = new AnyUiThickness(0, 0, 0, 0);
+            l.Padding = new AnyUiThickness(5, 0, 0, 0);
+            l.Background = background;
+            l.Foreground = foreground;
+            l.Content = "" + name;
+            l.FontWeight = AnyUiFontWeight.Bold;
+            AnyUiGrid.SetRow(l, 0);
+            AnyUiGrid.SetColumn(l, 0);
+            g.Children.Add(l);
+            view.Children.Add(g);
+
+            // auxButton
+            if (auxButton)
+            {
+                AnyUiUIElement.RegisterControl(
+                    AddSmallButtonTo(
+                        g, 0, 1,
+                        margin: new AnyUiThickness(2, 2, 2, 2),
+                        padding: new AnyUiThickness(5, 0, 5, 0),
+                        content: auxButtonTitle),
+                    auxButtonLambda);
+            }
+
+            // context menu
+            if (auxContextHeader != null && auxContextLambda != null)
+            {
+                AddSmallContextMenuItemTo(
+                        g, 0, 2,
+                        "\u22ee",
+                        auxContextHeader.ToArray(),
+                        margin: new AnyUiThickness(2, 2, 2, 2),
+                        padding: new AnyUiThickness(5, 0, 5, 0),
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        menuItemLambda: auxContextLambda);
+            }
+        }
+
+        public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrush background, AnyUiBrush foreground,
+            bool requestContextMenu,
+            string contextMenuText, string[] menuHeaders, Func<object, AnyUiLambdaActionBase> menuItemLambda,
+            AnyUiThickness margin = null, AnyUiThickness padding = null)
+        {
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 13, 0, 0);
+
+            var gc1 = new AnyUiColumnDefinition();
+            gc1.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
+            g.ColumnDefinitions.Add(gc1);
+
+            var isContextMenu = requestContextMenu && contextMenuText != null
+                && menuHeaders != null && menuItemLambda != null;
+            if (isContextMenu)
+            {
+                var gc3 = new AnyUiColumnDefinition();
+                gc3.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+                g.ColumnDefinitions.Add(gc3);
+            }
+
+            var l = new AnyUiLabel();
+            l.Margin = new AnyUiThickness(0, 0, 0, 0);
+            l.Padding = new AnyUiThickness(5, 0, 0, 0);
+            l.Background = background;
+            l.Foreground = foreground;
+            l.Content = "" + name;
+            l.FontWeight = AnyUiFontWeight.Bold;
+            AnyUiGrid.SetRow(l, 0);
+            AnyUiGrid.SetColumn(l, 0);
+            g.Children.Add(l);
+            view.Children.Add(g);
+
+            if (isContextMenu)
+            {
+                AddSmallContextMenuItemTo(
+                    g, 0, 1,
+                    contextMenuText, menuHeaders, menuItemLambda,
+                    margin: margin, padding: padding);
+            }
+        }
+
+        public AnyUiSelectableTextBlock AddSmallLabelTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
+            string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
+            bool setBold = false, bool setNoWrap = false,
+            AnyUiVerticalAlignment? verticalAlignment = null,
+            AnyUiVerticalAlignment? verticalContentAlignment = null)
+        {
+            var lab = new AnyUiSelectableTextBlock();
+
+            lab.Margin = margin;
+            lab.Padding = padding;
+            if (verticalAlignment != null)
+                lab.VerticalAlignment = verticalAlignment;
+            if (verticalContentAlignment != null)
+                lab.VerticalContentAlignment = verticalContentAlignment.Value;
+            if (foreground != null)
+                lab.Foreground = foreground;
+            if (background != null)
+                lab.Background = background;
+            if (setBold)
+                lab.FontWeight = AnyUiFontWeight.Bold;
+            if (setNoWrap)
+                lab.TextWrapping = AnyUiTextWrapping.NoWrap;
+            lab.Text = content;
+
+            // check, which content
+            if (this.showIriMode
+                && content != null && content != ""
+                && (content.Trim().ToLower().StartsWith("http://")
+                 || content.Trim().ToLower().StartsWith("https://")))
+            {
+                // mark as hyperlink
+                lab.TextAsHyperlink = true;
+
+                // directly assign lambda
+                lab.setValueLambda = (o) =>
+                {
+                    return new AnyUiLambdaActionDisplayContentFile(content, preferInternalDisplay: true);
+                };
+            }
+
+            AnyUiGrid.SetRow(lab, row);
+            AnyUiGrid.SetColumn(lab, col);
+            g.Children.Add(lab);
+            return (lab);
+        }
+
+        /// <summary>
+        /// Adds a subpanel, which has the caption "key". Can be used to visual set apart multiple items
+        /// from the sub-panel from the items on the main panel.
+        /// </summary>
+        /// <param name="view">Panel to be added to</param>
+        /// <param name="caption">Caption</param>
+        /// <returns>Sub-panel, to which can be added</returns>
+        public AnyUiStackPanel AddSubStackPanel(AnyUiStackPanel view, string caption,
+            int minWidthFirstCol = -1)
+        {
+            var g = AddSmallGrid(1, 2, new[] { "#", "*" });
+
+            if (minWidthFirstCol > -1)
+                g.ColumnDefinitions[0].MinWidth = minWidthFirstCol;
+
+            AddSmallLabelTo(g, 0, 0, content: caption);
+            var sp = AddSmallStackPanelTo(g, 0, 1, setVertical: true);
+
+            // in total
+            view.Children.Add(g);
+
+            // done
+            return (sp);
+        }
+
+        public AnyUiGrid AddSubGrid(AnyUiStackPanel view, string caption,
+            int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null,
+            int minWidthFirstCol = -1)
+        {
+            var g = AddSmallGrid(1, 2, new[] { "#", "*" });
+
+            if (minWidthFirstCol > -1)
+                g.ColumnDefinitions[0].MinWidth = minWidthFirstCol;
+
+            AddSmallLabelTo(g, 0, 0, content: caption);
+            var inner = AddSmallGridTo(g, 0, 1, rows, cols, colWidths, margin: margin);
+
+            // in total
+            view.Children.Add(g);
+
+            // done
+            return (inner);
         }
 
     }

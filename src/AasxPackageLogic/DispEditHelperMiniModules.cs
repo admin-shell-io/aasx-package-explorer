@@ -173,7 +173,7 @@ namespace AasxPackageLogic
                 int storedI = i;
                 AddGroup(
                     substack, $"Qualifier {1 + i}",
-                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
+                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, requestContextMenu: repo != null,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
                         "\u2702", "Delete",
@@ -604,7 +604,7 @@ namespace AasxPackageLogic
                 int storedI = i;
                 AddGroup(
                     substack, $"Pair {1 + i}: {AdminShellUtil.ShortenWithEllipses(pairs[storedI].Name, 30)}",
-                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
+                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, requestContextMenu: repo != null,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
                         "\u2702", "Delete",
@@ -808,7 +808,7 @@ namespace AasxPackageLogic
                 int storedI = i;
                 AddGroup(
                     substack, $"Extension {1 + i}: {AdminShellUtil.ShortenWithEllipses(extension.Name,30)}",
-                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
+                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, requestContextMenu: repo != null,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
                         "\u2702", "Delete",
@@ -1309,7 +1309,7 @@ namespace AasxPackageLogic
                 var txt = AdminShellUtil.ShortenWithEllipses(valuePairs[i].Value, 30);
                 AddGroup(
                     substack, $"Pair {1 + i}: {txt}",
-                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
+                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, requestContextMenu: repo != null,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
                         "\u2702", "Delete",

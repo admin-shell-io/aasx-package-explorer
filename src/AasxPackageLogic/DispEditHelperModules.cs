@@ -1278,7 +1278,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, $"{key}:", levelColors.SubSection, repo, 
+            this.AddGroup(stack, $"{key}:", levelColors.SubSection, requestAuxButton: repo != null, 
                 auxContextHeader: auxContextHeader, auxContextLambda: auxContextLambda);
 
             if (this.SafeguardAccess(
