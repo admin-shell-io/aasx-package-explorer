@@ -75,6 +75,10 @@
 
     private void MainTimer_HandleLogMessages()
     {
+        // pop log messages from the plug-ins into the Stored Prints in Log
+        // right now, no server-listening flyouts ..
+        Plugins.PumpPluginLogsIntoLog(null /* this.FlyoutLoggingPush */);
+
         // check for Stored Prints in Log
         StoredPrint sp;
         while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)

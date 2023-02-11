@@ -232,6 +232,7 @@ namespace AasxPackageExplorer
                         help: "Export UML of SubmodelElements in multiple common formats.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "Filename and path of file to exported.")
+                            .Add("Location", "Location of the file (local, user, download).")
                             .Add("Format", "Format to be either 'XMI v1.1', 'XML v2.1', 'PlantUML'.")
                             .Add("Record", "Record data", hidden: true)
                             .AddFromReflection(new ExportUmlRecord())))

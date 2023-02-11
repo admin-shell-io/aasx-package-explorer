@@ -87,7 +87,8 @@ namespace AnyUi
             string proposeFn,
             string filter,
             string msg,
-            string argFilterIndex = null)
+            string argFilterIndex = null,
+            string argLocation = null)
         {
             await Task.Yield();
             return false;
@@ -147,6 +148,31 @@ namespace AnyUi
         {
             await Task.Yield();
             return;
+        }
+
+        public async Task CheckIfDownloadAndStart(
+            LogInstance log, 
+            object location, 
+            string fn,
+            string contentType = "application/octet-stream")
+        {
+            if (location is string ls
+                && ls.Equals(AnyUiDialogueDataSaveFile.LocationKind.Download.ToString(), 
+                    StringComparison.InvariantCultureIgnoreCase)
+                && WebBrowserServicesAllowed())
+            {
+                try
+                {
+                    await WebBrowserDisplayOrDownloadFile(fn, contentType);
+                    log?.Info("Download initiated.");
+                }
+                catch (Exception ex)
+                {
+                    log?.Error(
+                        ex, $"When downloading saved file");
+                    return;
+                }
+            }
         }
     }
 }

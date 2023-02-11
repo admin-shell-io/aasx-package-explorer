@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using AasxIntegrationBase;
 using AasxPackageLogic;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -133,6 +134,10 @@ namespace AasxPackageExplorer
                 this.Result = null;
                 ControlClosed?.Invoke();
             }
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)

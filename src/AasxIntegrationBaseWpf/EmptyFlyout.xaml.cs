@@ -63,6 +63,10 @@ namespace AasxIntegrationBase
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         //
         // Mechanics
         //

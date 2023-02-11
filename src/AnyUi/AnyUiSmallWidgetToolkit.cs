@@ -25,10 +25,13 @@ namespace AnyUi
 
         public AnyUiGrid AddSmallGrid(int rows, int cols,
             string[] colWidths = null, string[] rowHeights = null,
-            AnyUiThickness margin = null, AnyUiBrush background = null)
+            AnyUiThickness margin = null, AnyUiBrush background = null,
+            AnyUiThickness padding = null)
         {
             var g = new AnyUiGrid();
             g.Margin = margin;
+            if (padding != null)
+                g.Padding = padding;
             if (background != null)
                 g.Background = background;
 

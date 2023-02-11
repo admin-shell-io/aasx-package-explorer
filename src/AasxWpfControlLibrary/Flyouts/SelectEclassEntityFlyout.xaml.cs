@@ -76,6 +76,10 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             DiaData.ResultIRDI = null;

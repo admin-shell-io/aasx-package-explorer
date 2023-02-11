@@ -299,8 +299,8 @@ namespace AasxPackageExplorer
                 await CommandBinding_ExportImportTableUml(cmd, ticket, import: true);
 
             // REFACTOR: STAYS HERE
-            if (cmd == "exportuml")
-                await CommandBinding_ExportImportTableUml(cmd, ticket, exportUml: true);
+            //if (cmd == "exportuml")
+            //    await CommandBinding_ExportImportTableUml(cmd, ticket, exportUml: true);
 
             // REFACTOR: STAYS HERE
             if (cmd == "importtimeseries")

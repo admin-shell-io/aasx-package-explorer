@@ -26,6 +26,7 @@ using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary.PackageCentral;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -50,6 +51,10 @@ namespace AasxPackageExplorer
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
+        {
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
         {
         }
 

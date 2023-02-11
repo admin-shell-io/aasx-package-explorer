@@ -18,6 +18,7 @@ using AasxIntegrationBase;
 using AasxPackageLogic;
 using AdminShellNS;
 using Newtonsoft.Json;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -76,6 +77,10 @@ namespace AasxPackageExplorer
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
+        {
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
         {
         }
 

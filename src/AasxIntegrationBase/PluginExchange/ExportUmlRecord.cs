@@ -34,7 +34,7 @@ namespace AasxIntegrationBase
             "PlantUML (text format, www.plantuml.com)"
         };
 
-        public ExportFormat Format = ExportFormat.Xmi21;
+        public ExportFormat Format = ExportFormat.PlantUml;
 
         [AasxMenuArgument(help: "If greater or equal zero, limits the number of characters for inital values.")]
         public int LimitInitialValue = 15;

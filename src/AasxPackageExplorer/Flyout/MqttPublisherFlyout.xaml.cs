@@ -79,6 +79,10 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         public bool Result { get { return DiaData.Result; } }
 
         //

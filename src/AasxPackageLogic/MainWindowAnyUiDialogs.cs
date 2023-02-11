@@ -1338,7 +1338,8 @@ namespace AasxPackageLogic
                     var panel = new AnyUiStackPanel();
                     var helper = new DispEditHelperBasics();
 
-                    var g = helper.AddSmallGrid(4, 4, new[] { "150:", "*", "200:" });
+                    var g = helper.AddSmallGrid(4, 4, new[] { "220:", "*", "20:", "20:" }, 
+                                padding: new AnyUiThickness(0, 5, 0, 5));
                     panel.Add(g);
 
                     // Row 0 : Format
@@ -1346,23 +1347,30 @@ namespace AasxPackageLogic
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetIntFromControl(
-                        helper.AddSmallComboBoxTo(g, 0, 1, maxWidth: 400,
-                            items: ExportUmlRecord.FormatNames,
-                        selectedIndex: (int)data.Format),
+                        helper.Set(
+                            helper.AddSmallComboBoxTo(g, 0, 1,
+                                items: ExportUmlRecord.FormatNames,
+                                selectedIndex: (int)data.Format),
+                            minWidth: 600, maxWidth: 600),
                         (i) => { data.Format = (ExportUmlRecord.ExportFormat)i; });
 
                     // Row 1 : limiting of values im UML
                     helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
+
+                    var g2 = helper.AddSmallGridTo(g, 1, 1, 1, 2, new[] { "200:", "*" });
                     AnyUiUIElement.SetIntFromControl(
                         helper.Set(
-                            helper.AddSmallTextBoxTo(g, 1, 1,
-                                margin: new AnyUiThickness(4, 2, 2, 2),
-                                text: $"{data.LimitInitialValue:D}"),
-                            maxWidth: 400),
+                            helper.AddSmallTextBoxTo(g2, 0, 0,
+                                margin: new AnyUiThickness(0, 2, 2, 2),
+                                text: $"{data.LimitInitialValue:D}",
+                                verticalAlignment: AnyUiVerticalAlignment.Center,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center) /*,
+                            minWidth: 400, maxWidth: 400,
+                            horizontalAlignment: AnyUiHorizontalAlignment.Left */),
                         (i) => { data.LimitInitialValue = i; });
-                    helper.AddSmallLabelTo(g, 1, 2,
+                    helper.AddSmallLabelTo(g2, 0, 1,
                         content: "(0 disables values, -1 = unlimited)",
                         margin: new AnyUiThickness(10, 0, 0, 0),
                         verticalAlignment: AnyUiVerticalAlignment.Center,
@@ -1376,21 +1384,22 @@ namespace AasxPackageLogic
                         helper.Set(
                             helper.AddSmallCheckBoxTo(g, 2, 1,
                                 content: "(after export, file will be copied to paste buffer)",
-                                isChecked: data.CopyToPasteBuffer),
+                                isChecked: data.CopyToPasteBuffer,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
                             colSpan: 2),
                         (b) => { data.CopyToPasteBuffer = b; });
 
-                    //// Test
-                    //AnyUiUIElement.RegisterControl(
-                    //    helper.AddSmallButtonTo(g, 3, 0, content: "Test!", directInvoke: true),
-                    //    (o) =>
-                    //    {
-                    //        return new AnyUiLambdaActionModalPanelReRender() 
-                    //            { DiaDataPanel = uci };
-                    //    });
-                    //if (data.LimitInitialValue >= 1 && data.LimitInitialValue <= 3)
-                    //    for (int i = 0; i < data.LimitInitialValue - 1; i++)
-                    //        helper.AddSmallLabelTo(g, 3, 1 + i, content: "" + i);
+                    // Test
+                    AnyUiUIElement.RegisterControl(
+                        helper.AddSmallButtonTo(g, 3, 0, content: "Test!", directInvoke: true),
+                        (o) =>
+                        {
+                            return new AnyUiLambdaActionModalPanelReRender()
+                            { DiaDataPanel = uci };
+                        });
+                    if (data.LimitInitialValue >= 1 && data.LimitInitialValue <= 3)
+                        for (int i = 0; i < data.LimitInitialValue; i++)
+                            helper.AddSmallLabelTo(g, 3, 1 + i, content: "" + i);
 
                     // give back
                     return panel;

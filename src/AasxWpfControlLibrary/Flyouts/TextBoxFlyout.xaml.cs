@@ -92,6 +92,10 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         public string Text
         {
             get

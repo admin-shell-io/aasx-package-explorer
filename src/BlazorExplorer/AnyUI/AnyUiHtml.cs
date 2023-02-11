@@ -926,7 +926,8 @@ namespace AnyUi
 			string proposeFn,
 			string filter,
 			string msg,
-			string argFilterIndex = null)
+			string argFilterIndex = null,
+            string argLocation = null)
 		{
             var uc = await MenuSelectSaveFilenameAsync(ticket, argName, caption, proposeFn, filter, msg);
 			
@@ -935,7 +936,9 @@ namespace AnyUi
 				ticket[argName] = uc.TargetFileName;
 				if (argFilterIndex?.HasContent() == true)
 					ticket[argFilterIndex] = uc.FilterIndex;
-				return true;
+                if (argLocation?.HasContent() == true)
+                    ticket[argLocation] = uc.Location.ToString();
+                return true;
 			}
 			return false;
 		}

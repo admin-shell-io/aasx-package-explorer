@@ -27,6 +27,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AdminShellNS;
+using AnyUi;
 using Newtonsoft.Json;
 
 // ReSharper disable InlineOutVariableDeclaration
@@ -71,6 +72,10 @@ namespace AasxPackageExplorer
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
+        {
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
         {
         }
 

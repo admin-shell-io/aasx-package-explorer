@@ -232,6 +232,7 @@ namespace AnyUi
 				if (fnExt != "")
 					fn = fn.Substring(0, fn.Length - fnExt.Length) + fiExt;
 			}
+            else
 			if (final == 1)
 			{
 				// add if empty

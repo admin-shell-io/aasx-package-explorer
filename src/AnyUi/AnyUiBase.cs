@@ -321,7 +321,7 @@ namespace AnyUi
 
         public bool AllZero => AllEqual && Left == 0.0;
 
-        public double Width => Left + Right;
+        public double Width => Left + Right;        
     }
 
     public enum AnyUiVisibility : byte
@@ -1027,6 +1027,12 @@ namespace AnyUi
     public class AnyUiPanel : AnyUiFrameworkElement, IEnumerateChildren, IGetBackground
     {
         public AnyUiBrush Background;
+        
+        /// <summary>
+        /// This property is not directly legacy of WPD nor HTML: <c>Padding</c> will be
+        /// applied to all children and their paddings. Experimental.
+        /// </summary>
+        public AnyUiThickness Padding;
 
         private List<AnyUiUIElement> _children = new List<AnyUiUIElement>();
         public List<AnyUiUIElement> Children

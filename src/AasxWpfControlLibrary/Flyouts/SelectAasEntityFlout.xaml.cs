@@ -30,6 +30,7 @@ using AasxWpfControlLibrary;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -89,6 +90,10 @@ namespace AasxPackageExplorer
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
+        {
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
         {
         }
 

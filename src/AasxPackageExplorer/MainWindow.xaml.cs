@@ -1319,6 +1319,13 @@ namespace AasxPackageExplorer
                     throw new NotImplementedException();
                 }
             }
+
+            if (lab is AnyUiLambdaActionModalPanelReRender lamprr)
+            {
+                if (currentFlyoutControl != null)
+                    currentFlyoutControl.LambdaActionAvailable(lamprr);
+            }
+
         }
 
         private async Task MainTimer_HandleEntityPanel()

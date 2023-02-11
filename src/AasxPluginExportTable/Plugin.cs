@@ -23,6 +23,7 @@ using JetBrains.Annotations;
 using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using static AnyUi.AnyUiDialogueDataSaveFile;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -203,19 +204,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             if (action == "export-uml-dialogs")
             {
-                if (args != null && args.Length >= 3
-                    && args[0] is Aas.Environment env
-                    && args[1] is Aas.Submodel sm
-                    && args[2] is AnyUiContextBase displayContext)
-                {
-                    // the Submodel elements need to have parents
-                    sm.SetAllParents();
-
-                    // use functionality                    
-                    _log.Info($"Starting test ..");
-
-                    await TestExportUmlDialogBased(env, sm, displayContext);
-
+                if (args != null && args.Length >= 2
+                    && args[0] is AasxMenuActionTicket ticket
+                    && args[1] is AnyUiContextPlusDialogs displayContext)                  
+                {                   
+                    await TestExportUmlDialogBased(ticket, displayContext);
                     return new AasxPluginResultBase();
                 }
             }
@@ -403,85 +396,116 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         }
 
-        private async Task TestExportUmlDialogBased(Aas.Environment env, Aas.Submodel sm, AnyUiContextBase displayContext)
+        private async Task TestExportUmlDialogBased(
+            AasxMenuActionTicket ticket,
+            AnyUiContextPlusDialogs displayContext)
         {
-            // data
-            var data = new ExportUmlRecord();
+            // access
+            if (ticket == null || displayContext == null)
+                return;
 
-            // panel
-            Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> renderPanel = (uci) =>
+            // check preconditions
+            if (ticket.Env == null || ticket.Submodel == null || ticket.SubmodelElement != null)
             {
-                // create panel
-                var panel = new AnyUiStackPanel();
+                _log?.Error("Export UML: A Submodel has to be selected!");
+                return;
+            }
 
-                panel.Add(new AnyUiLabel() { Content = "Hallo!" });
+            // ask for parameter record?
+            var record = ticket["Record"] as ExportUmlRecord;
+            if (record == null)
+            {
+                record = new ExportUmlRecord();
 
-                //var helper = new DispEditHelperBasics();
+                var uc = new AnyUiDialogueDataModalPanel("Export UML ..");
+                uc.ActivateRenderPanel(record,
+                    (uci) =>
+                    {
+                        // create panel
+                        var panel = new AnyUiStackPanel();
+                        var helper = new AnyUiSmallWidgetToolkit();
 
-                //var g = helper.AddSmallGrid(4, 4, new[] { "150:", "*", "200:" });
-                //panel.Add(g);
+                        var g = helper.AddSmallGrid(4, 4, new[] { "150:", "*", "200:" });
+                        panel.Add(g);
 
-                //// Row 0 : Format
-                //helper.AddSmallLabelTo(g, 0, 0, content: "Format:",
-                //    verticalAlignment: AnyUiVerticalAlignment.Center,
-                //    verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                //AnyUiUIElement.SetIntFromControl(
-                //    helper.AddSmallComboBoxTo(g, 0, 1, maxWidth: 400,
-                //        items: ExportUmlRecord.FormatNames,
-                //    selectedIndex: (int)data.Format),
-                //    (i) => { data.Format = (ExportUmlRecord.ExportFormat)i; });
+                        // Row 0 : Format
+                        helper.AddSmallLabelTo(g, 0, 0, content: "Format:",
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                        AnyUiUIElement.SetIntFromControl(
+                            helper.AddSmallComboBoxTo(g, 0, 1, maxWidth: 450,
+                                items: ExportUmlRecord.FormatNames,
+                            selectedIndex: (int)record.Format),
+                            (i) => { record.Format = (ExportUmlRecord.ExportFormat)i; });
 
-                //// Row 1 : limiting of values im UML
-                //helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
-                //    verticalAlignment: AnyUiVerticalAlignment.Center,
-                //    verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                //AnyUiUIElement.SetIntFromControl(
-                //    helper.Set(
-                //        helper.AddSmallTextBoxTo(g, 1, 1,
-                //            margin: new AnyUiThickness(4, 2, 2, 2),
-                //            text: $"{data.LimitInitialValue:D}"),
-                //        maxWidth: 400),
-                //    (i) => { data.LimitInitialValue = i; });
-                //helper.AddSmallLabelTo(g, 1, 2,
-                //    content: "(0 disables values, -1 = unlimited)",
-                //    margin: new AnyUiThickness(10, 0, 0, 0),
-                //    verticalAlignment: AnyUiVerticalAlignment.Center,
-                //    verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                        // Row 1 : limiting of values im UML
+                        helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                        AnyUiUIElement.SetIntFromControl(
+                            helper.Set(
+                                helper.AddSmallTextBoxTo(g, 1, 1,
+                                    margin: new AnyUiThickness(4, 2, 2, 2),
+                                    text: $"{record.LimitInitialValue:D}"),
+                                maxWidth: 200),
+                            (i) => { record.LimitInitialValue = i; });
+                        helper.AddSmallLabelTo(g, 1, 2,
+                            content: "(0 disables values, -1 = unlimited)",
+                            margin: new AnyUiThickness(10, 0, 0, 0),
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                //// Row 2 : Copy to paste buffer
-                //helper.AddSmallLabelTo(g, 2, 0, content: "Copy to paste buffer:",
-                //    verticalAlignment: AnyUiVerticalAlignment.Center,
-                //    verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                //AnyUiUIElement.SetBoolFromControl(
-                //    helper.Set(
-                //        helper.AddSmallCheckBoxTo(g, 2, 1,
-                //            content: "(after export, file will be copied to paste buffer)",
-                //            isChecked: data.CopyToPasteBuffer),
-                //        colSpan: 2),
-                //    (b) => { data.CopyToPasteBuffer = b; });
+                        // Row 2 : Copy to paste buffer
+                        helper.AddSmallLabelTo(g, 2, 0, content: "Copy to paste buffer:",
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                        AnyUiUIElement.SetBoolFromControl(
+                            helper.Set(
+                                helper.AddSmallCheckBoxTo(g, 2, 1,
+                                    content: "(after export, file will be copied to paste buffer)",
+                                    isChecked: record.CopyToPasteBuffer),
+                                colSpan: 2),
+                            (b) => { record.CopyToPasteBuffer = b; });
 
-                //// Test
-                //AnyUiUIElement.RegisterControl(
-                //    helper.AddSmallButtonTo(g, 3, 0, content: "Test!", directInvoke: true),
-                //    (o) =>
-                //    {
-                //        return new AnyUiLambdaActionModalPanelReRender() 
-                //            { DiaDataPanel = uci };
-                //    });
-                //if (data.LimitInitialValue >= 1 && data.LimitInitialValue <= 3)
-                //    for (int i = 0; i < data.LimitInitialValue - 1; i++)
-                //        helper.AddSmallLabelTo(g, 3, 1 + i, content: "" + i);
+                        // give back
+                        return panel;
+                    });
+                if (!(await displayContext.StartFlyoverModalAsync(uc)))
+                    return;
+            }
 
-                // give back
-                return panel;
-            };
+            // stop
+            await Task.Delay(2000);
 
-            // dialog
-            var uc = new AnyUiDialogueDataModalPanel("Export UML ..");
-            // uc.Panel = panel;                
-            // uc.Data = data;
-            uc.ActivateRenderPanel(data, renderPanel);
-            var res = await displayContext.StartFlyoverModalAsync(uc);
+            // ask for filename?
+            if (!(await displayContext.MenuSelectSaveFilenameToTicketAsync(
+                        ticket, "File",
+                        "Select file for UML export ..",
+                        "new.puml",
+                        "PlantUML text file (*.puml)|*.puml|UML text file (*.uml)|*.uml|All files (*.*)|*.*",
+                        "Import/ export UML: No valid filename.",
+                        argLocation: "Location")))
+                return;
+
+            var fn = ticket["File"] as string;
+            var loc = ticket["Location"];
+
+            // the Submodel elements need to have parents
+            var sm = ticket.Submodel;
+            sm.SetAllParents();
+
+            // export
+            ExportUml.ExportUmlToFile(ticket.Env, sm, record, fn);
+            
+            // persist
+            await displayContext.CheckIfDownloadAndStart(_log, loc, fn);
+            if (record.CopyToPasteBuffer)
+            {
+                var lines = System.IO.File.ReadAllText(fn);
+                displayContext.ClipboardSet(new AnyUiClipboardData(lines));
+            }
+            
+            _log.Info($"Export UML data to file: {fn}");
         }
     }
 }

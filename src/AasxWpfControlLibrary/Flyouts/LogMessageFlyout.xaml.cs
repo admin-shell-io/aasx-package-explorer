@@ -203,6 +203,10 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         public void CloseControlExplicit()
         {
             if (this.timer != null)

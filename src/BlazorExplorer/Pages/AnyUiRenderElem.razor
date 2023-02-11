@@ -415,9 +415,10 @@
         {
             comb.Text = "" + comb.Items[comb.SelectedIndex.Value];
         }
-
-        <select class="form-control selectpicker" value="@comb.Text" style="@style"
-                @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
+        
+        // class="form-control selectpicker"
+        <select class="" value="@comb.Text" style="@style"
+            @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
             @foreach (var item in comb.Items)
             {
                 <option value="@item">@item</option>

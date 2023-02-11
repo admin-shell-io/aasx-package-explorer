@@ -128,5 +128,8 @@ namespace AasxPackageExplorer
             }
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
     }
 }

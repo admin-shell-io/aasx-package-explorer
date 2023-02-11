@@ -116,6 +116,10 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         //
         // Business logic
         //

@@ -317,7 +317,7 @@ namespace BlazorUI.Data
                     var pi = Plugins.FindPluginInstance(pluginName);
                     var actionName = "export-uml-dialogs";
 
-                    await pi.InvokeActionAsync(actionName, ticket.Env, ticket.Submodel, DisplayContext);
+                    await pi.InvokeActionAsync(actionName, ticket, DisplayContext);
                 }
                 catch (Exception ex)
                 {

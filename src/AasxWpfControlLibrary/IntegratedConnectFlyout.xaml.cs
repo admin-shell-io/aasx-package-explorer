@@ -145,6 +145,10 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         public void LoadPresets(Newtonsoft.Json.Linq.JToken jtoken)
         {
             // access
@@ -342,6 +346,7 @@ namespace AasxPackageExplorer
                     ApplyPreset(_presets[i]);
             }
         }
+
 
         private void TextBoxMessages_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {

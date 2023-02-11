@@ -24,6 +24,7 @@ using AasxIntegrationBase.AasForms;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
+using System.Windows.Controls;
 
 namespace AasxPluginExportTable.Uml
 {
@@ -339,8 +340,11 @@ namespace AasxPluginExportTable.Uml
             if (Doc == null || !fn.HasContent())
                 return;
 
-            // save
-            Doc.Save(fn);
+            // save (with specified encoding)
+            using (TextWriter sw = new StreamWriter(fn, false, Encoding.UTF8)) //Set encoding
+            {
+                Doc.Save(sw);
+            }
         }
     }
 }
