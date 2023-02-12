@@ -32,7 +32,7 @@ using Extensions;
 // Disable dead code detection due to comments such as `//-9- {Referable}.kind`
 // dead-csharp off
 
-namespace AasxPluginExportTable
+namespace AasxPluginExportTable.Table
 {
     public class ExportTableAasEntitiesItem
     {
@@ -56,7 +56,7 @@ namespace AasxPluginExportTable
             this.sm = sm;
             this.sme = sme;
             this.cd = cd;
-            this.Parent = parent;
+            Parent = parent;
         }
 
         public Aas.IReferable GetHeadingReferable()
@@ -102,7 +102,7 @@ namespace AasxPluginExportTable
 
             public CellRecord(string text)
             {
-                this.Text = text;
+                Text = text;
             }
         }
 
@@ -110,7 +110,7 @@ namespace AasxPluginExportTable
         {
             if (Record == null)
                 return null;
-            var i = (1 + row) * (1 + Record.Cols) + (1 + col);
+            var i = (1 + row) * (1 + Record.Cols) + 1 + col;
             if (row < 0 || col < 0 || Record.Top == null || i >= Record.Top.Count)
                 return null;
             var cr = new CellRecord(Record.Top[i]);
@@ -124,7 +124,7 @@ namespace AasxPluginExportTable
         {
             if (Record == null)
                 return null;
-            var i = (1 + row) * (1 + Record.Cols) + (1 + col);
+            var i = (1 + row) * (1 + Record.Cols) + 1 + col;
             if (row < 0 || col < 0 || Record.Body == null || i >= Record.Body.Count)
                 return null;
             var cr = new CellRecord(Record.Body[i]);
@@ -155,8 +155,8 @@ namespace AasxPluginExportTable
 
             public ItemProcessor(ImportExportTableRecord record, ExportTableAasEntitiesItem item)
             {
-                this.Record = record;
-                this.Item = item;
+                Record = record;
+                Item = item;
             }
 
             //
@@ -215,7 +215,7 @@ namespace AasxPluginExportTable
                         rf.GetSelfDescription()?.ElementAbbreviation);
                 }
                 if (rf is Aas.IReferable rfpar)
-                    rep(head + "parent", "" + ((rfpar.IdShort != null) ? rfpar.IdShort : "-"));
+                    rep(head + "parent", "" + (rfpar.IdShort != null ? rfpar.IdShort : "-"));
             }
 
             private void repModelingKind(string head, Aas.ModelingKind? k)
@@ -248,7 +248,7 @@ namespace AasxPluginExportTable
                 if (q != null)
                 {
                     foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
-                        if (("" + q.Value) == Enum.GetName(typeof(FormMultiplicity), m))
+                        if ("" + q.Value == Enum.GetName(typeof(FormMultiplicity), m))
                         {
                             multiStr = "" + AasFormConstants.FormMultiplicityAsUmlCardinality[(int)m];
                         }
@@ -312,22 +312,22 @@ namespace AasxPluginExportTable
                 repDict = new Dictionary<string, string>();
 
                 // some general replacements
-                rep("nl", "" + System.Environment.NewLine);
+                rep("nl", "" + Environment.NewLine);
                 rep("br", "\r");
                 rep("tab", "\t");
 
                 // for the provided AAS entites, set the replacements
-                if (this.Item != null)
+                if (Item != null)
                 {
                     // shortcuts
-                    var par = this.Item.Parent;
-                    var sm = this.Item.sm;
-                    var sme = this.Item.sme;
-                    var cd = this.Item.cd;
+                    var par = Item.Parent;
+                    var sm = Item.sm;
+                    var sme = Item.sme;
+                    var cd = Item.cd;
 
                     // general for the item
-                    rep("depth", "" + this.Item.depth);
-                    rep("indent", "" + (new string('~', Math.Max(0, this.Item.depth))));
+                    rep("depth", "" + Item.depth);
+                    rep("indent", "" + new string('~', Math.Max(0, Item.depth)));
 
                     //-1- {Parent}
                     if (par is Aas.Submodel parsm)
@@ -440,7 +440,7 @@ namespace AasxPluginExportTable
                             rep("RelationshipElement.first", "" + rele.First?.ToStringExtended(1));
                             rep("RelationshipElement.second", "" + rele.Second?.ToStringExtended(1));
 
-                            rep("SME.value", "" + rele.First?.ToStringExtended(1) 
+                            rep("SME.value", "" + rele.First?.ToStringExtended(1)
                                 + " -> " + rele.Second?.ToStringExtended(1));
                         }
 
@@ -449,12 +449,12 @@ namespace AasxPluginExportTable
                             //-2- SubmodelElementCollection.{value = #elements}
                             rep(
                                 "SubmodelElementCollection.value", "" +
-                                ((smc.Value != null)
+                                (smc.Value != null
                                     ? smc.Value.Count
                                     : 0) +
                                 " elements");
 
-                            rep("SME.value", "" + ((smc.Value != null) ? smc.Value.Count : 0) + " elements");
+                            rep("SME.value", "" + (smc.Value != null ? smc.Value.Count : 0) + " elements");
                         }
 
                         if (sme is Aas.SubmodelElementList sml)
@@ -462,13 +462,13 @@ namespace AasxPluginExportTable
                             //-2- SubmodelElementList.{value = #elements, orderRelevant}
                             rep(
                                 "SubmodelElementList.value", "" +
-                                ((sml.Value != null)
+                                (sml.Value != null
                                     ? sml.Value.Count
                                     : 0) +
                                 " elements");
                             rep("SubmodelElementList.orderRelevant", "" + sml.OrderRelevant);
 
-                            rep("SME.value", "" + ((sml.Value != null) ? sml.Value.Count : 0) + " elements");
+                            rep("SME.value", "" + (sml.Value != null ? sml.Value.Count : 0) + " elements");
                         }
 
                         if (sme is Aas.Entity ent)
@@ -539,11 +539,11 @@ namespace AasxPluginExportTable
                 var input = cr.Text;
 
                 // newline
-                if (this.ReplaceNewlineWith != null)
+                if (ReplaceNewlineWith != null)
                 {
-                    input = input.Replace("\r\n", this.ReplaceNewlineWith);
-                    input = input.Replace("\n\r", this.ReplaceNewlineWith);
-                    input = input.Replace("\n", this.ReplaceNewlineWith);
+                    input = input.Replace("\r\n", ReplaceNewlineWith);
+                    input = input.Replace("\n\r", ReplaceNewlineWith);
+                    input = input.Replace("\n", ReplaceNewlineWith);
                 }
 
                 // process from right to left
@@ -558,10 +558,10 @@ namespace AasxPluginExportTable
                     // OK, found a placeholder-tag to replace
                     var tag = "" + match.Groups[1].Value.Trim().ToLower();
 
-                    if (this.repDict.ContainsKey(tag))
+                    if (repDict.ContainsKey(tag))
                     {
-                        input = Replace(input, match.Index, match.Length, this.repDict[tag]);
-                        this.NumberReplacements++;
+                        input = Replace(input, match.Index, match.Length, repDict[tag]);
+                        NumberReplacements++;
                     }
                     else
                     if (tag == "stop")
@@ -803,7 +803,7 @@ namespace AasxPluginExportTable
                 }
                 catch (Exception ex)
                 {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    LogInternally.That.SilentlyIgnoredError(ex);
                 }
                 // ReSharper enable PossibleNullReferenceException
             }
@@ -818,7 +818,7 @@ namespace AasxPluginExportTable
                 }
                 catch (Exception ex)
                 {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    LogInternally.That.SilentlyIgnoredError(ex);
                 }
                 // ReSharper enable PossibleNullReferenceException
             }
@@ -1041,9 +1041,9 @@ namespace AasxPluginExportTable
                     try
                     {
                         var bgc = (System.Windows.Media.Color)ColorConverter.ConvertFromString(cr.Bg);
-                        var bgs = (new ColorConverter()).ConvertToString(bgc).Substring(3);
+                        var bgs = new ColorConverter().ConvertToString(bgc).Substring(3);
 
-                        tcp.Append(new DocumentFormat.OpenXml.Wordprocessing.Shading()
+                        tcp.Append(new Shading()
                         {
                             Color = "auto",
                             Fill = bgs,
@@ -1052,7 +1052,7 @@ namespace AasxPluginExportTable
                     }
                     catch (Exception ex)
                     {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                        LogInternally.That.SilentlyIgnoredError(ex);
                     }
                     // ReSharper enable PossibleNullReferenceException
                 }
@@ -1078,7 +1078,7 @@ namespace AasxPluginExportTable
                     if (cr.Fg != null)
                     {
                         var fgc = (System.Windows.Media.Color)ColorConverter.ConvertFromString(cr.Fg);
-                        var fgs = (new ColorConverter()).ConvertToString(fgc).Substring(3);
+                        var fgs = new ColorConverter().ConvertToString(fgc).Substring(3);
 
                         rp.Append(new DocumentFormat.OpenXml.Wordprocessing.Color() { Val = fgs });
                     }
@@ -1096,7 +1096,7 @@ namespace AasxPluginExportTable
                 }
                 catch (Exception ex)
                 {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    LogInternally.That.SilentlyIgnoredError(ex);
                 }
             }
 
@@ -1134,7 +1134,8 @@ namespace AasxPluginExportTable
                 {
 
                     // make a table
-                    Table table = body.AppendChild(new Table());
+                    DocumentFormat.OpenXml.Wordprocessing.Table table = 
+                        body.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Table());
 
                     // do a process on overall table cells
                     if (true)

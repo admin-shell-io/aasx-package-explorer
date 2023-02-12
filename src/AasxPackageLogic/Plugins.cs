@@ -34,6 +34,8 @@ namespace AasxPackageLogic
             public string name = "";
             public AasxPluginActionDescriptionBase[] actions = new AasxPluginActionDescriptionBase[] { };
 
+            public List<AasxPluginResultSingleMenuItem> MenuItems;
+
             public PluginInstance()
             { }
 
@@ -102,9 +104,9 @@ namespace AasxPackageLogic
                 return null;
             }
 
-            public bool HasAction(string name)
+            public bool HasAction(string name, bool useAsync = false)
             {
-                return this.FindAction(name) != null;
+                return this.FindAction(name, useAsync: useAsync) != null;
             }
 
             public object CheckForLogMessage()
@@ -222,6 +224,15 @@ namespace AasxPackageLogic
                     // adding
                     Log.Singleton.Info(".. adding plugin {0}", pi.name);
                     loadedPlugins.Add(pi.name, pi);
+
+                    // ask for menu items
+                    var resMi = pi.InvokeAction("get-menu-items");
+                    if (resMi is AasxPluginResultProvideMenuItems menuItems
+                        && menuItems.MenuItems != null)
+                    {
+                        pi.MenuItems = menuItems.MenuItems;
+                        Log.Singleton.Info(".. found {0} menu items.", pi.MenuItems.Count);
+                    }
                 }
                 catch (Exception ex)
                 {

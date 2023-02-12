@@ -17,7 +17,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace AasxPluginExportTable
+namespace AasxPluginExportTable.Table
 {
     public class ImportTableWordProvider : IImportTableProvider
     {
@@ -94,7 +94,7 @@ namespace AasxPluginExportTable
             // open word
             var document = WordprocessingDocument.Open(stream, isEditable: false);
             var docDoc = document.MainDocumentPart.Document;
-            var tables = docDoc.Body.Elements<Table>();
+            var tables = docDoc.Body.Elements<DocumentFormat.OpenXml.Wordprocessing.Table>();
             if (tables == null)
                 yield break;
 

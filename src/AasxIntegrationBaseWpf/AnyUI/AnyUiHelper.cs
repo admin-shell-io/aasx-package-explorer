@@ -12,8 +12,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Media.Imaging;
+using AasxIntegrationBase;
+using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
 
@@ -72,6 +75,6 @@ namespace AasxIntegrationBaseWpf
                 _timer2.Start();
                 return _timer2;
             }
-        }
+        }        
     }
 }

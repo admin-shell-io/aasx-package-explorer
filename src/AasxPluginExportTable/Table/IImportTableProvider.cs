@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AasxPluginExportTable
+namespace AasxPluginExportTable.Table
 {
     /// <summary>
     /// This interface provides an abstraction of a table with string-valued cells

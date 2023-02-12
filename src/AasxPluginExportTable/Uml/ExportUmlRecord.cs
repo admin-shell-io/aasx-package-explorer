@@ -18,7 +18,7 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-namespace AasxIntegrationBase
+namespace AasxPluginExportTable.Uml
 {
     /// <summary>
     /// Some user options for exporting UML

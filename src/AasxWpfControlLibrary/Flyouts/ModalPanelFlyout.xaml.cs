@@ -77,7 +77,7 @@ namespace AasxPackageExplorer
             if (sender == ButtonCancel)
             {
                 DiaData.Result = false;
-                ControlClosed?.Invoke();
+                // ControlClosed?.Invoke();
             }
         }
 

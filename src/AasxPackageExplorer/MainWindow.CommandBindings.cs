@@ -291,8 +291,8 @@ namespace AasxPackageExplorer
                 CommandBinding_ConnectRest();
 
             // REFACTOR: STAYS HERE
-            if (cmd == "exporttable")
-                await CommandBinding_ExportImportTableUml(cmd, ticket, import: false);
+            //if (cmd == "exporttable")
+            //    await CommandBinding_ExportImportTableUml(cmd, ticket, import: false);
 
             // REFACTOR: STAYS HERE
             if (cmd == "importtable")
@@ -303,8 +303,8 @@ namespace AasxPackageExplorer
             //    await CommandBinding_ExportImportTableUml(cmd, ticket, exportUml: true);
 
             // REFACTOR: STAYS HERE
-            if (cmd == "importtimeseries")
-                await CommandBinding_ExportImportTableUml(cmd, ticket, importTimeSeries: true);
+            //if (cmd == "importtimeseries")
+            //    await CommandBinding_ExportImportTableUml(cmd, ticket, importTimeSeries: true);
 
             // REFACTOR: STAYS HERE
             if (cmd == "serverpluginemptysample")
@@ -1202,193 +1202,137 @@ namespace AasxPackageExplorer
                 }
             };
 
-            if (cmd == "exporttable" || cmd == "importtable")
-            {
-                if (ticket?.ScriptMode != true)
-                {
-                    // interactive
-                    // handle the export dialogue
-                    var uc = new ExportTableFlyout((cmd == "exporttable")
-                        ? "Export SubmodelElements as Table"
-                        : "Import SubmodelElements from Table");
-                    uc.Presets = Logic?.GetImportExportTablePreset().Item1;
+            //if (cmd == "exporttable" || cmd == "importtable")
+            //{
+            //    if (ticket?.ScriptMode != true)
+            //    {
+            //        // interactive
+            //        // handle the export dialogue
+            //        var uc = new ExportTableFlyout((cmd == "exporttable")
+            //            ? "Export SubmodelElements as Table"
+            //            : "Import SubmodelElements from Table");
+            //        uc.Presets = Logic?.GetImportExportTablePreset().Item1;
 
-                    StartFlyoverModal(uc);
+            //        StartFlyoverModal(uc);
 
-                    if (uc.CloseForHelp)
-                    {
-                        callHelp?.Invoke();
-                        return;
-                    }
+            //        if (uc.CloseForHelp)
+            //        {
+            //            callHelp?.Invoke();
+            //            return;
+            //        }
 
-                    if (uc.Result == null)
-                        return;
+            //        if (uc.Result == null)
+            //            return;
 
-                    // have a result
-                    var record = uc.Result;
+            //        // have a result
+            //        var record = uc.Result;
 
-                    // be a little bit specific
-                    var dlgTitle = "Select text file to be exported";
-                    var dlgFileName = "";
-                    var dlgFilter = "";
+            //        // be a little bit specific
+            //        var dlgTitle = "Select text file to be exported";
+            //        var dlgFileName = "";
+            //        var dlgFilter = "";
 
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.TSF)
-                    {
-                        dlgFileName = "new.txt";
-                        dlgFilter =
-                            "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
-                    }
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.LaTex)
-                    {
-                        dlgFileName = "new.tex";
-                        dlgFilter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
-                    }
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
-                    {
-                        dlgFileName = "new.xlsx";
-                        dlgFilter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
-                    }
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
-                    {
-                        dlgFileName = "new.docx";
-                        dlgFilter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
-                    }
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
-                    {
-                        dlgFileName = "new.md";
-                        dlgFilter = "Markdown (*.md)|*.md|All files (*.*)|*.*";
-                    }
+            //        if (record.Format == (int)ImportExportTableRecord.FormatEnum.TSF)
+            //        {
+            //            dlgFileName = "new.txt";
+            //            dlgFilter =
+            //                "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+            //        }
+            //        if (record.Format == (int)ImportExportTableRecord.FormatEnum.LaTex)
+            //        {
+            //            dlgFileName = "new.tex";
+            //            dlgFilter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
+            //        }
+            //        if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
+            //        {
+            //            dlgFileName = "new.xlsx";
+            //            dlgFilter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+            //        }
+            //        if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
+            //        {
+            //            dlgFileName = "new.docx";
+            //            dlgFilter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
+            //        }
+            //        if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
+            //        {
+            //            dlgFileName = "new.md";
+            //            dlgFilter = "Markdown (*.md)|*.md|All files (*.*)|*.*";
+            //        }
 
-                    // store
-                    ticket["Record"] = record;
+            //        // store
+            //        ticket["Record"] = record;
 
-                    // ask now for a filename
-                    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                        ticket, "File",
-                        dlgTitle,
-                        dlgFileName,
-                        dlgFilter,
-                        "Import/ export table: No valid filename.")))
-                        return;
-                }
+            //        // ask now for a filename
+            //        if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+            //            ticket, "File",
+            //            dlgTitle,
+            //            dlgFileName,
+            //            dlgFilter,
+            //            "Import/ export table: No valid filename.")))
+            //            return;
+            //    }
 
-                // pass on
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
-                }
-            }
+            //    // pass on
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, null, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
+            //    }
+            //}
 
-            if (cmd == "exportuml")
-            {
-                bool copyLater = false;
-                if (ticket?.ScriptMode != true)
-                {
-                    // interactive
-                    // handle the export dialogue
-                    var uc = new ExportUmlFlyout();
-                    uc.Result = Logic?.GetImportExportTablePreset().Item2 ?? new ExportUmlRecord();
+            //if (cmd == "importtimeseries")
+            //{
+            //    if (ticket?.ScriptMode != true)
+            //    {
+            //        // interactive
+            //        // handle the export dialogue
+            //        var uc = new ImportTimeSeriesFlyout();
+            //        uc.Result = Logic?.GetImportExportTablePreset().Item3 ?? new ImportTimeSeriesRecord();
 
-                    StartFlyoverModal(uc);
+            //        StartFlyoverModal(uc);
 
-                    if (uc.Result == null)
-                        return;
+            //        if (uc.Result == null)
+            //            return;
 
-                    // have a result
-                    var result = uc.Result;
-                    copyLater = result.CopyToPasteBuffer;
+            //        // have a result
+            //        var result = uc.Result;
 
-                    // store
-                    ticket["Record"] = result;
+            //        // store
+            //        ticket["Record"] = result;
 
-                    // ask now for a filename
-                    if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
-                        ticket, "File",
-                        "Select file for UML export ..",
-                        "new.uml",
-                        "PlantUML text file (*.uml)|*.uml|All files (*.*)|*.*",
-                        "Import/ export UML: No valid filename.")))
-                        return;
-                }
+            //        // be a little bit specific
+            //        var dlgTitle = "Select file for time series import ..";
+            //        var dlgFilter = "All files (*.*)|*.*";
 
-                // pass on
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
-                }
+            //        if (result.Format == (int)ImportTimeSeriesRecord.FormatEnum.Excel)
+            //        {
+            //            dlgFilter =
+            //                "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+            //        }
 
-                // copy?
-                if (copyLater)
-                    try
-                    {
-                        var lines = System.IO.File.ReadAllText(ticket["File"] as string);
-                        Clipboard.SetData(DataFormats.Text, lines);
-                        Log.Singleton.Info("Export UML data copied to paste buffer.");
-                    }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
-            }
+            //        // ask now for a filename
+            //        if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
+            //            ticket, "File",
+            //            dlgTitle,
+            //            null,
+            //            dlgFilter,
+            //            "Import time series: No valid filename.")))
+            //            return;
+            //    }
 
-            if (cmd == "importtimeseries")
-            {
-                if (ticket?.ScriptMode != true)
-                {
-                    // interactive
-                    // handle the export dialogue
-                    var uc = new ImportTimeSeriesFlyout();
-                    uc.Result = Logic?.GetImportExportTablePreset().Item3 ?? new ImportTimeSeriesRecord();
-
-                    StartFlyoverModal(uc);
-
-                    if (uc.Result == null)
-                        return;
-
-                    // have a result
-                    var result = uc.Result;
-
-                    // store
-                    ticket["Record"] = result;
-
-                    // be a little bit specific
-                    var dlgTitle = "Select file for time series import ..";
-                    var dlgFilter = "All files (*.*)|*.*";
-
-                    if (result.Format == (int)ImportTimeSeriesRecord.FormatEnum.Excel)
-                    {
-                        dlgFilter =
-                            "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
-                    }
-
-                    // ask now for a filename
-                    if (!(await DisplayContext.MenuSelectOpenFilenameToTicketAsync(
-                        ticket, "File",
-                        dlgTitle,
-                        null,
-                        dlgFilter,
-                        "Import time series: No valid filename.")))
-                        return;
-                }
-
-                // pass on
-                try
-                {
-                    Logic?.CommandBinding_GeneralDispatchHeadless(cmd, ticket);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "Import time series: passing on.");
-                }
-            }
+            //    // pass on
+            //    try
+            //    {
+            //        Logic?.CommandBinding_GeneralDispatchHeadless(cmd, null, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logic?.LogErrorToTicket(ticket, ex, "Import time series: passing on.");
+            //    }
+            //}
 
             // redraw
             CommandExecution_RedrawAll();

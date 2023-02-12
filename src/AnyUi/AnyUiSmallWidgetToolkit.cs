@@ -182,10 +182,13 @@ namespace AnyUi
             AnyUiGrid g, int row, int col,
             int rows, int cols,
             string[] colWidths = null, string[] rowHeights = null,
-            AnyUiThickness margin = null, AnyUiBrush background = null)
+            AnyUiThickness margin = null, AnyUiBrush background = null,
+            AnyUiThickness padding = null)
         {
             var inner = AddSmallGrid(rows, cols, colWidths, rowHeights, margin, background);
             inner.Margin = margin;
+            if (padding != null)
+                inner.Padding = padding;
             AnyUiGrid.SetRow(inner, row);
             AnyUiGrid.SetColumn(inner, col);
             g.Children.Add(inner);
@@ -686,7 +689,7 @@ namespace AnyUi
                 lab.Background = background;
             if (setBold)
                 lab.FontWeight = AnyUiFontWeight.Bold;
-            if (setNoWrap)
+            // if (setNoWrap)
                 lab.TextWrapping = AnyUiTextWrapping.NoWrap;
             lab.Text = content;
 

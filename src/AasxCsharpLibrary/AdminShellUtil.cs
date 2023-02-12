@@ -12,6 +12,7 @@ using Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -548,12 +549,14 @@ namespace AdminShellNS
                     break;
 
                 case TypeCode.Single:
-                    if (Single.TryParse("" + value, out var sgl))
+                    if (Single.TryParse("" + value, NumberStyles.Float, 
+                        CultureInfo.InvariantCulture, out var sgl))
                         f.SetValue(obj, sgl);
                     break;
 
                 case TypeCode.Double:
-                    if (Double.TryParse("" + value, out var dbl))
+                    if (Double.TryParse("" + value, NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out var dbl))
                         f.SetValue(obj, dbl);
                     break;
 

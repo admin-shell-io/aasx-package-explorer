@@ -18,7 +18,7 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
-namespace AasxPluginExportTable
+namespace AasxPluginExportTable.Table
 {
     /// <summary>
     /// Base class of an context, which will be provided to the matchers in
@@ -75,7 +75,7 @@ namespace AasxPluginExportTable
             Parent = new Aas.Property(Aas.DataTypeDefXsd.String);
             Sme = new Aas.Property(Aas.DataTypeDefXsd.String);
             CD = new Aas.ConceptDescription("");
-            
+
             // CD.CreateDataSpecWithContentIec61360();
             CD.AddEmbeddedDataSpecification(
                 new Aas.EmbeddedDataSpecification(

@@ -294,39 +294,17 @@ namespace BlazorUI.Data
             }
 
 
-            // REFACTOR: WPF required
-            if (cmd == "exporttable"
-                ||  cmd == "importtable"
-                /* || cmd == "exportuml" */
-                || cmd == "importtimeseries")
-            {
-                Logic.LogErrorToTicket(ticket, "ExportInport Table UML not implemented, yet.");
+            //// REFACTOR: WPF required
+            //if (cmd == "exporttable"
+            //    ||  cmd == "importtable"
+            //    /* || cmd == "exportuml" */
+            //    /* || cmd == "importtimeseries" */)
+            //{
+            //    Logic.LogErrorToTicket(ticket, "ExportInport Table UML not implemented, yet.");
 
-                return;
-            }
-
-            // TEST!
-            if (cmd == "exportuml")
-            {
-
-                try
-                {
-                    Log.Singleton.Info("Exporting UML dialog based ..");
-
-                    var pluginName = "AasxPluginExportTable";
-                    var pi = Plugins.FindPluginInstance(pluginName);
-                    var actionName = "export-uml-dialogs";
-
-                    await pi.InvokeActionAsync(actionName, ticket, DisplayContext);
-                }
-                catch (Exception ex)
-                {
-                    Logic?.LogErrorToTicket(ticket, ex, "When exporting UML, an error occurred");
-                }
-
-                return;
-            }
-
+            //    return;
+            //}
+           
             // REFACTOR: WPF required
             if (cmd == "serverpluginemptysample"
                 || cmd == "serverpluginopcua"

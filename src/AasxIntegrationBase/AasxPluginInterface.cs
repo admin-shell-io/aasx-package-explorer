@@ -62,6 +62,27 @@ namespace AasxIntegrationBase
         public List<Aas.ConceptDescription> cds;
     }
 
+    public class AasxPluginResultSingleMenuItem
+    {
+        /// <summary>
+        /// Identifies, where in the hierarchy of the application's main menu
+        /// this new menu item shall be attached to. Designates a named 
+        /// <c>AasxMenu</c>.
+        /// </summary>
+        public string AttachPoint;
+
+        /// <summary>
+        /// The new menu item including name, header, may be hotkey and 
+        /// argument description.
+        /// </summary>
+        public AasxMenuItem MenuItem;
+    }
+
+    public class AasxPluginResultProvideMenuItems : AasxPluginResultBase
+    {
+        public List<AasxPluginResultSingleMenuItem> MenuItems;
+    }
+
     public interface IPushApplicationEvent
     {
         void PushApplicationEvent(AasxIntegrationBase.AasxPluginResultEventBase evt);

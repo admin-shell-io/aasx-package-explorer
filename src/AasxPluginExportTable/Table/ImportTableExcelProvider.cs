@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
 
-namespace AasxPluginExportTable
+namespace AasxPluginExportTable.Table
 {
     public class ImportTableExcelProvider : IImportTableProvider
     {
@@ -22,12 +22,12 @@ namespace AasxPluginExportTable
         // Interface
         //
 
-        public int MaxRows => (_worksheet?
-            .LastRowUsed(XLCellsUsedOptions.Contents) == null)
+        public int MaxRows => _worksheet?
+            .LastRowUsed(XLCellsUsedOptions.Contents) == null
             ? 0 : _worksheet.LastRowUsed(XLCellsUsedOptions.Contents).RowNumber();
 
-        public int MaxCols => (_worksheet?
-            .LastColumnUsed(XLCellsUsedOptions.Contents) == null)
+        public int MaxCols => _worksheet?
+            .LastColumnUsed(XLCellsUsedOptions.Contents) == null
             ? 0 : _worksheet.LastColumnUsed(XLCellsUsedOptions.Contents).ColumnNumber();
 
         public string Cell(int row, int col)

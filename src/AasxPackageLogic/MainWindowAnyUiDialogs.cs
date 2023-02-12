@@ -391,7 +391,7 @@ namespace AasxPackageLogic
                     ticket["UseX509"] = useX509;
 
                     // further to logic
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
                     // update
                     MainWindow.RedrawAllAasxElements();
@@ -405,7 +405,7 @@ namespace AasxPackageLogic
                     ticket.StartExec();
 
                     // further to logic
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                     return;
                 }
 
@@ -467,7 +467,7 @@ namespace AasxPackageLogic
                 };
 
                 // further to logic
-                await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
             }
 
             if ((cmd == "decrypt") && PackageCentral.Main != null)
@@ -514,7 +514,7 @@ namespace AasxPackageLogic
                 };
 
                 // further to logic
-                await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
             }
 
             if (cmd == "closeaux" && PackageCentral.AuxAvailable)
@@ -657,7 +657,7 @@ namespace AasxPackageLogic
 
             if (cmd == "filerepoquery")
                 // TODO (MIHO, 2023-02-08): move the referred code here, as it is UI related
-                await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
             if (cmd == "filerepocreatelru")
             {
@@ -700,7 +700,7 @@ namespace AasxPackageLogic
                 ticket?.StartExec();
 
                 // further to logic
-                await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
                 // update
                 MainWindow.RedrawAllAasxElements();
@@ -723,7 +723,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
                     MainWindow.RedrawAllAasxElements();
                     MainWindow.RedrawElementView();
@@ -751,7 +751,7 @@ namespace AasxPackageLogic
                 // do it directly
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -776,7 +776,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -801,7 +801,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -824,7 +824,7 @@ namespace AasxPackageLogic
                 try
                 {
                     // do it
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
                     // redisplay
                     MainWindow.RedrawAllAasxElements();
@@ -851,7 +851,7 @@ namespace AasxPackageLogic
                 // do it
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -874,7 +874,7 @@ namespace AasxPackageLogic
                 // do it
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -898,7 +898,7 @@ namespace AasxPackageLogic
                 try
                 {
                     // delegate futher
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
                     // redisplay
                     MainWindow.RedrawAllAasxElements();
@@ -926,7 +926,7 @@ namespace AasxPackageLogic
                 try
                 {
                     // delegate futher
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -950,7 +950,7 @@ namespace AasxPackageLogic
                 try
                 {
                     // do it
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
                     // redisplay
                     MainWindow.RedrawAllAasxElements();
@@ -979,7 +979,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                     MainWindow.RestartUIafterNewPackage();
                 }
                 catch (Exception ex)
@@ -1006,7 +1006,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -1046,7 +1046,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -1084,7 +1084,7 @@ namespace AasxPackageLogic
                 // ReSharper enable PossibleNullReferenceException
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -1106,7 +1106,7 @@ namespace AasxPackageLogic
                 // do
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
                     // TODO (MIHO, 2022-11-17): not very elegant
                     if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")
@@ -1184,7 +1184,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -1209,7 +1209,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -1252,7 +1252,7 @@ namespace AasxPackageLogic
                 try
                 {
                     // delegate futher
-                    await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -1307,7 +1307,7 @@ namespace AasxPackageLogic
                 try
                 {
                     {
-                        await CommandBinding_GeneralDispatchHeadless(cmd, ticket);
+                        await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
                     }
                 }
                 catch (Exception ex)
@@ -1320,98 +1320,108 @@ namespace AasxPackageLogic
             }
 
             //
-            // Any UI panels
+            // Any UI panels (from pulgins)
             //
 
-            if (cmd == "exportuml")
-            {
-                // start
-                ticket?.StartExec();
+            //if (cmd == "XXXXX")
+            //{
+            //    // start
+            //    ticket?.StartExec();
 
-                // data
-                var data = new ExportUmlRecord();
+            //    // data
+            //    var data = new ExportUmlRecord();
 
-                // panel
-                Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> renderPanel = (uci) =>
-                {
-                    // create panel
-                    var panel = new AnyUiStackPanel();
-                    var helper = new DispEditHelperBasics();
+            //    // panel
+            //    Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> renderPanel = (uci) =>
+            //    {
+            //        // create panel
+            //        var panel = new AnyUiStackPanel();
+            //        var helper = new DispEditHelperBasics();
 
-                    var g = helper.AddSmallGrid(4, 4, new[] { "220:", "*", "20:", "20:" }, 
-                                padding: new AnyUiThickness(0, 5, 0, 5));
-                    panel.Add(g);
+            //        var g = helper.AddSmallGrid(4, 4, new[] { "220:", "*", "20:", "20:" }, 
+            //                    padding: new AnyUiThickness(0, 5, 0, 5));
+            //        panel.Add(g);
 
-                    // Row 0 : Format
-                    helper.AddSmallLabelTo(g, 0, 0, content: "Format:",
-                        verticalAlignment: AnyUiVerticalAlignment.Center,
-                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                    AnyUiUIElement.SetIntFromControl(
-                        helper.Set(
-                            helper.AddSmallComboBoxTo(g, 0, 1,
-                                items: ExportUmlRecord.FormatNames,
-                                selectedIndex: (int)data.Format),
-                            minWidth: 600, maxWidth: 600),
-                        (i) => { data.Format = (ExportUmlRecord.ExportFormat)i; });
+            //        // Row 0 : Format
+            //        helper.AddSmallLabelTo(g, 0, 0, content: "Format:",
+            //            verticalAlignment: AnyUiVerticalAlignment.Center,
+            //            verticalContentAlignment: AnyUiVerticalAlignment.Center);
+            //        AnyUiUIElement.SetIntFromControl(
+            //            helper.Set(
+            //                helper.AddSmallComboBoxTo(g, 0, 1,
+            //                    items: ExportUmlRecord.FormatNames,
+            //                    selectedIndex: (int)data.Format),
+            //                minWidth: 600, maxWidth: 600),
+            //            (i) => { data.Format = (ExportUmlRecord.ExportFormat)i; });
 
-                    // Row 1 : limiting of values im UML
-                    helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
-                        verticalAlignment: AnyUiVerticalAlignment.Center,
-                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+            //        // Row 1 : limiting of values im UML
+            //        helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
+            //            verticalAlignment: AnyUiVerticalAlignment.Center,
+            //            verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                    var g2 = helper.AddSmallGridTo(g, 1, 1, 1, 2, new[] { "200:", "*" });
-                    AnyUiUIElement.SetIntFromControl(
-                        helper.Set(
-                            helper.AddSmallTextBoxTo(g2, 0, 0,
-                                margin: new AnyUiThickness(0, 2, 2, 2),
-                                text: $"{data.LimitInitialValue:D}",
-                                verticalAlignment: AnyUiVerticalAlignment.Center,
-                                verticalContentAlignment: AnyUiVerticalAlignment.Center) /*,
-                            minWidth: 400, maxWidth: 400,
-                            horizontalAlignment: AnyUiHorizontalAlignment.Left */),
-                        (i) => { data.LimitInitialValue = i; });
-                    helper.AddSmallLabelTo(g2, 0, 1,
-                        content: "(0 disables values, -1 = unlimited)",
-                        margin: new AnyUiThickness(10, 0, 0, 0),
-                        verticalAlignment: AnyUiVerticalAlignment.Center,
-                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+            //        var g2 = helper.AddSmallGridTo(g, 1, 1, 1, 2, new[] { "200:", "*" });
+            //        AnyUiUIElement.SetIntFromControl(
+            //            helper.Set(
+            //                helper.AddSmallTextBoxTo(g2, 0, 0,
+            //                    margin: new AnyUiThickness(0, 2, 2, 2),
+            //                    text: $"{data.LimitInitialValue:D}",
+            //                    verticalAlignment: AnyUiVerticalAlignment.Center,
+            //                    verticalContentAlignment: AnyUiVerticalAlignment.Center) /*,
+            //                minWidth: 400, maxWidth: 400,
+            //                horizontalAlignment: AnyUiHorizontalAlignment.Left */),
+            //            (i) => { data.LimitInitialValue = i; });
+            //        helper.AddSmallLabelTo(g2, 0, 1,
+            //            content: "(0 disables values, -1 = unlimited)",
+            //            margin: new AnyUiThickness(10, 0, 0, 0),
+            //            verticalAlignment: AnyUiVerticalAlignment.Center,
+            //            verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                    // Row 2 : Copy to paste buffer
-                    helper.AddSmallLabelTo(g, 2, 0, content: "Copy to paste buffer:",
-                        verticalAlignment: AnyUiVerticalAlignment.Center,
-                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                    AnyUiUIElement.SetBoolFromControl(
-                        helper.Set(
-                            helper.AddSmallCheckBoxTo(g, 2, 1,
-                                content: "(after export, file will be copied to paste buffer)",
-                                isChecked: data.CopyToPasteBuffer,
-                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
-                            colSpan: 2),
-                        (b) => { data.CopyToPasteBuffer = b; });
+            //        // Row 2 : Copy to paste buffer
+            //        helper.AddSmallLabelTo(g, 2, 0, content: "Copy to paste buffer:",
+            //            verticalAlignment: AnyUiVerticalAlignment.Center,
+            //            verticalContentAlignment: AnyUiVerticalAlignment.Center);
+            //        AnyUiUIElement.SetBoolFromControl(
+            //            helper.Set(
+            //                helper.AddSmallCheckBoxTo(g, 2, 1,
+            //                    content: "(after export, file will be copied to paste buffer)",
+            //                    isChecked: data.CopyToPasteBuffer,
+            //                    verticalContentAlignment: AnyUiVerticalAlignment.Center),
+            //                colSpan: 2),
+            //            (b) => { data.CopyToPasteBuffer = b; });
 
-                    // Test
-                    AnyUiUIElement.RegisterControl(
-                        helper.AddSmallButtonTo(g, 3, 0, content: "Test!", directInvoke: true),
-                        (o) =>
-                        {
-                            return new AnyUiLambdaActionModalPanelReRender()
-                            { DiaDataPanel = uci };
-                        });
-                    if (data.LimitInitialValue >= 1 && data.LimitInitialValue <= 3)
-                        for (int i = 0; i < data.LimitInitialValue; i++)
-                            helper.AddSmallLabelTo(g, 3, 1 + i, content: "" + i);
+            //        // Test
+            //        AnyUiUIElement.RegisterControl(
+            //            helper.AddSmallButtonTo(g, 3, 0, content: "Test!", directInvoke: true),
+            //            (o) =>
+            //            {
+            //                return new AnyUiLambdaActionModalPanelReRender()
+            //                { DiaDataPanel = uci };
+            //            });
+            //        if (data.LimitInitialValue >= 1 && data.LimitInitialValue <= 3)
+            //            for (int i = 0; i < data.LimitInitialValue; i++)
+            //                helper.AddSmallLabelTo(g, 3, 1 + i, content: "" + i);
 
-                    // give back
-                    return panel;
-                };
+            //        // give back
+            //        return panel;
+            //    };
 
-                // dialog
-                var uc = new AnyUiDialogueDataModalPanel("Export UML ..");
-                // uc.Panel = panel;                
-                // uc.Data = data;
-                uc.ActivateRenderPanel(data, renderPanel);
-                var res = await DisplayContext.StartFlyoverModalAsync(uc);
-            }
+            //    // dialog
+            //    var uc = new AnyUiDialogueDataModalPanel("XXXXX");
+            //    // uc.Panel = panel;                
+            //    // uc.Data = data;
+            //    uc.ActivateRenderPanel(data, renderPanel);
+            //    var res = await DisplayContext.StartFlyoverModalAsync(uc);
+            //}
+            //
+            
+            //if (cmd == "exportuml")
+            //    // simply pass on
+            //    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+            // check if a plugin is attached to the name
+            if (menuItem is AasxMenuItem mi && mi.PluginToAction?.HasContent() == true)
+                // simply pass on, the headless function will check again
+                await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
 
             //
             // Scripting : allow for server?

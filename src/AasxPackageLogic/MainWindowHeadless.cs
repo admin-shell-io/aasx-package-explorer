@@ -34,6 +34,8 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using System.Windows;
+using System.Windows.Controls;
+using Microsoft.VisualBasic.Logging;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -126,6 +128,7 @@ namespace AasxPackageLogic
         /// </summary>
         public async Task CommandBinding_GeneralDispatchHeadless(
             string cmd,
+            AasxMenuItemBase menuItem,
             AasxMenuActionTicket ticket)
         {
             //
@@ -766,155 +769,126 @@ namespace AasxPackageLogic
                 }
             }
 
-            if (cmd == "exporttable" || cmd == "importtable")
-            {
-                // arguments
-                if (ticket.Env == null
-                || ticket.Submodel == null
-                || !(ticket["File"] is string fn) || fn.HasContent() != true)
-                {
-                    LogErrorToTicket(ticket,
-                        "Import/ Export: No valid AAS-Env, Submodel or target file selected");
-                    return;
-                }
+            //if (cmd == "exporttable" || cmd == "importtable")
+            //{
+            //    // arguments
+            //    if (ticket.Env == null
+            //    || ticket.Submodel == null
+            //    || !(ticket["File"] is string fn) || fn.HasContent() != true)
+            //    {
+            //        LogErrorToTicket(ticket,
+            //            "Import/ Export: No valid AAS-Env, Submodel or target file selected");
+            //        return;
+            //    }
 
-                // record for import/ export
-                var record = ticket["Record"] as ImportExportTableRecord;
-                var records = GetImportExportTablePreset().Item1;
-                if (records != null && record == null
-                    && ticket["Preset"] is string presetName)
-                    foreach (var pr in records)
-                        if (pr?.Name?.Trim().ToLower() == presetName.Trim().ToLower())
-                        {
-                            record = pr;
-                            break;
-                        }
+            //    // record for import/ export
+            //    var record = ticket["Record"] as ImportExportTableRecord;
+            //    var records = GetImportExportTablePreset().Item1;
+            //    if (records != null && record == null
+            //        && ticket["Preset"] is string presetName)
+            //        foreach (var pr in records)
+            //            if (pr?.Name?.Trim().ToLower() == presetName.Trim().ToLower())
+            //            {
+            //                record = pr;
+            //                break;
+            //            }
 
-                if (record != null && ticket["Format"] is string fmt)
-                    for (int i = 0; i < ImportExportTableRecord.FormatNames.Length; i++)
-                        if (ImportExportTableRecord.FormatNames[i].ToLower()
-                                .Contains(fmt.ToLower()))
-                            record.Format = i;
+            //    if (record != null && ticket["Format"] is string fmt)
+            //        for (int i = 0; i < ImportExportTableRecord.FormatNames.Length; i++)
+            //            if (ImportExportTableRecord.FormatNames[i].ToLower()
+            //                    .Contains(fmt.ToLower()))
+            //                record.Format = i;
 
-                // check again
-                var pluginName = "AasxPluginExportTable";
-                var pi = Plugins.FindPluginInstance(pluginName);
-                var actionName = (cmd == "exporttable") ? "export-submodel" : "import-submodel";
-                if (record == null || !pi.HasAction(actionName))
-                {
-                    LogErrorToTicket(ticket, "Import/export table: No record data available or " +
-                        "no suitable plugin available.");
-                    return;
-                }
+            //    // check again
+            //    var pluginName = "AasxPluginExportTable";
+            //    var pi = Plugins.FindPluginInstance(pluginName);
+            //    var actionName = (cmd == "exporttable") ? "export-submodel" : "import-submodel";
+            //    if (record == null || !pi.HasAction(actionName))
+            //    {
+            //        LogErrorToTicket(ticket, "Import/export table: No record data available or " +
+            //            "no suitable plugin available.");
+            //        return;
+            //    }
 
-                try
-                {
-                    Log.Singleton.Info("Exporting/ importing {0}", fn);
-                    pi.InvokeAction(actionName, record, fn, ticket.Env, ticket.Submodel, ticket);
-                }
-                catch (Exception ex)
-                {
-                    LogErrorToTicket(ticket, ex, "When importing/ exporting tables, an error occurred");
-                }
-            }
+            //    try
+            //    {
+            //        Log.Singleton.Info("Exporting/ importing {0}", fn);
+            //        pi.InvokeAction(actionName, record, fn, ticket.Env, ticket.Submodel, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        LogErrorToTicket(ticket, ex, "When importing/ exporting tables, an error occurred");
+            //    }
+            //}
 
-            if (cmd == "exportuml")
-            {
-                // arguments
-                if (ticket.Env == null
-                || ticket.Submodel == null
-                || !(ticket["File"] is string fn) || fn.HasContent() != true)
-                {
-                    LogErrorToTicket(ticket,
-                        "Export UML: No valid AAS-Env, Submodel or target file selected");
-                    return;
-                }
+            //if (cmd == "exportuml")
+            //{
+            //    try
+            //    {
+            //        Log.Singleton.Info("Exporting UML dialog based ..");
 
-                // record for import/ export
-                var record = ticket["Record"] as ExportUmlRecord;
-                if (record == null)
-                    record = new ExportUmlRecord();
+            //        var pluginName = "AasxPluginExportTable";
+            //        var pi = Plugins.FindPluginInstance(pluginName);
+            //        var actionName = "export-uml-dialogs";
 
-                // arguments by reflection
-                ticket?.ArgValue?.PopulateObjectFromArgs(record);
+            //        await pi.InvokeActionAsync(actionName, ticket, DisplayContext);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        LogErrorToTicket(ticket, ex, "When exporting UML, an error occurred");
+            //    }
 
-                // further settings
-                if (ticket["Format"] is string fmt)
-                    for (int i = 0; i < ExportUmlRecord.FormatNames.Length; i++)
-                        if (ExportUmlRecord.FormatNames[i].ToLower()
-                                .Contains(fmt.ToLower()))
-                            record.Format = (ExportUmlRecord.ExportFormat)i;
+            //    return;
+            //}
 
-                // check again
-                var pluginName = "AasxPluginExportTable";
-                var pi = Plugins.FindPluginInstance(pluginName);
-                var actionName = "export-uml";
-                if (record == null || !pi.HasAction(actionName))
-                {
-                    LogErrorToTicket(ticket, "Export UML: No record data available or " +
-                        "no suitable plugin available.");
-                    return;
-                }
+            //if (cmd == "importtimeseries")
+            //{
+            //    // arguments
+            //    if (ticket.Env == null
+            //    || ticket.Submodel == null
+            //    || !(ticket["File"] is string fn) || fn.HasContent() != true)
+            //    {
+            //        LogErrorToTicket(ticket,
+            //            "Import time series: No valid AAS-Env, Submodel or target file selected");
+            //        return;
+            //    }
 
-                try
-                {
-                    Log.Singleton.Info("Exporting UML {0}", fn);
-                    pi.InvokeAction(actionName, record, fn, ticket.Env, ticket.Submodel, ticket);
-                }
-                catch (Exception ex)
-                {
-                    LogErrorToTicket(ticket, ex, "When exporting UML, an error occurred");
-                }
-            }
+            //    // record for import/ export
+            //    var record = ticket["Record"] as ImportTimeSeriesRecord;
+            //    if (record == null)
+            //        record = new ImportTimeSeriesRecord();
 
-            if (cmd == "importtimeseries")
-            {
-                // arguments
-                if (ticket.Env == null
-                || ticket.Submodel == null
-                || !(ticket["File"] is string fn) || fn.HasContent() != true)
-                {
-                    LogErrorToTicket(ticket,
-                        "Import time series: No valid AAS-Env, Submodel or target file selected");
-                    return;
-                }
+            //    // arguments by reflection
+            //    ticket?.ArgValue?.PopulateObjectFromArgs(record);
 
-                // record for import/ export
-                var record = ticket["Record"] as ImportTimeSeriesRecord;
-                if (record == null)
-                    record = new ImportTimeSeriesRecord();
+            //    // further settings
+            //    if (ticket["Format"] is string fmt)
+            //        for (int i = 0; i < ImportTimeSeriesRecord.FormatNames.Length; i++)
+            //            if (ImportTimeSeriesRecord.FormatNames[i].ToLower()
+            //                    .Contains(fmt.ToLower()))
+            //                record.Format = (ImportTimeSeriesRecord.FormatEnum)i;
 
-                // arguments by reflection
-                ticket?.ArgValue?.PopulateObjectFromArgs(record);
+            //    // check again
+            //    var pluginName = "AasxPluginExportTable";
+            //    var pi = Plugins.FindPluginInstance(pluginName);
+            //    var actionName = "import-time-series";
+            //    if (record == null || !pi.HasAction(actionName))
+            //    {
+            //        LogErrorToTicket(ticket, "Import time series: No record data available or " +
+            //            "no suitable plugin available.");
+            //        return;
+            //    }
 
-                // further settings
-                if (ticket["Format"] is string fmt)
-                    for (int i = 0; i < ImportTimeSeriesRecord.FormatNames.Length; i++)
-                        if (ImportTimeSeriesRecord.FormatNames[i].ToLower()
-                                .Contains(fmt.ToLower()))
-                            record.Format = (ImportTimeSeriesRecord.FormatEnum)i;
-
-                // check again
-                var pluginName = "AasxPluginExportTable";
-                var pi = Plugins.FindPluginInstance(pluginName);
-                var actionName = "import-time-series";
-                if (record == null || !pi.HasAction(actionName))
-                {
-                    LogErrorToTicket(ticket, "Import time series: No record data available or " +
-                        "no suitable plugin available.");
-                    return;
-                }
-
-                try
-                {
-                    Log.Singleton.Info("Importing time series {0}", fn);
-                    pi.InvokeAction(actionName, record, fn, ticket.Env, ticket.Submodel, ticket);
-                }
-                catch (Exception ex)
-                {
-                    LogErrorToTicket(ticket, ex, "When importing time series, an error occurred");
-                }
-            }
+            //    try
+            //    {
+            //        Log.Singleton.Info("Importing time series {0}", fn);
+            //        pi.InvokeAction(actionName, record, fn, ticket.Env, ticket.Submodel, ticket);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        LogErrorToTicket(ticket, ex, "When importing time series, an error occurred");
+            //    }
+            //}
 
             if (cmd == "newsubmodelfromplugin")
             {
@@ -1169,9 +1143,29 @@ namespace AasxPackageLogic
 					}
 				}
 			}
-		}
 
-        public Tuple<List<ImportExportTableRecord>, ExportUmlRecord, ImportTimeSeriesRecord>
+            //
+            // Plugins
+            //
+
+            // check if a plugin is attached to the name
+            if (menuItem is AasxMenuItem mi && mi.PluginToAction?.HasContent() == true)
+            {
+                try
+                {
+                    var plugin = Plugins.FindPluginInstance(mi.PluginToAction);
+                    if (plugin != null && plugin.HasAction("call-menu-item", useAsync: true))
+                        await plugin.InvokeActionAsync("call-menu-item", cmd, ticket, DisplayContext);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(
+                        ex, $"When calling plugin {mi.PluginToAction} to call-menu-item {mi.Name}.");
+                }
+            }
+        }
+
+        public Tuple<List<ImportExportTableRecord>, object, ImportTimeSeriesRecord>
             GetImportExportTablePreset()
         {
             // try to get presets from the plugin
@@ -1182,9 +1176,9 @@ namespace AasxPackageLogic
                 var presets = (pi?.InvokeAction("get-presets") as AasxIntegrationBase.AasxPluginResultBaseObject)?
                         .obj as object[];
                 if (presets != null && presets.Length >= 3)
-                    return new Tuple<List<ImportExportTableRecord>, ExportUmlRecord, ImportTimeSeriesRecord>(
+                    return new Tuple<List<ImportExportTableRecord>, object, ImportTimeSeriesRecord>(
                         presets[0] as List<ImportExportTableRecord>,
-                        presets[1] as ExportUmlRecord,
+                        presets[1] as object,
                         presets[2] as ImportTimeSeriesRecord
                     );
             }

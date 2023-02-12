@@ -80,12 +80,58 @@ namespace AasxIntegrationBase
     [System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
     public class AasxMenuArgument : System.Attribute
     {
+        /// <summary>
+        /// If set, name to be used
+        /// </summary>
         public string Name = "";
+
+        /// <summary>
+        /// Help text for parsing command arguments
+        /// </summary>
         public string Help = "";
-        public AasxMenuArgument(string name = "", string help = "")
+
+        /// <summary>
+        /// If set, header (key) in a UI dialogue.
+        /// </summary>
+        public string UiHeader = null;
+
+        /// <summary>
+        /// If true, add help texts in a additional column
+        /// </summary>
+        public bool UiShowHelp = false;
+
+        /// <summary>
+        /// If true, will group edit field and help directly after each other
+        /// </summary>
+        public bool UiGroupHelp = false;
+
+        /// <summary>
+        /// If not <c>null</c>, will restrict the minimum length of the edit field.
+        /// Automatically disable "stretch" behavior of the field.
+        /// </summary>
+        public int? UiMinWidth = null;
+
+        /// <summary>
+        /// If not <c>null</c>, will restrict the maximum length of the edit field.
+        /// Automatically disable "stretch" behavior of the field.
+        /// </summary>
+        public int? UiMaxWidth = null;
+
+        public AasxMenuArgument(
+            string name = "", string help = "",
+            string uiHeader = null, bool uiShowHelp = false,
+            bool uiGroupHelp = false,
+            int minWidth = -1, int maxWidth = -1)
         {
-            this.Name = name;
+            Name = name;
             Help = help;
+            UiHeader = uiHeader;
+            UiShowHelp = uiShowHelp;
+            UiGroupHelp = uiGroupHelp;
+            if (minWidth >= 0.0)
+                UiMinWidth = minWidth;
+            if (maxWidth >= 0.0)
+                UiMaxWidth = maxWidth;
         }
     }
 
@@ -200,7 +246,7 @@ namespace AasxIntegrationBase
     /// <summary>
     /// Base class for menu items with a possible action.
     /// </summary>
-    public abstract class AasxMenuItemBase
+    public abstract class AasxMenuItemBase 
     {
         /// <summary>
         /// Name of the menu item. Relevant. Will be used to differentiate
@@ -238,6 +284,12 @@ namespace AasxIntegrationBase
         /// The action to be activated.
         /// </summary>
         public AasxMenuActionAsyncDelegate ActionAsync = null;
+
+        /// <summary>
+        /// If not null will cause to invoke the action "call-menu-item" for 
+        /// the named plugin.
+        /// </summary>
+        public string PluginToAction = null;
 
         //
         // Convenience
@@ -330,6 +382,12 @@ namespace AasxIntegrationBase
         /// Sub menues
         /// </summary>
         public AasxMenu Childs = null;
+
+        /// <summary>
+        /// Declares this menu as a named attach point, to which dynamic items, e.g. provided
+        /// by plugins, can be attached to.
+        /// </summary>
+        public string AttachPoint = null;
 
         //
         // more
@@ -506,13 +564,15 @@ namespace AasxIntegrationBase
         public AasxMenu AddMenu(
             string header,
             AasxMenuFilter filter = AasxMenuFilter.WpfBlazor,
-            AasxMenu childs = null)
+            AasxMenu childs = null,
+            string attachPoint = null)
         {
             this.Add(new AasxMenuItem()
             {
                 Header = header,
                 Filter = filter,
-                Childs = childs
+                Childs = childs,
+                AttachPoint = attachPoint
             });
             return this;
         }
@@ -589,12 +649,16 @@ namespace AasxIntegrationBase
             }
         }
 
-        public IEnumerable<T> FindAll<T>(Func<AasxMenuItemBase, bool> pred = null)
+        public IEnumerable<T> FindAll<T>(Func<T, bool> pred = null)
             where T : AasxMenuItemBase
         {
+            // test itself
+            if (this is T chi && (pred == null || pred(chi)))
+                yield return chi;
+
             foreach (var ch in this)
             {
-                if (ch is T cht && (pred == null || pred(ch)))
+                if (ch is T cht && (pred == null || pred(cht)))
                     yield return cht;
                 if (ch is AasxMenuItem chmi && chmi.Childs != null)
                     foreach (var x in chmi.Childs.FindAll(pred))

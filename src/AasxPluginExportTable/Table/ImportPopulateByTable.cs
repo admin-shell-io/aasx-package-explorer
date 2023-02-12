@@ -18,7 +18,7 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
-namespace AasxPluginExportTable
+namespace AasxPluginExportTable.Table
 {
     /// <summary>
     /// This class create a context to a Submodel, which shall be incrementally popoulated by
@@ -101,7 +101,7 @@ namespace AasxPluginExportTable
                         cell = "";
 
                     var mi = (1 + r) * (1 + _job.Cols) + 1 + c;
-                    var mat = (mi >= matcher.Count) ? null : matcher[mi];
+                    var mat = mi >= matcher.Count ? null : matcher[mi];
                     if (mat == null)
                     {
                         _log?.Info($"    invalid matcher at top ({1 + r}, {1 + c})");

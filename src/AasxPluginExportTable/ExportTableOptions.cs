@@ -13,11 +13,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasxPluginExportTable.Uml;
 using AdminShellNS;
 
 namespace AasxPluginExportTable
 {
-    public class ExportTableOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class ExportTableOptions : AasxPluginOptionsBase
     {
         public string TemplateIdConceptDescription = "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 

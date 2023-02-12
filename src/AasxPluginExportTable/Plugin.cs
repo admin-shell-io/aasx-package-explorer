@@ -15,7 +15,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using AasxPluginExportTable;
 using AasxPluginExportTable.TimeSeries;
 using AasxPluginExportTable.Uml;
 using AnyUi;
@@ -24,6 +23,9 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using static AnyUi.AnyUiDialogueDataSaveFile;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using AasxPluginExportTable.Table;
+using AasxPluginExportTable;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -31,7 +33,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     public class AasxPlugin : AasxPluginBase
     {
-        private AasxPluginExportTable.ExportTableOptions _options = new AasxPluginExportTable.ExportTableOptions();
+        private ExportTableOptions _options = new AasxPluginExportTable.ExportTableOptions();
 
         static AasxPlugin()
         {
@@ -44,13 +46,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            _options = AasxPluginExportTable.ExportTableOptions.CreateDefault();
+            _options = ExportTableOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
             {
                 var newOpt =
-                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginExportTable.ExportTableOptions>(
+                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<ExportTableOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
                     this._options = newOpt;
@@ -77,6 +79,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-presets", "Provides options/ preset data of plugin to caller."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "get-menu-items", "Provides a list of menu items of the plugin to the caller."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "call-menu-item", "Caller activates a named menu item.", useAsync: true));
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("export-uml", "Exports a Submodel to an UML file."));
@@ -92,7 +100,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
-                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginExportTable.ExportTableOptions>(
+                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<ExportTableOptions>(
                     (args[0] as string));
                 if (newOpt != null)
                     this._options = newOpt;
@@ -138,42 +146,107 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return new AasxPluginResultBaseObject("presets", presets);
             }
 
-            if ((action == "export-submodel" || action == "import-submodel")
-                && args != null && args.Length >= 5)
+            if (action == "get-menu-items")
             {
-                if (args[0] is ImportExportTableRecord record
-                    && args[1] is string fn
-                    && args[2] is Aas.Environment env
-                    && args[3] is Aas.Submodel sm
-                    && args[4] is AasxMenuActionTicket ticket)
+                // result list 
+                var res = new List<AasxPluginResultSingleMenuItem>();
+
+                // export table
+                res.Add(new AasxPluginResultSingleMenuItem()
                 {
-                    // the Submodel elements need to have parents
-                    sm.SetAllParents();
+                    AttachPoint = "Export",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ExportTable",
+                        Header = "Export SubmodelElements as Table …",
+                        HelpText = "Export table(s) for sets of SubmodelElements in multiple common formats.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                            .Add("File", "Filename and path of file to exported.")
+                            .Add("Preset", "Name of preset to load.")
+                            .Add("Format", "Format to be either " +
+                                    "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
+                            .Add("Record", "Record data", hidden: true)
+                    }
+                });
 
-                    if (action == "export-submodel")
-                        Export(record, fn, sm, env, ticket);
+                // export uml
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Export",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ExportUml",
+                        Header = "Export Submodel as UML …",
+                        HelpText = "Export UML of Submodel in multiple common formats.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                            .Add("File", "Filename and path of file to exported.")
+                            .Add("Location", "Location of the file (local, user, download).")
+                            .Add("Format", "Format to be either 'XMI v1.1', 'XML v2.1', 'PlantUML'.")
+                            .Add("Record", "Record data", hidden: true)
+                            .AddFromReflection(new ExportUmlRecord())
+                    }
+                });
 
-                    if (action == "import-submodel")
-                        Import(record, fn, sm, env);
-                }
+                // import time series
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Import",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ImportTimeSeries",
+                        Header = "Read time series values into SubModel …",
+                        HelpText = "Import sets of time series values from an table in common format.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                                .Add("File", "Filename and path of file to imported.")
+                                .Add("Format", "Format to be 'Excel'.")
+                                .Add("Record", "Record data", hidden: true)
+                                .AddFromReflection(new ImportTimeSeriesRecord())
+                    }
+                });
+
+                // return
+                return new AasxPluginResultProvideMenuItems()
+                {
+                    MenuItems = res
+                };
             }
 
-            if (action == "export-uml")
-            {
-                if (args != null && args.Length >= 4
-                    && args[0] is ExportUmlRecord record
-                    && args[1] is string fn
-                    && args[2] is Aas.Environment env
-                    && args[3] is Aas.Submodel sm)
-                {
-                    // the Submodel elements need to have parents
-                    sm.SetAllParents();
+            //if ((action == "export-submodel" || action == "import-submodel")
+            //    && args != null && args.Length >= 5)
+            //{
+            //    if (args[0] is ImportExportTableRecord record
+            //        && args[1] is string fn
+            //        && args[2] is Aas.Environment env
+            //        && args[3] is Aas.Submodel sm
+            //        && args[4] is AasxMenuActionTicket ticket)
+            //    {
+            //        // the Submodel elements need to have parents
+            //        sm.SetAllParents();
 
-                    // use functionality
-                    ExportUml.ExportUmlToFile(env, sm, record, fn);
-                    _log.Info($"Export UML data to file: {fn}");
-                }
-            }
+            //        if (action == "export-submodel")
+            //            Export(record, fn, sm, env, ticket);
+
+            //        if (action == "import-submodel")
+            //            Import(record, fn, sm, env);
+            //    }
+            //}
+
+            //if (action == "export-uml")
+            //{
+            //    if (args != null && args.Length >= 4
+            //        && args[0] is ExportUmlRecord record
+            //        && args[1] is string fn
+            //        && args[2] is Aas.Environment env
+            //        && args[3] is Aas.Submodel sm)
+            //    {
+            //        // the Submodel elements need to have parents
+            //        sm.SetAllParents();
+
+            //        // use functionality
+            //        ExportUml.ExportUmlToFile(env, sm, record, fn);
+            //        _log.Info($"Export UML data to file: {fn}");
+            //    }
+            //}
 
             if (action == "import-time-series")
             {
@@ -188,7 +261,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     // use functionality
                     _log.Info($"Importing time series from file: {fn} ..");
-                    ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, record, fn, _log);
+                    // ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, record, fn, _log);
                 }
             }            
 
@@ -202,14 +275,30 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         /// </summary>
         public new async Task<object> ActivateActionAsync(string action, params object[] args)
         {
-            if (action == "export-uml-dialogs")
+            if (action == "call-menu-item")
             {
-                if (args != null && args.Length >= 2
-                    && args[0] is AasxMenuActionTicket ticket
-                    && args[1] is AnyUiContextPlusDialogs displayContext)                  
-                {                   
-                    await TestExportUmlDialogBased(ticket, displayContext);
-                    return new AasxPluginResultBase();
+                if (args != null && args.Length >= 3
+                    && args[0] is string cmd
+                    && args[1] is AasxMenuActionTicket ticket
+                    && args[2] is AnyUiContextPlusDialogs displayContext)                  
+                {
+                    if (cmd == "exporttable")
+                    {
+                        await AnyUiDialogueTable.ImportExportTableDialogBased(_log, ticket, displayContext, _options, doImport: false);
+                        return new AasxPluginResultBase();
+                    }
+
+                    if (cmd == "exportuml")
+                    {
+                        await AnyUiDialogueUmlExport.ExportUmlDialogBased(_log, ticket, displayContext);
+                        return new AasxPluginResultBase();
+                    }
+
+                    if (cmd == "importtimeseries")
+                    {
+                        await AnyUiDialogueTimeSeries.ImportTimeSeriesDialogBased(_log, ticket, displayContext);
+                        return new AasxPluginResultBase();
+                    }
                 }
             }
 
@@ -295,7 +384,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
         }
 
-        private void Export(ImportExportTableRecord record,
+        private void Export(
+            AasxPluginExportTable.ImportExportTableRecord record,
             string fn,
             Aas.Submodel sm, Aas.Environment env,
             AasxMenuActionTicket ticket = null)
@@ -344,7 +434,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         }
 
-        private void Import(ImportExportTableRecord record,
+        private void Import(
+            AasxPluginExportTable.ImportExportTableRecord record,
             string fn,
             Aas.Submodel sm, Aas.Environment env,
             AasxMenuActionTicket ticket = null)
@@ -395,117 +486,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
 
         }
-
-        private async Task TestExportUmlDialogBased(
-            AasxMenuActionTicket ticket,
-            AnyUiContextPlusDialogs displayContext)
-        {
-            // access
-            if (ticket == null || displayContext == null)
-                return;
-
-            // check preconditions
-            if (ticket.Env == null || ticket.Submodel == null || ticket.SubmodelElement != null)
-            {
-                _log?.Error("Export UML: A Submodel has to be selected!");
-                return;
-            }
-
-            // ask for parameter record?
-            var record = ticket["Record"] as ExportUmlRecord;
-            if (record == null)
-            {
-                record = new ExportUmlRecord();
-
-                var uc = new AnyUiDialogueDataModalPanel("Export UML ..");
-                uc.ActivateRenderPanel(record,
-                    (uci) =>
-                    {
-                        // create panel
-                        var panel = new AnyUiStackPanel();
-                        var helper = new AnyUiSmallWidgetToolkit();
-
-                        var g = helper.AddSmallGrid(4, 4, new[] { "150:", "*", "200:" });
-                        panel.Add(g);
-
-                        // Row 0 : Format
-                        helper.AddSmallLabelTo(g, 0, 0, content: "Format:",
-                            verticalAlignment: AnyUiVerticalAlignment.Center,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        AnyUiUIElement.SetIntFromControl(
-                            helper.AddSmallComboBoxTo(g, 0, 1, maxWidth: 450,
-                                items: ExportUmlRecord.FormatNames,
-                            selectedIndex: (int)record.Format),
-                            (i) => { record.Format = (ExportUmlRecord.ExportFormat)i; });
-
-                        // Row 1 : limiting of values im UML
-                        helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
-                            verticalAlignment: AnyUiVerticalAlignment.Center,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        AnyUiUIElement.SetIntFromControl(
-                            helper.Set(
-                                helper.AddSmallTextBoxTo(g, 1, 1,
-                                    margin: new AnyUiThickness(4, 2, 2, 2),
-                                    text: $"{record.LimitInitialValue:D}"),
-                                maxWidth: 200),
-                            (i) => { record.LimitInitialValue = i; });
-                        helper.AddSmallLabelTo(g, 1, 2,
-                            content: "(0 disables values, -1 = unlimited)",
-                            margin: new AnyUiThickness(10, 0, 0, 0),
-                            verticalAlignment: AnyUiVerticalAlignment.Center,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
-
-                        // Row 2 : Copy to paste buffer
-                        helper.AddSmallLabelTo(g, 2, 0, content: "Copy to paste buffer:",
-                            verticalAlignment: AnyUiVerticalAlignment.Center,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        AnyUiUIElement.SetBoolFromControl(
-                            helper.Set(
-                                helper.AddSmallCheckBoxTo(g, 2, 1,
-                                    content: "(after export, file will be copied to paste buffer)",
-                                    isChecked: record.CopyToPasteBuffer),
-                                colSpan: 2),
-                            (b) => { record.CopyToPasteBuffer = b; });
-
-                        // give back
-                        return panel;
-                    });
-                if (!(await displayContext.StartFlyoverModalAsync(uc)))
-                    return;
-            }
-
-            // stop
-            await Task.Delay(2000);
-
-            // ask for filename?
-            if (!(await displayContext.MenuSelectSaveFilenameToTicketAsync(
-                        ticket, "File",
-                        "Select file for UML export ..",
-                        "new.puml",
-                        "PlantUML text file (*.puml)|*.puml|UML text file (*.uml)|*.uml|All files (*.*)|*.*",
-                        "Import/ export UML: No valid filename.",
-                        argLocation: "Location")))
-                return;
-
-            var fn = ticket["File"] as string;
-            var loc = ticket["Location"];
-
-            // the Submodel elements need to have parents
-            var sm = ticket.Submodel;
-            sm.SetAllParents();
-
-            // export
-            ExportUml.ExportUmlToFile(ticket.Env, sm, record, fn);
-            
-            // persist
-            await displayContext.CheckIfDownloadAndStart(_log, loc, fn);
-            if (record.CopyToPasteBuffer)
-            {
-                var lines = System.IO.File.ReadAllText(fn);
-                displayContext.ClipboardSet(new AnyUiClipboardData(lines));
-            }
-            
-            _log.Info($"Export UML data to file: {fn}");
-        }
+        
     }
 }

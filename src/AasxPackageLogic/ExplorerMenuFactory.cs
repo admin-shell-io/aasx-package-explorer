@@ -19,6 +19,7 @@ using AdminShellNS;
 using Extensions;
 using AnyUi;
 using Newtonsoft.Json;
+using VDS.RDF.Query.Expressions.Functions.Sparql.Boolean;
 
 namespace AasxPackageExplorer
 {
@@ -119,7 +120,7 @@ namespace AasxPackageExplorer
                             .Add("AAS", "String with AAS-Id")
                             .Add("Asset", "String with Asset-Id.")))
                 .AddSeparator()
-                .AddMenu(header: "Import …", childs: (new AasxMenu())
+                .AddMenu(header: "Import …", attachPoint: "import", childs: (new AasxMenu())
                     .AddWpfBlazor(name: "ImportAML", header: "Import AutomationML into AASX …",
                         help: "Import AML file with AAS entities to overall AAS environment.",
                         args: new AasxMenuListOfArgDefs()
@@ -159,13 +160,13 @@ namespace AasxPackageExplorer
                         help: "Import BAMM RDF into AASX.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "BAMM file with RDF data."))
-                    .AddWpfBlazor(name: "ImportTimeSeries", header: "Read time series values into SubModel …",
+                    /* .AddWpfBlazor(name: "ImportTimeSeries", header: "Read time series values into SubModel …",
                             help: "Import sets of time series values from an table in common format.",
                             args: new AasxMenuListOfArgDefs()
                                 .Add("File", "Filename and path of file to imported.")
                                 .Add("Format", "Format to be 'Excel'.")
                                 .Add("Record", "Record data", hidden: true)
-                                .AddFromReflection(new ImportTimeSeriesRecord()))
+                                .AddFromReflection(new ImportTimeSeriesRecord())) */
                     .AddWpfBlazor(name: "ImportTable", header: "Import SubmodelElements from Table …",
                             help: "Import sets of SubmodelElements from table datat in multiple common formats.",
                             args: new AasxMenuListOfArgDefs()
@@ -174,7 +175,7 @@ namespace AasxPackageExplorer
                                 .Add("Format", "Format to be either " +
                                         "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
                                 .Add("Record", "Record data", hidden: true)))
-                .AddMenu(header: "Export …", childs: (new AasxMenu())
+                .AddMenu(header: "Export …", attachPoint: "Export", childs: (new AasxMenu())
                     .AddWpfBlazor(name: "ExportAML", header: "Export AutomationML …",
                         help: "Export AML file with AAS entities from AAS environment.",
                         args: new AasxMenuListOfArgDefs()
@@ -220,22 +221,22 @@ namespace AasxPackageExplorer
                         args: new AasxMenuListOfArgDefs()
                             .Add("Machine", "Designation of the machine/ equipment.")
                             .Add("Model", "Model type, either 'Physical' or 'Signal'."))
-                    .AddWpfBlazor(name: "ExportTable", header: "Export SubmodelElements as Table …",
+                    /* .AddWpfBlazor(name: "ExportTable", header: "Export SubmodelElements as Table …",
                         help: "Export table(s) for sets of SubmodelElements in multiple common formats.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "Filename and path of file to exported.")
                             .Add("Preset", "Name of preset to load.")
                             .Add("Format", "Format to be either " +
                                     "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
-                            .Add("Record", "Record data", hidden: true))
-                    .AddWpfBlazor(name: "ExportUml", header: "Export SubmodelElements as UML …",
-                        help: "Export UML of SubmodelElements in multiple common formats.",
-                        args: new AasxMenuListOfArgDefs()
-                            .Add("File", "Filename and path of file to exported.")
-                            .Add("Location", "Location of the file (local, user, download).")
-                            .Add("Format", "Format to be either 'XMI v1.1', 'XML v2.1', 'PlantUML'.")
-                            .Add("Record", "Record data", hidden: true)
-                            .AddFromReflection(new ExportUmlRecord())))
+                            .Add("Record", "Record data", hidden: true)) */
+                    /* .AddWpfBlazor(name: "ExportUml", header: "Export Submodel as UML …",
+                    help: "Export UML of Submodel in multiple common formats.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("File", "Filename and path of file to exported.")
+                        .Add("Location", "Location of the file (local, user, download).")
+                        .Add("Format", "Format to be either 'XMI v1.1', 'XML v2.1', 'PlantUML'.")
+                        .Add("Record", "Record data", hidden: true)
+                        .AddFromReflection(new ExportUmlRecord())  ) */ )
                 .AddSeparator(filter: AasxMenuFilter.NotBlazor)
                 .AddMenu(header: "Server …", filter: AasxMenuFilter.NotBlazor, childs: (new AasxMenu())
                     .AddWpf(name: "ServerRest", header: "Serve AAS as REST …", inputGesture: "Shift+F6")
@@ -344,6 +345,36 @@ namespace AasxPackageExplorer
 
             for (int i = 0; i < 9; i++)
                 menu.AddHotkey(name: $"LaunchScript{i}", gesture: $"Ctrl+Shift+{i}");
+
+            //
+            // Try attach plugins
+            //
+
+            foreach (var mi in menu.FindAll<AasxMenuItem>((test) => test.AttachPoint?.HasContent() == true))
+            {
+                // this is worth a search in the plugins
+                foreach (var pi in Plugins.LoadedPlugins.Values)
+                {
+                    // menu items?
+                    if (pi.MenuItems == null)
+                        continue;
+
+                    // search here
+                    foreach (var pmi in pi.MenuItems)
+                        if (pmi.AttachPoint.Equals(mi.AttachPoint, 
+                            System.StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // double the data
+                            var newMi = pmi.MenuItem.Copy();
+
+                            // say, that it goes to a plugin
+                            newMi.PluginToAction = pi.name;
+
+                            // yes! can attach!
+                            mi.Add(newMi);
+                        }
+                }
+            }
 
             //
             // End

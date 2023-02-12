@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using AasxPluginExportTable.Table;
 
 namespace AasxPluginExportTable.TimeSeries
 {
