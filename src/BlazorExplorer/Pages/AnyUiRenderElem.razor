@@ -320,8 +320,20 @@
         @* onchange only when focus changes.
            @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), false))" *@
 
-        <input type="text" style="@style" value="@chtb.Text"           
-            @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
+        @if (!chtb.MultiLine)
+        {
+
+            <input type="text" style="@style" value="@chtb.Text"           
+                @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
+
+        }
+        else
+        {
+
+            <textarea class="form-control" style="@style; resize:none; overflow:hidden " value="@chtb.Text"
+                @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
+
+        }
 
         @code {
             private void MyTextInput(AnyUiTextBox chtb, string value, bool direct)

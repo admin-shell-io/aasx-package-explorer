@@ -501,6 +501,11 @@ namespace AnyUi
     public class AnyUiLambdaActionModalPanelReRender : AnyUiLambdaActionBase
     {
         public AnyUiDialogueDataModalPanel DiaDataPanel;
+
+        public AnyUiLambdaActionModalPanelReRender(AnyUiDialogueDataModalPanel diaDataPanel)
+        {
+            DiaDataPanel = diaDataPanel;
+        }
     }
 
     /// <summary>
@@ -1247,6 +1252,7 @@ namespace AnyUi
         public AnyUiScrollBarVisibility VerticalScrollBarVisibility;
 
         public bool AcceptsReturn;
+        public bool MultiLine;
         public Nullable<int> MaxLines;
 
         public string Text = null;

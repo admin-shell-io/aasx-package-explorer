@@ -115,7 +115,7 @@ namespace AasxPluginExportTable.TimeSeries
                             verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                        var g2 = helper.AddSmallGridTo(g, 1, 1, 1, 4, new[] { "#", "#", "#", "*" },
+                        var g2 = helper.AddSmallGridTo(g, 1, 1, 1, 4, new[] { "#", "#", "#", "#" },
                                     padding: new AnyUiThickness(0, 0, 4, 0));
 
                         AnyUiUIElement.RegisterControl(
@@ -124,7 +124,7 @@ namespace AasxPluginExportTable.TimeSeries
                                 padding: new AnyUiThickness(4, 0, 4, 0)),
                             setValue: (o) =>
                             {
-                                return new AnyUiLambdaActionModalPanelReRender();
+                                return new AnyUiLambdaActionModalPanelReRender(uc);
                             });
 
                         AnyUiUIElement.RegisterControl(
@@ -133,7 +133,7 @@ namespace AasxPluginExportTable.TimeSeries
                                 padding: new AnyUiThickness(4, 0, 4, 0)),
                             setValue: (o) =>
                             {
-                                return new AnyUiLambdaActionModalPanelReRender();
+                                return new AnyUiLambdaActionModalPanelReRender(uc);
                             });
 
                         if (pluginOptions?.Presets != null)
@@ -151,7 +151,7 @@ namespace AasxPluginExportTable.TimeSeries
                                 minWidth: 350, maxWidth: 400),
                                 (o) => { 
                                     ;
-                                    return new AnyUiLambdaActionModalPanelReRender();
+                                    return new AnyUiLambdaActionModalPanelReRender(uc);
                                 });
                         
                         }
@@ -247,7 +247,7 @@ namespace AasxPluginExportTable.TimeSeries
                                 record.RowsBody = workRowsBody;
                                 record.Cols = workCols;
 
-                                return new AnyUiLambdaActionModalPanelReRender();
+                                return new AnyUiLambdaActionModalPanelReRender(uc);
                             });
 
                         resize.DirectInvoke = true;
@@ -345,7 +345,7 @@ namespace AasxPluginExportTable.TimeSeries
                                                 verticalAlignment: AnyUiVerticalAlignment.Stretch,
                                                 verticalContentAlignment: AnyUiVerticalAlignment.Top),
                                             minWidth: 100,
-                                            minHeight: 50,
+                                            minHeight: 60,
                                             horizontalAlignment: AnyUiHorizontalAlignment.Stretch),
                                         (s) => { ; });
 
@@ -353,6 +353,7 @@ namespace AasxPluginExportTable.TimeSeries
 
                                     // smaller text
                                     cell.FontSize = 0.7f;
+                                    cell.MultiLine = true;
                                 }
 
                                 // make a vertical gap between Top & Body

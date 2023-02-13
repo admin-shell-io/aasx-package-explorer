@@ -31,7 +31,7 @@ window.mainLayoutAttachKeyboard = () => {
             return;
         }
 
-        if (dialog && dialog.open && keyName === 'Enter' && !event.ctrlKey) {
+        if (false && dialog && dialog.open && keyName === 'Enter' && !event.ctrlKey) {
 
             event.preventDefault();
 

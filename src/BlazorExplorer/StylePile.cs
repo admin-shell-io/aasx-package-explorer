@@ -217,7 +217,7 @@ namespace BlazorUI
             )
         {
             // defaults, if not otherwise stated
-            if (forceNoWrap || (textWrapping.HasValue && textWrapping.Value == AnyUiTextWrapping.NoWrap))
+            if (forceNoWrap || (!textWrapping.HasValue || textWrapping.Value == AnyUiTextWrapping.NoWrap))
                 Set("white-space", "nowrap", add: true);
             else
             {

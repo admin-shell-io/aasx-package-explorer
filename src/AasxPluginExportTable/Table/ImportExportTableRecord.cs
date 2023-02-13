@@ -107,5 +107,100 @@ namespace AasxPluginExportTable
                 return res;
             }
         }
+
+        //
+        // List vs. Matrix management
+        //
+
+        /// <summary>
+        /// Get a cell content.
+        /// </summary>
+        /// <param name="top"><c>True if to access Top table.</c></param>
+        /// <param name="row">0 for head, 1..n for other rows</param>
+        /// <param name="col">0 for head, 1..n for other cols</param>
+        /// <returns></returns>
+        public string GetCell(bool top, int row, int col)
+        {
+            // which list?
+            var list = top ? Top : Body;
+
+            // which index
+            var ndx = col + row * RealCols;
+
+            // any?
+            if (list == null || ndx >= list.Count)
+                return "";
+
+            // ok
+            return list[ndx];
+        }
+
+        /// <summary>
+        /// Put a cell content. If the list is not existing or to small, it will be created.
+        /// </summary>
+        /// <param name="top"><c>True if to access Top table.</c></param>
+        /// <param name="row">0 for head, 1..n for other rows</param>
+        /// <param name="col">0 for head, 1..n for other cols</param>
+        /// <returns></returns>
+        public void PutCell(bool top, int row, int col, string content)
+        {
+            // which list?
+            var list = Top;
+            if (top)
+            {
+                if (Top == null)
+                {
+                    Top = new List<string>();
+                    list = Top;
+                }
+            }
+            else
+            {
+                if (Body == null)
+                    Body = new List<string>();
+                list = Body;
+            }                       
+
+            // which index
+            var ndx = col + row * RealCols;
+
+            // enlarge?
+            while (list.Count <= ndx)
+                list.Add("");
+
+            // ok
+            list[ndx] = content;
+        }
+
+        /// <summary>
+        /// Changes the matrix dimensions. Will set the new values to Rows/ Cols.
+        /// </summary>
+        public void ReArrange(
+            int oldRowsTop, int oldRowsBody, int oldCols, 
+            int newRowsTop, int newRowsBody, int newCols)
+        {
+            // save lists
+            var oldTop = Top;
+            var oldBody = Body;
+
+            // create new ones
+            Top = new List<string>();
+            while (Top.Count < (1 + newRowsTop) * (1 + newCols))
+                Top.Add("");
+
+            Body = new List<string>();
+            while (Body.Count < (1 + newRowsBody) * (1 + newCols))
+                Body.Add("");
+
+            // commit dimension as well
+            RowsTop = newRowsTop;
+            RowsBody = newRowsBody;
+            Cols = newCols;
+
+            // now copy the old values into the new ones
+            for (int or = 0; or < oldRowsTop + 1; or++)
+                for (int oc = 0; oc < oldCols + 1; oc++)
+                    ;
+        }
     }
 }
