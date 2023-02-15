@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 // Quite declarative approach for the future
@@ -642,6 +643,14 @@ namespace AnyUi
         public Func<object, AnyUiLambdaActionBase> setValueLambda = null;
 
         /// <summary>
+        /// This callback (lambda) is activated by the control frequently, if a value update
+        /// occurs. The calling application needs to set this lambda in order to receive
+        /// value updates.
+        /// Note: async variant; as of today, ONLY IMPLEMENTED SPARSELY!!
+        /// </summary>
+        public Func<object, Task<AnyUiLambdaActionBase>> setValueAsyncLambda = null;
+
+        /// <summary>
         /// Arbitrary object/ tag exclusively used for ad-hoc debug. Do not use for long-term
         /// purposes.
         /// </summary>
@@ -676,7 +685,9 @@ namespace AnyUi
         /// <param name="takeOverLambda">Lambda called at the end of a modification</param>
         /// <returns>Passes thru the user control</returns>
         public static T RegisterControl<T>(
-            T cntl, Func<object, AnyUiLambdaActionBase> setValue,
+            T cntl, 
+            Func<object, AnyUiLambdaActionBase> setValue = null,
+            Func<object, Task<AnyUiLambdaActionBase>> setValueAsync = null,
             AnyUiLambdaActionBase takeOverLambda = null)
             where T : AnyUiUIElement
         {
@@ -686,6 +697,7 @@ namespace AnyUi
 
             // simply set lambdas
             cntl.setValueLambda = setValue;
+            cntl.setValueAsyncLambda = setValueAsync;
             cntl.takeOverLambda = takeOverLambda;
 
             return cntl;

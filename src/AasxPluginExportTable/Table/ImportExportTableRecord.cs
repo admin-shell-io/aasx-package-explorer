@@ -200,7 +200,26 @@ namespace AasxPluginExportTable
             // now copy the old values into the new ones
             for (int or = 0; or < oldRowsTop + 1; or++)
                 for (int oc = 0; oc < oldCols + 1; oc++)
-                    ;
+                    if (or < (newRowsTop + 1) && oc < (newCols + 1))
+                    {
+                        var cnt = "";
+                        var ondx = or * (1 + oldCols) + oc;
+                        if (ondx < oldTop.Count)
+                            cnt = oldTop[ondx];
+                        PutCell(true, or, oc, cnt);
+                    }
+
+            for (int or = 0; or < oldRowsBody + 1; or++)
+                for (int oc = 0; oc < oldCols + 1; oc++)
+                    if (or < (newRowsBody + 1) && oc < (newCols + 1))
+                    {
+                        var cnt = "";
+                        var ondx = or * (1 + oldCols) + oc;
+                        if (ondx < oldBody.Count)
+                            cnt = oldBody[ondx];
+                        PutCell(false, or, oc, cnt);
+                    }
         }
+
     }
 }

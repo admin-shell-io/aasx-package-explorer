@@ -72,9 +72,7 @@ namespace AasxPluginExportTable.TimeSeries
                         record.Format = i;
 
             // work rows, cols
-            var workRowsTop = record.RowsTop;
-            var workRowsBody = record.RowsBody;
-            var workCols = record.Cols;
+            int workRowsTop, workRowsBody, workCols;
 
             // ok, go on ..
             var uc = new AnyUiDialogueDataModalPanel(
@@ -90,6 +88,11 @@ namespace AasxPluginExportTable.TimeSeries
 
                     var g = helper.AddSmallGrid(25, 2, new[] { "120:", "*" },
                                 padding: new AnyUiThickness(0, 5, 0, 5));
+
+                    // (re-)set work rows, cols
+                    workRowsTop = record.RowsTop;
+                    workRowsBody = record.RowsBody;
+                    workCols = record.Cols;
 
                     // TODO: Put this into above function!
                     g.ColumnDefinitions[0].MinWidth = 120;
@@ -122,37 +125,88 @@ namespace AasxPluginExportTable.TimeSeries
                             helper.AddSmallButtonTo(
                                 g2, 0, 0, content: "Load ..",
                                 padding: new AnyUiThickness(4, 0, 4, 0)),
-                            setValue: (o) =>
+                            setValueAsync: async (o) =>
                             {
-                                return new AnyUiLambdaActionModalPanelReRender(uc);
+                                // ask for filename
+                                var ofData = await displayContext.MenuSelectOpenFilenameAsync(
+                                    ticket: null, argName: null,
+                                    caption: "Select preset JSON file to load ..",
+                                    proposeFn: "",
+                                    filter: "Preset JSON file (*.json)|*.json|All files (*.*)|*.*",
+                                    msg: "Not found",
+                                    requireNoFlyout: true);
+                                if (ofData?.Result != true)
+                                    return new AnyUiLambdaActionNone();
+
+                                // load new data
+                                try
+                                {
+                                    log?.Info("Loading new preset data {0} ..", ofData.TargetFileName);
+                                    var newRec = ImportExportTableRecord.LoadFromFile(ofData.TargetFileName);
+                                    record = newRec;
+                                    uc.Data = newRec;
+                                    return new AnyUiLambdaActionModalPanelReRender(uc);
+                                }
+                                catch (Exception ex)
+                                {
+                                    log?.Error(ex, "when loading plugin preset data");
+                                }
+                                return new AnyUiLambdaActionNone();
                             });
 
                         AnyUiUIElement.RegisterControl(
                             helper.AddSmallButtonTo(
                                 g2, 0, 1, content: "Save ..",
                                 padding: new AnyUiThickness(4, 0, 4, 0)),
-                            setValue: (o) =>
+                            setValueAsync: async (o) =>
                             {
-                                return new AnyUiLambdaActionModalPanelReRender(uc);
+                                // ask for filename
+                                var sfData = await displayContext.MenuSelectSaveFilenameAsync(
+                                    ticket: null, argName: null,
+                                    caption: "Select preset JSON file to save ..",
+                                    proposeFn: "new.json",
+                                    filter: "Preset JSON file (*.json)|*.json|All files (*.*)|*.*",
+                                    msg: "Not found");
+                                if (sfData?.Result != true)
+                                    return new AnyUiLambdaActionNone();
+
+                                // save new data
+                                try
+                                {
+                                    record.SaveToFile(sfData.TargetFileName);
+                                    log?.Info("Saved preset data to {0}.", sfData.TargetFileName);
+                                }
+                                catch (Exception ex)
+                                {
+                                    log?.Error(ex, "when saving plugin preset data");
+                                }
+                                return new AnyUiLambdaActionNone();
                             });
 
                         if (pluginOptions?.Presets != null)
                         {
-
                             helper.AddSmallLabelTo(g2, 0, 2, content: "From options:",
                             verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                            AnyUiUIElement.RegisterControl(
-                            helper.Set(
-                                helper.AddSmallComboBoxTo(g2, 0, 4,
-                                    items: pluginOptions.Presets.Select((pr) => "" + pr.Name).ToArray(),
-                                    selectedIndex: 0),
-                                minWidth: 350, maxWidth: 400),
-                                (o) => { 
-                                    ;
-                                    return new AnyUiLambdaActionModalPanelReRender(uc);
-                                });
+                            AnyUiComboBox cbPreset = null;
+                            cbPreset = AnyUiUIElement.RegisterControl(
+                                helper.Set(
+                                    helper.AddSmallComboBoxTo(g2, 0, 4,
+                                        items: pluginOptions.Presets.Select((pr) => "" + pr.Name).ToArray(),
+                                        text: "Please select preset to load .."),
+                                    minWidth: 350, maxWidth: 400),
+                                    (o) => {
+                                        if (!cbPreset.SelectedIndex.HasValue)
+                                            return new AnyUiLambdaActionNone();
+                                        var ndx = cbPreset.SelectedIndex.Value;
+                                        if (ndx < 0 || ndx >= pluginOptions.Presets.Count)
+                                            return new AnyUiLambdaActionNone();
+                                        var newRec = pluginOptions.Presets[ndx];
+                                        record = newRec;
+                                        uc.Data = newRec;
+                                        return new AnyUiLambdaActionModalPanelReRender(uc);
+                                    });
                         
                         }
                     }
@@ -243,9 +297,8 @@ namespace AasxPluginExportTable.TimeSeries
                                 padding: new AnyUiThickness(4, 0, 4, 0)),
                             setValue: (o) =>
                             {
-                                record.RowsTop = workRowsTop;
-                                record.RowsBody = workRowsBody;
-                                record.Cols = workCols;
+                                record.ReArrange(record.RowsTop, record.RowsBody, record.Cols,
+                                    workRowsTop, workRowsBody, workCols);
 
                                 return new AnyUiLambdaActionModalPanelReRender(uc);
                             });
@@ -341,13 +394,15 @@ namespace AasxPluginExportTable.TimeSeries
                                     var cell = AnyUiUIElement.SetStringFromControl(
                                         helper.Set(
                                             helper.AddSmallTextBoxTo(g2, tr, tc,
-                                                text: "xxx",
+                                                text: "" + record.GetCell(isTop, rIdx, cIdx),
                                                 verticalAlignment: AnyUiVerticalAlignment.Stretch,
                                                 verticalContentAlignment: AnyUiVerticalAlignment.Top),
                                             minWidth: 100,
                                             minHeight: 60,
                                             horizontalAlignment: AnyUiHorizontalAlignment.Stretch),
-                                        (s) => { ; });
+                                        (s) => {
+                                            record.PutCell(isTop, rIdx, cIdx, s);
+                                        });
 
                                     currElem = cell;
 

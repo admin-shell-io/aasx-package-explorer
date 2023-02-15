@@ -1092,10 +1092,11 @@ namespace AnyUi
                         wpf.Content = cntl.Content;
                         wpf.ToolTip = cntl.ToolTip;
                         // callbacks
-                        wpf.Click += (sender, e) =>
+                        wpf.Click += async (sender, e) =>
                         {
                             // normal procedure
                             var action = cntl.setValueLambda?.Invoke(cntl);
+                            action ??= await cntl.setValueAsyncLambda?.Invoke(cntl);
                             EmitOutsideAction(action);
 
                             // special case
@@ -1828,19 +1829,33 @@ namespace AnyUi
             string caption,
             string proposeFn,
             string filter,
-            string msg)
+            string msg,
+            bool requireNoFlyout = false)
         {
             // filename
             var sourceFn = ticket?[argName] as string;
 
-            if (sourceFn?.HasContent() != true)
-            {
-                var uc = new AnyUiDialogueDataOpenFile(
-                    caption: caption,
-                    message: "Select filename by uploading it or from stored user files.",
-                    filter: filter, proposeFn: proposeFn);
-                uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
+            // prepare query
+            var uc = new AnyUiDialogueDataOpenFile(
+                   caption: caption,
+                   message: "Select filename by uploading it or from stored user files.",
+                   filter: filter, proposeFn: proposeFn);
+            uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
 
+            // do direct?
+            if (sourceFn?.HasContent() != true && requireNoFlyout)
+            {
+                // do not perform further with show "new" (overlapping!) flyout ..
+                PerformSpecialOps(modal: true, dialogueData: uc);
+                if (!uc.Result)
+                    return null;
+                return
+                    uc;
+            }
+
+            // no, via modal dialog?
+            if (sourceFn?.HasContent() != true)
+            {              
                 if (await StartFlyoverModalAsync(uc))
                 {
                     // house keeping
@@ -1899,22 +1914,38 @@ namespace AnyUi
             string caption,
             string proposeFn,
             string filter,
-            string msg)
+            string msg,
+            bool requireNoFlyout = false)
         {
             // filename
             var targetFn = ticket?[argName] as string;
 
-            if (targetFn?.HasContent() != true)
-            {
-                var uc = new AnyUiDialogueDataSaveFile(
+            // prepare query
+            var uc = new AnyUiDialogueDataSaveFile(
                     caption: caption,
                     message: "Select filename and how to provide the file. " +
                     "It might be possible to store files " +
                     "as user file or on a local file system.",
                     filter: filter, proposeFn: proposeFn);
 
-                uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
-                uc.AllowLocalFiles = Options.Curr.AllowLocalFiles;
+            uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
+            uc.AllowLocalFiles = Options.Curr.AllowLocalFiles;
+
+            // do direct?
+            if (targetFn?.HasContent() != true && requireNoFlyout)
+            {
+                // do not perform further with show "new" (overlapping!) flyout ..
+                PerformSpecialOps(modal: true, dialogueData: uc);
+                if (!uc.Result)
+                    return null;
+                return
+                    uc;
+            }
+
+            // no, via modal dialog?
+            if (targetFn?.HasContent() != true)
+            {
+                
 
                 if (await StartFlyoverModalAsync(uc))
                 {

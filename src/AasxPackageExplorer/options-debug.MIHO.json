@@ -18,7 +18,7 @@
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx", */
   "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_forV3-spiel.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\00_FestoDemoBox-Module-2-Kopie2.aasx",
-  "WindowLeft": 2200,
+  "WindowLeft": 200,
   "WindowTop": -1,
   "WindowWidth": 900,
   "WindowHeight": 600,

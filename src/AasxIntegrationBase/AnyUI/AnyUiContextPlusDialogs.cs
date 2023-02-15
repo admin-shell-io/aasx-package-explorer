@@ -91,7 +91,8 @@ namespace AnyUi
             string caption,
             string proposeFn,
             string filter,
-            string msg)
+            string msg,
+            bool requireNoFlyout = false)
         {
             await Task.Yield();
             return null;
@@ -123,7 +124,8 @@ namespace AnyUi
             string caption,
             string proposeFn,
             string filter,
-            string msg)
+            string msg,
+            bool requireNoFlyout = false)
         {
             await Task.Yield();
             return null;

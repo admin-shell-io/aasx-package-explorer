@@ -51,7 +51,7 @@
             </Grid.ColumnDefinitions>
 
             <ScrollViewer x:Name="ScrollViewContent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                          VerticalScrollBarVisibility="Auto">
+                          VerticalScrollBarVisibility="Visible">
 
             </ScrollViewer>
 

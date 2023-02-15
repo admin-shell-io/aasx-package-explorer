@@ -805,12 +805,18 @@ namespace AnyUi
 			string caption,
 			string proposeFn,
 			string filter,
-			string msg)
+			string msg,
+            bool requireNoFlyout = false)
 		{
 			// filename
 			var sourceFn = ticket?[argName] as string;
 
-			if (sourceFn?.HasContent() != true)
+            // no direct queries
+            if (sourceFn?.HasContent() != true && requireNoFlyout)
+                return null;
+
+            // ok, modal?
+            if (sourceFn?.HasContent() != true)
 			{
 				var uc = new AnyUiDialogueDataOpenFile(
 					caption: caption,
@@ -876,11 +882,17 @@ namespace AnyUi
 			string caption,
 			string proposeFn,
 			string filter,
-			string msg)
+			string msg,
+            bool requireNoFlyout = false)
 		{
 			// filename
 			var targetFn = ticket?[argName] as string;
 
+            // no direct queries
+            if (targetFn?.HasContent() != true && requireNoFlyout)
+                return null;
+
+            // ok, modal?
 			if (targetFn?.HasContent() != true)
 			{
 				var uc = new AnyUiDialogueDataSaveFile(
