@@ -39,7 +39,7 @@ namespace AasxPackageExplorer
         private ListOfVisualElementBasic _theEntities = null;
         private DispEditHelperMultiElement _helper = new DispEditHelperMultiElement();
         private AnyUiUIElement _lastRenderedRootElement = null;
-        private AnyUiDisplayContextWpf _displayContext = null;
+        // private AnyUiDisplayContextWpf _displayContext = null;
 
         #region Public events and properties
         //
@@ -81,8 +81,8 @@ namespace AasxPackageExplorer
                         // redraw ourselves?
                         if (_packages != null && _theEntities != null)
                             DisplayOrEditVisualAasxElement(
-                                _packages, _displayContext, _theEntities, _helper.editMode, _helper.hintMode,
-                                flyoutProvider: _displayContext?.FlyoutProvider,
+                                _packages, dcwpf, _theEntities, _helper.editMode, _helper.hintMode,
+                                flyoutProvider: dcwpf?.FlyoutProvider,
                                 appEventProvider: _helper?.appEventsProvider);
                     }
 
@@ -103,9 +103,9 @@ namespace AasxPackageExplorer
         {
             try
             {
-                var changes = true == _displayContext?.CallUndoChanges(_lastRenderedRootElement);
+                var changes = true == _helper?.context?.CallUndoChanges(_lastRenderedRootElement);
                 if (changes)
-                    _displayContext.EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+                    _helper.context.EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
 
             }
             catch (Exception ex)
@@ -212,7 +212,7 @@ namespace AasxPackageExplorer
 
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
-			AnyUiDisplayContextWpf _displayContext,
+			AnyUiDisplayContextWpf displayContext,
 			ListOfVisualElementBasic entities,
             bool editMode, bool hintMode = false, bool showIriMode = false,
             VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
@@ -263,7 +263,7 @@ namespace AasxPackageExplorer
             _helper.hintMode = hintMode;
             _helper.repo = repo;
             _helper.showIriMode = showIriMode;
-            _helper.context = _displayContext;
+            _helper.context = displayContext;
 
             // inform plug that their potential panel might not shown anymore
             Plugins.AllPluginsInvoke("clear-panel-visual-extension");
@@ -363,7 +363,7 @@ namespace AasxPackageExplorer
 
                                 vepe.thePlugin?.InvokeAction(
                                     "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
-                                    stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf,
+                                    stack, _helper.context, AnyUiDisplayContextWpf.SessionSingletonWpf,
                                     opContext);
                             }
                             catch (Exception ex)
@@ -508,63 +508,18 @@ namespace AasxPackageExplorer
                     && stack.Children.Count == 1
                     && stack.Children[0] is AnyUiGrid grid)
                 {
-                    spwpf = _displayContext.GetOrCreateWpfElement(grid);
+                    // accessing the WPF version of display context!
+                    spwpf = displayContext.GetOrCreateWpfElement(grid);
                 }
                 else
                 {
-                    spwpf = _displayContext.GetOrCreateWpfElement(stack);
+                    spwpf = displayContext.GetOrCreateWpfElement(stack);
                     DockPanel.SetDock(spwpf, Dock.Top);
                 }
                 _helper.ShowLastHighlights();
 
                 theMasterPanel.Children.Add(spwpf);
 
-                // OLD_to_be_removed
-                // register key shortcuts
-                //var num = _displayContext.PrepareNameList(stack);
-                //if (num > 0)
-                //{
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-move-up", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Up,
-                //        "Move current AAS element up by one position.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-move-down", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Down,
-                //        "Move current AAS element down by one position.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-move-top", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Home,
-                //        "Move current AAS element to the first position of the respective list.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-move-end", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.End,
-                //        "Move current AAS element to the last position of the respective list.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-delete", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Delete,
-                //        "Delete current AAS element in the respective list. Shift key skips dialogue.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-cut", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.X,
-                //        "Transfers current AAS element into paste buffer and deletes in respective list.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-copy", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.C,
-                //        "Copies current AAS element into paste buffer for later pasting.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-paste-into", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.V,
-                //        "Copy existing paste buffer into the child list of the current AAS element.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-paste-above", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.W,
-                //        "Copy existing paste buffer above the current AAS element in the same list.");
-
-                //    _displayContext.RegisterKeyShortcut(
-                //        "aas-elem-paste-below", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Y,
-                //        "Copy existing paste buffer below the current AAS element in the same list.");
-
-                //}
             }
 
             // keep the stack
@@ -577,8 +532,11 @@ namespace AasxPackageExplorer
 
         public Tuple<AnyUiDisplayContextWpf, AnyUiUIElement> GetLastRenderedRoot()
         {
+            if (!(_helper.context is AnyUiDisplayContextWpf dcwpf))
+                return null;
+
             return new Tuple<AnyUiDisplayContextWpf, AnyUiUIElement>(
-                _displayContext, _lastRenderedRootElement);
+                dcwpf, _lastRenderedRootElement);
         }
 
         public void RedisplayRenderedRoot(
@@ -588,6 +546,8 @@ namespace AasxPackageExplorer
         {
             // safe
             _lastRenderedRootElement = root;
+            if (!(_helper?.context is AnyUiDisplayContextWpf dcwpf))
+                return;
 
             // redisplay
             theMasterPanel.Children.Clear();
@@ -601,11 +561,11 @@ namespace AasxPackageExplorer
                 && stack.Children.Count == 1
                 && stack.Children[0] is AnyUiGrid grid)
             {
-                spwpf = _displayContext.GetOrCreateWpfElement(grid, allowReUse: allowReUse, mode: mode);
+                spwpf = dcwpf.GetOrCreateWpfElement(grid, allowReUse: allowReUse, mode: mode);
             }
             else
             {
-                spwpf = _displayContext.GetOrCreateWpfElement(root, allowReUse: allowReUse, mode: mode);
+                spwpf = dcwpf.GetOrCreateWpfElement(root, allowReUse: allowReUse, mode: mode);
                 DockPanel.SetDock(spwpf, Dock.Top);
             }
 
@@ -618,26 +578,30 @@ namespace AasxPackageExplorer
         public void HandleGlobalKeyDown(KeyEventArgs e, bool preview)
         {
             // access
-            if (_displayContext == null)
+            if (!(_helper?.context is AnyUiDisplayContextWpf dcwpf))
                 return;
 
             // save keyboad states for AnyUI
-            _displayContext.ActualShiftState = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-            _displayContext.ActualControlState = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
-            _displayContext.ActualAltState = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
+            _helper.context.ActualShiftState = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+            _helper.context.ActualControlState = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+            _helper.context.ActualAltState = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
 
             // investigate event itself
             if (e == null)
                 return;
-            var num = _displayContext?.TriggerKeyShortcut(e.Key, Keyboard.Modifiers, preview);
+            var num = dcwpf.TriggerKeyShortcut(e.Key, Keyboard.Modifiers, preview);
             if (num > 0)
                 e.Handled = true;
         }
 
         public IEnumerable<KeyShortcutRecord> EnumerateShortcuts()
         {
-            if (_displayContext?.KeyShortcuts != null)
-                foreach (var sc in _displayContext.KeyShortcuts)
+            // access
+            if (!(_helper?.context is AnyUiDisplayContextWpf dcwpf))
+                yield break;
+
+            if (dcwpf.KeyShortcuts != null)
+                foreach (var sc in dcwpf.KeyShortcuts)
                     yield return sc;
         }
     }

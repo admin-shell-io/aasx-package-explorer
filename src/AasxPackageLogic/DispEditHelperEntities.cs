@@ -3475,7 +3475,7 @@ namespace AasxPackageLogic
                             var uc = new AnyUiDialogueDataTextEditor(
                                                 caption: $"Edit Blob '{"" + blb.IdShort}'",
                                                 mimeType: blb.ContentType,
-                                                text: Encoding.Default.GetString(blb.Value));
+                                                text: Encoding.Default.GetString(blb.Value ?? new byte[0]));
                             if (this.context.StartFlyoverModal(uc))
                             {
                                 blb.Value = Encoding.Default.GetBytes(uc.Text);
