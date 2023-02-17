@@ -77,6 +77,7 @@
   </Choose>
 
   <ItemGroup>
+    <Folder Include="FlyoutsForPlugins\" />
     <None Update="IDTA_and_PI40_t.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

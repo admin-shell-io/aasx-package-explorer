@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxPluginExportTable.Uml;
+using AasxPluginExportTable.TimeSeries;
+using AasxPluginExportTable.Table;
 using AdminShellNS;
 
 namespace AasxPluginExportTable

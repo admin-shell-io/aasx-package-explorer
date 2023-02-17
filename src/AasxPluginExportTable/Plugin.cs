@@ -230,60 +230,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 };
             }
 
-            //if ((action == "export-submodel" || action == "import-submodel")
-            //    && args != null && args.Length >= 5)
-            //{
-            //    if (args[0] is ImportExportTableRecord record
-            //        && args[1] is string fn
-            //        && args[2] is Aas.Environment env
-            //        && args[3] is Aas.Submodel sm
-            //        && args[4] is AasxMenuActionTicket ticket)
-            //    {
-            //        // the Submodel elements need to have parents
-            //        sm.SetAllParents();
-
-            //        if (action == "export-submodel")
-            //            Export(record, fn, sm, env, ticket);
-
-            //        if (action == "import-submodel")
-            //            Import(record, fn, sm, env);
-            //    }
-            //}
-
-            //if (action == "export-uml")
-            //{
-            //    if (args != null && args.Length >= 4
-            //        && args[0] is ExportUmlRecord record
-            //        && args[1] is string fn
-            //        && args[2] is Aas.Environment env
-            //        && args[3] is Aas.Submodel sm)
-            //    {
-            //        // the Submodel elements need to have parents
-            //        sm.SetAllParents();
-
-            //        // use functionality
-            //        ExportUml.ExportUmlToFile(env, sm, record, fn);
-            //        _log.Info($"Export UML data to file: {fn}");
-            //    }
-            //}
-
-            if (action == "import-time-series")
-            {
-                if (args != null && args.Length >= 4
-                    && args[0] is ImportTimeSeriesRecord record
-                    && args[1] is string fn
-                    && args[1] is Aas.Environment env
-                    && args[2] is Aas.Submodel sm)
-                {
-                    // the Submodel elements need to have parents
-                    sm.SetAllParents();
-
-                    // use functionality
-                    _log.Info($"Importing time series from file: {fn} ..");
-                    // ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, record, fn, _log);
-                }
-            }            
-
             // default
             return null;
         }
@@ -333,7 +279,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // default
             return null;
         }
-
         
     }
 }

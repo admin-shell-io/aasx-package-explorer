@@ -30,151 +30,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AasxIntegrationBaseWpf;component/Themes/Generic.xaml"/>
                 <ResourceDictionary>
-                    <!--
-                    <RoutedUICommand x:Key="ExportSMD" Text="ExportSMD" />
-                    <RoutedUICommand x:Key="New" Text="New" />
-                    <RoutedUICommand x:Key="Open" Text="Open" />
-                    <RoutedUICommand x:Key="Save" Text="Save" />
-                    <RoutedUICommand x:Key="SaveAs" Text="SaveAs" />
-                    <RoutedUICommand x:Key="Close" Text="Close" />
-                    <RoutedUICommand x:Key="Sign" Text="Sign" />
-                    <RoutedUICommand x:Key="ValidateCertificate" Text="ValidateCertificate" />
-                    <RoutedUICommand x:Key="Encrypt" Text="Encrypt" />
-                    <RoutedUICommand x:Key="Decrypt" Text="Decrypt" />
-                    <RoutedUICommand x:Key="CheckAndFix" Text="CheckAndFix" />
-                    <RoutedUICommand x:Key="OpenAux" Text="OpenAux" />
-                    <RoutedUICommand x:Key="CloseAux" Text="CloseAux" />
-                    <RoutedUICommand x:Key="ConnectSecure" Text="ConnectSecure" />
-                    <RoutedUICommand x:Key="ConnectIntegrated" Text="ConnectIntegrated" />
-                    <RoutedUICommand x:Key="ConnectOpcUa" Text="ConnectOpcUa" />
-                    <RoutedUICommand x:Key="ConnectRest" Text="ConnectRest" />
-                    <RoutedUICommand x:Key="QueryRepo" Text="QueryRepo" />
-                    <RoutedUICommand x:Key="GenRepo" Text="GenRepo" />
-                    <RoutedUICommand x:Key="PrintRepo" Text="PrintRepo" />
-                    <RoutedUICommand x:Key="PrintAsset" Text="PrintAsset" />
-                    <RoutedUICommand x:Key="ImportAML" Text="ImportAML" />
-                    <RoutedUICommand x:Key="ImportDictSubmodel" Text="ImportSubmodel" />
-                    <RoutedUICommand x:Key="ImportDictSubmodelElements" Text="ImportSubmodelElements" />
-                    <RoutedUICommand x:Key="OPCRead" Text="OPCRead" />
-                    <RoutedUICommand x:Key="RDFRead" Text="RDFRead" />
-                    <RoutedUICommand x:Key="SubmodelWrite" Text="SubmodelWrite" />
-                    <RoutedUICommand x:Key="SubmodelRead" Text="SubmodelRead" />
-                    <RoutedUICommand x:Key="SubmodelGet" Text="SubmodelGet" />
-                    <RoutedUICommand x:Key="SubmodelPut" Text="SubmodelPut" />
-                    <RoutedUICommand x:Key="BMEcatImport" Text="BMEcatImport" />
-                    <RoutedUICommand x:Key="CSVImport" Text="CSVImport" />
-                    <RoutedUICommand x:Key="SubmodelTDImport" Text="SubmodelTDImport" />
-                    <RoutedUICommand x:Key="SubmodelTDExport" Text="SubmodelTDExport" />
-                    <RoutedUICommand x:Key="ExportAML" Text="ExportAML" />
-                    <RoutedUICommand x:Key="OpcUaImportNodeSet" Text="OpcUaImportNodeSet" />
-                    <RoutedUICommand x:Key="OPCUAi4aasExport" Text="OPCUAi4aasExport" />
-                    <RoutedUICommand x:Key="OPCUAi4aasImport" Text="OPCUAi4aasImport" />
-                    <RoutedUICommand x:Key="OpcUaExportNodeSetUaPlugin" Text="OpcUaExportNodeSetUaPlugin" />
-                    <RoutedUICommand x:Key="CopyClipboardElementJson" Text="CopyClipboardElementJson" />
-                    <RoutedUICommand x:Key="ExportGenericForms" Text="ExportGenericForms" />
-                    <RoutedUICommand x:Key="ExportPredefineConcepts" Text="ExportPredefineConcepts" />
-                    <RoutedUICommand x:Key="ExportTable" Text="ExportTable" />
-                    <RoutedUICommand x:Key="ImportTable" Text="ImportTable" />
-                    <RoutedUICommand x:Key="ExportUml" Text="ExportUml" />
-                    <RoutedUICommand x:Key="ImportTimeSeries" Text="ImportTimeSeries" />
-                    <RoutedUICommand x:Key="ServerRest" Text="ServerRest" />
-                    <RoutedUICommand x:Key="MQTTPub" Text="MQTTPub" />
-                    <RoutedUICommand x:Key="ServerPluginEmptySample" Text="ServerPluginEmptySample" />
-                    <RoutedUICommand x:Key="ServerPluginOPCUA" Text="ServerPluginOPCUA" />
-                    <RoutedUICommand x:Key="ServerPluginMQTT" Text="ServerPluginMQTT" />
-                    <RoutedUICommand x:Key="Exit" Text="Exit" />
-                    <RoutedUICommand x:Key="EditKey" Text="EditKey" />
-                    <RoutedUICommand x:Key="HintsKey" Text="HintsKey" />
-                    <RoutedUICommand x:Key="ShowIriKey" Text="ShowIriKey" />
-                    <RoutedUICommand x:Key="EditMenu" Text="EditMenu" />
-                    <RoutedUICommand x:Key="HintsMenu" Text="HintsMenu" />
-                    <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
-                    <RoutedUICommand x:Key="VerboseConnect" Text="VerboseConnect" />
-                    <RoutedUICommand x:Key="AnimateElements" Text="AnimateElements" />
-                    <RoutedUICommand x:Key="ObserveEvents" Text="ObserveEvents" />
-                    <RoutedUICommand x:Key="CompressEvents" Text="CompressEvents" />
-                    <RoutedUICommand x:Key="Test" Text="Test" />
-                    <RoutedUICommand x:Key="BufferClear" Text="BufferClear" />
-                    <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
-                    <RoutedUICommand x:Key="ToolsFindForward" Text="ToolsFindForward" />
-                    <RoutedUICommand x:Key="ToolsFindBackward" Text="ToolsFindbackward" />
-                    <RoutedUICommand x:Key="NewSubmodelFromPlugin" Text="NewSubmodelFromPlugin" />
-                    <RoutedUICommand x:Key="ConvertElement" Text="ConvertElement" />
-                    <RoutedUICommand x:Key="EventsShowLogMenu" Text="EventsShowLogMenu" />
-                    <RoutedUICommand x:Key="EventsShowLogKey" Text="EventsShowLogKey" />
-                    <RoutedUICommand x:Key="EventsResetLocks" Text="EventsResetLocks" />
-                    <RoutedUICommand x:Key="Help" Text="Help" />
-                    <RoutedUICommand x:Key="About" Text="About" />
-                    <RoutedUICommand x:Key="HelpGithub" Text="HelpGithub" />
-                    <RoutedUICommand x:Key="FaqGithub" Text="FaqGithub" />
-                    <RoutedUICommand x:Key="HelpIssues" Text="HelpIssues" />
-                    <RoutedUICommand x:Key="HelpOptionsInfo" Text="HelpOptionsInfo" />
-
-                    <RoutedUICommand x:Key="FileRepoNew" Text="FileRepoNew" />
-                    <RoutedUICommand x:Key="FileRepoOpen" Text="FileRepoOpen" />
-                    <RoutedUICommand x:Key="FileRepoConnectRepository" Text="FileRepoConnectRepository" />
-                    <RoutedUICommand x:Key="FileRepoConnectRegistry" Text="FileRepoConnectRegistry" />
-                    <RoutedUICommand x:Key="FileRepoLoadWoPrompt" Text="FileRepoLoadWoPrompt" />
-                    <RoutedUICommand x:Key="FileRepoCreateLRU" Text="FileRepoCreateLRU" />
-                    <RoutedUICommand x:Key="FileRepoQuery" Text="FileRepoQuery" />
-                    -->
-
-                    <!-- TODO: move this to separate xaml file -->
-                    <!--
-                    <ControlTemplate x:Key="MenuItemControlTemplateDropShadow" TargetType="{x:Type MenuItem}">
-                        <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                            <Grid VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <ContentPresenter x:Name="Icon" Content="{TemplateBinding Icon}" ContentSource="Icon" HorizontalAlignment="Center" Height="16" Margin="3" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center" Width="16"/>
-                                <Path x:Name="GlyphPanel" Data="F1M10,1.2L4.7,9.1 4.5,9.1 0,5.2 1.3,3.5 4.3,6.1 8.3,0 10,1.2z" Fill="{TemplateBinding Foreground}" FlowDirection="LeftToRight" Margin="3" Visibility="Collapsed" VerticalAlignment="Center"/>
-                                <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom">
-                                    <Border x:Name="SubMenuBorder" BorderBrush="#FF999999" Margin="0,0,8,8" BorderThickness="1" Background="#FFF0F0F0" Padding="2">
-                                        <Border.Effect>
-                                            <DropShadowEffect BlurRadius="10" Opacity="0.7"/>
-                                        </Border.Effect>
-                                        <ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
-                                            <Grid RenderOptions.ClearTypeHint="Enabled">
-                                                <Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
-                                                    <Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}" Height="{Binding ActualHeight, ElementName=SubMenuBorder}" Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
-                                                </Canvas>
-                                                <Rectangle Fill="#FFD7D7D7" HorizontalAlignment="Left" Margin="29,2,0,2" Width="1"/>
-                                                <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
-                                            </Grid>
-                                        </ScrollViewer>
-                                    </Border>
-                                </Popup>
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSuspendingPopupAnimation" Value="True">
-                                <Setter Property="PopupAnimation" TargetName="PART_Popup" Value="None"/>
-                            </Trigger>
-                            <Trigger Property="Icon" Value="{x:Null}">
-                                <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Visibility" TargetName="GlyphPanel" Value="Visible"/>
-                                <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
-                            </Trigger>
-                            <Trigger Property="IsHighlighted" Value="True">
-                                <Setter Property="Background" TargetName="templateRoot" Value="#3D26A0DA"/>
-                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="#FF26A0DA"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="#FF707070"/>
-                                <Setter Property="Fill" TargetName="GlyphPanel" Value="#FF707070"/>
-                            </Trigger>
-                            <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
-                                <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
-                                <Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                    -->
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -577,11 +432,6 @@
                         </Viewbox>
                     </Border>
 
-                    <!--
-                    <repo:AasxFileRepoControl x:Name="RepoControl" Grid.Row="2" Grid.Column="0">
-                    </repo:AasxFileRepoControl>
-                    -->
-
                     <Border Grid.Row="2" Grid.Column="0"
                             BorderThickness="1.0" BorderBrush="{DynamicResource DarkestAccentColor}" CornerRadius="6" 
                             Margin="2,0,0,0" Padding="2">
@@ -665,20 +515,10 @@
                                 <Border x:Name="CefContainer">
 
                                 </Border>
-                                <!--
-                            xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
-                            <cefSharp:ChromiumWebBrowser x:Name="theBrowser" Grid.Row="0" Address="https://github.com/admin-shell/io/blob/master/README.md" />
-                            -->
                             </Grid>
                         </TabItem>
                     </TabControl>
                 </Border>
-
-                <!--
-                <Border x:Name="ShowKeys" Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="0" Margin="0" CornerRadius="2">
-                    <Label Content="[X]" Margin="0" Padding="0" VerticalAlignment="Top" VerticalContentAlignment="Top"/>
-                </Border>
-                -->
 
                 <Button x:Name="ButtonKeyboard" Grid.Column="4" 
                         HorizontalAlignment="Right" VerticalAlignment="Top" 
@@ -694,16 +534,6 @@
                         </Style>
                     </Button.Resources>
                 </Button>
-
-                <!-- Decision: use Content panel
-                <Popup IsOpen="True" StaysOpen="False" PlacementTarget="{Binding ElementName=ButtonKeyboard}" Placement="Left" 
-                       HorizontalOffset="20" VerticalOffset="20"
-                       Height="{Binding ElementName=ElementTabControl, Path=ActualHeight}">
-                    <Border Background="LightYellow">
-                        <TextBlock>I'm the popup</TextBlock>
-                    </Border>
-                </Popup>
-                -->
 
             </Grid>
 
@@ -767,19 +597,8 @@
 
         </Grid>
 
-        <!--
-        <local:SelectFromRepository Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-
-        </local:SelectFromRepository>
-        -->
-
 
         <Grid x:Name="GridFlyover" Grid.Row="0" Grid.Column="0" Visibility="Hidden" Background="#c0000977">
-            <!--
-            <local:SelectFromRepository Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" Margin="10">
-
-            </local:SelectFromRepository>
-            -->
         </Grid>
 
     </Grid>
