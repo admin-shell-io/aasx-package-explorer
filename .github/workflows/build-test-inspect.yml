@@ -4,11 +4,13 @@ on:
   pull_request:
     branches:
       - master
+      - MIHO/JoinMMV3RC02andDynMen_FQ1_Q1
     types: [opened, synchronize, reopened, edited]
 
   push:
     branches:
       - master
+      - MIHO/JoinMMV3RC02andDynMen_FQ1_Q1
 
 jobs:
   Build-test-inspect:
