@@ -41,7 +41,7 @@
                        
         <Grid x:Name="GridContentAndButtons" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Center">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="20"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -51,8 +51,7 @@
             </Grid.ColumnDefinitions>
 
             <ScrollViewer x:Name="ScrollViewContent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                          VerticalScrollBarVisibility="Visible">
-
+                          VerticalScrollBarVisibility="Auto">
             </ScrollViewer>
 
             <Button x:Name="ButtonCancel" IsDefault="True" Grid.Row="2" Grid.Column="0" 

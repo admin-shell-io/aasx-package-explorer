@@ -166,7 +166,7 @@ namespace AasxPackageExplorer
                                 .Add("File", "Filename and path of file to imported.")
                                 .Add("Format", "Format to be 'Excel'.")
                                 .Add("Record", "Record data", hidden: true)
-                                .AddFromReflection(new ImportTimeSeriesRecord())) */
+                                .AddFromReflection(new ImportTimeSeriesRecord()))
                     .AddWpfBlazor(name: "ImportTable", header: "Import SubmodelElements from Table …",
                             help: "Import sets of SubmodelElements from table datat in multiple common formats.",
                             args: new AasxMenuListOfArgDefs()
@@ -174,7 +174,7 @@ namespace AasxPackageExplorer
                                 .Add("Preset", "Name of preset to load.")
                                 .Add("Format", "Format to be either " +
                                         "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
-                                .Add("Record", "Record data", hidden: true)))
+                                .Add("Record", "Record data", hidden: true))) */ )
                 .AddMenu(header: "Export …", attachPoint: "Export", childs: (new AasxMenu())
                     .AddWpfBlazor(name: "ExportAML", header: "Export AutomationML …",
                         help: "Export AML file with AAS entities from AAS environment.",
@@ -238,7 +238,8 @@ namespace AasxPackageExplorer
                         .Add("Record", "Record data", hidden: true)
                         .AddFromReflection(new ExportUmlRecord())  ) */ )
                 .AddSeparator(filter: AasxMenuFilter.NotBlazor)
-                .AddMenu(header: "Server …", filter: AasxMenuFilter.NotBlazor, childs: (new AasxMenu())
+                .AddMenu(header: "Server …", filter: AasxMenuFilter.NotBlazor, 
+                         attachPoint: "Server", childs: (new AasxMenu())
                     .AddWpf(name: "ServerRest", header: "Serve AAS as REST …", inputGesture: "Shift+F6")
                     .AddWpf(name: "MQTTPub", header: "Publish AAS via MQTT …")
                     .AddSeparator()
@@ -281,7 +282,7 @@ namespace AasxPackageExplorer
                     .AddWpfBlazor(name: "LocationPush", header: "Push location", inputGesture: "Ctrl+Shift+P")
                     .AddWpfBlazor(name: "LocationPop", header: "Pop location", inputGesture: "Ctrl+Shift+O"))
                 .AddSeparator()
-                .AddMenu(header: "Plugins …", childs: (new AasxMenu())
+                .AddMenu(header: "Plugins …", attachPoint: "Plugins", childs: (new AasxMenu())
                     .AddWpfBlazor(name: "NewSubmodelFromPlugin", header: "New Submodel", inputGesture: "Ctrl+Shift+M",
                             help: "Creates a new Submodel based on defintions provided by plugin.",
                             args: new AasxMenuListOfArgDefs()

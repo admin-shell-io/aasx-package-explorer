@@ -27,6 +27,8 @@ using AdminShellNS;
 using Extensions;
 using AnyUi;
 using System.Reflection;
+using AasxPluginExportTable.Table;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace AasxPluginExportTable.TimeSeries
 {
@@ -39,6 +41,7 @@ namespace AasxPluginExportTable.TimeSeries
     public static class AnyUiDialogueTable
     {
         public static async Task ImportExportTableDialogBased(
+            ExportTableOptions options,
             LogInstance log,
             AasxMenuActionTicket ticket,
             AnyUiContextPlusDialogs displayContext,
@@ -121,67 +124,71 @@ namespace AasxPluginExportTable.TimeSeries
                         var g2 = helper.AddSmallGridTo(g, 1, 1, 1, 4, new[] { "#", "#", "#", "#" },
                                     padding: new AnyUiThickness(0, 0, 4, 0));
 
-                        AnyUiUIElement.RegisterControl(
-                            helper.AddSmallButtonTo(
-                                g2, 0, 0, content: "Load ..",
-                                padding: new AnyUiThickness(4, 0, 4, 0)),
-                            setValueAsync: async (o) =>
-                            {
-                                // ask for filename
-                                var ofData = await displayContext.MenuSelectOpenFilenameAsync(
-                                    ticket: null, argName: null,
-                                    caption: "Select preset JSON file to load ..",
-                                    proposeFn: "",
-                                    filter: "Preset JSON file (*.json)|*.json|All files (*.*)|*.*",
-                                    msg: "Not found",
-                                    requireNoFlyout: true);
-                                if (ofData?.Result != true)
+                        if (displayContext.HasCapability(AnyUiContextCapability.DialogWithoutFlyover))
+                        {
+
+                            AnyUiUIElement.RegisterControl(
+                                helper.AddSmallButtonTo(
+                                    g2, 0, 0, content: "Load ..",
+                                    padding: new AnyUiThickness(4, 0, 4, 0)),    
+                                setValueAsync: async (o) =>
+                                {
+                                    // ask for filename
+                                    var ofData = await displayContext.MenuSelectOpenFilenameAsync(
+                                        ticket: null, argName: null,
+                                        caption: "Select preset JSON file to load ..",
+                                        proposeFn: "",
+                                        filter: "Preset JSON file (*.json)|*.json|All files (*.*)|*.*",
+                                        msg: "Not found",
+                                        requireNoFlyout: true);
+                                    if (ofData?.Result != true)
+                                        return new AnyUiLambdaActionNone();
+
+                                    // load new data
+                                    try
+                                    {
+                                        log?.Info("Loading new preset data {0} ..", ofData.TargetFileName);
+                                        var newRec = ImportExportTableRecord.LoadFromFile(ofData.TargetFileName);
+                                        record = newRec;
+                                        uc.Data = newRec;
+                                        return new AnyUiLambdaActionModalPanelReRender(uc);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        log?.Error(ex, "when loading plugin preset data");
+                                    }
                                     return new AnyUiLambdaActionNone();
+                                });
 
-                                // load new data
-                                try
+                            AnyUiUIElement.RegisterControl(
+                                helper.AddSmallButtonTo(
+                                    g2, 0, 1, content: "Save ..",
+                                    padding: new AnyUiThickness(4, 0, 4, 0)),
+                                setValueAsync: async (o) =>
                                 {
-                                    log?.Info("Loading new preset data {0} ..", ofData.TargetFileName);
-                                    var newRec = ImportExportTableRecord.LoadFromFile(ofData.TargetFileName);
-                                    record = newRec;
-                                    uc.Data = newRec;
-                                    return new AnyUiLambdaActionModalPanelReRender(uc);
-                                }
-                                catch (Exception ex)
-                                {
-                                    log?.Error(ex, "when loading plugin preset data");
-                                }
-                                return new AnyUiLambdaActionNone();
-                            });
+                                    // ask for filename
+                                    var sfData = await displayContext.MenuSelectSaveFilenameAsync(
+                                        ticket: null, argName: null,
+                                        caption: "Select preset JSON file to save ..",
+                                        proposeFn: "new.json",
+                                        filter: "Preset JSON file (*.json)|*.json|All files (*.*)|*.*",
+                                        msg: "Not found");
+                                    if (sfData?.Result != true)
+                                        return new AnyUiLambdaActionNone();
 
-                        AnyUiUIElement.RegisterControl(
-                            helper.AddSmallButtonTo(
-                                g2, 0, 1, content: "Save ..",
-                                padding: new AnyUiThickness(4, 0, 4, 0)),
-                            setValueAsync: async (o) =>
-                            {
-                                // ask for filename
-                                var sfData = await displayContext.MenuSelectSaveFilenameAsync(
-                                    ticket: null, argName: null,
-                                    caption: "Select preset JSON file to save ..",
-                                    proposeFn: "new.json",
-                                    filter: "Preset JSON file (*.json)|*.json|All files (*.*)|*.*",
-                                    msg: "Not found");
-                                if (sfData?.Result != true)
+                                    // save new data
+                                    try
+                                    {
+                                        record.SaveToFile(sfData.TargetFileName);
+                                        log?.Info("Saved preset data to {0}.", sfData.TargetFileName);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        log?.Error(ex, "when saving plugin preset data");
+                                    }
                                     return new AnyUiLambdaActionNone();
-
-                                // save new data
-                                try
-                                {
-                                    record.SaveToFile(sfData.TargetFileName);
-                                    log?.Info("Saved preset data to {0}.", sfData.TargetFileName);
-                                }
-                                catch (Exception ex)
-                                {
-                                    log?.Error(ex, "when saving plugin preset data");
-                                }
-                                return new AnyUiLambdaActionNone();
-                            });
+                                });
+                        }
 
                         if (pluginOptions?.Presets != null)
                         {
@@ -350,7 +357,7 @@ namespace AasxPluginExportTable.TimeSeries
                     // For Top & Body, with 1 + 1 + 1 * Cols, 1 + 1 * Rows 
                     {
                         // dimensions
-                        var totalRows = record.RealRowsTop + record.RealRowsBody;                        
+                        var totalRows = 1 + record.RealRowsTop + record.RealRowsBody;                        
                         var totalCols = 1 + record.RealCols;
 
                         // prepare grid
@@ -365,7 +372,23 @@ namespace AasxPluginExportTable.TimeSeries
                                 padding: new AnyUiThickness(1, 1, 1, 1)),
                             colSpan: 2);
 
-                        for (int tr=0; tr<totalRows; tr++)
+                        // column headers
+                        for (int tc=0; tc<totalCols; tc++)
+                        {
+                            // first columns label
+                            var txtRowHead = (tc == 0) ? "Table" : $"Column {tc}";
+
+                            helper.Set(
+                                helper.AddSmallLabelTo(g2, 0, tc, 
+                                    content: (tc == 0) ? "Table" : $"Column {tc}",
+                                    verticalAlignment: AnyUiVerticalAlignment.Bottom,
+                                    verticalContentAlignment: AnyUiVerticalAlignment.Bottom),
+                                horizontalAlignment: AnyUiHorizontalAlignment.Left,
+                                horizontalContentAlignment: AnyUiHorizontalAlignment.Left);
+                        }
+
+                        // column bodies, row by row
+                        for (int tr=0; tr<totalRows-1; tr++)
                             for (int tc=0; tc<totalCols; tc++)
                             {
                                 // calculate indexes
@@ -383,7 +406,7 @@ namespace AasxPluginExportTable.TimeSeries
                                     var txtRowHead = (isTop ? "Top" : "Body") + "\u00bb"
                                             + ((rIdx == 0) ? "Head" : $"Row {rIdx}") + ":" ;
 
-                                    currElem = helper.AddSmallLabelTo(g2, tr, 0, content: txtRowHead,
+                                    currElem = helper.AddSmallLabelTo(g2, 1 + tr, 0, content: txtRowHead,
                                         verticalAlignment: AnyUiVerticalAlignment.Top,
                                         verticalContentAlignment: AnyUiVerticalAlignment.Top);                                    
                                 
@@ -393,10 +416,12 @@ namespace AasxPluginExportTable.TimeSeries
                                     // any other cell = text box
                                     var cell = AnyUiUIElement.SetStringFromControl(
                                         helper.Set(
-                                            helper.AddSmallTextBoxTo(g2, tr, tc,
+                                            helper.AddSmallTextBoxTo(g2, 1 + tr, tc,
                                                 text: "" + record.GetCell(isTop, rIdx, cIdx),
                                                 verticalAlignment: AnyUiVerticalAlignment.Stretch,
-                                                verticalContentAlignment: AnyUiVerticalAlignment.Top),
+                                                verticalContentAlignment: AnyUiVerticalAlignment.Top,
+                                                textWrap: AnyUiTextWrapping.Wrap,
+                                                fontSize: 0.7, multiLine: true),
                                             minWidth: 100,
                                             minHeight: 60,
                                             horizontalAlignment: AnyUiHorizontalAlignment.Stretch),
@@ -405,10 +430,6 @@ namespace AasxPluginExportTable.TimeSeries
                                         });
 
                                     currElem = cell;
-
-                                    // smaller text
-                                    cell.FontSize = 0.7f;
-                                    cell.MultiLine = true;
                                 }
 
                                 // make a vertical gap between Top & Body
@@ -417,6 +438,22 @@ namespace AasxPluginExportTable.TimeSeries
                             }
                     }
 
+                    // Row 5 : placeholders helping information
+
+                    helper.AddSmallLabelTo(g, 5, 0, content: "Placeholders:",
+                            verticalAlignment: AnyUiVerticalAlignment.Top,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Top);
+
+                    helper.Set(
+                        helper.AddSmallLabelTo(g, 5, 1,
+                            margin: new AnyUiThickness(0, 2, 2, 2),
+                            content: ImportExportPlaceholders.GetHelp(),
+                            verticalAlignment: AnyUiVerticalAlignment.Top,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Top,
+                            fontSize: 0.7,
+                            wrapping: AnyUiTextWrapping.Wrap),
+                        minHeight: 100,
+                        horizontalAlignment: AnyUiHorizontalAlignment.Stretch);
 
                     // Row 1..n : automatic generation
                     // displayContext.AutoGenerateUiFieldsFor(record, helper, g, startRow: 2);
@@ -426,29 +463,274 @@ namespace AasxPluginExportTable.TimeSeries
                 });
             if (!(await displayContext.StartFlyoverModalAsync(uc)))
                 return;
-            
-            //// stop
-            //await Task.Delay(2000);
 
-            //// ask for filename?
-            //if (!(await displayContext.MenuSelectOpenFilenameToTicketAsync(
-            //            ticket, "File",
-            //            "Select file for time series import ..",
-            //            "",
-            //            "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*",
-            //            "Import/ export UML: No valid filename.")))
-            //    return;
+            // stop
+            await Task.Delay(2000);
 
-            //var fn = ticket["File"] as string;
+            // dome open/ save dialog base data
+            var dlgFileName = "";
+            var dlgFilter = "";
 
-            //// the Submodel elements need to have parents
-            //var sm = ticket.Submodel;
-            //sm.SetAllParents();
+            if (record.Format == (int)ImportExportTableRecord.FormatEnum.TSF)
+            {
+                dlgFileName = "new.txt";
+                dlgFilter =
+                    "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+            }
+            if (record.Format == (int)ImportExportTableRecord.FormatEnum.LaTex)
+            {
+                dlgFileName = "new.tex";
+                dlgFilter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
+            }
+            if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
+            {
+                dlgFileName = "new.xlsx";
+                dlgFilter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+            }
+            if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
+            {
+                dlgFileName = "new.docx";
+                dlgFilter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
+            }
+            if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
+            {
+                dlgFileName = "new.md";
+                dlgFilter = "Markdown (*.md)|*.md|All files (*.*)|*.*";
+            }
 
-            //// Import
-            //ImportTimeSeries.ImportTimeSeriesFromFile(ticket.Env, sm, record, fn, log);
+            // ask for filename?
+            if (!doImport)
+            {
+                // Export
+                if (!(await displayContext.MenuSelectSaveFilenameToTicketAsync(
+                            ticket, "File",
+                            "Select file to be exported",
+                            dlgFileName,
+                            dlgFilter,
+                            "Export table: No valid filename.",
+                            argLocation: "Location")))
+                    return;
+            }
+            else
+            {
+                if (!(await displayContext.MenuSelectOpenFilenameToTicketAsync(
+                            ticket, "File",
+                            "Select file to be imported ..",
+                            dlgFileName,
+                            dlgFilter,
+                            "Import table: No valid filename.")))
+                    return;
+            }
 
-            //log.Info($"Importing time series data from table {fn} finished.");
+            var fn = ticket["File"] as string;
+
+            // the Submodel elements need to have parents
+            var sm = ticket.Submodel;
+            sm.SetAllParents();
+
+            if (!doImport)
+            {
+                // Export
+                Export(options, record, fn, sm, ticket?.Env, ticket, log);
+
+                // persist
+                await displayContext.CheckIfDownloadAndStart(log, ticket["Location"], fn);
+
+                // done
+                log.Info($"Exporting table data to table {fn} finished.");
+            }
+            else
+            {
+                // Import
+                Import(options, record, fn, sm, ticket?.Env, ticket, log);
+                log.Info($"Importing table data from table {fn} finished.");
+            }
+
+        }
+
+        private static void ExportTable_EnumerateSubmodel(
+            List<ExportTableAasEntitiesList> list, Aas.Environment env,
+            bool broadSearch, bool actInHierarchy, int depth,
+            Aas.Submodel sm, Aas.ISubmodelElement sme)
+        {
+            // check
+            if (list == null || env == null || sm == null)
+                return;
+
+            //
+            // Submodel or SME ??
+            //
+
+            Aas.IReferable coll = null;
+            if (sme == null)
+            {
+                // yield SM
+                // MIHO 21-11-24: IMHO this makes no sense
+                //// list.Add(new ExportTableAasEntitiesItem(depth, sm: sm, parentSm: sm));
+
+                // use collection
+                coll = sm;
+            }
+            else
+            {
+                // simple check for SME collection
+                if (sme is Aas.IReferable)
+                    coll = (sme as Aas.IReferable);
+            }
+
+            // prepare listItem
+            ExportTableAasEntitiesList listItem = null;
+            if (!actInHierarchy)
+            {
+                // add everything in one list
+                if (list.Count < 1)
+                    list.Add(new ExportTableAasEntitiesList());
+                listItem = list[0];
+            }
+            else
+            {
+                // create a new list for each recursion
+                listItem = new ExportTableAasEntitiesList();
+                list.Add(listItem);
+            }
+
+            // pass 1: process value
+            if (coll != null)
+                foreach (var ci in coll.EnumerateChildren())
+                {
+                    // gather data for this entity
+                    var sme2 = ci;
+                    var cd = env.FindConceptDescriptionByReference(sme2?.SemanticId);
+
+                    // add
+                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd,
+                        parent: coll as Aas.IReferable));
+
+                    // go directly deeper?
+                    if (!broadSearch && ci != null &&
+                        ci is Aas.IReferable)
+                        ExportTable_EnumerateSubmodel(
+                            list, env, broadSearch: false, actInHierarchy,
+                            depth: 1 + depth, sm: sm, sme: ci);
+                }
+
+            // pass 2: go for recursion AFTER?
+            if (broadSearch)
+            {
+                if (coll != null)
+                    foreach (var ci in coll.EnumerateChildren())
+                        if (ci != null && ci is Aas.IReferable)
+                            ExportTable_EnumerateSubmodel(
+                                list, env, broadSearch: true, actInHierarchy,
+                                depth: 1 + depth, sm: sm, sme: ci);
+            }
+        }
+
+        private static void Export(
+            ExportTableOptions options,
+            AasxPluginExportTable.ImportExportTableRecord record,
+            string fn,
+            Aas.Submodel sm, Aas.Environment env,
+            AasxMenuActionTicket ticket = null,
+            LogInstance log = null)
+        {
+            // prepare list of items to be exported
+            var list = new List<ExportTableAasEntitiesList>();
+            ExportTable_EnumerateSubmodel(list, env, broadSearch: false,
+                actInHierarchy: record.ActInHierarchy, depth: 1, sm: sm, sme: null);
+
+            if (fn == null)
+                return;
+
+            try
+            {
+                log.Info("Exporting table: {0}", fn);
+                var success = false;
+                try
+                {
+                    var proc = new ExportTableProcessor(record);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.TSF)
+                        success = proc.ExportTabSeparated(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.LaTex)
+                        success = proc.ExportLaTex(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
+                        success = proc.ExportExcel(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
+                        success = proc.ExportWord(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
+                        success = proc.ExportMarkdownGithub(fn, list);
+                }
+                catch (Exception ex)
+                {
+                    log?.Error(ex, "performing data format export");
+                    success = false;
+                }
+
+                if (!success && ticket?.ScriptMode != true)
+                    log?.Error(
+                        "Export table: Some error occured while exporting the table. " +
+                        "Please refer to the log messages.");
+            }
+            catch (Exception ex)
+            {
+                log?.Error(ex, "When exporting table, an error occurred");
+            }
+
+        }
+
+        private static void Import(
+            ExportTableOptions options,
+            AasxPluginExportTable.ImportExportTableRecord record,
+            string fn,
+            Aas.Submodel sm, Aas.Environment env,
+            AasxMenuActionTicket ticket = null,
+            LogInstance log = null)
+        {
+            // get the import file
+            if (fn == null)
+                return;
+
+            // try import
+            try
+            {
+                log.Info("Importing table: {0}", fn);
+                var success = false;
+                try
+                {
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
+                    {
+                        success = true;
+                        var pop = new ImportPopulateByTable(log, record, sm, env, options);
+                        using (var stream = System.IO.File.Open(fn, FileMode.Open,
+                                    FileAccess.Read, FileShare.ReadWrite))
+                            foreach (var tp in ImportTableWordProvider.CreateProviders(stream))
+                                pop.PopulateBy(tp);
+                    }
+
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
+                    {
+                        success = true;
+                        var pop = new ImportPopulateByTable(log, record, sm, env, options);
+                        foreach (var tp in ImportTableExcelProvider.CreateProviders(fn))
+                            pop.PopulateBy(tp);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log?.Error(ex, "importing table");
+                    success = false;
+                }
+
+                if (!success && ticket?.ScriptMode != true)
+                    log?.Error(
+                        "Table import: Some error occured while importing the table. " +
+                        "Please refer to the log messages.");
+            }
+            catch (Exception ex)
+            {
+                log?.Error(ex, "When exporting table, an error occurred");
+            }
+
         }
 
     }

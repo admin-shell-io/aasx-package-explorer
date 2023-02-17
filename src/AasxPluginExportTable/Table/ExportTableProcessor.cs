@@ -264,8 +264,8 @@ namespace AasxPluginExportTable.Table
                     return;
                 if (ifi.Id != null)
                 {
-                    //-9- {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}
-                    rep(head + "identification", ifi.Id);
+                    //-9- Identifiable.id, administration.{ version, revision}}
+                    rep(head + "id", ifi.Id);
                 }
                 if (ifi.Administration != null)
                 {

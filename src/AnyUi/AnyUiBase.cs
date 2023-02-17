@@ -1260,6 +1260,7 @@ namespace AnyUi
     public class AnyUiTextBox : AnyUiControl
     {
         public AnyUiThickness Padding;
+        public AnyUiTextWrapping? TextWrapping;
 
         public AnyUiScrollBarVisibility VerticalScrollBarVisibility;
 

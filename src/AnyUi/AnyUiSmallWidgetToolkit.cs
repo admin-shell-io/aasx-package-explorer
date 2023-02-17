@@ -220,7 +220,9 @@ namespace AnyUi
             int? colSpan = null,
             AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
-            double? fontSize = null)
+            double? fontSize = null,
+            AnyUiTextWrapping? textWrap = null,
+            bool? multiLine = null)
         {
             var tb = new AnyUiTextBox();
             tb.Margin = margin;
@@ -236,6 +238,10 @@ namespace AnyUi
                 tb.VerticalAlignment = verticalAlignment;
             if (verticalContentAlignment != null)
                 tb.VerticalContentAlignment = verticalContentAlignment.Value;
+            if (textWrap.HasValue)
+                tb.TextWrapping = textWrap.Value;
+            if (multiLine.HasValue)
+                tb.MultiLine = multiLine.Value;
 
             // (MIHO, 2020-11-13): constrain to one line
             tb.AcceptsReturn = false;
@@ -673,7 +679,9 @@ namespace AnyUi
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
             bool setBold = false, bool setNoWrap = false,
             AnyUiVerticalAlignment? verticalAlignment = null,
-            AnyUiVerticalAlignment? verticalContentAlignment = null)
+            AnyUiVerticalAlignment? verticalContentAlignment = null,
+            double? fontSize = null,
+            AnyUiTextWrapping? wrapping = null)
         {
             var lab = new AnyUiSelectableTextBlock();
 
@@ -691,6 +699,10 @@ namespace AnyUi
                 lab.FontWeight = AnyUiFontWeight.Bold;
             // if (setNoWrap)
                 lab.TextWrapping = AnyUiTextWrapping.NoWrap;
+            if (wrapping.HasValue)
+                lab.TextWrapping = wrapping.Value;
+            if (fontSize.HasValue)
+                lab.FontSize = fontSize.Value;
             lab.Text = content;
 
             // check, which content

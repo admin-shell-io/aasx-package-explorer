@@ -76,6 +76,12 @@ namespace AnyUi
 
         public static string SessionSingletonWpf = "session-wpf";
 
+        public override IEnumerable<AnyUiContextCapability> EnumCapablities()
+        {
+            yield return AnyUiContextCapability.WPF;
+            yield return AnyUiContextCapability.DialogWithoutFlyover;
+        }
+
         public AnyUiDisplayContextWpf(
             IFlyoutProvider flyoutProvider, PackageCentral packages)
         {
@@ -889,6 +895,8 @@ namespace AnyUi
                                 wpf.Foreground = GetWpfBrush(cntl.Foreground);
                             if (cntl.Padding != null)
                                 wpf.Padding = GetWpfTickness(cntl.Padding);
+                            if (cntl.TextWrapping.HasValue)
+                                wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
 
                             wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)
                                 ((int) cntl.VerticalScrollBarVisibility);

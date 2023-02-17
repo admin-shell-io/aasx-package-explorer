@@ -151,6 +151,24 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // result list 
                 var res = new List<AasxPluginResultSingleMenuItem>();
 
+                // import table
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Import",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ImportTable",
+                        Header = "Import SubmodelElements from Table …",
+                        HelpText = "Import sets of SubmodelElements from table datat in multiple common formats.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                                .Add("File", "Filename and path of file to imported.")
+                                .Add("Preset", "Name of preset to load.")
+                                .Add("Format", "Format to be either " +
+                                        "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
+                                .Add("Record", "Record data", hidden: true)
+                    }
+                });
+
                 // export table
                 res.Add(new AasxPluginResultSingleMenuItem()
                 {
@@ -162,6 +180,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         HelpText = "Export table(s) for sets of SubmodelElements in multiple common formats.",
                         ArgDefs = new AasxMenuListOfArgDefs()
                             .Add("File", "Filename and path of file to exported.")
+                            .Add("Location", "Location of the file (local, user, download).")
                             .Add("Preset", "Name of preset to load.")
                             .Add("Format", "Format to be either " +
                                     "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
@@ -284,13 +303,22 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 {
                     if (cmd == "exporttable")
                     {
-                        await AnyUiDialogueTable.ImportExportTableDialogBased(_log, ticket, displayContext, _options, doImport: false);
+                        await AnyUiDialogueTable.ImportExportTableDialogBased(
+                            _options, _log, ticket, displayContext, _options, doImport: false);
+                        return new AasxPluginResultBase();
+                    }
+
+                    if (cmd == "importtable")
+                    {
+                        await AnyUiDialogueTable.ImportExportTableDialogBased(
+                            _options, _log, ticket, displayContext, _options, doImport: true);
                         return new AasxPluginResultBase();
                     }
 
                     if (cmd == "exportuml")
                     {
-                        await AnyUiDialogueUmlExport.ExportUmlDialogBased(_log, ticket, displayContext);
+                        await AnyUiDialogueUmlExport.ExportUmlDialogBased(
+                            _log, ticket, displayContext);
                         return new AasxPluginResultBase();
                     }
 
@@ -306,186 +334,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return null;
         }
 
-        private void ExportTable_EnumerateSubmodel(
-            List<ExportTableAasEntitiesList> list, Aas.Environment env,
-            bool broadSearch, bool actInHierarchy, int depth,
-            Aas.Submodel sm, Aas.ISubmodelElement sme)
-        {
-            // check
-            if (list == null || env == null || sm == null)
-                return;
-
-            //
-            // Submodel or SME ??
-            //
-
-            Aas.IReferable coll = null;
-            if (sme == null)
-            {
-                // yield SM
-                // MIHO 21-11-24: IMHO this makes no sense
-                //// list.Add(new ExportTableAasEntitiesItem(depth, sm: sm, parentSm: sm));
-
-                // use collection
-                coll = sm;
-            }
-            else
-            {
-                // simple check for SME collection
-                if (sme is Aas.IReferable)
-                    coll = (sme as Aas.IReferable);
-            }
-
-            // prepare listItem
-            ExportTableAasEntitiesList listItem = null;
-            if (!actInHierarchy)
-            {
-                // add everything in one list
-                if (list.Count < 1)
-                    list.Add(new ExportTableAasEntitiesList());
-                listItem = list[0];
-            }
-            else
-            {
-                // create a new list for each recursion
-                listItem = new ExportTableAasEntitiesList();
-                list.Add(listItem);
-            }
-
-            // pass 1: process value
-            if (coll != null)
-                foreach (var ci in coll.EnumerateChildren())
-                {
-                    // gather data for this entity
-                    var sme2 = ci;
-                    var cd = env.FindConceptDescriptionByReference(sme2?.SemanticId);
-
-                    // add
-                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd,
-                        parent: coll as Aas.IReferable));
-
-                    // go directly deeper?
-                    if (!broadSearch && ci != null &&
-                        ci is Aas.IReferable)
-                        ExportTable_EnumerateSubmodel(
-                            list, env, broadSearch: false, actInHierarchy,
-                            depth: 1 + depth, sm: sm, sme: ci);
-                }
-
-            // pass 2: go for recursion AFTER?
-            if (broadSearch)
-            {
-                if (coll != null)
-                    foreach (var ci in coll.EnumerateChildren())
-                        if (ci != null && ci is Aas.IReferable)
-                            ExportTable_EnumerateSubmodel(
-                                list, env, broadSearch: true, actInHierarchy,
-                                depth: 1 + depth, sm: sm, sme: ci);
-            }
-        }
-
-        private void Export(
-            AasxPluginExportTable.ImportExportTableRecord record,
-            string fn,
-            Aas.Submodel sm, Aas.Environment env,
-            AasxMenuActionTicket ticket = null)
-        {
-            // prepare list of items to be exported
-            var list = new List<ExportTableAasEntitiesList>();
-            ExportTable_EnumerateSubmodel(list, env, broadSearch: false,
-                actInHierarchy: record.ActInHierarchy, depth: 1, sm: sm, sme: null);
-
-            if (fn == null)
-                return;
-
-            try
-            {
-                _log.Info("Exporting table: {0}", fn);
-                var success = false;
-                try
-                {
-                    var proc = new ExportTableProcessor(record);
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.TSF)
-                        success = proc.ExportTabSeparated(fn, list);
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.LaTex)
-                        success = proc.ExportLaTex(fn, list);
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
-                        success = proc.ExportExcel(fn, list);
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
-                        success = proc.ExportWord(fn, list);
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
-                        success = proc.ExportMarkdownGithub(fn, list);
-                }
-                catch (Exception ex)
-                {
-                    _log?.Error(ex, "performing data format export");
-                    success = false;
-                }
-
-                if (!success && ticket?.ScriptMode != true)
-                    _log?.Error(
-                        "Export table: Some error occured while exporting the table. " +
-                        "Please refer to the log messages.");
-            }
-            catch (Exception ex)
-            {
-                _log?.Error(ex, "When exporting table, an error occurred");
-            }
-
-        }
-
-        private void Import(
-            AasxPluginExportTable.ImportExportTableRecord record,
-            string fn,
-            Aas.Submodel sm, Aas.Environment env,
-            AasxMenuActionTicket ticket = null)
-        {
-            // get the import file
-            if (fn == null)
-                return;
-
-            // try import
-            try
-            {
-                _log.Info("Importing table: {0}", fn);
-                var success = false;
-                try
-                {
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
-                    {
-                        success = true;
-                        var pop = new ImportPopulateByTable(_log, record, sm, env, _options);
-                        using (var stream = System.IO.File.Open(fn, FileMode.Open,
-                                    FileAccess.Read, FileShare.ReadWrite))
-                            foreach (var tp in ImportTableWordProvider.CreateProviders(stream))
-                                pop.PopulateBy(tp);
-                    }
-
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
-                    {
-                        success = true;
-                        var pop = new ImportPopulateByTable(_log, record, sm, env, _options);
-                        foreach (var tp in ImportTableExcelProvider.CreateProviders(fn))
-                            pop.PopulateBy(tp);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _log?.Error(ex, "importing table");
-                    success = false;
-                }
-
-                if (!success && ticket?.ScriptMode != true)
-                    _log?.Error(
-                        "Table import: Some error occured while importing the table. " +
-                        "Please refer to the log messages.");
-            }
-            catch (Exception ex)
-            {
-                _log?.Error(ex, "When exporting table, an error occurred");
-            }
-
-        }
         
     }
 }

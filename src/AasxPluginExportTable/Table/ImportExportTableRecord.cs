@@ -38,7 +38,7 @@ namespace AasxPluginExportTable
 
         public int Format = 0;
 
-        public int RowsTop = 1, RowsBody = 1, RowsGap = 2, Cols = 1;
+        public int RowsTop = 1, RowsBody = 1, RowsGap = 2, Cols = 2;
 
         [JsonIgnore]
         public int RealRowsTop { get { return 1 + RowsTop; } }

@@ -206,6 +206,11 @@ namespace AnyUi
             Packages = packageCentral;
         }
 
+        public override IEnumerable<AnyUiContextCapability> EnumCapablities()
+        {
+            yield return AnyUiContextCapability.Blazor;
+        }
+
         public void SetJsRuntime(IJSRuntime runtime)
         {
             _jsRuntime = runtime;

@@ -77,7 +77,7 @@ namespace AasxPackageExplorer
             if (sender == ButtonCancel)
             {
                 DiaData.Result = false;
-                // ControlClosed?.Invoke();
+                ControlClosed?.Invoke();
             }
         }
 
@@ -100,9 +100,10 @@ namespace AasxPackageExplorer
             };
 
             // fill the scroll viewer
-            var x = DisplayContext.GetOrCreateWpfElement(DiaData.Panel, renderDefaults: rd);
+            var panelCnt = DisplayContext.GetOrCreateWpfElement(DiaData.Panel, renderDefaults: rd);
             ScrollViewContent.Content = null;
-            ScrollViewContent.Content = x;
+            ScrollViewContent.Content = panelCnt;
+            panelCnt.UpdateLayout();
             this.UpdateLayout();
         }
 

@@ -16,6 +16,7 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using System.Globalization;
 using System.Reflection;
+using System.Linq;
 
 namespace AnyUi
 {
@@ -68,6 +69,30 @@ namespace AnyUi
         }
     }
 
+    public enum AnyUiContextCapability
+    { 
+        /// <summary>
+        /// Display is a WPF application. 
+        /// Allows hardcoded behaviour. It is recommended to use
+        /// other capablities instead.
+        /// </summary>
+        WPF,
+
+        /// <summary>
+        /// Display is a Blazor application. 
+        /// Allows hardcoded behaviour. It is recommended to use
+        /// other capablities instead.
+        /// </summary>
+        Blazor, 
+        
+        /// <summary>
+        /// Display can perform open/save dialogs and further without
+        /// utilizing the singleton modal flyover.
+        /// Note: display context allows only for one level of
+        /// modal / flyover dialogues. NO stacking of dialogues.
+        /// </summary>
+        DialogWithoutFlyover 
+    };
 
     /// <summary>
     /// This class extends the base context with more functions for handling 
@@ -75,11 +100,31 @@ namespace AnyUi
     /// </summary>
     public class AnyUiContextPlusDialogs : AnyUiContextBase
     {
-        private string lastFnForInitialDirectory = null;
+        /// <summary>
+        /// Enumerates all given (positive) capabilities.
+        /// </summary>
+        public virtual IEnumerable<AnyUiContextCapability> EnumCapablities()
+        {
+            yield break;
+        }
+
+        /// <summary>
+        /// Checks if a particular capability is given.
+        /// </summary>
+        public virtual bool HasCapability(AnyUiContextCapability capa)
+        {
+            return EnumCapablities().Contains(capa);
+        }
+
+        /// <summary>
+        /// Used to hold the directory the user was using the last time
+        /// </summary>
+        /// <param name="fn"></param>
         public void RememberForInitialDirectory(string fn)
         {
-            this.lastFnForInitialDirectory = fn;
+            lastFnForInitialDirectory = fn;
         }
+        private static string lastFnForInitialDirectory = null;
 
         /// <summary>
         /// Selects a filename to read either from user or from ticket.
