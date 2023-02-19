@@ -57,6 +57,10 @@ namespace AasxPluginDocumentShelf
 
         protected AnyUiRenderForm _formDoc = null;
 
+        protected static int InstCounter = 1;
+
+        protected string CurrInst = "";
+
         #endregion
 
         #region Cache for already generated Images
@@ -117,6 +121,10 @@ namespace AasxPluginDocumentShelf
             _timer2.Enabled = true;
             _timer2.Start();
 #endif
+
+            CurrInst = "" + InstCounter;
+            InstCounter++;
+        
         }
 
         public void Start(
@@ -1273,6 +1281,8 @@ namespace AasxPluginDocumentShelf
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
+            return;
+
             // access
             if (_renderedEntities == null || theDocEntitiesToPreview == null || _inDispatcherTimer)
                 return;

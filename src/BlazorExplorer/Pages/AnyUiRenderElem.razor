@@ -285,6 +285,9 @@
         style.SetFillWidth(Element, AnyUiHtmlFillMode.None, tb.Margin, setMinMaxWidth: true);
         style.SetAlignments(Element);
 
+        if (tb.Text.StartsWith("Edit"))
+            ;
+
         <span style="@style"><MultiLineText InputString="@tb.Text" /></span>
     }
     else
@@ -298,6 +301,9 @@
 
         style.SetFillWidth(Element, AnyUiHtmlFillMode.None, chlb.Margin, setMinMaxWidth: true, setInlineBlock: true);
         style.SetAlignments(Element);
+
+        if (chlb.Content.StartsWith("Edit"))
+            ;
 
         <span style="@style"><MultiLineText InputString="@chlb.Content" /></span>
     }

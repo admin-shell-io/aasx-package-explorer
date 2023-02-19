@@ -642,13 +642,21 @@
         <div class="sticky-top" style="margin-top:-16px; word-wrap: break-word; width: 100%; overflow: hidden">
             @{
                 // call prepare function (the ref's make clear, which session data is altered)
+                if (_onlyUpdatePluginUi)
+                    ;
+
+                
                 if (Session?.PrepareDisplayDataAndElementPanel(
                     JSRuntime,
                     Session.DisplayContext,
                     ref Session.helper,
                     ref Session.ElementPanel,
-                    ref Session.DynamicMenu) == true)
+                    ref Session.DynamicMenu,
+                    ref _onlyUpdatePluginUi) == true)
                 {
+                    if (_onlyUpdatePluginUi)
+                        ;
+
                     // render
                     var _displayData = new AnyUiDisplayDataHtml(Session.DisplayContext);
                     <AnyUiRenderElem DisplayData="@_displayData"

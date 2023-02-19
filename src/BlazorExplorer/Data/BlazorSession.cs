@@ -400,7 +400,8 @@ namespace BlazorUI.Data
             AnyUiDisplayContextHtml displayContext, 
             ref DispEditHelperMultiElement helper,
             ref AnyUiStackPanel elementPanel,
-            ref AasxMenuBlazor dynamicMenu)
+            ref AasxMenuBlazor dynamicMenu,
+            ref bool pluginOnlyUpdate)
         {
             // access possible
             var sn = DisplayElements.SelectedItem;
@@ -453,7 +454,13 @@ namespace BlazorUI.Data
                     tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None,
                     DisplayElements.SelectedItem);
 
-                if (!common)
+                if (common)
+                {
+                    // can reset plugin
+                    DisposeLoadedPlugin();
+                    pluginOnlyUpdate = false;
+                }
+                else
                 {
                     // some special cases
 
@@ -476,6 +483,13 @@ namespace BlazorUI.Data
                         if (approach == 0 && hasWpf)
                             approach = 1;
 
+                        // may dispose old (other plugin)
+                        if (LoadedPluginInstance != vepe.thePlugin)
+                        {
+                            DisposeLoadedPlugin();
+                            pluginOnlyUpdate = false;
+                        }
+
                         // NEW: Differentiate behaviour ..
                         if (approach == 2)
                         {
@@ -485,19 +499,34 @@ namespace BlazorUI.Data
 
                             try
                             {
-                                var opContext = new PluginOperationContextBase()
+                                if (pluginOnlyUpdate)
                                 {
-                                    DisplayMode = (EditMode)
+                                    vepe.thePlugin?.InvokeAction(
+                                        "update-anyui-visual-extension",
+                                        elementPanel, displayContext, 
+                                        SessionId);
+                                    // _onlyUpdatePluginUi = false;
+                                }
+                                else
+                                {
+                                    var opContext = new PluginOperationContextBase()
+                                    {
+                                        DisplayMode = (EditMode)
                                         ? PluginOperationDisplayMode.MayAddEdit
                                         : PluginOperationDisplayMode.JustDisplay
-                                };
+                                    };
 
-                                vepe.thePlugin?.InvokeAction(
-                                    "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
-                                    elementPanel,
-                                    displayContext,
-                                    SessionId,
-                                    opContext);
+                                    vepe.thePlugin?.InvokeAction(
+                                        "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
+                                        elementPanel,
+                                        displayContext,
+                                        SessionId,
+                                        opContext);
+
+                                    // remember
+                                    LoadedPluginInstance = vepe.thePlugin;
+                                    LoadedPluginSessionId = SessionId;
+                                }
                             }
                             catch (Exception ex)
                             {
