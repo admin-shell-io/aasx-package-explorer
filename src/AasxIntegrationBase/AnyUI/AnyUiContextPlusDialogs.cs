@@ -124,7 +124,7 @@ namespace AnyUi
         {
             lastFnForInitialDirectory = fn;
         }
-        private static string lastFnForInitialDirectory = null;
+        protected static string lastFnForInitialDirectory = null;
 
         /// <summary>
         /// Selects a filename to read either from user or from ticket.

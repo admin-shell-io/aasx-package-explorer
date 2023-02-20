@@ -104,6 +104,9 @@ namespace AasxIntegrationBase
         public string fn = null;
         public string mimeType = null;
         public bool preferInternalDisplay = false;
+
+        public bool SaveInsteadDisplay = false;
+        public string ProposeFn = null;
     }
 
     public class AasxPluginResultEventRedrawAllElements : AasxPluginResultEventBase

@@ -603,7 +603,7 @@ namespace AasxPluginDocumentShelf
                 hds.AddRange(new[] { "\u270e", "View metadata" });
 
             hds.AddRange(new[] { "\U0001F56E", "View file" });
-            hds.AddRange(new[] { "\U0001F4BE", "Save file as .." });
+            hds.AddRange(new[] { "\U0001F4BE", "Save file .." });
 
             // context menu
             uitk.AddSmallContextMenuItemTo(g, 2, 2,
@@ -923,55 +923,56 @@ namespace AasxPluginDocumentShelf
 
             // show digital file
             if (tag == null && menuItemHeader == "View file")
-                DocumentEntity_DoubleClick(e);
+                DocumentEntity_DisplaySaveFile(e, true, false);
 
             // save digital file?
-            if (tag == null && menuItemHeader == "Save file as .." && e.DigitalFile?.Path.HasContent() == true)
+            if (tag == null && menuItemHeader == "Save file .." && e.DigitalFile?.Path.HasContent() == true)
             {
-                // make a file available
-                var inputFn = e.DigitalFile.Path;
+                DocumentEntity_DisplaySaveFile(e, true, true);
+                //// make a file available
+                //var inputFn = e.DigitalFile.Path;
 
-                if (CheckIfPackageFile(inputFn))
-                    inputFn = _package?.MakePackageFileAvailableAsTempFile(e.DigitalFile.Path);
+                //if (CheckIfPackageFile(inputFn))
+                //    inputFn = _package?.MakePackageFileAvailableAsTempFile(e.DigitalFile.Path);
 
-                if (!inputFn.HasContent())
-                {
-                    _log.Error("Error making digital file available. Aborting!");
-                    return;
-                }
+                //if (!inputFn.HasContent())
+                //{
+                //    _log.Error("Error making digital file available. Aborting!");
+                //    return;
+                //}
 
-                // ask for a file name via event stack
-                _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventSelectFile()
-                {
-                    Session = _session,
-                    SaveDialogue = true,
-                    Title = "Save digital file as ..",
-                    FileName = System.IO.Path.GetFileName(e.DigitalFile.Path),
-                    DefaultExt = "*" + System.IO.Path.GetExtension(e.DigitalFile.Path)
-                });
+                //// ask for a file name via event stack
+                //_eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventSelectFile()
+                //{
+                //    Session = _session,
+                //    SaveDialogue = true,
+                //    Title = "Save digital file as ..",
+                //    FileName = System.IO.Path.GetFileName(e.DigitalFile.Path),
+                //    DefaultExt = "*" + System.IO.Path.GetExtension(e.DigitalFile.Path)
+                //});
 
-                // .. and receive incoming event
-                _menuSubscribeForNextEventReturn = (revt) =>
-                {
-                    if (revt is AasxPluginEventReturnSelectFile rsel
-                        && rsel.FileNames != null && rsel.FileNames.Length > 0)
-                    {
-                        try
-                        {
-                            // do it
-                            System.IO.File.Copy(inputFn, rsel.FileNames[0], overwrite: true);
-                            _log.Info("Successfully saved {0}", rsel.FileNames[0]);
-                        }
-                        catch (Exception ex)
-                        {
-                            _log.Error(ex, "while saving digital file to user specified loacation");
-                        }
-                    }
-                };
+                //// .. and receive incoming event
+                //_menuSubscribeForNextEventReturn = (revt) =>
+                //{
+                //    if (revt is AasxPluginEventReturnSelectFile rsel
+                //        && rsel.FileNames != null && rsel.FileNames.Length > 0)
+                //    {
+                //        try
+                //        {
+                //            // do it
+                //            System.IO.File.Copy(inputFn, rsel.FileNames[0], overwrite: true);
+                //            _log.Info("Successfully saved {0}", rsel.FileNames[0]);
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            _log.Error(ex, "while saving digital file to user specified loacation");
+                //        }
+                //    }
+                //};
             }
         }
 
-        private void DocumentEntity_DoubleClick(DocumentEntity e)
+        private void DocumentEntity_DisplaySaveFile(DocumentEntity e, bool display, bool save)
         {
             // first check
             if (e == null || e.DigitalFile?.Path == null || e.DigitalFile.Path.Trim().Length < 1
@@ -996,6 +997,8 @@ namespace AasxPluginDocumentShelf
                 // give over to event stack
                 _eventStack?.PushEvent(new AasxPluginResultEventDisplayContentFile()
                 {
+                    SaveInsteadDisplay = save,
+                    ProposeFn = System.IO.Path.GetFileName(e.DigitalFile.Path),
                     Session = _session,
                     fn = inputFn,
                     mimeType = e.DigitalFile.MimeType
@@ -1003,8 +1006,13 @@ namespace AasxPluginDocumentShelf
             }
             catch (Exception ex)
             {
-                _log?.Error(ex, "when double-click");
+                _log?.Error(ex, "when executing file action");
             }
+        }
+
+        private void DocumentEntity_DoubleClick(DocumentEntity e)
+        {
+            DocumentEntity_DisplaySaveFile(e, true, false);
         }
 
         protected bool _inDragStart = false;
@@ -1281,8 +1289,6 @@ namespace AasxPluginDocumentShelf
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            return;
-
             // access
             if (_renderedEntities == null || theDocEntitiesToPreview == null || _inDispatcherTimer)
                 return;

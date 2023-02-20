@@ -20,7 +20,8 @@ namespace BlazorUI.Utils
 {
     public static class BlazorUtils
     {
-        public static async Task DisplayOrDownloadFile(IJSRuntime runtime, string fn, string mimeType = null)
+        public static async Task DisplayOrDownloadFile(IJSRuntime runtime, string fn, string mimeType = null,
+            bool forceSave = false)
         {
             // access
             if (runtime == null || !fn.HasContent())
@@ -68,6 +69,10 @@ namespace BlazorUI.Utils
                     if (mimeType != null && mimeType.ToLower().Trim() == browserHandles[i + 1])
                         display = true;
                 }
+
+                // no display?
+                if (forceSave)
+                    display = false;
 
                 // prepare file
                 var file = await System.IO.File.ReadAllBytesAsync(fn);

@@ -638,25 +638,25 @@
     </div>
 
     <!-- right panel -->
-    <div class=@($"col-{11-Session.DividerTreeAndElement}") style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; position:sticky;padding:10px;">
-        <div class="sticky-top" style="margin-top:-16px; word-wrap: break-word; width: 100%; overflow: hidden">
-            @{
-                // call prepare function (the ref's make clear, which session data is altered)
-                if (_onlyUpdatePluginUi)
-                    ;
+    @{
+        var elementPanelStyle = new StylePile()
+            .Add("word-wrap: break-word; width: 100%; overflow: hidden");
 
-                
+        // by some weird reason, the top margin is to be correct, if NOT a plugon ..
+        if (!(Session.DisplayElements?.SelectedItem is VisualElementPluginExtension))
+            elementPanelStyle.Add("margin-top", "-16px");
+    }
+
+    <div class=@($"col-{11-Session.DividerTreeAndElement}") style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; position:sticky;padding:10px;">
+        <div class="sticky-top" style="@elementPanelStyle">
+            @{                
                 if (Session?.PrepareDisplayDataAndElementPanel(
                     JSRuntime,
                     Session.DisplayContext,
                     ref Session.helper,
                     ref Session.ElementPanel,
-                    ref Session.DynamicMenu,
-                    ref _onlyUpdatePluginUi) == true)
+                    ref Session.DynamicMenu) == true)
                 {
-                    if (_onlyUpdatePluginUi)
-                        ;
-
                     // render
                     var _displayData = new AnyUiDisplayDataHtml(Session.DisplayContext);
                     <AnyUiRenderElem DisplayData="@_displayData"
@@ -946,15 +946,24 @@
                 }
 
                 if (ndm.ExecuteLambdaAction is AnyUiLambdaActionRedrawEntity)
+                {
                     // force the sticky update mode to false, because of redraw of entity
                     _onlyUpdatePluginUi = false;
+                    Session.DisposeLoadedPlugin();
+                }
 
                 if (ndm.NewPluginResultEvent is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
                     && Session.renderJsRuntime != null
                     && evtDispCont.fn != null)
                 {
+                    // raise a bit more attention
+                    if (evtDispCont.SaveInsteadDisplay)
+                        Log.Singleton.Info(StoredPrint.Color.Blue, "Please find the file ready in the Downloads folder!");
+
+                    // trigger
                     InvokeAsync(async () => {
-                        await BlazorUtils.DisplayOrDownloadFile(Session.renderJsRuntime, evtDispCont.fn, evtDispCont.mimeType);
+                        await BlazorUtils.DisplayOrDownloadFile(Session.renderJsRuntime, evtDispCont.fn, evtDispCont.mimeType,
+                                forceSave: evtDispCont.SaveInsteadDisplay);
                         this.StateHasChanged();
                     });
                     return;
@@ -1289,7 +1298,6 @@
         BlazorSession.totalIndexTimer--;
     }
 
-    private bool _inTimer = false;
 
     //private void MainTimer_HandleLogMessages()
     //{
@@ -1326,9 +1334,9 @@
 
     private void MainTimer_HandleApplicationEvents()
     {
-        if (_inTimer)
+        if (Session.InTimer)
             return;
-        _inTimer = true;
+        Session.InTimer = true;
         // check if a plug-in has some work to do ..
         foreach (var lpi in Plugins.LoadedPlugins.Values)
         {
@@ -1336,7 +1344,7 @@
             if (evt !=null)
                 HandleApplicationEvent(evt, lpi);
         }
-        _inTimer = false;
+        Session.InTimer = false;
     }
 
     private void HandleApplicationEvent(
@@ -1584,13 +1592,13 @@
     private void MainTimer_HandleElementAnimation()
     {
         // access
-        if (_inTimer)
+        if (Session.InTimer)
             return;
         if (Session?.significantElements == null)
             return;
 
         // dive in
-        _inTimer = true;
+        Session.InTimer = true;
 
         // find elements?
         foreach (var rec in Session.significantElements.Retrieve(Session.env?.AasEnv, SignificantAasElement.ValueAnimation))
@@ -1610,7 +1618,7 @@
         }
 
         // dive out
-        _inTimer = false;
+        Session.InTimer = false;
     }
 
     protected async void ContainerListItemSelected(BlazorExplorer.Pages.PanelPackageContainerList.ContextMenuSelectArgs args)
@@ -1884,6 +1892,7 @@
     {
         Session.DisplayElements.NotifyTreeSelectionChanged(ve, modi);
         Session.DisplayElements_SelectedItemChanged(Session.DisplayElements, null);
+        Session.DisposeLoadedPlugin();
         this.StateHasChanged();
     }
 

@@ -132,6 +132,18 @@ namespace BlazorUI.Data
         /// </summary>
         public bool HintMode = true;
 
+        // to be refactored in a class?
+
+        public VisualElementGeneric LoadedPluginNode = null;
+        public Plugins.PluginInstance LoadedPluginInstance = null;
+        public object LoadedPluginSessionId = null;
+
+        /// <summary>
+        /// Set by timer functions if entered. Used to interlock double timers,
+        /// mostly for debugger-friendlyness.
+        /// </summary>
+        public bool InTimer = false;
+
         //
         // PROTECTED
         //
@@ -171,8 +183,7 @@ namespace BlazorUI.Data
 
         public static int totalIndexTimer = 0;
 
-        public Plugins.PluginInstance LoadedPluginInstance = null;
-        public object LoadedPluginSessionId = null;
+
 
         /// <summary>
         /// Called to create a new session
@@ -362,6 +373,7 @@ namespace BlazorUI.Data
             // access
             if (LoadedPluginInstance == null || LoadedPluginSessionId == null)
             {
+                LoadedPluginNode = null;
                 LoadedPluginInstance = null;
                 LoadedPluginSessionId = null;
                 return;
@@ -373,6 +385,7 @@ namespace BlazorUI.Data
                 LoadedPluginInstance.InvokeAction("dispose-anyui-visual-extension",
                     LoadedPluginSessionId);
 
+                LoadedPluginNode = null;
                 LoadedPluginInstance = null;
                 LoadedPluginSessionId = null;
             }
@@ -400,8 +413,7 @@ namespace BlazorUI.Data
             AnyUiDisplayContextHtml displayContext, 
             ref DispEditHelperMultiElement helper,
             ref AnyUiStackPanel elementPanel,
-            ref AasxMenuBlazor dynamicMenu,
-            ref bool pluginOnlyUpdate)
+            ref AasxMenuBlazor dynamicMenu)
         {
             // access possible
             var sn = DisplayElements.SelectedItem;
@@ -458,7 +470,6 @@ namespace BlazorUI.Data
                 {
                     // can reset plugin
                     DisposeLoadedPlugin();
-                    pluginOnlyUpdate = false;
                 }
                 else
                 {
@@ -483,9 +494,17 @@ namespace BlazorUI.Data
                         if (approach == 0 && hasWpf)
                             approach = 1;
 
+                        // the default behaviour is to update a plugin content,
+                        // only if no / invalid content is available fill new
+
+                        var pluginOnlyUpdate = true;
+
                         // may dispose old (other plugin)
-                        if (LoadedPluginInstance != vepe.thePlugin)
+                        if (LoadedPluginInstance == null
+                            || LoadedPluginNode != DisplayElements.SelectedItem 
+                            || LoadedPluginInstance != vepe.thePlugin)
                         {
+                            // invalidate, fill new
                             DisposeLoadedPlugin();
                             pluginOnlyUpdate = false;
                         }
@@ -505,7 +524,6 @@ namespace BlazorUI.Data
                                         "update-anyui-visual-extension",
                                         elementPanel, displayContext, 
                                         SessionId);
-                                    // _onlyUpdatePluginUi = false;
                                 }
                                 else
                                 {
@@ -524,6 +542,7 @@ namespace BlazorUI.Data
                                         opContext);
 
                                     // remember
+                                    LoadedPluginNode = DisplayElements.SelectedItem;
                                     LoadedPluginInstance = vepe.thePlugin;
                                     LoadedPluginSessionId = SessionId;
                                 }

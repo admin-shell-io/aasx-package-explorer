@@ -6,10 +6,11 @@
 @using AnyUi
 @using BlazorUI.Data
 @inject BlazorUI.Data.AASService SubmodelService
-@inject BlazorUI.Data.BlazorSession bi
 
-@{
-// resharper disable all
+@code{
+    // resharper disable all
+    // test a new approach
+    protected bool NewApproach = true;
 }
 
 
@@ -78,6 +79,12 @@
     if (hasCornerRadius)
         tablestyle += "border-collapse: separate";
 
+    // test
+    if (NewApproach)
+    {
+        tablestyle.Add("table-layout", "fixed");
+    }
+
     // 
     // Render
     //
@@ -90,10 +97,27 @@
                     <tr>
                         @for (int ci = 0; ci < _numCol; ci++)
                         {
+                            // get the typical head style
                             var thStyle = GetColHeadStyle(ci);
                             if (deleteWidth)
                                 thStyle -= "width";
 
+                            // new approach?
+                            if (NewApproach)
+                            {
+                                thStyle.Set("overflow", "hidden", add: true);
+                                var scale = (_grid.DisplayData as AnyUiDisplayDataHtml)?.GetScale() ?? 1.0;
+                                
+                                if (_grid.ColumnDefinitions != null && ci < _grid.ColumnDefinitions.Count)
+                                {
+                                    var cd = _grid.ColumnDefinitions[ci];
+                                    if (cd.MinWidth.HasValue)
+                                        thStyle.Set("width", 
+                                            FormattableString.Invariant($"{cd.MinWidth.Value}px"), add: true);
+                                }
+                            }
+
+                            // do it
                             <th style="@thStyle">
                             </th>
                         }
@@ -176,6 +200,9 @@
                                             borderThickness: chbrd.BorderThickness,
                                             cornerRadius: chbrd.CornerRadius);
                                     }
+
+                                    if (NewApproach)
+                                        tdStyle.Set("overflow", "hidden", add: true);
 
                                     // now render
                                     <td style="@tdStyle" colspan="@colspan" rowspan="@rowspan" data-source="AnyUiRenderGrid.razor tdStyle">

@@ -334,8 +334,13 @@ namespace BlazorUI.Data
             }
 
             // REFACTOR: WPF required
-            if (cmd == "eventsresetlocks"
-                || cmd == "eventsshowlogkey"
+            if (cmd == "eventsresetlocks")
+            {
+                InTimer = false;
+                Log.Singleton.Info("Events reset.");
+            }
+
+            if (cmd == "eventsshowlogkey"
                 || cmd == "eventsshowlogmenu")
             {
                 Logic.LogErrorToTicket(ticket, "Showing events not implemented, yet.");

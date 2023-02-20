@@ -1077,7 +1077,7 @@ namespace AdminShellNS
         {
             // local
             if (IsLocalFile(uriString))
-                return GetLocalStreamFromPackage(uriString, mode);
+                return GetLocalStreamFromPackage(uriString, mode, access);
 
             // no ..
             return System.IO.File.Open(uriString, mode, access);
@@ -1116,7 +1116,7 @@ namespace AdminShellNS
             return isLocal;
         }
 
-        public Stream GetLocalStreamFromPackage(string uriString, FileMode mode = FileMode.Open)
+        public Stream GetLocalStreamFromPackage(string uriString, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read)
         {
             // access
             if (_openPackage == null)
@@ -1132,7 +1132,7 @@ namespace AdminShellNS
             if (part == null)
                 throw (new Exception(
                     string.Format($"Cannot access part {uriString} in {_fn}. Aborting!")));
-            return part.GetStream(mode);
+            return part.GetStream(mode, access);
         }
 
         public long GetStreamSizeFromPackage(string uriString)

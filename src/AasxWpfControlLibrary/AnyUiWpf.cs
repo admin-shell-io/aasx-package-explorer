@@ -1104,7 +1104,8 @@ namespace AnyUi
                         {
                             // normal procedure
                             var action = cntl.setValueLambda?.Invoke(cntl);
-                            action ??= await cntl.setValueAsyncLambda?.Invoke(cntl);
+                            if (action == null && cntl.setValueAsyncLambda != null)
+                                action = await cntl.setValueAsyncLambda.Invoke(cntl);
                             EmitOutsideAction(action);
 
                             // special case
@@ -1634,6 +1635,10 @@ namespace AnyUi
                 {
                     dlg.InitialDirectory = idir;
                     dlg.FileName = System.IO.Path.GetFileName(dlg.FileName);
+                }
+                else
+                {
+                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(lastFnForInitialDirectory);
                 }
 
                 var res = dlg.ShowDialog();

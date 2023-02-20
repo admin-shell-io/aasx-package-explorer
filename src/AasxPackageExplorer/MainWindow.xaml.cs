@@ -1602,13 +1602,31 @@ namespace AasxPackageExplorer
                     && evtDispCont.fn != null)
                     try
                     {
-                        BrowserDisplayLocalFile(evtDispCont.fn, evtDispCont.mimeType,
-                            preferInternal: evtDispCont.preferInternalDisplay);
+                        if (evtDispCont.SaveInsteadDisplay)
+                        {
+                            var proposeFn = System.IO.Path.GetFileName(evtDispCont.fn);
+                            if (evtDispCont.ProposeFn?.HasContent() == true)
+                                proposeFn = System.IO.Path.GetFileName(evtDispCont.ProposeFn);
+
+                            var uc = await DisplayContext.MenuSelectSaveFilenameAsync(
+                                null, "File", "Save file ..", proposeFn, "All files (*.*)|*.*", "No access", requireNoFlyout: true);
+
+                            if (uc?.Result == true)
+                            {
+                                System.IO.File.Copy(evtDispCont.fn, uc.TargetFileName);
+                                Log.Singleton.Info("Provided file copied to: " + uc.TargetFileName);
+                            }
+                        }
+                        else
+                        {
+                            BrowserDisplayLocalFile(evtDispCont.fn, evtDispCont.mimeType,
+                                preferInternal: evtDispCont.preferInternalDisplay);
+                        }
                     }
                     catch (Exception ex)
                     {
                         Log.Singleton.Error(
-                            ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
+                            ex, $"While displaying/ saving content file {evtDispCont.fn} requested by plug-in");
                     }
 
                 // Redraw All

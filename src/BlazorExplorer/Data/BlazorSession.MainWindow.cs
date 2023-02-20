@@ -303,6 +303,9 @@ namespace BlazorUI.Data
             if (DisplayElements == null)
                 return;
 
+            // no cached plugin
+            DisposeLoadedPlugin();
+
             // the AAS will cause some more visual effects
             if (DisplayElements.SelectedItem is VisualElementAdminShell veaas)
                 InfoBox.SetInfos(veaas.theAas, veaas.thePackage);
