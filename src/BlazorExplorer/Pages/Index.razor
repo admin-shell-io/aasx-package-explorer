@@ -1011,6 +1011,16 @@
                     Layout.StatusLineClear();
                 }
 
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionExecuteSpecialAction laesa
+                    && laesa.SpecialAction != null)
+                {
+                    if (laesa.SpecialAction.MenuItemLambdaAsync != null)
+                        InvokeAsync(async () => {
+                            // await Task.Delay(1000);
+                            await laesa.SpecialAction.MenuItemLambdaAsync(laesa.Arg);
+                        });
+                }
+
                 // re-create items
                 // Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
 

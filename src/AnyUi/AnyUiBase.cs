@@ -563,6 +563,7 @@ namespace AnyUi
         public string[] MenuItemHeaders;
         [JsonIgnore]
         public Func<object, AnyUiLambdaActionBase> MenuItemLambda;
+        public Func<object, Task<AnyUiLambdaActionBase>> MenuItemLambdaAsync;
 
         public int ResultIndex = -1;
 
@@ -570,10 +571,12 @@ namespace AnyUi
 
         public AnyUiSpecialActionContextMenu(
             string[] menuItemHeaders,
-            Func<object, AnyUiLambdaActionBase> menuItemLambda)
+            Func<object, AnyUiLambdaActionBase> menuItemLambda,
+            Func<object, Task<AnyUiLambdaActionBase>> menuItemLambdaAsync)
         {
             MenuItemHeaders = menuItemHeaders;
             MenuItemLambda = menuItemLambda;
+            MenuItemLambdaAsync = menuItemLambdaAsync;
         }
     }
 

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ using BlazorUI.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using VDS.RDF.Query.Algebra;
 
 namespace AnyUi
 {
@@ -80,6 +82,12 @@ namespace AnyUi
         /// </summary>
         public AnyUiSpecialActionBase SpecialAction;
 
+        /// <summary>
+        /// There is still a chance of race condition in modal dialogs.
+        /// This hold the last time a modal dialog was deisplayed.
+        /// </summary>
+        protected DateTime _lastTimeOfModalClose = DateTime.Now;
+
         // old stuff
 
         public bool htmlDotnetEventIn = false;
@@ -107,6 +115,37 @@ namespace AnyUi
         }
 
 		// service function
+
+        /// <summary>
+        /// Notify closing of modal dialog, for book (time) keeping.
+        /// </summary>
+        public void NotifyModalClose()
+        {
+            _lastTimeOfModalClose = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Wait for a certain time before (again) opening modal dialog
+        /// This function is blocking; try to avoid by using Async()
+        /// </summary>
+        public void WaitMinimumForModalOpen()
+        {
+            while ((DateTime.Now - _lastTimeOfModalClose).TotalMilliseconds < 1500)
+            {
+                Thread.Sleep(50);
+            }
+        }
+
+        /// <summary>
+        /// Wait for a certain time before (again) opening modal dialog
+        /// </summary>
+        public async Task WaitMinimumForModalOpenAsync()
+        {
+            while ((DateTime.Now - _lastTimeOfModalClose).TotalMilliseconds < 1500)
+            {
+                await Task.Delay(50);
+            }
+        }
 
 		/// <summary>
 		/// Will set all important flags in a way, that the event can be executed.
@@ -358,7 +397,9 @@ namespace AnyUi
                         }
 
                         // simply do event loop (but here in the "background")
-                        while (!s.EventDone) Task.Delay(1);
+                        while (!s.EventDone) 
+                            Thread.Sleep(1);
+                        
                         s.EventOpen = false;
                         s.EventDone = false;
                         s.BackgroundAction = AnyUiHtmlBackgroundActionType.None;
@@ -370,11 +411,26 @@ namespace AnyUi
 						//        Program.DataRedrawMode.None, evs.SessionId));
 						s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
 
+                        // remember close
+                        s.NotifyModalClose();
+
                         // directly concern about the results
                         if (sacm.ResultIndex >= 0)
 						{
 							int bufferedI = sacm.ResultIndex;
 							var action2 = sacm.MenuItemLambda?.Invoke(bufferedI);
+                            if (action2 == null && sacm.MenuItemLambdaAsync != null)
+                            {
+                                Program.signalNewData(
+                                    new Program.NewDataAvailableArgs(
+                                        Program.DataRedrawMode.SomeStructChange, 
+                                        s.SessionId,
+                                        newLambdaAction: new AnyUiLambdaActionExecuteSpecialAction() { 
+                                            SpecialAction = sacm,
+                                            Arg = bufferedI
+                                        }, 
+                                        onlyUpdatePanel: true));
+                            }
 						}
 					}
 
@@ -388,6 +444,9 @@ namespace AnyUi
 						s.EventDone = false;
 						s.BackgroundAction = AnyUiHtmlBackgroundActionType.None;
 						s.SpecialAction = null;
+
+                        // notify close
+                        s.NotifyModalClose();
 
 						// execute lambda
 						var ret = sasv.UiElement?.setValueLambda?.Invoke(sasv.Argument);
@@ -474,6 +533,7 @@ namespace AnyUi
                         // simply treat woodoo as error!
                         evs.JsRuntime = dc._jsRuntime;
 
+                        // prepare
 						if (evs.EventOpen)
 					    {
 						    Log.Singleton.Error("Error in starting special action as some modal dialogue " +
@@ -481,6 +541,10 @@ namespace AnyUi
 						    return;
 					    }
 
+                        // wait?
+                        evs.WaitMinimumForModalOpen();
+
+                        // start modal
                         evs.BackgroundAction = AnyUiHtmlBackgroundActionType.ContextMenu;
 					    evs.StartModalSpecialAction(cntlcm);
 
@@ -522,6 +586,8 @@ namespace AnyUi
             if (evs == null)
                 return r;
 
+            evs.WaitMinimumForModalOpen();
+
             var dd = evs.StartModal(new AnyUiDialogueDataMessageBox(
                 caption, message, buttons, image));
 
@@ -538,7 +604,7 @@ namespace AnyUi
                     Program.DataRedrawMode.None, evs.SessionId)); 
 
             // wait modal
-            while (!evs.EventDone) Task.Delay(1);
+            while (!evs.EventDone) Thread.Sleep(1);
             evs.EventDone = false;
 
             // dialog result
@@ -569,6 +635,8 @@ namespace AnyUi
             if (evs == null)
                 return r;
 
+            await evs.WaitMinimumForModalOpenAsync();
+
             var dd = evs.StartModal(new AnyUiDialogueDataMessageBox(
                 caption, message, buttons, image));
 
@@ -588,6 +656,9 @@ namespace AnyUi
 
             // make sure its closed
             await _jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
+
+            // notify
+            evs.NotifyModalClose();
 
             // dialog result
             if (dd.Result)
@@ -614,6 +685,8 @@ namespace AnyUi
             if (evs == null)
                 return null;
 
+            evs.WaitMinimumForModalOpen();
+
 			var dd = evs.StartModal(new AnyUiDialogueDataOpenFile(
 				caption: caption, 
                 message: message,
@@ -626,7 +699,7 @@ namespace AnyUi
 					Program.DataRedrawMode.None, evs.SessionId));
 
 			// wait modal
-			while (!evs.EventDone) Task.Delay(1);
+			while (!evs.EventDone) Thread.Sleep(1);
 			evs.EventDone = false;
 
             // dialog result
@@ -648,6 +721,8 @@ namespace AnyUi
 			if (dialogueData == null || evs == null)
 				return false;
 
+            evs.WaitMinimumForModalOpen();
+
 			var dd = evs.StartModal(dialogueData);
 
             // trigger display
@@ -665,6 +740,8 @@ namespace AnyUi
             //    new Program.NewDataAvailableArgs(
             //        Program.DataRedrawMode.None, evs.SessionId));
             _jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
+
+            evs.NotifyModalClose();
 
             return dd.Result;
 
@@ -735,6 +812,8 @@ namespace AnyUi
             if (dialogueData == null || evs == null)
                 return false;
 
+            await evs.WaitMinimumForModalOpenAsync();
+
             var dd = evs.StartModal(dialogueData);
 
             // trigger display
@@ -760,6 +839,9 @@ namespace AnyUi
 
             // make sure its closed
             await _jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
+
+            // notify
+            evs.NotifyModalClose();
 
             return dd.Result;
         }

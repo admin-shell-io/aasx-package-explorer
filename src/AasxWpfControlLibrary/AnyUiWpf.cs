@@ -1125,9 +1125,11 @@ namespace AnyUi
 
                                     // directly attached
                                     var bufferedI = i;
-                                    mi.Click += (sender2, e2) =>
+                                    mi.Click += async (sender2, e2) =>
                                     {
                                         var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
+                                        if (action2 == null && cntlcm.MenuItemLambdaAsync != null)
+                                            action2 = await cntlcm.MenuItemLambdaAsync(bufferedI);
                                         EmitOutsideAction(action2);
                                     };
                                 }

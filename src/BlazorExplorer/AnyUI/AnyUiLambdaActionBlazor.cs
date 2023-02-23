@@ -40,9 +40,18 @@ using Newtonsoft.Json;
 namespace AnyUi
 {
     /// <summary>
-    /// Requiest to view to clear the status line
+    /// Request to view to clear the status line
     /// </summary>
     public class AnyUiLambdaActionStatusLineClear : AnyUiLambdaActionBase
     {
+    }
+
+    /// <summary>
+    /// Request to execute the lambda actions for a context menu
+    /// </summary>
+    public class AnyUiLambdaActionExecuteSpecialAction : AnyUiLambdaActionBase
+    {
+        public AnyUiSpecialActionContextMenu SpecialAction;
+        public object Arg;
     }
 }

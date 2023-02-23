@@ -22,6 +22,7 @@ using Extensions;
 using AnyUi;
 using Newtonsoft.Json;
 using System.IO.Packaging;
+using System.Threading.Tasks;
 
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable AccessToModifiedClosure
@@ -54,6 +55,8 @@ namespace AasxPluginDocumentShelf
         private List<DocumentEntity> _renderedEntities = new List<DocumentEntity>();
 
         private List<DocumentEntity> theDocEntitiesToPreview = new List<DocumentEntity>();
+
+        private System.Timers.Timer _dispatcherTimer = null;
 
         // members for form editing
 
@@ -118,15 +121,24 @@ namespace AasxPluginDocumentShelf
 #else
             // Note: this timer shall work for all sorts of applications?
             // see: https://stackoverflow.com/questions/21041299/c-sharp-dispatchertimer-in-dll-application-never-triggered
-            var _timer2 = new System.Timers.Timer(1000);
-            _timer2.Elapsed += DispatcherTimer_Tick;
-            _timer2.Enabled = true;
-            _timer2.Start();
+            _dispatcherTimer = new System.Timers.Timer(1000);
+            _dispatcherTimer.Elapsed += DispatcherTimer_Tick;
+            _dispatcherTimer.Enabled = true;
+            _dispatcherTimer.Start();
 #endif
 
             CurrInst = "" + InstCounter;
             InstCounter++;
         
+        }
+
+        public void Dispose()
+        {
+            if (_dispatcherTimer != null)
+            {
+                _dispatcherTimer.Stop();
+                _dispatcherTimer.Dispose();
+            }
         }
 
         public void Start(
@@ -208,7 +220,7 @@ namespace AasxPluginDocumentShelf
             if (foundRec == null)
                 return;
 
-            // right now: hardcoded check for mdoel version
+            // right now: hardcoded check for model version
             _renderedVersion = DocumentEntity.SubmodelVersion.Default;
             var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
             if (_submodel.SemanticId.MatchesExactlyOneKey(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
@@ -437,7 +449,9 @@ namespace AasxPluginDocumentShelf
                         }
                         catch (Exception ex)
                         {
-                            _log?.Error(ex, $"when loading preview image {inputFn}");
+                            // do not show any error message, as it might appear
+                            // frequently
+                            LogInternally.That.SilentlyIgnoredError(ex);
                         }
                     }
 
@@ -622,11 +636,12 @@ namespace AasxPluginDocumentShelf
                     margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0),
                     fontWeight: AnyUiFontWeight.Bold,
-                    menuItemLambda: (o) =>
+                    menuItemLambda: null,
+                    menuItemLambdaAsync: async (o) =>
                     {
                         if (o is int ti && ti >= 0 && ti < hds.Count)
                             // awkyard, but for compatibility to WPF version
-                            de?.RaiseMenuClick(hds[2 * ti + 1], null);
+                            await de?.RaiseMenuClick(hds[2 * ti + 1], null);
                         return new AnyUiLambdaActionNone();
                     });
 
@@ -823,7 +838,7 @@ namespace AasxPluginDocumentShelf
 
         private List<Aas.ISubmodelElement> _updateSourceElements = null;
 
-        private void DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
+        private async Task DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
         {
             // first check
             if (e == null || menuItemHeader == null)
@@ -864,14 +879,14 @@ namespace AasxPluginDocumentShelf
                 var found = false;
                 foreach (var smcDoc in
                     _submodel.SubmodelElements.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
-                        semConf.SemIdDocument))
+                        semConf.SemIdDocument, MatchMode.Relaxed))
                     if (smcDoc?.Value == e.SourceElementsDocument)
                     {
                         // identify as well the DocumentVersion
                         // (convert to List() because of Count() below)
                         var allVers =
                             e.SourceElementsDocument.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
-                                semConf.SemIdDocumentVersion).ToList();
+                                semConf.SemIdDocumentVersion, MatchMode.Relaxed).ToList();
                         foreach (var smcVer in allVers)
                             if (smcVer?.Value == e.SourceElementsDocumentVersion)
                             {
@@ -881,6 +896,9 @@ namespace AasxPluginDocumentShelf
                                 // access
                                 if (smcVer == null || smcVer.Value == null || smcDoc == null || smcDoc.Value == null)
                                     continue;
+
+                                // wait a bit
+                                // await Task.Delay(1000);
 
                                 // ask back via event stack
                                 _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventMessageBox()
@@ -996,8 +1014,8 @@ namespace AasxPluginDocumentShelf
                     return;
                 }
 
-                if (AnyUiMessageBoxResult.Cancel == _displayContext?.MessageBoxFlyoutShow(
-                    "Add a PreviewFile information to the current DecoumentEntity?",
+                if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
+                    "Add a PreviewFile information to the current DocumentEntity?",
                     "DocumentShelf",
                     AnyUiMessageBoxButton.OKCancel,
                     AnyUiMessageBoxImage.Question))
@@ -1378,6 +1396,7 @@ namespace AasxPluginDocumentShelf
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             // access
+            if (_renderedEntities == null || theDocEntitiesToPreview == null || _inDispatcherTimer)
             if (_renderedEntities == null || theDocEntitiesToPreview == null || _inDispatcherTimer)
                 return;
 

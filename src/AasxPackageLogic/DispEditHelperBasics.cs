@@ -26,6 +26,7 @@ using AdminShellNS.DiaryData;
 using AnyUi;
 using Extensions;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace AasxPackageLogic
 {
@@ -1530,7 +1531,8 @@ namespace AasxPackageLogic
             string[] menuHeaders,
             Func<object, AnyUiLambdaActionBase> menuItemLambda,
             AnyUiThickness margin = null, AnyUiThickness padding = null,
-            AnyUiBrush foreground = null, AnyUiBrush background = null)
+            AnyUiBrush foreground = null, AnyUiBrush background = null,
+            Func<object, Task<AnyUiLambdaActionBase>> menuItemLambdaAsync = null)
         {
             // construct button
             var but = new AnyUiButton();
@@ -1544,7 +1546,8 @@ namespace AasxPackageLogic
             AnyUiGrid.SetRow(but, row);
             AnyUiGrid.SetColumn(but, col);
             g.Children.Add(but);
-            but.SpecialAction = new AnyUiSpecialActionContextMenu(menuHeaders, menuItemLambda);
+            but.SpecialAction = new AnyUiSpecialActionContextMenu(
+                menuHeaders, menuItemLambda, menuItemLambdaAsync);
 
             // ok
             return (but);

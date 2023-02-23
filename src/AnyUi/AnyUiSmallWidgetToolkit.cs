@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace AnyUi
 {
@@ -390,7 +391,8 @@ namespace AnyUi
             AnyUiThickness margin = null, AnyUiThickness padding = null,
             AnyUiBrush foreground = null, AnyUiBrush background = null,
             double? fontSize = null, AnyUiFontWeight? fontWeight = null,
-            AnyUiVerticalAlignment? verticalAlignment = null)
+            AnyUiVerticalAlignment? verticalAlignment = null,
+            Func<object, Task<AnyUiLambdaActionBase>> menuItemLambdaAsync = null)
         {
             // construct button
             var but = new AnyUiButton();
@@ -410,7 +412,8 @@ namespace AnyUi
             AnyUiGrid.SetRow(but, row);
             AnyUiGrid.SetColumn(but, col);
             g.Children.Add(but);
-            but.SpecialAction = new AnyUiSpecialActionContextMenu(menuHeaders, menuItemLambda);
+            but.SpecialAction = new AnyUiSpecialActionContextMenu(
+                menuHeaders, menuItemLambda, menuItemLambdaAsync);
 
             // ok
             return (but);

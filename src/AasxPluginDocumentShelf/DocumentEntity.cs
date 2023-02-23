@@ -16,6 +16,7 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
+using System.Threading.Tasks;
 
 namespace AasxPluginDocumentShelf
 {
@@ -27,7 +28,7 @@ namespace AasxPluginDocumentShelf
         public delegate void DocumentEntityEvent(DocumentEntity e);
         public event DocumentEntityEvent DoubleClick = null;
 
-        public delegate void MenuClickDelegate(DocumentEntity e, string menuItemHeader, object tag);
+        public delegate Task MenuClickDelegate(DocumentEntity e, string menuItemHeader, object tag);
         public event MenuClickDelegate MenuClick = null;
 
         public event DocumentEntityEvent DragStart = null;
@@ -95,9 +96,9 @@ namespace AasxPluginDocumentShelf
                 DoubleClick(this);
         }
 
-        public void RaiseMenuClick(string menuItemHeader, object tag)
+        public async Task RaiseMenuClick(string menuItemHeader, object tag)
         {
-            MenuClick?.Invoke(this, menuItemHeader, tag);
+            await MenuClick?.Invoke(this, menuItemHeader, tag);
         }
 
         public void RaiseDragStart()
