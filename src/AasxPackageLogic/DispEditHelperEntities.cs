@@ -183,19 +183,27 @@ namespace AasxPackageLogic
                 {
                     if (buttonNdx == 0)
                     {
-                        var uc = new AnyUiDialogueDataEmpty();
-                        this.context?.StartFlyover(uc);
-                        try
+                        if (context is AnyUiContextPlusDialogs cpd
+                            && cpd.HasCapability(AnyUiContextCapability.WPF))
                         {
-                            if (asset.GlobalAssetId.IsValid() == true)
-                                this.context?.PrintSingleAssetCodeSheet(
-                                    asset.GlobalAssetId.Keys[0].Value, aas?.IdShort);
+                            var uc = new AnyUiDialogueDataEmpty();
+                            this.context?.StartFlyover(uc);
+                            try
+                            {
+                                if (asset.GlobalAssetId.IsValid() == true)
+                                    this.context?.PrintSingleAssetCodeSheet(
+                                        asset.GlobalAssetId.Keys[0].Value, aas?.IdShort);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex, "When printing, an error occurred");
+                            }
+                            this.context?.CloseFlyover();
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            Log.Singleton.Error(ex, "When printing, an error occurred");
+                            Log.Singleton.Error("Printing is only supported in the WPF version.");
                         }
-                        this.context?.CloseFlyover();
                     }
                     return new AnyUiLambdaActionNone();
                 });
@@ -365,7 +373,7 @@ namespace AasxPackageLogic
                     });
 
                     this.AddActionPanel(
-                        stack, "Copy from existing AAS:",
+                        stack, "Copy existing AAS:",
                         repo: repo,
                         superMenu: superMenu,
                         ticketMenu: new AasxMenu()
@@ -690,7 +698,7 @@ namespace AasxPackageLogic
                     this.AddGroup(stack, "Dynamic rendering of ConceptDescriptions", this.levelColors.MainSection);
 
                     var g1 = this.AddSubGrid(stack, "Dynamic order:", 1, 2, new[] { "#", "#" },
-                        minWidthFirstCol: this.standardFirstColWidth);
+                        minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
                     AnyUiComboBox cb1 = null;
                     cb1 = AnyUiUIElement.RegisterControl(
                         this.AddSmallComboBoxTo(g1, 0, 0,
@@ -737,7 +745,7 @@ namespace AasxPackageLogic
                     });
 
                     var g2 = this.AddSubGrid(stack, "Entities:", 1, 1, new[] { "#" },
-                        minWidthFirstCol: this.standardFirstColWidth);
+                        minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
                     AnyUiUIElement.RegisterControl(
                         this.AddSmallButtonTo(g2, 0, 0, content: "Sort according above order",
                             margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0)),
@@ -1202,6 +1210,7 @@ namespace AasxPackageLogic
                 });
                 this.AddActionPanel(
                     stack, "Copy from existing Submodel:",
+                    firstColumnWidth: FirstColumnWidth.Large,
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -1287,7 +1296,7 @@ namespace AasxPackageLogic
 
             // Referable
             this.DisplayOrEditEntityReferable(stack, 
-                parentContainer: null, referable: aas, indexPosition: 0, categoryUsual: false);
+                parentContainer: null, referable: aas, indexPosition: 0);
 
             // Identifiable
             this.DisplayOrEditEntityIdentifiable(
@@ -1594,7 +1603,7 @@ namespace AasxPackageLogic
                         severityLevel: HintCheck.Severity.Notice)
                 });
                 this.AddActionPanel(
-                    stack, "Copy from existing SubmodelElement:",
+                    stack, "Copy existing SMEs:",
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -1665,6 +1674,7 @@ namespace AasxPackageLogic
                 this.AddActionPanel(
                     stack, "ConceptDescriptions (missing):",
                     repo: repo, superMenu: superMenu,
+                    firstColumnWidth: FirstColumnWidth.Large,
                     ticketMenu: new AasxMenu()
                         .AddAction("create-eclass", "Create \U0001f844 ECLASS",
                             "Create missing CDs searching from ECLASS.")
@@ -1698,6 +1708,7 @@ namespace AasxPackageLogic
                 this.AddActionPanel(
                     stack, "Submodel & -elements:",
                     repo: repo, superMenu: superMenu,
+                    firstColumnWidth: FirstColumnWidth.Large,
                     ticketMenu: new AasxMenu()
                         .AddAction("convert-template", "Turn to kind Template",
                             "Sets all kind attributes in element and children to kind Template.")
@@ -1778,7 +1789,7 @@ namespace AasxPackageLogic
 
                 // IReferable
                 this.DisplayOrEditEntityReferable(stack, 
-                    parentContainer: null, referable: submodel, indexPosition: 0, categoryUsual: false);
+                    parentContainer: null, referable: submodel, indexPosition: 0);
 
                 // Identifiable
                 this.DisplayOrEditEntityIdentifiable(
@@ -1951,8 +1962,7 @@ namespace AasxPackageLogic
                             }
                         }
                         return la;
-                    }),
-                categoryUsual: false);
+                    }));
 
             // Identifiable
 
@@ -2277,7 +2287,7 @@ namespace AasxPackageLogic
                                 severityLevel: HintCheck.Severity.Notice)
                         });
                         this.AddActionPanel(
-                            stack, "Copy from existing SubmodelElement:",
+                            stack, "Copy existing SMEs:",
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
                                 .AddAction("copy-single", "Copy single",
@@ -2662,6 +2672,7 @@ namespace AasxPackageLogic
                     });
                 this.AddActionPanel(
                     stack, "ConceptDescriptions from ECLASS:",
+                    firstColumnWidth: FirstColumnWidth.Large,
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("import-missing", "Import missing",
@@ -2762,8 +2773,8 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                 });
                 this.AddActionPanel(
-                    stack, "Copy from existing SubmodelElement:",
-                    repo: repo, superMenu: superMenu,
+                    stack, "Copy existing SMEs:",
+                    firstColumnWidth: FirstColumnWidth.Large,
                     ticketMenu: new AasxMenu()
                         .AddAction("copy-single", "Copy single",
                             "Copy single selected entity from another AAS, caring for ConceptDescriptions.")
@@ -3103,7 +3114,6 @@ namespace AasxPackageLogic
                 // IReferable
                 this.DisplayOrEditEntityReferable(stack, 
                     parentContainer: parentContainer, referable: sme, indexPosition: indexPosition,
-                    categoryUsual: true,
                     injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
                         auxTitles: new[] { "Sync" },
                         auxToolTips: new[] { "Copy (if target is empty) idShort " +
@@ -3131,13 +3141,7 @@ namespace AasxPackageLogic
                                 }
                             }
                             return new AnyUiLambdaActionNone();
-                        }),
-                    addHintsCategory: new[] {
-                        new HintCheck(
-                            () => sme.Category?.HasContent() != true,
-                            "The use of category is deprecated. ",
-                           severityLevel: HintCheck.Severity.Notice)
-                    });
+                        }));
 
                 // Kind
                 this.DisplayOrEditEntityModelingKind(stack, sme.Kind,

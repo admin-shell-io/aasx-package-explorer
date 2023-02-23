@@ -608,7 +608,7 @@ namespace AasxPackageLogic
 
                                 if (parentContainer is Aas.Submodel pcsm && wrapper != null)
                                     createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
-                                        pcsm.SubmodelElements, smw2, wrapper);
+                                        pcsm.SubmodelElements, smw2, wrapper, makeUnique);
 
                                 if (parentContainer is Aas.SubmodelElementCollection pcsmc && wrapper != null)
                                     createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
@@ -630,7 +630,6 @@ namespace AasxPackageLogic
                                         annotations, smw2, wrapper, makeUnique);
                                 }
                                     
-
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is Aas.Operation pcop && wrapper != null)
                                 {
@@ -706,8 +705,6 @@ namespace AasxPackageLogic
 
                                 // aprent set automatically
                                 // TODO (MIHO, 2021-08-18): createAtIndex missing here
-                                //if (sme is IEnumerateChildren smeec)
-                                //    smeec.AddChild(smw2, item.Placement);
                                 sme.AddChild(smw2, item.Placement);
                             }
 

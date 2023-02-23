@@ -21,7 +21,11 @@ namespace AnyUi
         /// <summary>
         /// Automatically replace labes starting with IRI with active links
         /// </summary>
-        public bool showIriMode = false;
+        public bool showIriMode = false;        
+
+        //
+        // Small widgets
+        //
 
         public AnyUiGrid AddSmallGrid(int rows, int cols,
             string[] colWidths = null, string[] rowHeights = null,

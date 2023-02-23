@@ -286,7 +286,7 @@ namespace BlazorUI.Data
             // display again
             Program.signalNewData(
                 new Program.NewDataAvailableArgs(
-                    Program.DataRedrawMode.None, this.SessionId));
+                    Program.DataRedrawMode.RebuildTreeKeepOpen, this.SessionId));
             DisplayElements.Refresh();
 
 #if _log_times

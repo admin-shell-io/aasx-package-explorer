@@ -984,7 +984,8 @@
                         // if an element is deleted within the tree, the tree shall be re-drawn,
                         // the focus shall be shifted to a recommended element
                         // and the panel shall be updated (because of index)
-                        Session.RedrawAllAasxElements(keepFocus: true, nextFocusMdo: lapcc.NextFocus);
+                        Session.RedrawAllAasxElements(
+                            keepFocus: true, nextFocusMdo: lapcc.NextFocus, wishExpanded: false);
                         _onlyUpdatePluginUi = false;
                     }
                 }

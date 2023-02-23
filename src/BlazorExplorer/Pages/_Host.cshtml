@@ -123,9 +123,9 @@
                 contentType = "application/octet-stream";
             }
 
-            console.log("sBrowser=" + sBrowser);
-            console.log("sUsrAg=" + sUsrAg);
-            console.log("contentType=" + contentType);
+            //console.log("sBrowser=" + sBrowser);
+            //console.log("sUsrAg=" + sUsrAg);
+            //console.log("contentType=" + contentType);
 
             // Create the URL
             const file = new File([data], filename, { type: contentType });
@@ -146,6 +146,52 @@
             // We don't need to keep the url, let's release the memory
             // On Safari it seems you need to comment this line... (please let me know if you know why)
             URL.revokeObjectURL(exportUrl);
+        }
+
+        function BlazorDownloadUrl(url, contentType, filename) {
+
+            // Create the <a> element and click on it
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = url;
+
+            // try force download (seems not to work)
+            a.type = "application/octet-stream"
+            a.download = filename;
+            
+            a.target = "_blank";
+            // a.target = "_self";
+            a.click();
+
+            // We don't need to keep the url, let's release the memory
+            // On Safari it seems you need to comment this line... (please let me know if you know why)
+            URL.revokeObjectURL(url);
+        }
+
+        function BlazorDisplayUrl(url, contentType) {
+            // Browser switch: Mozilla blocks display of PDF "block:... denied for scipt", therefore
+            // switch to "octet-stream", then, funny enough, Mozilla will also DISPLAY PDF ..
+
+            var sBrowser, sUsrAg = navigator.userAgent;
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                contentType = "application/octet-stream";
+            }
+
+            // Create the <a> element and click on it
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = url;
+
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                a.download = url;
+            }
+
+            a.target = "_blank";
+            a.click();
+
+            // We don't need to keep the url, let's release the memory
+            // On Safari it seems you need to comment this line... (please let me know if you know why)
+            URL.revokeObjectURL(url);
         }
 
         // Convert a base64 string to a Uint8Array. This is needed to create a blob object from the base64 string.

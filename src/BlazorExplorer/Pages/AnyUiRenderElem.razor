@@ -215,16 +215,17 @@
     {
         if (Session.EditMode)
         {
-
             // outer style
             style.SetSpecifics(
                 margin: hb.Margin,
                 padding: hb.Padding,
-                textWrapping: hb.TextWrapping,
+                textWrapping: hb.TextWrapping ?? AnyUiTextWrapping.Wrap,
                 fontSizeRel: hb.FontSize,
                 fontWeight: hb.FontWeight);
 
             style.Set("color", hb.Background?.HtmlRgb(), add: true, doNotSetIfNull: true);
+
+            style.Set("z-index", "-1", add: true);
 
             // inner style (pure text)
             var innerstyle = new StylePile();
@@ -319,7 +320,7 @@
 
         if (Parent is AnyUiGrid)
         {
-            style += "width: 100%";
+            style += "width: 99%";
             style += "box-sizing: border-box";
 
             style.SetMinMaxWidthHeight(Element);
@@ -332,21 +333,25 @@
         {
 
             <input type="text" style="@style" value="@chtb.Text"           
-                @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
+                @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), false))"
+                @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
 
         }
         else
         {
 
             <textarea class="form-control" style="@style; resize:none; overflow:hidden " value="@chtb.Text"
-                @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
+                @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), false))"
+                @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
 
         }
 
         @code {
-            private void MyTextInput(AnyUiTextBox chtb, string value, bool direct)
+            private void MyTextInput(AnyUiTextBox chtb, string value, bool takeOver)
             {
-                Program.EvalSetValueLambdaAndHandleReturn(Session.SessionId, chtb, value);
+                if (takeOver)
+                    ;
+                Program.EvalSetValueLambdaAndHandleReturn(Session.SessionId, chtb, value, takeOver);
             }
         }
     }

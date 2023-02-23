@@ -58,6 +58,13 @@ namespace AasxPluginDocumentShelf
         public List<Tuple<DocRelationType, Aas.Reference>> Relations =
             new List<Tuple<DocRelationType, Aas.Reference>>();
 
+        /// <summary>
+        /// The parsing might add a dedicated, version-specific action to add.
+        /// </summary>        
+        public delegate bool AddPreviewFileDelegate(DocumentEntity e, string path, string contentType);
+
+        public AddPreviewFileDelegate AddPreviewFile;
+
         public class FileInfo
         {
             public string Path = "";
@@ -499,6 +506,21 @@ namespace AasxPluginDocumentShelf
                         // add
                         ent.SmVersion = DocumentEntity.SubmodelVersion.V11;
                         its.Add(ent);
+
+                        //
+                        // add actions?
+                        //
+
+                        ent.AddPreviewFile = (ent2, path2, contentType2) =>
+                        {
+                            var fl2 = new Aas.File(contentType2, 
+                                idShort: "PreviewFile",
+                                semanticId: defs11.CD_PreviewFile?.GetReference(),
+                                value: path2);
+                            smcVer.Add(fl2);
+                            ent.PreviewFile = new DocumentEntity.FileInfo(fl);
+                            return true;
+                        };
                     }
                 }
 

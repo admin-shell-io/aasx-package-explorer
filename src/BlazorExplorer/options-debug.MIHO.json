@@ -33,6 +33,7 @@
   "LogoFile": "PI40_and_IDTA.png",
   "QualifiersFile": "qualifier-presets.json",
   "ExtensionsPresetFile": "extension-presets.json",
+  "IdentifierKeyValuePairsFile": "local-identifier-presets.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
   "SplashTime": 0,
@@ -68,7 +69,7 @@
     "SingleValueTopic": "Values/aas/{aas}/sm/{sm}/{path}"
   },
   "UserDir": ".\\userdata",
-  "UserName" : "miho",
+  "UserName": "miho",
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],

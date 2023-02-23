@@ -14,6 +14,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Net;
+using System.Net.Http;
 using AdminShellNS;
 using AnyUi;
 using ImageMagick;
@@ -85,6 +86,8 @@ namespace AasxIntegrationBaseGdi
             return null;
         }
 
+        // TODO (MIHO, 2023-02-23): make the whole thing async!!
+
         public static AnyUiBitmapInfo MakePreviewFromPackageOrUrl(
             AdminShellPackageEnv package, string path,
             double dpi = 75)
@@ -102,8 +105,25 @@ namespace AasxIntegrationBaseGdi
                 else
                 {
                     // try download
-                    var wc = new WebClient();
+#if __old
+                    var wc = new WebClient();                    
                     thumbStream = wc.OpenRead(path);
+#else
+                    // upgrade to HttpClient and follow re-directs
+                    var hc = new HttpClient();
+                    var response = hc.GetAsync(path).GetAwaiter().GetResult();
+
+                    // if you call response.EnsureSuccessStatusCode here it will throw an exception
+                    if (response.StatusCode == HttpStatusCode.Moved 
+                        || response.StatusCode == HttpStatusCode.Found)
+                    {
+                        var location = response.Headers.Location;
+                        response = hc.GetAsync(location).GetAwaiter().GetResult();
+                    }
+
+                    response.EnsureSuccessStatusCode();
+                    thumbStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+#endif
                 }
 
                 if (thumbStream == null)

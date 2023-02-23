@@ -1,0 +1,11 @@
+[
+  {
+    "name": "GTIN from GS1",
+    "pair": {
+      "semanticId": null,
+      "name": "GTIN",
+      "value": "123456789-10",
+      "externalSubjectId": null
+    }
+  }
+]

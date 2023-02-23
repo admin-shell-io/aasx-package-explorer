@@ -11,9 +11,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxPackageLogic;
+using AdminShellNS;
 using Microsoft.JSInterop;
 
 namespace BlazorUI.Utils
@@ -32,7 +34,7 @@ namespace BlazorUI.Utils
             {
 
                 // extension of fn?
-                var ext = System.IO.Path.GetExtension(fn).ToLower().Trim();
+                var ext = AdminShellUtil.GetExtensionWoQuery(fn).ToLower().Trim();
 
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
                 var browserHandles = new[]
@@ -74,15 +76,34 @@ namespace BlazorUI.Utils
                 if (forceSave)
                     display = false;
 
-                // prepare file
-                var file = await System.IO.File.ReadAllBytesAsync(fn);
-                var fileName = System.IO.Path.GetFileName(fn);
-                // Send the data to JS to actually download the file
+                // make it a URI
+                var uri = new Uri(fn);
 
-                if (display)
-                    await runtime.InvokeVoidAsync("BlazorDisplayFile", fileName, mimeType, file);
+                if (uri.IsFile)
+                {
+                    // prepare file to be provided by the server
+                    var file = await System.IO.File.ReadAllBytesAsync(fn);
+                    var fileName = System.IO.Path.GetFileName(fn);
+
+                    // send the data to JS to actually display / download the file
+                    if (display)
+                        await runtime.InvokeVoidAsync("BlazorDisplayFile", fileName, mimeType, file);
+                    else
+                        await runtime.InvokeVoidAsync("BlazorDownloadFile", fileName, mimeType, file);
+                }
                 else
-                    await runtime.InvokeVoidAsync("BlazorDownloadFile", fileName, mimeType, file);
+                {
+                    // no file, hand over directly to the browser
+                    
+                    // combine information WITHOUT query path
+                    var fileName = System.IO.Path.GetFileNameWithoutExtension(fn) + ext;
+
+                    // send the data to JS to actually display / download the file
+                    if (display)
+                        await runtime.InvokeVoidAsync("BlazorDisplayUrl", fn, mimeType);
+                    else
+                        await runtime.InvokeVoidAsync("BlazorDownloadUrl", fn, mimeType, fileName);
+                }
             }
             catch (Exception ex)
             {

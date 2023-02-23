@@ -146,10 +146,17 @@ namespace AasxPackageLogic
                             {
                                 var qNew = new Aas.Qualifier("", Aas.DataTypeDefXsd.String);
                                 var jsonInput = this.context?.ClipboardGet()?.Text;
-                                if (PasteQualifierTextIntoExisting(jsonInput, qNew))
+                                if (jsonInput?.HasContent() == true)
                                 {
-                                    qualifiers.Add(qNew);
-                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    if (PasteQualifierTextIntoExisting(jsonInput, qNew))
+                                    {
+                                        qualifiers.Add(qNew);
+                                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    }
+                                }
+                                else
+                                {
+                                    Log.Singleton.Error("Nothing found in the clipboard! Aborting.");
                                 }
                             }
                             catch (Exception ex)
@@ -168,7 +175,7 @@ namespace AasxPackageLogic
             for (int i = 0; i < qualifiers.Count; i++)
             {
                 var qual = qualifiers[i];
-                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: this.smallFirstColWidth); 
+                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: GetWidth(FirstColumnWidth.Small)); 
 
                 int storedI = i;
                 AddGroup(
@@ -219,9 +226,16 @@ namespace AasxPackageLogic
                                     try
                                     {
                                         var jsonInput = this.context?.ClipboardGet()?.Text;
-                                        action = PasteQualifierTextIntoExisting(jsonInput, qualifiers[storedI]);
-                                        if (action)
-                                            Log.Singleton.Info("Qualifier taken from clipboard.");
+                                        if (jsonInput?.HasContent() == true)
+                                        {
+                                            action = PasteQualifierTextIntoExisting(jsonInput, qualifiers[storedI]);
+                                            if (action)
+                                                Log.Singleton.Info("Qualifier taken from clipboard.");
+                                        }
+                                        else
+                                        {
+                                            Log.Singleton.Error("Nothing found in the clipboard! Aborting.");
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
@@ -541,7 +555,7 @@ namespace AasxPackageLogic
                             if (pfn == null || !System.IO.File.Exists(pfn))
                             {
                                 Log.Singleton.Error(
-                                    "JSON file for SpecificAssetId presets not defined nor existing ({pfn}).");
+                                    $"JSON file for SpecificAssetId presets not defined nor existing ({pfn}).");
                                 return new AnyUiLambdaActionNone();
                             }
                             try
@@ -577,10 +591,17 @@ namespace AasxPackageLogic
                             {
                                 var pNew = new Aas.SpecificAssetId("", "", null);
                                 var jsonInput = this.context?.ClipboardGet()?.Text;
-                                if (PasteIKVPTextIntoExisting(jsonInput, pNew))
+                                if (jsonInput?.HasContent() == true)
+                                { 
+                                    if (PasteIKVPTextIntoExisting(jsonInput, pNew))
+                                    {
+                                        pairs.Add(pNew);
+                                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    }
+                                }
+                                else
                                 {
-                                    pairs.Add(pNew);
-                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    Log.Singleton.Error("Nothing found in the clipboard! Aborting.");
                                 }
                             }
                             catch (Exception ex)
@@ -599,7 +620,7 @@ namespace AasxPackageLogic
             for (int i = 0; i < pairs.Count; i++)
             {
                 var pair = pairs[i];
-                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: this.smallFirstColWidth);
+                var substack = AddSubStackPanel(stack, "  ", GetWidth(FirstColumnWidth.Small));
 
                 int storedI = i;
                 AddGroup(
@@ -649,7 +670,14 @@ namespace AasxPackageLogic
                                     try
                                     {
                                         var jsonInput = this.context?.ClipboardGet()?.Text;
-                                        action = PasteIKVPTextIntoExisting(jsonInput, pairs[storedI]);
+                                        if (jsonInput?.HasContent() == true)
+                                        {
+                                            action = PasteIKVPTextIntoExisting(jsonInput, pairs[storedI]);
+                                        }
+                                        else
+                                        {
+                                            Log.Singleton.Error("Nothing found in the clipboard! Aborting.");
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
@@ -803,7 +831,7 @@ namespace AasxPackageLogic
             for (int i = 0; i < extensions.Count; i++)
             {
                 var extension = extensions[i];
-                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: this.smallFirstColWidth);
+                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: GetWidth(FirstColumnWidth.Small));
 
                 int storedI = i;
                 AddGroup(
@@ -1073,10 +1101,14 @@ namespace AasxPackageLogic
             AnyUiUIElement.RegisterControl(
                 AddSmallComboBoxTo(
                     frontPanel, 0, 0,
-                    margin: new AnyUiThickness(4, 2, 2, 2),
-                    padding: new AnyUiThickness(2, -1, 0, -1),
+                    margin: NormalOrCapa(
+                        new AnyUiThickness(4, 2, 2, 2),
+                        AnyUiContextCapability.Blazor, new AnyUiThickness(2, 1, 2, -1)),
+                    padding: NormalOrCapa(
+                        new AnyUiThickness(2, -1, 0, -1),
+                        AnyUiContextCapability.Blazor, new AnyUiThickness(2, 1, 2, 3)),
                     text: "" + Aas.Stringification.ToString(refkeys.Type),
-                    minWidth: 100,
+                    minWidth: 120,
                     items: Enum.GetValues(typeof(Aas.ReferenceTypes)).OfType<Aas.ReferenceTypes>().Select((rt) => Aas.Stringification.ToString(rt)).ToArray(),
                     isEditable: false,
                     verticalContentAlignment: AnyUiVerticalAlignment.Center),
@@ -1091,8 +1123,12 @@ namespace AasxPackageLogic
             AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             frontPanel, 0, 1,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            padding: new AnyUiThickness(5, 0, 5, 0),
+                            margin: NormalOrCapa(
+                                new AnyUiThickness(2, 2, 2, 2),
+                                AnyUiContextCapability.Blazor, new AnyUiThickness(6, 0, 0, 0)),
+                            padding: NormalOrCapa(
+                                new AnyUiThickness(5, 0, 5, 0),
+                                AnyUiContextCapability.Blazor, new AnyUiThickness(0, 0, 0, 0)),
                             content: "\u21bb"),
                         (o) =>
                         {
@@ -1303,7 +1339,7 @@ namespace AasxPackageLogic
             for (int i = 0; i < valuePairs.Count; i++)
             {
                 var vp = valuePairs[i];
-                var substack = AddSubStackPanel(stack, "", minWidthFirstCol: this.smallFirstColWidth); 
+                var substack = AddSubStackPanel(stack, "", minWidthFirstCol: GetWidth(FirstColumnWidth.Small)); 
 
                 int storedI = i;
                 var txt = AdminShellUtil.ShortenWithEllipses(valuePairs[i].Value, 30);

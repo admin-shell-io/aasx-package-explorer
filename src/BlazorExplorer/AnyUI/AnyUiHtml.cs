@@ -182,7 +182,12 @@ namespace AnyUi
                 TouchLambda = touchLambda;
         }
 
-        public double GetScale() => 1.4;
+        public double GetScale() => 1.2;
+
+        public double ScaleToPixel(double anyUiPx)
+        {
+            return 1.20f * anyUiPx;
+        }
 
         public static bool DebugFrames = false;
     }
@@ -782,29 +787,53 @@ namespace AnyUi
 
         }
 
-        /// <summary>
-        /// If supported by implementation technology, will set Clipboard (copy/ paste buffer)
-        /// of the main application computer.
-        /// </summary>
         public override void ClipboardSet(AnyUiClipboardData cb)
         {
             // see: https://www.meziantou.net/copying-text-to-clipboard-in-a-blazor-application.htm
 
             if (_jsRuntime != null && cb != null)
             {
-                _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", cb.Text);
+                try
+                {
+                    _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", cb.Text);
+                } 
+                catch (Exception ex)
+                {
+                    LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
+        }
+
+        public override AnyUiClipboardData ClipboardGet()
+        {
+            // see: https://stackoverflow.com/questions/75472912/how-do-i-read-the-clipboard-with-blazor
+
+            if (_jsRuntime != null)
+            {
+                try
+                {
+                    var str = _jsRuntime.InvokeAsync<string>("navigator.clipboard.readText").GetAwaiter().GetResult();
+                    if (str != null)
+                        return new AnyUiClipboardData(str);
+                }
+                catch (Exception ex)
+                {
+                    LogInternally.That.SilentlyIgnoredError(ex);
+                }
+            }
+
+            return null;
         }
 
         //
         // Convenience services
         //
 
-		/// <summary>
-		/// Selects a filename to read either from user or from ticket.
-		/// </summary>
-		/// <returns>The dialog data containing the filename or <c>null</c></returns>
-		public async override Task<AnyUiDialogueDataOpenFile> MenuSelectOpenFilenameAsync(
+        /// <summary>
+        /// Selects a filename to read either from user or from ticket.
+        /// </summary>
+        /// <returns>The dialog data containing the filename or <c>null</c></returns>
+        public async override Task<AnyUiDialogueDataOpenFile> MenuSelectOpenFilenameAsync(
 			AasxMenuActionTicket ticket,
 			string argName,
 			string caption,
@@ -1040,6 +1069,99 @@ namespace AnyUi
             if (_jsRuntime == null)
                 return;
             await BlazorUI.Utils.BlazorUtils.DisplayOrDownloadFile(_jsRuntime, fn, mimeType);
+        }
+
+        public double ApproxFontWidth(string str, double left, double right, double? minWdidth = null)
+        {
+            double tl = 8 * str.Length;
+            if (minWdidth.HasValue)
+                tl = Math.Max(tl, minWdidth.Value);
+
+            return tl + left + right;
+        }
+
+        public double GetApproxElementWidth(AnyUiUIElement elem)
+        {
+            // access
+            if (elem == null)
+                return 0.0f;
+
+            //
+            // simple types
+            //
+            if (elem is AnyUiLabel lab)
+                return ApproxFontWidth(lab.Content, 0.0, 0.0);
+            else
+            if (elem is AnyUiSelectableTextBlock stb)
+                return ApproxFontWidth(stb.Text, 0.0, 0.0);
+            else
+            if (elem is AnyUiTextBlock tbl)
+                return ApproxFontWidth(tbl.Text, 0.0, 0.0);
+            else
+            if (elem is AnyUiTextBox tbx)
+                return ApproxFontWidth(tbx.Text, 4.0, 4.0, tbx.MinWidth);
+            else
+            if (elem is AnyUiHintBubble hb)
+                return ApproxFontWidth(hb.Text, 4.0, 4.0);
+            else
+            if (elem is AnyUiComboBox com)
+                return ApproxFontWidth(com.Text, 4.0, 4.0, com.MinWidth);
+            else
+            if (elem is AnyUiCheckBox cbx)
+                return ApproxFontWidth(cbx.Content, 14.0, 4.0, cbx.MinWidth);
+            else
+            if (elem is AnyUiButton btn)
+                return ApproxFontWidth(btn.Content, 8.0, 8.0, btn.MinWidth);
+            else
+            //
+            // Panels
+            //
+            if (elem is AnyUiGrid grid)
+            {
+                var maxdim = grid.GetMaxRowCol();
+                double sumOfColMax = 0.0;
+                for (int c = 0; c < maxdim.Item2; c++)
+                {
+                    double colMax = 0.0;
+                    for (int r=0; r<maxdim.Item1; r++)
+                        foreach (var ch in grid.GetChildsAt(r,c))
+                        {
+                            var aw = GetApproxElementWidth(ch);
+                            if (aw > colMax)
+                                colMax = aw;
+                        }
+                    sumOfColMax += colMax;
+                }
+                return sumOfColMax;
+            }
+            else
+            if (elem is AnyUiStackPanel stack)
+            {
+                if (stack.Orientation == AnyUiOrientation.Vertical)
+                {
+                    // maximum of all widths
+                    double mx = 0.0;
+                    if (stack.Children != null)
+                        foreach (var ch in stack.Children)
+                            mx = Math.Max(mx, GetApproxElementWidth(ch));
+                    return mx;
+                }
+
+                if (stack.Orientation == AnyUiOrientation.Horizontal)
+                {
+                    // sum of all widths
+                    double sum = 0.0;
+                    if (stack.Children != null)
+                        foreach (var ch in stack.Children)
+                            sum += GetApproxElementWidth(ch);
+                    return sum;
+                }
+            }
+
+            //
+            // None of these
+            //
+            return 0.0;
         }
     }
 }

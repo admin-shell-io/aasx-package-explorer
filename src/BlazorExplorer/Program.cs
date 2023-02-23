@@ -181,7 +181,8 @@ namespace BlazorExplorer
         }
 
         public static void EvalSetValueLambdaAndHandleReturn(
-            int sessionNumber, AnyUiUIElement elem, object value = null)
+            int sessionNumber, AnyUiUIElement elem, object value = null,
+            bool takeOver = false)
         {
             // access
             if (elem == null)
@@ -189,11 +190,22 @@ namespace BlazorExplorer
 
             // evaluate & action
             var la = elem.setValueLambda?.Invoke(value);
-            if (la is AnyUiLambdaActionNone)
-                return;
-            signalNewData(
-                new Program.NewDataAvailableArgs(
-                    DataRedrawMode.ValueChanged, sessionNumber, la)); // same tree, only values changed
+            if (!(la is AnyUiLambdaActionNone))
+            {
+                // same tree, only values changed
+                signalNewData(
+                    new Program.NewDataAvailableArgs(
+                        DataRedrawMode.ValueChanged, sessionNumber, la)); 
+            }
+
+            // more?
+            if (takeOver)
+            {
+                // more severe
+                signalNewData(
+                    new Program.NewDataAvailableArgs(
+                        DataRedrawMode.RebuildTreeKeepOpen, sessionNumber, elem.takeOverLambda)); 
+            }
         }
 
         public static void loadAasx(BlazorSession bi, string value)

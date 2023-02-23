@@ -11,7 +11,7 @@
 
 @{
     var innerStyle = new StylePile()
-       .Set("text-color", Foreground?.HtmlRgba(), doNotSetIfNull: true, add: true)
+       .Set("color", Foreground?.HtmlRgba(), doNotSetIfNull: true, add: true)
        .Set("background-color",Background?.HtmlRgba(), doNotSetIfNull: true, add: true);
 }
 

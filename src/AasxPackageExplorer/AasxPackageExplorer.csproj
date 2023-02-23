@@ -78,6 +78,9 @@
 
   <ItemGroup>
     <Folder Include="FlyoutsForPlugins\" />
+    <None Update="local-identifier-presets.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="IDTA_and_PI40_t.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

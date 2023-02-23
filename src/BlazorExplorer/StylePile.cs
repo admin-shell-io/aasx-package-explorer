@@ -21,6 +21,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using AasxPackageLogic;
 using AdminShellNS;
 using AnyUi;
@@ -303,26 +304,36 @@ namespace BlazorUI
             if (!(elem is AnyUiFrameworkElement fe))
                 return;
 
-            var scale = (elem.DisplayData as AnyUiDisplayDataHtml)?.GetScale() ?? 1.0;
-
             if (setWidth)
             {
                 if (fe.MinWidth.HasValue)
-                    Set("min-width", FormattableString.Invariant($"{scale * fe.MinWidth.Value}px"), add: true);
+                {
+                    var mwpx = (elem.DisplayData as AnyUiDisplayDataHtml)?
+                        .ScaleToPixel(fe.MinWidth.Value) ?? fe.MinWidth.Value;
+                    Set("min-width", FormattableString.Invariant($"{mwpx}px"), add: true);
+                }
                 if (fe.MaxWidth.HasValue)
-                    Set("max-width", FormattableString.Invariant($"{scale * fe.MaxWidth.Value}px"), add: true);
+                {
+                    var mwpx = (elem.DisplayData as AnyUiDisplayDataHtml)?
+                        .ScaleToPixel(fe.MaxWidth.Value) ?? fe.MaxWidth.Value;
+                    Set("max-width", FormattableString.Invariant($"{mwpx}px"), add: true);
+                }
             }
 
             if (setHeight)
             {
                 if (fe.MinHeight.HasValue)
                 {
-                    Set("min-height", FormattableString.Invariant($"{scale * fe.MinHeight.Value}px"), add: true);
+                    var mwpx = (elem.DisplayData as AnyUiDisplayDataHtml)?
+                        .ScaleToPixel(fe.MinWidth.Value) ?? fe.MinWidth.Value;
+                    Set("min-height", FormattableString.Invariant($"{mwpx}px"), add: true);
                     Set("object-fit", "scale-down", add: true);
                 }
                 if (fe.MaxHeight.HasValue)
                 {
-                    Set("max-height", FormattableString.Invariant($"{scale * fe.MaxHeight.Value}px"), add: true);
+                    var mwpx = (elem.DisplayData as AnyUiDisplayDataHtml)?
+                        .ScaleToPixel(fe.MaxWidth.Value) ?? fe.MaxWidth.Value;
+                    Set("max-height", FormattableString.Invariant($"{mwpx}px"), add: true);
                     Set("object-fit", "scale-down", add: true);
                 }
             }

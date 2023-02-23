@@ -21,6 +21,7 @@ using AdminShellNS;
 using Extensions;
 using AnyUi;
 using Newtonsoft.Json;
+using System.IO.Packaging;
 
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable AccessToModifiedClosure
@@ -39,6 +40,7 @@ namespace AasxPluginDocumentShelf
         private PluginEventStack _eventStack = null;
         private PluginSessionBase _session = null;
         private AnyUiStackPanel _panel = null;
+        private AnyUiContextPlusDialogs _displayContext = null;
         private PluginOperationContextBase _opContext = null;
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
@@ -135,7 +137,8 @@ namespace AasxPluginDocumentShelf
             PluginEventStack eventStack,
             PluginSessionBase session,
             AnyUiStackPanel panel,
-            PluginOperationContextBase opContext)
+            PluginOperationContextBase opContext,
+            AnyUiContextPlusDialogs cdp)
         {
             _log = log;
             _package = thePackage;
@@ -145,6 +148,7 @@ namespace AasxPluginDocumentShelf
             _session = session;
             _panel = panel;
             _opContext = opContext;
+            _displayContext = cdp;
 
             // no form, yet
             _formDoc = null;
@@ -160,7 +164,8 @@ namespace AasxPluginDocumentShelf
             PluginEventStack eventStack,
             PluginSessionBase session,
             object opanel,
-            PluginOperationContextBase opContext)
+            PluginOperationContextBase opContext,
+            AnyUiContextPlusDialogs cdp)
         {
             // access
             var package = opackage as AdminShellPackageEnv;
@@ -177,7 +182,7 @@ namespace AasxPluginDocumentShelf
 
             // factory this object
             var shelfCntl = new ShelfAnyUiControl();
-            shelfCntl.Start(log, package, sm, options, eventStack, session, panel, opContext);
+            shelfCntl.Start(log, package, sm, options, eventStack, session, panel, opContext, cdp);
 
             // return shelf
             return shelfCntl;
@@ -523,7 +528,7 @@ namespace AasxPluginDocumentShelf
                 background: AnyUiBrushes.White);
             border.Child = g;
 
-            // Orga and Country flags flapping in the breez
+            // Orga and Country flags flapping in the breeze
             var sp1 = uitk.AddSmallStackPanelTo(g, 0, 1,
                 setHorizontal: true);
 
@@ -604,6 +609,11 @@ namespace AasxPluginDocumentShelf
 
             hds.AddRange(new[] { "\U0001F56E", "View file" });
             hds.AddRange(new[] { "\U0001F4BE", "Save file .." });
+
+            if (_opContext?.IsDisplayModeEditOrAdd == true)
+            {
+                hds.AddRange(new[] { "\U0001F5BC", "Make preview permanent" });
+            }
 
             // context menu
             uitk.AddSmallContextMenuItemTo(g, 2, 2,
@@ -764,11 +774,13 @@ namespace AasxPluginDocumentShelf
         public void Update(params object[] args)
         {
             // check args
-            if (args == null || args.Length < 1
-                || !(args[0] is AnyUiStackPanel newPanel))
+            if (args == null || args.Length < 2
+                || !(args[0] is AnyUiStackPanel newPanel)
+                || !(args[1] is AnyUiContextPlusDialogs newCdp))
                 return;
 
             // ok, re-assign panel and re-display
+            _displayContext = newCdp;
             _panel = newPanel;
             _panel.Children.Clear();
 
@@ -969,6 +981,82 @@ namespace AasxPluginDocumentShelf
                 //        }
                 //    }
                 //};
+            }
+
+            // show digital file
+            if (tag == null && menuItemHeader == "Make preview permanent"
+                && e?.ReferableHash != null 
+                && referableHashToCachedBitmap.ContainsKey(e?.ReferableHash)
+                && e.AddPreviewFile != null)
+            {
+                // make sure its empty
+                if (e.PreviewFile != null)
+                {
+                    _log?.Error("For this entity, the PreviewFile seems to be already defined. Aborting.");
+                    return;
+                }
+
+                if (AnyUiMessageBoxResult.Cancel == _displayContext?.MessageBoxFlyoutShow(
+                    "Add a PreviewFile information to the current DecoumentEntity?",
+                    "DocumentShelf",
+                    AnyUiMessageBoxButton.OKCancel,
+                    AnyUiMessageBoxImage.Question))
+                    return;
+
+                // try turn the bitmap into a physical file
+                try
+                {
+                    var bi = referableHashToCachedBitmap[e.ReferableHash];
+                    
+                    // go the easy route first
+                    if (bi.PngData != null)
+                    {
+                        // create a writeable temp png file name
+                        var tmpfn = System.IO.Path.GetTempFileName();
+                        var pngfn = tmpfn.Replace(".tmp", ".png");
+
+                        // write it
+                        System.IO.File.WriteAllBytes(pngfn, bi.PngData);
+
+                        // prepare upload data
+                        var ptd = "/aasx/";
+                        var ptfn = System.IO.Path.GetFileName(pngfn);                        
+                        _package.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                        // get content type
+                        var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                        // call "add"
+                        var targetPath = _package.AddSupplementaryFileToStore(
+                            pngfn, ptd, ptfn,
+                            embedAsThumb: false, useMimeType: mimeType);
+
+                        if (targetPath == null)
+                        {
+                            _log?.Error(
+                                $"Error adding file {pngfn} to package");
+                        }
+                        else
+                        {
+                            // add
+                            _log?.Info(StoredPrint.Color.Blue,
+                                $"Added {ptfn} to pending package items. A save-operation is required.");
+
+                            var res = e.AddPreviewFile(
+                                e,
+                                path: System.IO.Path.Combine(ptd, ptfn),
+                                contentType: mimeType);
+
+                            // re-display also in Explorer
+                            _eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements()
+                                { Session = _session });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _log?.Error(ex, "Creating physical file for PreviewFile");
+                }
             }
         }
 

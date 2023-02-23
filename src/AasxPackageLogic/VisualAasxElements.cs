@@ -2259,8 +2259,10 @@ namespace AasxPackageLogic
 
             // recursion
             if (recursionDepth > 0)
-                foreach (var mem in tvl.Members)
+                // for some reason, often a "collection modified exception" was occuring
+                for (int i=0; i<tvl.Members.Count; i++)
                 {
+                    var mem = tvl.Members[i];
                     foreach (var x in FindAllInListOfVisualElements(mem, dataObject, alsoDereferenceObjects,
                                         recursionDepth - 1))
                         if (x != null)

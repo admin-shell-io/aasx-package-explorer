@@ -74,9 +74,11 @@
                 <tbody>
                     @{
                         @if (_panel?.Children != null)
-                            foreach (var ch in _panel.Children)
+                            for (int i=0; i<_panel.Children.Count; i++)
                             {
-                                ;
+                                //if (i > 19)
+                                //    break;
+                                var ch = _panel.Children[i];
                                 <tr>
                                     <td>
                                         <AnyUiRenderElem DisplayData="@DisplayData"

@@ -105,9 +105,7 @@ namespace AasxPackageLogic
             Aas.IReferable parentContainer,
             Aas.IReferable referable,
             int indexPosition,
-            DispEditInjectAction injectToIdShort = null,
-            HintCheck[] addHintsCategory = null,
-            bool categoryUsual = false)
+            DispEditInjectAction injectToIdShort = null)
         {
             // access
             if (stack == null || referable == null)
@@ -168,7 +166,8 @@ namespace AasxPackageLogic
                 },
                 auxButtonTitles: DispEditInjectAction.GetTitles(null, injectToIdShort),
                 auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
-                auxButtonLambda: injectToIdShort?.auxLambda
+                auxButtonLambda: injectToIdShort?.auxLambda,
+                takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(nextFocus: referable)
                 );
 
             this.AddHintBubble(
@@ -196,19 +195,13 @@ namespace AasxPackageLogic
                     repo, relatedReferable: referable);
             }
 
-            if (!categoryUsual)
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new HintCheck(() => referable.Category?.HasContent() == true,
-                    "The use of category is deprecated.", severityLevel: HintCheck.Severity.Notice));
+            // category deprecated
+            this.AddHintBubble(
+                stack, hintMode,
+                new HintCheck(() => referable.Category?.HasContent() == true,
+                "The use of category is deprecated. Do not plan to use this information in new developments.", 
+                severityLevel: HintCheck.Severity.Notice));
 
-            this.AddHintBubble(stack, hintMode, 
-                this.ConcatHintChecks(new[] {
-                    new HintCheck(
-                        () => referable.Category?.HasContent() == true,
-                        "The Category is deprecated. Do not plan to use this information in new developments.",
-                        breakIfTrue: true,
-                        severityLevel: HintCheck.Severity.Notice) }, addHintsCategory));
             AddKeyValueExRef(
                 stack, "category", referable, referable.Category, null, repo,
                 v =>
@@ -373,6 +366,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                         return new AnyUiLambdaActionNone();
                     },
+                    takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable),
                     auxButtonTitles: DispEditInjectAction.GetTitles(new[] { "Generate" }, injectToId),
                     auxButtonLambda: (i) =>
                     {
@@ -412,8 +406,8 @@ namespace AasxPackageLogic
                 new HintCheck(
                     () =>
                     {
-                        return identifiable.Administration.Version.Trim() == "" ||
-                            identifiable.Administration.Revision.Trim() == "";
+                        return identifiable.Administration.Version?.HasContent() != true ||
+                            identifiable.Administration.Revision?.HasContent() != true;
                     },
                     "Admistrative information fields should not be empty.",
                     severityLevel: HintCheck.Severity.Notice )
@@ -575,7 +569,7 @@ namespace AasxPackageLogic
                         stack, "Specifications:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
-                            .AddAction("add-reference", "Add Aas.Reference",
+                            .AddAction("add-reference", "Add Reference",
                                 "Adds a reference to a data specification.")
                             .AddAction("delete-reference", "Delete last reference",
                                 "Deletes the last reference in the list."),
@@ -883,7 +877,7 @@ namespace AasxPackageLogic
                         stack, $"{entityName}:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
-                            .AddAction("add-reference", "Add Aas.Reference",
+                            .AddAction("add-reference", "Add Reference",
                                 "Adds a reference to the list.")
                             .AddAction("delete-reference", "Delete last reference",
                                 "Deletes the last reference in the list."),
@@ -1102,8 +1096,8 @@ namespace AasxPackageLogic
                     breakIfTrue: true,
                     severityLevel: HintCheck.Severity.Notice) });
             if (this.SafeguardAccess(
-                    stack, this.repo, semElem.SupplementalSemanticIds, "supplementalSemanticId:", "Create data element!",
-                    v =>
+                    stack, this.repo, semElem.SupplementalSemanticIds, "supplementalSem.Id:", "Create data element!",
+                    action: v =>
                     {
                         semElem.SupplementalSemanticIds = new List<Aas.Reference>();
                         return new AnyUiLambdaActionRedrawEntity();
@@ -1113,7 +1107,7 @@ namespace AasxPackageLogic
                 {
                     // let the user control the number of references
                     this.AddActionPanel(
-                        stack, "Suppl.Sem.Id:",
+                        stack, "supplementalSem.Id:",
                         new[] { "Add", "Delete last" }, repo,
                         (buttonNdx) =>
                         {
@@ -1616,7 +1610,7 @@ namespace AasxPackageLogic
             {
                 var subg = AddSubGrid(stack, "levelType:",
                 1, 4, new[] { "#", "#", "#", "#" },
-                minWidthFirstCol: this.standardFirstColWidth);
+                minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
 
                 int col = 0;
                 foreach (var lt in AdminShellUtil.GetEnumValues<Aas.LevelType>())

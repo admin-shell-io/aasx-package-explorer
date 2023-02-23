@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Remove="Pages\Index.cshtml.cs" />
     <Content Remove="BlazorExplorer.options-for-release.json" />
+    <Content Remove="local-identifier-presets.json" />
     <Content Remove="options-debug.MIHO.json" />
     <Content Remove="Pages\Component.razor" />
     <Content Remove="Pages\FetchData.cshtml" />
@@ -60,6 +61,9 @@
 
   <ItemGroup>
     <None Include="BlazorExplorer.options-for-release.json" />
+    <None Include="local-identifier-presets.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="options-debug.MIHO.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

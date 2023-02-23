@@ -20,10 +20,18 @@
     if (_grid == null)
         return;
 
+    if (_grid?.Children != null && _grid.Children.Count >= 1
+        && _grid.Children[0] is AnyUiSelectableTextBlock stb
+        && stb.Text == "id:")
+        ;
+
     // because of not working with table, need an outer <div>
     var divOuterStyle = new StylePile();
     divOuterStyle.SetSpecifics(
         margin: _grid.Margin);
+
+    if (_grid?.Children != null && _numRow == 3 && _numCol == 3)
+        ;
 
     //
     // Eval different table attributes
@@ -106,14 +114,44 @@
                             if (NewApproach)
                             {
                                 thStyle.Set("overflow", "hidden", add: true);
-                                var scale = (_grid.DisplayData as AnyUiDisplayDataHtml)?.GetScale() ?? 1.0;
                                 
                                 if (_grid.ColumnDefinitions != null && ci < _grid.ColumnDefinitions.Count)
                                 {
                                     var cd = _grid.ColumnDefinitions[ci];
+
+                                    if (cd.Width.Type == AnyUiGridUnitType.Auto)
+                                    {
+                                        // no overflow
+                                        thStyle -= "overflow";
+
+                                        // try approximate width
+                                        double maxColWidth = 0.0;
+                                        for (int ri = 0; ri < _numRow; ri++)
+                                            foreach (var ch in _grid.GetChildsAt(ri, ci))
+                                                maxColWidth = Math.Max(maxColWidth,
+                                                (DisplayData?.GetScale() ?? 1.0f)
+                                                * (DisplayData?._context?.GetApproxElementWidth(ch) ?? 0.0));
+                                        if (maxColWidth > 0.0)
+                                            thStyle.Set("width",
+                                                FormattableString.Invariant($"{maxColWidth}px"), add: true);
+                                    }
+
                                     if (cd.MinWidth.HasValue)
+                                    {
+                                        var mwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                                            .ScaleToPixel(cd.MinWidth.Value) ?? cd.MinWidth.Value;
                                         thStyle.Set("width", 
-                                            FormattableString.Invariant($"{cd.MinWidth.Value}px"), add: true);
+                                            FormattableString.Invariant($"{mwpx}px"), add: true);
+                                    }
+
+                                    if (cd.Width?.Type == AnyUiGridUnitType.Pixel)
+                                    {
+                                        // set specified width (but respect overflow, if set)
+                                        var mwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                                            .ScaleToPixel(cd.Width.Value) ?? cd.MinWidth.Value;
+                                        thStyle.Set("width",
+                                            FormattableString.Invariant($"{mwpx}px"), add: true);
+                                    }
                                 }
                             }
 
@@ -152,11 +190,14 @@
                                     StylePile divWithStyle = null;
                                     if (_grid.ColumnDefinitions != null && ci < _grid.ColumnDefinitions.Count)
                                     {
-                                        var scale = (_grid.DisplayData as AnyUiDisplayDataHtml)?.GetScale() ?? 1.0;
                                         var cd = _grid.ColumnDefinitions[ci];
                                         if (cd.MinWidth.HasValue)
+                                        {
+                                            var mwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                                                .ScaleToPixel(cd.MinWidth.Value) ?? cd.MinWidth.Value;
                                             divWithStyle = new StylePile(FormattableString.Invariant(
-                                                $"min-width: {cd.MinWidth.Value}px"));
+                                                $"min-width: {mwpx}px"));
+                                        }
                                     }
 
                                     // modify td style
@@ -203,6 +244,13 @@
 
                                     if (NewApproach)
                                         tdStyle.Set("overflow", "hidden", add: true);
+
+                                    if (_grid.ColumnDefinitions != null && ci < _grid.ColumnDefinitions.Count)
+                                    {
+                                        var cd = _grid.ColumnDefinitions[ci];
+                                        if (cd.Width.Type == AnyUiGridUnitType.Auto)
+                                            tdStyle -= "overflow";
+                                    }
 
                                     // now render
                                     <td style="@tdStyle" colspan="@colspan" rowspan="@rowspan" data-source="AnyUiRenderGrid.razor tdStyle">
@@ -311,8 +359,6 @@
                     sumOfStars += cd.Width.Value;
 
             // make sure to have a weight > 0.0 for balancing single columns
-            var starWeight = Math.Max(sumOfStars, 1.0);
-            var scale = (_grid.DisplayData as AnyUiDisplayDataHtml)?.GetScale() ?? 1.0;
 
             _colHeadStyles = new List<string>();
             _colCellStyles = new List<string>();
@@ -323,10 +369,17 @@
                 if (AnyUiDisplayDataHtml.DebugFrames)
                     ccs += " border: 1px solid black;";
 
+                var starWeight = Math.Max(sumOfStars, 1.0);
+                var mwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                    .ScaleToPixel(cd.Width.Value) ?? cd.Width.Value;
+                var wwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                    .ScaleToPixel(Math.Floor(100.0 * cd.Width.Value / starWeight)) 
+                    ?? Math.Floor(100.0 * cd.Width.Value / starWeight);
+
                 if (cd.Width?.Type == AnyUiGridUnitType.Pixel)
-                    chs = FormattableString.Invariant($"min-width:{cd.Width.Value * scale}px;");
+                    chs = FormattableString.Invariant($"min-width:{mwpx}px;");
                 if (cd.Width?.Type == AnyUiGridUnitType.Star)
-                    chs = FormattableString.Invariant($"width:{Math.Floor(100.0 * cd.Width.Value / starWeight)}%;");
+                    chs = FormattableString.Invariant($"width:{wwpx}%;");
                 if (cd.Width?.Type == AnyUiGridUnitType.Auto)
                     chs = $"";
 

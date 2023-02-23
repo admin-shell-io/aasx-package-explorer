@@ -141,8 +141,7 @@ namespace AasxPackageLogic
 
         public DispLevelColors levelColors = null;
 
-        public int standardFirstColWidth = 96;
-        public int smallFirstColWidth = 96 / 2;
+        public enum FirstColumnWidth { Standard, Small, Large }
 
         public bool editMode = false;
         public bool hintMode = false;
@@ -154,6 +153,20 @@ namespace AasxPackageLogic
         private AnyUiFrameworkElement lastHighlightedField = null;
 
         public AnyUiContextBase context = null;
+
+        //
+        // Width of first column
+        // (not always identical to maintain space efficiency)
+        //
+
+        public int GetWidth (FirstColumnWidth cw)
+        {
+            if (cw == FirstColumnWidth.Small)
+                return 40;
+            if (cw == FirstColumnWidth.Large)
+                return 220;
+            return 130;
+        }
 
         //
         // Highlighting
@@ -208,6 +221,34 @@ namespace AasxPackageLogic
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
         }        
+
+        //
+        // size management
+        //
+
+        public AnyUiThickness NormalOrCapa(AnyUiThickness normal, params object[] args)
+        {
+            // access
+            if (args == null || !(context is AnyUiContextPlusDialogs cpd))
+                return normal;
+
+            // look at args
+            for (int i=0; (i+1) < args.Length; i += 2)
+            {
+                // schema fulfilled?
+                if (!(args[i] is AnyUiContextCapability capaEn) || !(args[i + 1] is AnyUiThickness ath))
+                    continue;
+                if (cpd.HasCapability(capaEn))
+                    return ath;
+            }
+
+            // nope
+            return normal;
+        }
+
+        //
+        // Helpers for GUI building blocks
+        //
 
 #if ONLY_INFO
                 // This was used in former times and now replaced by using a set lambda in all times
@@ -344,7 +385,7 @@ namespace AasxPackageLogic
             g.Margin = new AnyUiThickness(0, 1, 0, 1);
             var gc1 = new AnyUiColumnDefinition();
             gc1.Width = AnyUiGridLength.Auto;
-            gc1.MinWidth = this.standardFirstColWidth;
+            gc1.MinWidth = this.GetWidth(FirstColumnWidth.Standard);
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new AnyUiColumnDefinition();
             gc2.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
@@ -375,13 +416,17 @@ namespace AasxPackageLogic
                 foreach (var c in comboBoxItems)
                     if (c.Length > maxc)
                         maxc = c.Length;
-                var maxWidth = 10 * maxc; // about one em
+                var maxWidth = 10 * maxc; // about one em                
 
                 // use combo box
                 var cb = AddSmallComboBoxTo(
                     g, 0, 1,
-                    margin: new AnyUiThickness(4, 2, 2, 2),
-                    padding: new AnyUiThickness(2, 0, 2, 0),
+                    margin: NormalOrCapa(
+                        new AnyUiThickness(4, 2, 2, 2), 
+                        AnyUiContextCapability.Blazor, new AnyUiThickness(4, 0, 2, 0)),
+                    padding: NormalOrCapa(
+                        new AnyUiThickness(2, 0, 2, 0),
+                        AnyUiContextCapability.Blazor, new AnyUiThickness(2, 3, 2, 3)),
                     text: "" + value,
                     minWidth: Math.Max(60, comboBoxMinWidth),
                     maxWidth: maxWidth,
@@ -459,7 +504,7 @@ namespace AasxPackageLogic
             var g = new AnyUiGrid();
             g.Margin = new AnyUiThickness(0, 1, 0, 1);
             var gc1 = new AnyUiColumnDefinition();
-            gc1.Width = new AnyUiGridLength(this.standardFirstColWidth);
+            gc1.Width = new AnyUiGridLength(this.GetWidth(FirstColumnWidth.Standard));
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new AnyUiColumnDefinition();
             gc2.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
@@ -506,7 +551,7 @@ namespace AasxPackageLogic
 
             var gc1 = new AnyUiColumnDefinition();
             gc1.Width = AnyUiGridLength.Auto;
-            gc1.MinWidth = this.standardFirstColWidth;
+            gc1.MinWidth = this.GetWidth(FirstColumnWidth.Standard);
             g.ColumnDefinitions.Add(gc1);
 
             for (int c = 0; c < cols; c++)
@@ -562,7 +607,7 @@ namespace AasxPackageLogic
                 Action<bool> valueChanged = null)
         {
             // make grid
-            var g = this.AddSmallGrid(1, 2, new[] { "" + this.standardFirstColWidth + ":", "*" },
+            var g = this.AddSmallGrid(1, 2, new[] { "" + this.GetWidth(FirstColumnWidth.Standard) + ":", "*" },
                     margin: new AnyUiThickness(0, 2, 0, 0));
 
             // Column 0 = Key
@@ -598,7 +643,8 @@ namespace AasxPackageLogic
             bool[] addWoEdit = null,
             AasxMenu superMenu = null,
             AasxMenu ticketMenu = null,
-            Func<int, AasxMenuActionTicket, AnyUiLambdaActionBase> ticketAction = null)
+            Func<int, AasxMenuActionTicket, AnyUiLambdaActionBase> ticketAction = null,
+            FirstColumnWidth firstColumnWidth = FirstColumnWidth.Standard)
         {
             // generate actionStr from ticketMenu
             if (actionStr == null && ticketMenu != null)
@@ -635,7 +681,7 @@ namespace AasxPackageLogic
             // 0 key
             var gc = new AnyUiColumnDefinition();
             gc.Width = AnyUiGridLength.Auto;
-            gc.MinWidth = this.standardFirstColWidth;
+            gc.MinWidth = GetWidth(firstColumnWidth);
             g.ColumnDefinitions.Add(gc);
 
             // 1+x button
@@ -702,9 +748,10 @@ namespace AasxPackageLogic
 
         public void AddAction(
             AnyUiStackPanel view, string key, string actionStr, ModifyRepo repo = null,
-            Func<int, AnyUiLambdaActionBase> action = null)
+            Func<int, AnyUiLambdaActionBase> action = null,
+            FirstColumnWidth firstColumnWidth = FirstColumnWidth.Standard)
         {
-            AddActionPanel(view, key, new[] { actionStr }, repo, action);
+            AddActionPanel(view, key, new[] { actionStr }, repo, action, firstColumnWidth: firstColumnWidth);
         }
 
         public void AddKeyListLangStr(
@@ -728,7 +775,7 @@ namespace AasxPackageLogic
             // 0 key
             var gc = new AnyUiColumnDefinition();
             gc.Width = AnyUiGridLength.Auto;
-            gc.MinWidth = this.standardFirstColWidth;
+            gc.MinWidth = GetWidth(FirstColumnWidth.Standard);
             g.ColumnDefinitions.Add(gc);
 
             // 1 langs
@@ -804,8 +851,12 @@ namespace AasxPackageLogic
                         // lang
                         var tbLang = AddSmallComboBoxTo(
                             g, 0 + i + rowOfs, 1,
-                            margin: new AnyUiThickness(4, 2, 2, 2),
-                            padding: new AnyUiThickness(0, -1, 0, -1),
+                            margin: NormalOrCapa(
+                                new AnyUiThickness(4, 2, 2, 2),
+                                AnyUiContextCapability.Blazor, new AnyUiThickness(4, 2, 2, 0)),
+                            padding: NormalOrCapa(
+                                new AnyUiThickness(0, -1, 0, -1),
+                                AnyUiContextCapability.Blazor, new AnyUiThickness(0, 4, 0, 4)),
                             text: "" + langStr[currentI].Language,
                             minWidth: 60,
                             items: defaultLanguages,
@@ -827,7 +878,9 @@ namespace AasxPackageLogic
                         // str
                         var tbStr = AddSmallTextBoxTo(
                             g, 0 + i + rowOfs, 2,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            margin: NormalOrCapa(
+                                new AnyUiThickness(2, 2, 2, 2),
+                                AnyUiContextCapability.Blazor, new AnyUiThickness(6, 2, 2, 2)),
                             verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center,
                             text: "" + langStr[currentI].Text);
@@ -1090,7 +1143,7 @@ namespace AasxPackageLogic
             // 0 key
             var gc = new AnyUiColumnDefinition();
             gc.Width = AnyUiGridLength.Auto;
-            gc.MinWidth = this.standardFirstColWidth;
+            gc.MinWidth = GetWidth(FirstColumnWidth.Standard);
             g.ColumnDefinitions.Add(gc);
 
             // 1 type
@@ -1540,7 +1593,7 @@ namespace AasxPackageLogic
             // Grid
             var g = AddSmallGrid(rows + rowOfs, 6, new[] { "#", "#", "#", "#", "*", "#", },
                 margin: new AnyUiThickness(0, 0, 0, 0));
-            g.ColumnDefinitions[0].MinWidth = this.standardFirstColWidth;
+            g.ColumnDefinitions[0].MinWidth = GetWidth(FirstColumnWidth.Standard);
 
             // populate key
             AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), 
@@ -1873,8 +1926,12 @@ namespace AasxPackageLogic
                         var cbType = AnyUiUIElement.RegisterControl(
                             AddSmallComboBoxTo(
                                 g, 0 + i + rowOfs, 1,
-                                margin: new AnyUiThickness(4, 2, 2, 2),
-                                padding: new AnyUiThickness(2, -1, 0, -1),
+                                margin: NormalOrCapa( 
+                                    new AnyUiThickness(4, 2, 2, 2),
+                                    AnyUiContextCapability.Blazor, new AnyUiThickness(4, 1, 2, -1)),
+                                padding: NormalOrCapa(
+                                    new AnyUiThickness(2, -1, 0, -1),
+                                    AnyUiContextCapability.Blazor, new AnyUiThickness(2, 4, 0, 4)),
                                 text: "" + keys[currentI].Type,
                                 minWidth: 100,
                                 items: Enum.GetNames(typeof(Aas.KeyTypes)),
@@ -1904,7 +1961,9 @@ namespace AasxPackageLogic
                         // value
                         var tbValue = AddSmallTextBoxTo(
                             g, 0 + i + rowOfs, 4,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            margin: NormalOrCapa(
+                                new AnyUiThickness(2, 2, 2, 2),
+                                AnyUiContextCapability.Blazor, new AnyUiThickness(6, 1, 2, 1)),
                             text: "" + keys[currentI].Value,
                             verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
@@ -1993,10 +2052,11 @@ namespace AasxPackageLogic
 
         public bool SafeguardAccess(
             AnyUiStackPanel view, ModifyRepo repo, object data, string key, string actionStr,
-            Func<int, AnyUiLambdaActionBase> action)
+            Func<int, AnyUiLambdaActionBase> action,
+            FirstColumnWidth firstColumnWidth = FirstColumnWidth.Standard)
         {
             if (repo != null && data == null)
-                AddAction(view, key, actionStr, repo, action);
+                AddAction(view, key, actionStr, repo, action, firstColumnWidth: firstColumnWidth);
             return (data != null);
         }
 
@@ -2605,7 +2665,7 @@ namespace AasxPackageLogic
             var addStr = "---" + r.Next(0, 0x7fffffff).ToString("X8");
 
             // completely blank?
-            if (rf.IdShort.Trim() == "")
+            if (rf.IdShort?.HasContent() != true)
             {
                 // empty!
                 rf.IdShort = rf.GetSelfDescription().AasElementName + addStr;

@@ -424,6 +424,7 @@ namespace BlazorUI.Data
             // brutally remember some data
             renderJsRuntime = jsRuntime;
             helper.editMode = EditMode;
+            helper.hintMode = HintMode;
             helper.repo = (EditMode) ? repo : null;
 
             // create new context

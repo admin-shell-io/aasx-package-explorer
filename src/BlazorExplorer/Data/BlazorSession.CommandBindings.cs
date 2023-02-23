@@ -90,7 +90,7 @@ namespace BlazorUI.Data
 
                 // in session, set these all important settings
                 this.EditMode = MainMenu?.IsChecked("EditMenu") == true;
-                this.HintMode = MainMenu?.IsChecked("HintMenu") == true;
+                this.HintMode = MainMenu?.IsChecked("HintsMenu") == true;
 
                 // edit mode affects the total element view
                 RedrawAllAasxElements(nextFocusMdo: currMdo);
