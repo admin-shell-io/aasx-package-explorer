@@ -304,7 +304,9 @@ namespace AasxIntegrationBase
         protected PluginEventStack _eventStack = new PluginEventStack();
         protected PluginSessionCollection _sessions = new PluginSessionCollection();
 
-        public static string PluginName = "(not initialized)";
+        protected string _pluginName = "(not initialized)";
+        
+        public string PluginName { get { return _pluginName; } set { _pluginName = value; } }
 
         public string GetPluginName()
         {

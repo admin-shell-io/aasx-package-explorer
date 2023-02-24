@@ -34,14 +34,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             public AasxPluginTechnicalData.TechnicalDataAnyUiControl AnyUiControl = null;
         }
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginTechnicalData";
-        }
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginTechnicalData";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
@@ -179,7 +175,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // create session and call
                 var session = _sessions.CreateNewSession<Session>(args[4]);
                 session.AnyUiControl = AasxPluginTechnicalData.TechnicalDataAnyUiControl.FillWithAnyUiControls(
-                    _log, args[0], args[1], _options, _eventStack, args[2]);
+                    _log, args[0], args[1], _options, _eventStack, args[2], this);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

@@ -423,7 +423,7 @@ namespace AnyUi
                             {
                                 Program.signalNewData(
                                     new Program.NewDataAvailableArgs(
-                                        Program.DataRedrawMode.SomeStructChange, 
+                                        Program.DataRedrawMode.None, 
                                         s.SessionId,
                                         newLambdaAction: new AnyUiLambdaActionExecuteSpecialAction() { 
                                             SpecialAction = sacm,
@@ -448,17 +448,36 @@ namespace AnyUi
                         // notify close
                         s.NotifyModalClose();
 
-						// execute lambda
-						var ret = sasv.UiElement?.setValueLambda?.Invoke(sasv.Argument);
+                        // how to proceed?
+                        if (sasv.UiElement?.setValueLambda != null)
+                        {
+                            // directly here .. execute lambda
+                            var ret = sasv.UiElement.setValueLambda?.Invoke(sasv.Argument);
 
-                        // not required?!
-                        // while (s.htmlDotnetEventOut) Task.Delay(1);
+                            // not required?!
+                            // while (s.htmlDotnetEventOut) Task.Delay(1);
 
-                        // trigger handling of lambda return
-                        Program.signalNewData(
-							new Program.NewDataAvailableArgs(
-								    Program.DataRedrawMode.SomeStructChange, s.SessionId,
-								    newLambdaAction: ret, onlyUpdatePanel: true));
+                            // trigger handling of lambda return
+                            Program.signalNewData(
+                                new Program.NewDataAvailableArgs(
+                                        Program.DataRedrawMode.SomeStructChange, s.SessionId,
+                                        newLambdaAction: ret, onlyUpdatePanel: true));
+                        }
+                        else
+                        if (sasv.UiElement?.setValueAsyncLambda != null)
+                        {
+                            // refer to Blazor single contact point
+                            Program.signalNewData(
+                                    new Program.NewDataAvailableArgs(
+                                        Program.DataRedrawMode.None,
+                                        s.SessionId,
+                                        newLambdaAction: new AnyUiLambdaActionExecuteSetValue()
+                                        {
+                                            SetValueAsyncLambda = sasv.UiElement.setValueAsyncLambda,
+                                            Arg = sasv.Argument
+                                        },
+                                        onlyUpdatePanel: true));
+                        }
 					}
 
 					i++;

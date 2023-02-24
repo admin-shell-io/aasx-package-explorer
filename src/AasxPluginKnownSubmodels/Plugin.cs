@@ -34,14 +34,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             public AasxPluginKnownSubmodels.KnownSubmodelAnyUiControl AnyUiControl = null;
         }
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginKnownSubmodels";
-        }
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginKnownSubmodels";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options

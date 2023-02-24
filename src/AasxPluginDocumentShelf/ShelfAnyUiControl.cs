@@ -43,6 +43,7 @@ namespace AasxPluginDocumentShelf
         private AnyUiStackPanel _panel = null;
         private AnyUiContextPlusDialogs _displayContext = null;
         private PluginOperationContextBase _opContext = null;
+        private AasxPluginBase _plugin = null;
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
 
@@ -150,7 +151,8 @@ namespace AasxPluginDocumentShelf
             PluginSessionBase session,
             AnyUiStackPanel panel,
             PluginOperationContextBase opContext,
-            AnyUiContextPlusDialogs cdp)
+            AnyUiContextPlusDialogs cdp,
+            AasxPluginBase plugin)
         {
             _log = log;
             _package = thePackage;
@@ -161,6 +163,7 @@ namespace AasxPluginDocumentShelf
             _panel = panel;
             _opContext = opContext;
             _displayContext = cdp;
+            _plugin = plugin;
 
             // no form, yet
             _formDoc = null;
@@ -177,7 +180,8 @@ namespace AasxPluginDocumentShelf
             PluginSessionBase session,
             object opanel,
             PluginOperationContextBase opContext,
-            AnyUiContextPlusDialogs cdp)
+            AnyUiContextPlusDialogs cdp,
+            AasxPluginBase plugin)
         {
             // access
             var package = opackage as AdminShellPackageEnv;
@@ -194,7 +198,7 @@ namespace AasxPluginDocumentShelf
 
             // factory this object
             var shelfCntl = new ShelfAnyUiControl();
-            shelfCntl.Start(log, package, sm, options, eventStack, session, panel, opContext, cdp);
+            shelfCntl.Start(log, package, sm, options, eventStack, session, panel, opContext, cdp, plugin);
 
             // return shelf
             return shelfCntl;
@@ -306,7 +310,7 @@ namespace AasxPluginDocumentShelf
                         margin: new AnyUiThickness(2), setHeight: 21,
                         padding: new AnyUiThickness(2, 0, 2, 0),
                         content: "Add Document .."),
-                    (o) => ButtonTabPanels_Click("ButtonAddDocument"));
+                    setValueAsync: (o) => ButtonTabPanels_Click("ButtonAddDocument"));
 
             //
             // Usage info
@@ -662,8 +666,8 @@ namespace AasxPluginDocumentShelf
 
             public void RenderAnyUi(
                 AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
-                Func<object, AnyUiLambdaActionBase> lambdaCancel = null,
-                Func<object, AnyUiLambdaActionBase> lambdaAdd = null)
+                Func<object, Task<AnyUiLambdaActionBase>> lambdaCancel = null,
+                Func<object, Task<AnyUiLambdaActionBase>> lambdaAdd = null)
             {
                 //
                 // make an outer grid, very simple grid of rows: header, spacer, body
@@ -693,14 +697,14 @@ namespace AasxPluginDocumentShelf
                         margin: new AnyUiThickness(2), setHeight: 21,
                         padding: new AnyUiThickness(4, 0, 4, 0),
                         content: "Cancel"),
-                    lambdaCancel);
+                    setValueAsync: lambdaCancel);
 
                 AnyUiUIElement.RegisterControl(
                     uitk.AddSmallButtonTo(header, 0, 2,
                         margin: new AnyUiThickness(2), setHeight: 21,
                         padding: new AnyUiThickness(4, 0, 4, 0),
                         content: "Add"),
-                    lambdaAdd);
+                    setValueAsync: lambdaAdd);
 
                 // small spacer
                 outer.RowDefinitions[1] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
@@ -856,7 +860,7 @@ namespace AasxPluginDocumentShelf
                 var fi = new FormInstanceSubmodelElementCollection(null, desc);
                 fi.PresetInstancesBasedOnSource(_updateSourceElements);
                 fi.outerEventStack = _eventStack;
-                fi.OuterPluginName = AasxIntegrationBase.AasxPlugin.PluginName;
+                fi.OuterPluginName = _plugin?.GetPluginName();
                 fi.OuterPluginSession = _session;
 
                 // initialize form
@@ -900,45 +904,36 @@ namespace AasxPluginDocumentShelf
                                 // wait a bit
                                 // await Task.Delay(1000);
 
-                                // ask back via event stack
-                                _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventMessageBox()
+                                // ask back via display context
+                                if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
+                                    "Delete DocumentEntity? This cannot be reverted!",
+                                    "DocumentShelf",
+                                    AnyUiMessageBoxButton.OKCancel,
+                                    AnyUiMessageBoxImage.Question))
+                                    return;
+
+                                // do it
+                                try
                                 {
-                                    Session = _session,
-                                    Caption = "Question",
-                                    Message = "Delete Document?",
-                                    Buttons = AnyUiMessageBoxButton.YesNo,
-                                    Image = AnyUiMessageBoxImage.Warning
-                                });
+                                    // confirmed! -> delete
+                                    if (allVers.Count < 2)
+                                        // remove the whole document!
+                                        _submodel.SubmodelElements.Remove(smcDoc);
+                                    else
+                                        // remove only the document version
+                                        e.SourceElementsDocument.Remove(smcVer);
 
-                                // .. and receive incoming event
-                                _menuSubscribeForNextEventReturn = (revt) =>
+                                    // re-display also in Explorer
+                                    _eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements()
+                                    { Session = _session });
+
+                                    // log
+                                    _log?.Info("Deleted Document(Version).");
+                                }
+                                catch (Exception ex)
                                 {
-                                    if (revt is AasxPluginEventReturnMessageBox rmb
-                                        && rmb.Result == AnyUiMessageBoxResult.Yes)
-                                    {
-                                        try
-                                        {
-                                            // confirmed! -> delete
-                                            if (allVers.Count < 2)
-                                                // remove the whole document!
-                                                _submodel.SubmodelElements.Remove(smcDoc);
-                                            else
-                                                // remove only the document version
-                                                e.SourceElementsDocument.Remove(smcVer);
-
-                                            // re-display also in Explorer
-                                            _eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements()
-                                            { Session = _session });
-
-                                            // log
-                                            _log?.Info("Deleted Document(Version).");
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            _log?.Error(ex, "while saveing digital file to user specified loacation");
-                                        }
-                                    }
-                                };
+                                    _log?.Error(ex, "while saveing digital file to user specified loacation");
+                                }
 
                                 // OK
                                 return;
@@ -1173,7 +1168,7 @@ namespace AasxPluginDocumentShelf
             _inDragStart = false;
         }
 
-        private AnyUiLambdaActionBase ButtonTabPanels_Click(string cmd, string arg = null)
+        private async Task<AnyUiLambdaActionBase> ButtonTabPanels_Click(string cmd, string arg = null)
         {
             if (cmd == "ButtonCancel")
             {
@@ -1274,49 +1269,40 @@ namespace AasxPluginDocumentShelf
                     return new AnyUiLambdaActionNone();
                 }
 
-                // ask back via event stack
-                _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventMessageBox()
+                // ask back via display context
+                if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
+                    "Add missing ConceptDescriptions to the AAS?",
+                    "DocumentShelf",
+                    AnyUiMessageBoxButton.OKCancel,
+                    AnyUiMessageBoxImage.Question))
+                    return new AnyUiLambdaActionNone();
+                
+                // do it
+                try
                 {
-                    Session = _session,
-                    Caption = "Question",
-                    Message = "Add missing ConceptDescriptions to the AAS?",
-                    Buttons = AnyUiMessageBoxButton.YesNo,
-                    Image = AnyUiMessageBoxImage.Warning
-                });
-
-                // .. and receive incoming event
-                _menuSubscribeForNextEventReturn = (revt) =>
-                {
-                    if (revt is AasxPluginEventReturnMessageBox rmb
-                        && rmb.Result == AnyUiMessageBoxResult.Yes)
+                    // ok, check
+                    int nr = 0;
+                    foreach (var x in theCds)
                     {
-                        try
-                        {
-                            // ok, check
-                            int nr = 0;
-                            foreach (var x in theCds)
-                            {
-                                var cd = x as Aas.ConceptDescription;
-                                if (cd == null || cd.Id?.HasContent() != true)
-                                    continue;
-                                var cdFound = env.FindConceptDescriptionById(cd.Id);
-                                if (cdFound != null)
-                                    continue;
-                                // ok, add
-                                var newCd = cd.Copy();
-                                env.ConceptDescriptions.Add(newCd);
-                                nr++;
-                            }
-
-                            // ok
-                            _log?.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
-                        }
-                        catch (Exception ex)
-                        {
-                            _log?.Error(ex, "when adding ConceptDescriptions for Document");
-                        }
+                        var cd = x as Aas.ConceptDescription;
+                        if (cd == null || cd.Id?.HasContent() != true)
+                            continue;
+                        var cdFound = env.FindConceptDescriptionById(cd.Id);
+                        if (cdFound != null)
+                            continue;
+                        // ok, add
+                        var newCd = cd.Copy();
+                        env.ConceptDescriptions.Add(newCd);
+                        nr++;
                     }
-                };
+
+                    // ok
+                    _log?.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
+                }
+                catch (Exception ex)
+                {
+                    _log?.Error(ex, "when adding ConceptDescriptions for Document");
+                }
 
                 // ok; event pending, nothing here
                 return new AnyUiLambdaActionNone();
@@ -1330,7 +1316,7 @@ namespace AasxPluginDocumentShelf
 
                 var fi = new FormInstanceSubmodelElementCollection(null, desc);
                 fi.outerEventStack = _eventStack;
-                fi.OuterPluginName = AasxIntegrationBase.AasxPlugin.PluginName;
+                fi.OuterPluginName = _plugin?.GetPluginName();
                 fi.OuterPluginSession = _session;
 
                 // initialize form

@@ -54,4 +54,13 @@ namespace AnyUi
         public AnyUiSpecialActionContextMenu SpecialAction;
         public object Arg;
     }
+
+    /// <summary>
+    /// Request to execute the set value lambda actions 
+    /// </summary>
+    public class AnyUiLambdaActionExecuteSetValue : AnyUiLambdaActionBase
+    {
+        public Func<object, Task<AnyUiLambdaActionBase>> SetValueAsyncLambda = null;
+        public object Arg;
+    }
 }

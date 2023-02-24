@@ -33,14 +33,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             public AasxPluginImageMap.ImageMapAnyUiControl AnyUiControl = null;
         }
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginImageMap";
-        }
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginImageMap";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
@@ -177,7 +173,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // create session and call
                 var session = _sessions.CreateNewSession<Session>(args[4]);
                 session.AnyUiControl = AasxPluginImageMap.ImageMapAnyUiControl.FillWithAnyUiControls(
-                    _log, args[0], args[1], _options, _eventStack, args[2], args[3]);
+                    _log, args[0], args[1], _options, _eventStack, args[2], args[3], this);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

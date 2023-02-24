@@ -184,8 +184,10 @@ namespace AasxPluginGenericForms
         #region Button clicks
         //=============
 
-        private AnyUiLambdaActionBase ButtonTabPanels_Click(string cmd)
+        private async Task<AnyUiLambdaActionBase> ButtonTabPanels_Click(string cmd)
         {
+            await Task.Yield();
+
             if (cmd == "ButtonCancel")
             {
                 // re-display (tree & panel)

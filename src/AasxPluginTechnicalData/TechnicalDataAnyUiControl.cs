@@ -41,6 +41,7 @@ namespace AasxPluginTechnicalData
         private TechnicalDataOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
+        private AasxPluginBase _plugin = null;
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
 
@@ -71,7 +72,8 @@ namespace AasxPluginTechnicalData
             Aas.Submodel theSubmodel,
             TechnicalDataOptions theOptions,
             PluginEventStack eventStack,
-            AnyUiStackPanel panel)
+            AnyUiStackPanel panel,
+            AasxPluginBase plugin)
         {
             _log = log;
             _package = thePackage;
@@ -79,6 +81,7 @@ namespace AasxPluginTechnicalData
             _options = theOptions;
             _eventStack = eventStack;
             _panel = panel;
+            _plugin = plugin;
 
             // fill given panel
             RenderFullView(_panel, _uitk, _package, _submodel, defaultLang: null);
@@ -89,7 +92,8 @@ namespace AasxPluginTechnicalData
             object opackage, object osm,
             TechnicalDataOptions options,
             PluginEventStack eventStack,
-            object opanel)
+            object opanel,
+            AasxPluginBase plugin)
         {
             // access
             var package = opackage as AdminShellPackageEnv;
@@ -103,7 +107,7 @@ namespace AasxPluginTechnicalData
 
             // factory this object
             var techCntl = new TechnicalDataAnyUiControl();
-            techCntl.Start(log, package, sm, options, eventStack, panel);
+            techCntl.Start(log, package, sm, options, eventStack, panel, plugin);
 
             // return shelf
             return techCntl;
@@ -189,7 +193,7 @@ namespace AasxPluginTechnicalData
                     _selectedLangStr = AasxLanguageHelper.LangEnumToISO639String[_selectedLangIndex];
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
                     {
-                        PluginName = AasxIntegrationBase.AasxPlugin.PluginName,
+                        PluginName = _plugin?.GetPluginName(),
                         UseInnerGrid = true
                     };
                 });

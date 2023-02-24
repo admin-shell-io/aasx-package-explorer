@@ -32,14 +32,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private AasxPluginMtpViewer.WpfMtpControlWrapper _viewerControl
             = new AasxPluginMtpViewer.WpfMtpControlWrapper();
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginMtpViewer";
-        }
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginMtpViewer";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options

@@ -35,14 +35,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     {
         private ExportTableOptions _options = new AasxPluginExportTable.ExportTableOptions();
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginExportTable";
-        }
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginExportTable";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options

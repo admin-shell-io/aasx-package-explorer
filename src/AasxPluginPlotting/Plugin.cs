@@ -31,14 +31,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private AasxPluginPlotting.PlottingViewControl _viewControl;
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginPlotting";
-        }
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginPlotting";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options

@@ -30,15 +30,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private AasxPluginBomStructure.GenericBomControl _bomControl = new AasxPluginBomStructure.GenericBomControl();
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginBomStructure";
-        }
-
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginBomStructure";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options

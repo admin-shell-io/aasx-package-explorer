@@ -1457,7 +1457,7 @@ namespace AasxPackageExplorer
                     try
                     {
                         plugin.InvokeAction(
-                            "update-anyui-visual-extension", renderedPanel, null,
+                            "update-anyui-visual-extension", renderedPanel, DisplayContext,
                             AnyUiDisplayContextWpf.SessionSingletonWpf);
                     }
                     catch (Exception ex)

@@ -1019,6 +1019,27 @@
                             // await Task.Delay(1000);
                             await laesa.SpecialAction.MenuItemLambdaAsync(laesa.Arg);
                         });
+
+                    // do not redraw directly; event needs to be send
+                    return;
+                }
+
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionExecuteSetValue laesv)
+                {
+                    if (laesv.SetValueAsyncLambda != null)
+                        InvokeAsync(async () => {
+                            // evaluate
+                            var ret = await laesv.SetValueAsyncLambda(laesv.Arg);
+                            
+                            // kind of recursion
+                            Program.signalNewData(
+                                new Program.NewDataAvailableArgs(
+                                        Program.DataRedrawMode.SomeStructChange, Session.SessionId,
+                                        newLambdaAction: ret, onlyUpdatePanel: true));
+                        });
+
+                    // do not redraw directly; kind of recursion above
+                    return;
                 }
 
                 // re-create items

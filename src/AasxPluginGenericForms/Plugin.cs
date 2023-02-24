@@ -32,14 +32,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             public AasxPluginGenericForms.GenericFormsAnyUiControl AnyUiControl = null;
         }
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginGenericForms";
-        }
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginGenericForms";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options

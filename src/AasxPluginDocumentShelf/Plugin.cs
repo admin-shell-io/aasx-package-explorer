@@ -35,14 +35,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             public AasxPluginDocumentShelf.ShelfAnyUiControl AnyUiControl = null;
         }
 
-        static AasxPlugin()
-        {
-            PluginName = "AasxPluginDocumentShelf";
-        }
-
         public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginDocumentShelf";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
@@ -199,7 +195,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var opContext = args[5] as PluginOperationContextBase;
                 session.AnyUiControl = AasxPluginDocumentShelf.ShelfAnyUiControl.FillWithAnyUiControls(
                     _log, args[0], args[1], _options, _eventStack, session, args[2], opContext, 
-                    args[3] as AnyUiContextPlusDialogs);
+                    args[3] as AnyUiContextPlusDialogs, this);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

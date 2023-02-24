@@ -43,6 +43,7 @@ namespace AasxPluginImageMap
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
         private AnyUiContextBase _context = null;
+        private AasxPluginBase _plugin = null;
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
 
@@ -83,7 +84,8 @@ namespace AasxPluginImageMap
             ImageMapOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel,
-            AnyUiContextBase context)
+            AnyUiContextBase context,
+            AasxPluginBase plugin)
         {
             _log = log;
             _package = thePackage;
@@ -92,6 +94,7 @@ namespace AasxPluginImageMap
             _eventStack = eventStack;
             _panel = panel;
             _context = context;
+            _plugin = plugin;
 
             // fill given panel
             RenderFullView(_panel, _uitk, _package, _submodel);
@@ -103,7 +106,8 @@ namespace AasxPluginImageMap
             ImageMapOptions options,
             PluginEventStack eventStack,
             object opanel,
-            object ocontext)
+            object ocontext,
+            AasxPluginBase plugin)
         {
             // access
             var package = opackage as AdminShellPackageEnv;
@@ -117,7 +121,7 @@ namespace AasxPluginImageMap
 
             // factory this object
             var techCntl = new ImageMapAnyUiControl();
-            techCntl.Start(log, package, sm, options, eventStack, panel, ocontext as AnyUiContextBase);
+            techCntl.Start(log, package, sm, options, eventStack, panel, ocontext as AnyUiContextBase, plugin);
 
             // return shelf
             return techCntl;
@@ -188,7 +192,7 @@ namespace AasxPluginImageMap
                     // events or not, depending on this flag
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
                     {
-                        PluginName = AasxPlugin.PluginName,
+                        PluginName = _plugin?.GetPluginName(),
                         UpdateMode = AnyUiRenderMode.All,
                         UseInnerGrid = true
                     };

@@ -43,9 +43,9 @@ namespace AasxIntegrationBase.AasForms
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             PluginOperationContextBase opctx,
             bool setLastScrollPos = false,
-            Func<object, AnyUiLambdaActionBase> lambdaFixCds = null,
-            Func<object, AnyUiLambdaActionBase> lambdaCancel = null,
-            Func<object, AnyUiLambdaActionBase> lambdaOK = null)
+            Func<object, Task<AnyUiLambdaActionBase>> lambdaFixCds = null,
+            Func<object, Task<AnyUiLambdaActionBase>> lambdaCancel = null,
+            Func<object, Task<AnyUiLambdaActionBase>> lambdaOK = null)
         {
             // make an outer grid, very simple grid of two rows: header & body
             var outer = view.Add(uitk.AddSmallGrid(rows: 3, cols: 1, colWidths: new[] { "*" }));
@@ -70,7 +70,7 @@ namespace AasxIntegrationBase.AasForms
                         margin: new AnyUiThickness(2), setHeight: 21,
                         padding: new AnyUiThickness(2, 0, 2, 0),
                         content: "Fix missing CDs .."),
-                    lambdaFixCds);
+                    setValueAsync: lambdaFixCds);
 
                 uitk.AddSmallBasicLabelTo(header, 0, 2,
                     foreground: AnyUiBrushes.DarkBlue,
@@ -86,7 +86,7 @@ namespace AasxIntegrationBase.AasForms
                         margin: new AnyUiThickness(2), setHeight: 21,
                         padding: new AnyUiThickness(2, 0, 2, 0),
                         content: "Cancel"),
-                    lambdaCancel);
+                    setValueAsync: lambdaCancel);
 
             if (lambdaOK != null)
                 AnyUiUIElement.RegisterControl(
@@ -94,7 +94,7 @@ namespace AasxIntegrationBase.AasForms
                         margin: new AnyUiThickness(2, 2, 4, 2), setHeight: 21,
                         padding: new AnyUiThickness(2, 0, 2, 0),
                         content: "Update to AAS"),
-                    lambdaOK);
+                    setValueAsync: lambdaOK);
 
             // small spacer
             uitk.AddSmallBasicLabelTo(outer, 1, 0,

@@ -85,9 +85,16 @@ namespace AasxPackageLogic
             public static PluginInstance CreateNew(
                 int sourceIndex, Assembly asm, Type plugType, IAasxPluginInterface plugObj, string[] args)
             {
+                // create a working pugin-structure
                 var pi = new PluginInstance(sourceIndex, asm, plugType, plugObj, args);
-                pi.name = pi.GetName();
                 pi.actions = pi.ListActions();
+
+                // call init plug-in on client (plug-in) side
+                var singleArg = new object[] { args };
+                pi.BasicInvokeMethod("InitPlugin", singleArg);
+
+                // get further information
+                pi.name = pi.GetName();
                 if (pi.name == null || pi.actions == null || pi.actions.Length < 1)
                     return null;
                 return pi;
@@ -215,11 +222,7 @@ namespace AasxPackageLogic
                             "Cannot invoke methods within instance from " +
                                 "class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
-                    }
-
-                    // init plug-in
-                    var singleArg = new object[] { pluginDll[index].Args };
-                    pi.BasicInvokeMethod("InitPlugin", singleArg);
+                    }                    
 
                     // adding
                     Log.Singleton.Info(".. adding plugin {0}", pi.name);
