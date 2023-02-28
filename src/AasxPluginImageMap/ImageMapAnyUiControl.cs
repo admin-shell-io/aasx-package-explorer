@@ -253,36 +253,7 @@ namespace AasxPluginImageMap
                         // is being activated.
                         EmitEvent = (_showRegions == 0) ? AnyUiEventMask.LeftDouble : 0
                     }),
-                (o) =>
-                {
-                    if (o is AnyUiEventData ev
-                        && ev.ClickCount >= 2
-                        && ev.Source is AnyUiFrameworkElement fe
-                        && fe.Tag is Aas.Property prop
-                        && prop.Parent is Aas.Entity ent)
-                    {
-                        // need a targetReference
-                        // first check, if a navigate to reference element can be found
-                        var navTo = ent.Statements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
-                            AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo?.GetReference(),
-                            MatchMode.Relaxed);
-                        var targetRf = navTo?.Value;
-
-                        // if not, have a look to the Entity itself
-                        if ((targetRf == null || targetRf.Count() < 1)
-                            && ent.EntityType == Aas.EntityType.SelfManagedEntity
-                            && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
-                            targetRf = ent.GlobalAssetId;
-
-                        // if found, hand over to main program
-                        if (targetRf != null && targetRf.Count() > 0)
-                            _eventStack?.PushEvent(new AasxPluginResultEventNavigateToReference()
-                            {
-                                targetReference = targetRf
-                            });
-                    }
-                    return new AnyUiLambdaActionNone();
-                });
+                setValue: RenderedElement_Clicked);
 
             //
             // Footer area
@@ -350,6 +321,42 @@ namespace AasxPluginImageMap
             SetBasicInfos();
             if (_showRegions == 0 || _showRegions == 2)
                 RenderRegions(forceTransparent: (_showRegions == 0));
+        }
+
+        /// <summary>
+        /// This callback received the clicks from canvas / rendered elements withing
+        /// </summary>
+        protected AnyUiLambdaActionBase RenderedElement_Clicked(object o)
+        {
+            // rendered element clicked?
+            if (o is AnyUiEventData ev
+                        && ev.ClickCount >= 2
+                        && ev.Source is AnyUiFrameworkElement fe
+                        && fe.Tag is Aas.Property prop
+                        && prop.Parent is Aas.Entity ent)
+            {
+                // need a targetReference
+                // first check, if a navigate to reference element can be found
+                var navTo = ent.Statements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
+                    AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo?.GetReference(),
+                    MatchMode.Relaxed);
+                var targetRf = navTo?.Value;
+
+                // if not, have a look to the Entity itself
+                if ((targetRf == null || targetRf.Count() < 1)
+                    && ent.EntityType == Aas.EntityType.SelfManagedEntity
+                    && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
+                    targetRf = ent.GlobalAssetId;
+
+                // if found, hand over to main program
+                if (targetRf != null && targetRf.Count() > 0)
+                    _eventStack?.PushEvent(new AasxPluginResultEventNavigateToReference()
+                    {
+                        targetReference = targetRf
+                    });
+            }
+            
+            return new AnyUiLambdaActionNone();
         }
 
         #endregion
@@ -464,6 +471,7 @@ namespace AasxPluginImageMap
 
             // entities
             int index = -1;
+            var activeFe = new List<AnyUiFrameworkElement>();
             foreach (var ent in _submodel.SubmodelElements.FindAllSemanticIdAs<Aas.Entity>(
                 defs.CD_EntityOfImageMap, mm))
             {
@@ -489,7 +497,7 @@ namespace AasxPluginImageMap
                     var cols = DetermineColors(index, forceTransparent, 0x30, 0xff);
 
                     // construct widget
-                    res.Add(new AnyUiRectangle()
+                    var el = new AnyUiRectangle()
                     {
                         Tag = prect,
                         X = pts[0],
@@ -499,7 +507,9 @@ namespace AasxPluginImageMap
                         Fill = cols.Item1,
                         Stroke = cols.Item2,
                         StrokeThickness = 1.0f
-                    });
+                    };
+                    activeFe.Add(el);
+                    res.Add(el);
 
                     // construct text
                     if (!forceTransparent)
@@ -537,7 +547,7 @@ namespace AasxPluginImageMap
                     var cols = DetermineColors(index, forceTransparent, 0x30, 0xff);
 
                     // construct widget
-                    res.Add(new AnyUiEllipse()
+                    var el = new AnyUiEllipse()
                     {
                         Tag = pcirc,
                         X = pts[0] - pts[2],
@@ -547,7 +557,9 @@ namespace AasxPluginImageMap
                         Fill = cols.Item1,
                         Stroke = cols.Item2,
                         StrokeThickness = 1.0f
-                    });
+                    };
+                    activeFe.Add(el);
+                    res.Add(el);
 
                     // construct text
                     if (!forceTransparent)
@@ -588,7 +600,7 @@ namespace AasxPluginImageMap
                     var cols = DetermineColors(index, forceTransparent, 0x30, 0xff);
 
                     // construct widget
-                    res.Add(new AnyUiPolygon()
+                    var el = new AnyUiPolygon()
                     {
                         X = 0,
                         Y = 0,
@@ -599,7 +611,9 @@ namespace AasxPluginImageMap
                         Fill = cols.Item1,
                         Stroke = cols.Item2,
                         StrokeThickness = 1.0f
-                    });
+                    };
+                    activeFe.Add(el);
+                    res.Add(el);
 
                     // construct text
                     if (!forceTransparent)
@@ -622,6 +636,20 @@ namespace AasxPluginImageMap
                         });
                     }
                 }
+            }
+
+            // "activate" some of the framework elements
+            foreach (var afe in activeFe)
+            {
+                // ok?
+                if (afe.Tag == null)
+                    return;
+
+                // send events
+                afe.EmitEvent = AnyUiEventMask.LeftDouble;
+
+                // hereto
+                afe.setValueLambda = RenderedElement_Clicked;
             }
 
             // try sort in order not to click on the (large, rectangular) labels, but on the 

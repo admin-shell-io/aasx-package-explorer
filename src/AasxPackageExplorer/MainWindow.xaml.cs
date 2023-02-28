@@ -864,7 +864,7 @@ namespace AasxPackageExplorer
                     return;
 
                 // safety?
-                if (MainMenu?.IsChecked("FileRepoLoadWoPrompt") == false)
+                if (MainMenu?.IsChecked("FileRepoLoadWoPrompt") != true)
                 {
                     // ask double question
                     if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -1369,7 +1369,7 @@ namespace AasxPackageExplorer
             if (location == null)
                 return null;
 
-            // try load (in the background/ RAM first..
+            // try load (in the background/ RAM) first..
             PackageContainerBase container = null;
             try
             {
@@ -1410,7 +1410,7 @@ namespace AasxPackageExplorer
                 else
                 {
                     // make sure the user wants to change
-                    if (MainMenu?.IsChecked("FileRepoLoadWoPrompt") != false)
+                    if (MainMenu?.IsChecked("FileRepoLoadWoPrompt") != true)
                     {
                         // ask double question
                         if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(

@@ -1030,7 +1030,7 @@
                         InvokeAsync(async () => {
                             // evaluate
                             var ret = await laesv.SetValueAsyncLambda(laesv.Arg);
-                            
+
                             // kind of recursion
                             Program.signalNewData(
                                 new Program.NewDataAvailableArgs(
@@ -1379,7 +1379,7 @@
         Session.InTimer = false;
     }
 
-    private void HandleApplicationEvent(
+    private async void HandleApplicationEvent(
             AasxIntegrationBase.AasxPluginResultEventBase evt,
             Plugins.PluginInstance pluginInstance)
     {
@@ -1393,36 +1393,38 @@
             if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo
                 && evtNavTo.targetReference != null && evtNavTo.targetReference.Keys.Count > 0)
             {
-                // make a work copy
-                var workReference = evtNavTo.targetReference.Copy();
+                await Session.UiHandleNavigateTo(evtNavTo.targetReference);
 
-                // plug-in? .. shorten reference
-                var srl = workReference.Keys.Last();
-                string pluginTag = null;
-                if (srl?.Type == Aas.KeyTypes.FragmentReference
-                    && srl?.Value?.StartsWith("Plugin:") == true)
-                {
-                    pluginTag = srl?.Value.Substring("Plugin:".Length);
-                    workReference.Keys.Remove(srl);
-                }
+    //            // make a work copy
+    //            var workReference = evtNavTo.targetReference.Copy();
 
-                // find Referable by reference in open package
-                var workRf = Session?.env?.AasEnv?.FindReferableByReference(workReference);
+    //            // plug-in? .. shorten reference
+    //            var srl = workReference.Keys.Last();
+    //            string pluginTag = null;
+    //            if (srl?.Type == Aas.KeyTypes.FragmentReference
+    //                && srl?.Value?.StartsWith("Plugin:") == true)
+    //            {
+    //                pluginTag = srl?.Value.Substring("Plugin:".Length);
+    //                workReference.Keys.Remove(srl);
+    //            }
 
-                // find items
-                #if TODO
-        var targetItem = Items?.FindReferable(workRf, pluginTag);
+    //            // find Referable by reference in open package
+    //            var workRf = Session?.env?.AasEnv?.FindReferableByReference(workReference);
 
-    // activate this
-    if (targetItem != null)
-    {
-        _inhibitSelectNodeForPanel = 0;
-    _onlyUpdatePluginUi = false;
-    ListOfItems.AddToExpandNodesFor(ExpandedNodes, targetItem);
-    SelectedNode = targetItem;
-    InvokeAsync(() => this.StateHasChanged());
-    }
-                #endif
+    //            // find items
+    //            #if TODO
+    //    var targetItem = Items?.FindReferable(workRf, pluginTag);
+
+    //// activate this
+    //if (targetItem != null)
+    //{
+    //    _inhibitSelectNodeForPanel = 0;
+    //_onlyUpdatePluginUi = false;
+    //ListOfItems.AddToExpandNodesFor(ExpandedNodes, targetItem);
+    //SelectedNode = targetItem;
+    //InvokeAsync(() => this.StateHasChanged());
+    //}
+    //            #endif
             }
 
             // Display Content Url

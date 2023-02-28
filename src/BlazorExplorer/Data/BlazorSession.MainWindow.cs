@@ -21,7 +21,9 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using AnyUi;
 using BlazorExplorer;
 using BlazorExplorer.Shared;
@@ -392,6 +394,197 @@ namespace BlazorUI.Data
                 new Program.NewDataAvailableArgs(
                     Program.DataRedrawMode.RebuildTreeKeepOpen, SessionId,
                     action));
+        }
+
+        //
+        // Subject to refactor
+        //
+
+        protected class LoadFromFileRepositoryInfo
+        {
+            public Aas.IReferable Referable;
+            public object BusinessObject;
+        }
+
+        protected async Task<LoadFromFileRepositoryInfo> LoadFromFileRepository(PackageContainerRepoItem fi,
+            Aas.Reference requireReferable = null)
+        {
+            // access single file repo
+            var fileRepo = PackageCentral.Repositories.FindRepository(fi);
+            if (fileRepo == null)
+                return null;
+
+            // which file?
+            var location = fileRepo.GetFullItemLocation(fi?.Location);
+            if (location == null)
+                return null;
+
+            // try load (in the background/ RAM) first..
+            PackageContainerBase container = null;
+            try
+            {
+                Log.Singleton.Info($"Auto-load file from repository {location} into container");
+                container = await PackageContainerFactory.GuessAndCreateForAsync(
+                    PackageCentral,
+                    location,
+                    location,
+                    overrideLoadResident: true,
+                    null, null,
+                    PackageContainerOptionsBase.CreateDefault(Options.Curr),
+                    runtimeOptions: PackageCentral.CentralRuntimeOptions);
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, $"When auto-loading {location}");
+            }
+
+            // if successfull ..
+            if (container != null)
+            {
+                // .. try find business object!
+                LoadFromFileRepositoryInfo res = new LoadFromFileRepositoryInfo();
+                if (requireReferable != null)
+                {
+                    var rri = new ExtendEnvironment.ReferableRootInfo();
+                    res.Referable = container.Env?.AasEnv.FindReferableByReference(requireReferable, rootInfo: rri);
+                    res.BusinessObject = res.Referable;
+
+                    // do some special decoding because auf Meta Model V3
+                    if (rri.Asset != null)
+                        res.BusinessObject = rri.Asset;
+                }
+
+                // only proceed, if business object was found .. else: close directly
+                if (requireReferable != null && res.Referable == null)
+                    container.Close();
+                else
+                {
+                    // make sure the user wants to change
+                    if (MainMenu?.IsChecked("FileRepoLoadWoPrompt") != true)
+                    {
+                        // ask double question
+                        if (AnyUiMessageBoxResult.OK != await DisplayContext.MessageBoxFlyoutShowAsync(
+                                "Load file from AASX file repository?",
+                                "AASX File Repository",
+                                AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+                            return null;
+                    }
+
+                    // start animation
+                    fileRepo.StartAnimation(fi, PackageContainerRepoItem.VisualStateEnum.ReadFrom);
+
+                    // activate
+                    UiLoadPackageWithNew(PackageCentral.MainItem,
+                        takeOverContainer: container, onlyAuxiliary: false);
+
+                    Log.Singleton.Info($"Successfully loaded AASX {location}");
+                }
+
+                // return bo to focus
+                return res;
+            }
+
+            return null;
+        }
+
+        public async Task UiHandleNavigateTo(
+            Aas.Reference targetReference,
+            bool alsoDereferenceObjects = true)
+        {
+            // access
+            if (targetReference == null || targetReference.Keys.Count < 1)
+                return;
+
+            // make a copy of the Reference for searching
+            VisualElementGeneric veFound = null;
+            var work = targetReference.Copy();
+
+            try
+            {
+                // remember some further supplementary search information
+                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(work);
+                work = sri.CleanReference;
+
+                // for later search in visual elements, expand them all in order to be absolutely 
+                // sure to find business object
+                this.DisplayElements.ExpandAllItems();
+
+                // incrementally make it unprecise
+                while (work.Keys.Count > 0)
+                {
+                    // try to find a business object in the package
+                    object bo = null;
+                    if (PackageCentral.MainAvailable && PackageCentral.Main.AasEnv != null)
+                        bo = PackageCentral.Main.AasEnv.FindReferableByReference(work);
+
+                    // if not, may be in aux package
+                    if (bo == null && PackageCentral.Aux != null && PackageCentral.Aux.AasEnv != null)
+                        bo = PackageCentral.Aux.AasEnv.FindReferableByReference(work);
+
+                    // if not, may look into the AASX file repo
+                    if (bo == null && PackageCentral.Repositories != null)
+                    {
+                        // find?
+                        PackageContainerRepoItem fi = null;
+                        if (work.Keys[0].Type == Aas.KeyTypes.GlobalReference) //TODO: jtikekar KeyTypes.AssetInformation
+                            fi = PackageCentral.Repositories.FindByAssetId(work.Keys[0].Value.Trim());
+                        if (work.Keys[0].Type == Aas.KeyTypes.AssetAdministrationShell)
+                            fi = PackageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());
+
+                        var boInfo = await LoadFromFileRepository(fi, work);
+                        bo = boInfo?.BusinessObject;
+                    }
+
+                    // still yes?
+                    if (bo != null)
+                    {
+                        // try to look up in visual elements
+                        if (this.DisplayElements != null)
+                        {
+                            var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
+                                alsoDereferenceObjects: alsoDereferenceObjects, sri: sri);
+                            if (ve != null)
+                            {
+                                veFound = ve;
+                                break;
+                            }
+                        }
+                    }
+
+                    // make it more unprecice
+                    work.Keys.RemoveAt(work.Keys.Count - 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "While retrieving element requested for navigate to");
+            }
+
+            // if successful, try to display it
+            try
+            {
+                if (veFound != null)
+                {
+                    // show ve
+                    DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
+                    // remember in history
+                    // ButtonHistory.Push(veFound);
+                    // fake selection
+                    RedrawElementView();
+                    DisplayElements.Refresh();
+                    // ContentTakeOver.IsEnabled = false;
+                }
+                else
+                {
+                    // everything is in default state, push adequate button history
+                    var veTop = DisplayElements.GetDefaultVisualElement();
+                    // ButtonHistory.Push(veTop);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "While displaying element requested for navigate to");
+            }
         }
 
     }

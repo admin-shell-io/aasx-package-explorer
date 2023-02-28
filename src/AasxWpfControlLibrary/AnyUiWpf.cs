@@ -333,8 +333,9 @@ namespace AnyUi
                                         if (((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0)
                                             && e5.ClickCount == 2)
                                         {
-                                            EmitOutsideAction(cntl.setValueLambda?.Invoke(
-                                                new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
+                                            var la = cntl.setValueLambda?.Invoke(
+                                                new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p));
+                                            EmitOutsideAction(la);
                                         }
                                     }
                                 };

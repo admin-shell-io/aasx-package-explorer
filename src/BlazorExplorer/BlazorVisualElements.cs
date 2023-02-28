@@ -96,6 +96,18 @@ namespace BlazorUI
         }
 
         /// <summary>
+        /// Gets the first element or a suitable one.
+        /// </summary>
+        /// <returns></returns>
+        public VisualElementGeneric GetDefaultVisualElement()
+        {
+            if (TreeItems == null || TreeItems.Count < 1)
+                return null;
+
+            return TreeItems[0];
+        }
+
+        /// <summary>
         /// Clears only selection.
         /// </summary>
 		public void ClearSelection()
