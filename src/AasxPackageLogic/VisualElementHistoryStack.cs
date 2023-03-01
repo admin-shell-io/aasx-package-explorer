@@ -1,33 +1,50 @@
-/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+﻿/*
+Copyright (c) 2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
+
+Copyright (c) 2022 Phoenix Contact GmbH & Co. KG <>
+Author: Andreas Orzelski
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPackageExplorer;
+using AasxPackageLogic.PackageCentral;
+using AasxPredefinedConcepts.Convert;
+using AasxSignature;
+using AnyUi;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 using Aas = AasCore.Aas3_0_RC02;
-using AasxPackageLogic;
 using AdminShellNS;
 using Extensions;
+using System.Windows;
+using System.Windows.Controls;
+using Microsoft.VisualBasic.Logging;
+using Microsoft.Windows.Themes;
 
-namespace AasxPackageExplorer
+// ReSharper disable MethodHasAsyncOverload
+
+namespace AasxPackageLogic
 {
+    /// <summary>
+    /// Single item for <c>VisualElementHistoryStack</c>
+    /// </summary>
     public class VisualElementHistoryItem
     {
         public VisualElementGeneric VisualElement = null;
@@ -43,24 +60,26 @@ namespace AasxPackageExplorer
         }
     }
 
-    public partial class VisualElementHistoryControl : UserControl
+    /// <summary>
+    /// This class realizes a stack of history references of AASes and elements.
+    /// Can be used to realize a back / forth navigation of editing locations.
+    /// </summary>
+    public class VisualElementHistoryStack
     {
         // members
 
         public event EventHandler<VisualElementHistoryItem> VisualElementRequested = null;
 
-        public event EventHandler HomeRequested = null;
+        public event EventHandler<bool> HistoryActive = null;
 
         private List<VisualElementHistoryItem> history = new List<VisualElementHistoryItem>();
 
         // init
 
-        public VisualElementHistoryControl()
+        public void Start()
         {
-            InitializeComponent();
-
             // initial state: without content
-            buttonBack.IsEnabled = false;
+            HistoryActive?.Invoke(null, false);
         }
 
         // functions
@@ -74,7 +93,7 @@ namespace AasxPackageExplorer
             history.Clear();
 
             // not enabled
-            buttonBack.IsEnabled = false;
+            HistoryActive?.Invoke(null, false);
         }
 
         public void Push(VisualElementGeneric ve)
@@ -126,37 +145,28 @@ namespace AasxPackageExplorer
                 history.Add(new VisualElementHistoryItem(ve, aasid, refref));
 
             // is enabled
-            buttonBack.IsEnabled = true;
+            HistoryActive?.Invoke(null, true);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public void Pop()
         {
-            if (sender == buttonBack)
-            {
-                // anything
-                if (history == null || history.Count < 1)
-                    return;
+            // anything
+            if (history == null || history.Count < 1)
+                return;
 
-                // pop last (as this the already displayed one)
-                history.RemoveAt(history.Count - 1);
+            // pop last (as this the already displayed one)
+            history.RemoveAt(history.Count - 1);
 
-                // may be disable ..
-                buttonBack.IsEnabled = history.Count > 0;
+            // may be disable ..
+            HistoryActive?.Invoke(null, history.Count > 0);
 
-                // give back the one prior to it
-                if (history.Count < 1)
-                    return;
-                var ve = history[history.Count - 1];
+            // give back the one prior to it
+            if (history.Count < 1)
+                return;
+            var ve = history[history.Count - 1];
 
-                // trigger event
-                this.VisualElementRequested?.Invoke(this, ve);
-            }
-
-            if (sender == buttonHome)
-            {
-                // just trigger
-                this.HomeRequested?.Invoke(this, null);
-            }
+            // trigger event
+            VisualElementRequested?.Invoke(this, ve);
         }
     }
 }

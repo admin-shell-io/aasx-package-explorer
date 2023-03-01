@@ -50,6 +50,11 @@ namespace AasxPackageExplorer
         IDisplayElements GetDisplayElements();
 
         /// <summary>
+        /// Triggers update of display
+        /// </summary>
+        void UpdateDisplay();
+
+        /// <summary>
         /// Clear AAS info, tree section, browser window
         /// </summary>
         void ClearAllViews();
@@ -162,5 +167,9 @@ namespace AasxPackageExplorer
         /// </summary>
         void AddWishForToplevelAction(AnyUiLambdaActionBase action);
 
+        /// <summary>
+        /// If a button is provided to take over just edited fields, enable/ disable it.
+        /// </summary>
+        void TakeOverContentEnable(bool enabled);
     }
 }

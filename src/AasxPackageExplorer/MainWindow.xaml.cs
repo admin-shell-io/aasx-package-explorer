@@ -206,7 +206,7 @@ namespace AasxPackageExplorer
 
             // clear the right section, first (might be rebuild by callback from below)
             DispEditEntityPanel.ClearDisplayDefaultStack();
-            ContentTakeOver.IsEnabled = false;
+            TakeOverContentEnable(false);
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
@@ -272,7 +272,18 @@ namespace AasxPackageExplorer
                 return new AdminShellPackageEnv(fn, Options.Curr.IndirectLoadSave);
         }
 
+        public void TakeOverContentEnable(bool enabled)
+        {
+            ContentTakeOver.IsEnabled = enabled;
+        }
 
+        /// <summary>
+        /// Triggers update of display
+        /// </summary>
+        public void UpdateDisplay()
+        {
+            this.UpdateLayout();
+        }
 
         private PackCntRuntimeOptions UiBuildRuntimeOptionsForMainAppLoad()
         {
@@ -406,7 +417,7 @@ namespace AasxPackageExplorer
             {
                 // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
                 if (!doNotNavigateAfterLoaded)
-                    UiCheckIfActivateLoadedNavTo();
+                    Logic?.UiCheckIfActivateLoadedNavTo();
 
                 if (indexItems && packItem?.Container?.Env?.AasEnv != null)
                     packItem.Container.SignificantElements
@@ -481,59 +492,59 @@ namespace AasxPackageExplorer
         //    return null;
         //}
 
-        /// <summary>
-        /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
-        /// found to be activated
-        /// </summary>
-        public bool UiCheckIfActivateLoadedNavTo()
-        {
-            // access
-            if (PackageCentral.Main?.AasEnv == null || this.DisplayElements == null)
-                return false;
+        ///// <summary>
+        ///// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
+        ///// found to be activated
+        ///// </summary>
+        //public bool UiCheckIfActivateLoadedNavTo()
+        //{
+        //    // access
+        //    if (PackageCentral.Main?.AasEnv == null || this.DisplayElements == null)
+        //        return false;
 
-            // use convenience function
-            foreach (var sm in PackageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
-            {
-                // check for ReferenceElement
-                var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
-                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
-                    MatchMode.Relaxed);
-                if (navTo?.Value == null)
-                    continue;
+        //    // use convenience function
+        //    foreach (var sm in PackageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
+        //    {
+        //        // check for ReferenceElement
+        //        var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
+        //            AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
+        //            MatchMode.Relaxed);
+        //        if (navTo?.Value == null)
+        //            continue;
 
-                // remember some further supplementary search information
-                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(navTo.Value);
+        //        // remember some further supplementary search information
+        //        var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(navTo.Value);
 
-                // lookup business objects
-                var bo = PackageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
-                if (bo == null)
-                    return false;
+        //        // lookup business objects
+        //        var bo = PackageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
+        //        if (bo == null)
+        //            return false;
 
-                // make sure that Submodel is expanded
-                this.DisplayElements.ExpandAllItems();
+        //        // make sure that Submodel is expanded
+        //        this.DisplayElements.ExpandAllItems();
 
-                // still proceed?
-                var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
-                        alsoDereferenceObjects: true, sri: sri);
-                if (veFound == null)
-                    return false;
+        //        // still proceed?
+        //        var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
+        //                alsoDereferenceObjects: true, sri: sri);
+        //        if (veFound == null)
+        //            return false;
 
-                // ok .. focus!!
-                DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
-                // remember in history
-                ButtonHistory.Push(veFound);
-                // fake selection
-                RedrawElementView();
-                DisplayElements.Refresh();
-                ContentTakeOver.IsEnabled = false;
+        //        // ok .. focus!!
+        //        DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
+        //        // remember in history
+        //        Logic?.LocationHistory?.Push(veFound);
+        //        // fake selection
+        //        RedrawElementView();
+        //        DisplayElements.Refresh();
+        //        TakeOverContentEnable(false);
 
-                // finally break
-                return true;
-            }
+        //        // finally break
+        //        return true;
+        //    }
 
-            // nothing found
-            return false;
-        }
+        //    // nothing found
+        //    return false;
+        //}
 
 
         public void UiShowRepositories(bool visible)
@@ -1000,6 +1011,20 @@ namespace AasxPackageExplorer
                 return false;
             };
 
+            // wire history bheaviour
+            if (Logic?.LocationHistory != null)
+            {
+                Logic.LocationHistory.VisualElementRequested += async (s4, historyItem) =>
+                {
+                    await ButtonHistory_ObjectRequested(s4, historyItem);
+                };
+
+                Logic.LocationHistory.HistoryActive += (s5, active) =>
+                {
+                    ButtonHistoryBack.IsEnabled = active;
+                };
+            }
+
             // nearly last task here ..
             Log.Singleton.Info("Application started ..");
 
@@ -1212,13 +1237,13 @@ namespace AasxPackageExplorer
 
                 // ok
                 DisplayElements.Refresh();
-                ContentTakeOver.IsEnabled = false;
+                TakeOverContentEnable(false);
             }
 
             if (lab is AnyUiLambdaActionContentsChanged)
             {
                 // enable button
-                ContentTakeOver.IsEnabled = true;
+                TakeOverContentEnable(true);
             }
 
             if (lab is AnyUiLambdaActionContentsTakeOver)
@@ -1561,17 +1586,17 @@ namespace AasxPackageExplorer
                     // show ve
                     DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
                     // remember in history
-                    ButtonHistory.Push(veFound);
+                    Logic?.LocationHistory?.Push(veFound);
                     // fake selection
                     RedrawElementView();
                     DisplayElements.Refresh();
-                    ContentTakeOver.IsEnabled = false;
+                    TakeOverContentEnable(false);
                 }
                 else
                 {
                     // everything is in default state, push adequate button history
                     var veTop = this.DisplayElements.GetDefaultVisualElement();
-                    ButtonHistory.Push(veTop);
+                    Logic?.LocationHistory?.Push(veTop);
                 }
             }
             catch (Exception ex)
@@ -2309,20 +2334,7 @@ namespace AasxPackageExplorer
                     new Action(() => LabelProgressBarInfo.Content = message));
         }
 
-        private void ButtonHistory_HomeRequested(object sender, EventArgs e)
-        {
-            // be careful
-            try
-            {
-                UiCheckIfActivateLoadedNavTo();
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, "While displaying home element");
-            }
-        }
-
-        private async void ButtonHistory_ObjectRequested(object sender, VisualElementHistoryItem hi)
+        private async Task ButtonHistory_ObjectRequested(object sender, VisualElementHistoryItem hi)
         {
             // be careful
             try
@@ -2338,7 +2350,7 @@ namespace AasxPackageExplorer
                         // fake selection
                         RedrawElementView();
                         DisplayElements.Refresh();
-                        ContentTakeOver.IsEnabled = false;
+                        TakeOverContentEnable(false);
 
                         // done
                         return;
@@ -2396,11 +2408,12 @@ namespace AasxPackageExplorer
                         // show ve
                         DisplayElements?.TrySelectVisualElement(veFocus, wishExpanded: true);
                         // remember in history
-                        ButtonHistory.Push(veFocus);
+                        // TODO MIHO: this was a bug??
+                        // ButtonHistory.Push(veFocus);
                         // fake selection
                         RedrawElementView();
                         DisplayElements.Refresh();
-                        ContentTakeOver.IsEnabled = false;
+                        TakeOverContentEnable(false);
                     }
                     catch (Exception ex)
                     {
@@ -2560,7 +2573,7 @@ namespace AasxPackageExplorer
             // try identify the business object
             if (DisplayElements.SelectedItem != null)
             {
-                ButtonHistory.Push(DisplayElements.SelectedItem);
+                Logic?.LocationHistory?.Push(DisplayElements.SelectedItem);
             }
 
             // may be flush events
@@ -2749,7 +2762,7 @@ namespace AasxPackageExplorer
             DisplayElements.Refresh();
 
             // re-enable
-            ContentTakeOver.IsEnabled = false;
+            TakeOverContentEnable(false);
         }
 
         private void DispEditEntityPanel_ContentsChanged(object sender, int kind)
@@ -3486,13 +3499,6 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        private void ButtonKeyboard_Click(object sender, RoutedEventArgs e)
-        {
-            var htmlfn = CreateTempFileForKeyboardShortcuts();
-            BrowserDisplayLocalFile(htmlfn, System.Net.Mime.MediaTypeNames.Text.Html,
-                                    preferInternal: true);
-        }
-
         // REFACTOR: for later refactoring
         public void RedrawRepositories()
         {
@@ -3547,6 +3553,26 @@ namespace AasxPackageExplorer
         public void AddWishForToplevelAction(AnyUiLambdaActionBase action)
         {
             DispEditEntityPanel.AddWishForOutsideAction(action);
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == ButtonKeyboard)
+            {
+                var htmlfn = CreateTempFileForKeyboardShortcuts();
+                BrowserDisplayLocalFile(htmlfn, System.Net.Mime.MediaTypeNames.Text.Html,
+                                        preferInternal: true);
+            }
+
+            if (sender == ButtonHomeLocation)
+            {
+                await CommandBinding_GeneralDispatch("navigatehome", null, new AasxMenuActionTicket());
+            }
+
+            if (sender == ButtonHistoryBack)
+            {
+                Logic?.LocationHistory?.Pop();
+            }
         }
     }
 }

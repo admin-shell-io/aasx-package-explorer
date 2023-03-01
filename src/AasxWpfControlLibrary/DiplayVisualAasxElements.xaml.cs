@@ -451,6 +451,8 @@ namespace AasxPackageExplorer
                 ve.IsExpanded = false;
             Woodoo(ve);
 
+            this.Refresh();
+
             // OK
             return true;
         }

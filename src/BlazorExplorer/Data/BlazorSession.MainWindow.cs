@@ -587,6 +587,23 @@ namespace BlazorUI.Data
             }
         }
 
+        /// <summary>
+        /// If a button is provided to take over just edited fields, enable/ disable it.
+        /// </summary>
+        public void TakeOverContentEnable(bool enabled)
+        {
+            // nothing to do for Blazor version
+        }
+
+        /// <summary>
+        /// Triggers update of display
+        /// </summary>
+        public void UpdateDisplay()
+        {
+            Program.signalNewData(
+                new Program.NewDataAvailableArgs(
+                    Program.DataRedrawMode.None, SessionId));
+        }
     }
 
 }

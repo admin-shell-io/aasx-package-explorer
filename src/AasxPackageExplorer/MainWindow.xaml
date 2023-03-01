@@ -314,9 +314,38 @@
                 
                 </Menu>
 
+                <!--
                 <local:VisualElementHistoryControl Grid.Column="2" x:Name="ButtonHistory" Margin="2" Width="50"
                         VisualElementRequested="ButtonHistory_ObjectRequested"
                         HomeRequested="ButtonHistory_HomeRequested"/>
+                -->
+
+                <Grid Grid.Column="2">
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" x:Name="ButtonHistoryBack" Content="&#x2bc7;" Click="Button_Click"
+                            Margin="0,2,0,2">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Grid.Column="2" x:Name="ButtonHomeLocation" Content="&#x29CB;" Click="Button_Click"
+                            Margin="0,2,0,2" Padding="0,0,0,4">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
 
                 <StackPanel Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right" Orientation="Horizontal">
                     <Image x:Name="LogoImage" VerticalAlignment="Stretch" Margin="2,2,4,2"/>
@@ -527,7 +556,7 @@
                         Foreground="{DynamicResource DarkestAccentColor}" 
                         BorderBrush="{DynamicResource DarkestAccentColor}" 
                         Padding="4,-3,4,0" Margin="5,6,5,0" Content="&#x2328;" FontSize="15"
-                        Click="ButtonKeyboard_Click">
+                        Click="Button_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="5"/>

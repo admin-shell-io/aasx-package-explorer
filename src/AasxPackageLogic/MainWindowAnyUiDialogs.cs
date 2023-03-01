@@ -48,7 +48,14 @@ namespace AasxPackageLogic
     public class MainWindowAnyUiDialogs : MainWindowHeadless
     {
         /// <summary>
-        /// Element of stack of editing locations. For faster jumping.
+        /// History of locations = AAS + Reference. For faster navigation between different
+        /// packages (i.e. of a repository)
+        /// </summary>
+        public VisualElementHistoryStack LocationHistory = new VisualElementHistoryStack();
+
+        /// <summary>
+        /// Element of stack of editing locations. For faster jumping within a single
+        /// package.
         /// </summary>
         protected class EditingLocation
         {
@@ -530,6 +537,25 @@ namespace AasxPackageLogic
                 catch (Exception ex)
                 {
                     LogErrorToTicket(ticket, ex, "when closing auxiliary AASX");
+                }
+            }
+
+            if (cmd == "navigateback"
+                && LocationHistory != null)
+            {
+                LocationHistory?.Pop();
+            }
+
+            if (cmd == "navigatehome")
+            {
+                // be careful
+                try
+                {
+                    UiCheckIfActivateLoadedNavTo();
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "While displaying home element");
                 }
             }
 
@@ -1502,5 +1528,60 @@ namespace AasxPackageLogic
             return null;
         }
 
+        /// <summary>
+        /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
+        /// found to be activated
+        /// </summary>
+        public bool UiCheckIfActivateLoadedNavTo()
+        {
+            // access
+            if (PackageCentral.Main?.AasEnv == null || MainWindow.GetDisplayElements() == null)
+                return false;
+
+            // use convenience function
+            foreach (var sm in PackageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
+            {
+                // check for ReferenceElement
+                var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
+                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
+                    MatchMode.Relaxed);
+                if (navTo?.Value == null)
+                    continue;
+
+                // remember some further supplementary search information
+                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(navTo.Value);
+
+                // lookup business objects
+                var bo = PackageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
+                if (bo == null)
+                    return false;
+
+                // make sure that Submodel is expanded
+                MainWindow.GetDisplayElements().ExpandAllItems();
+
+                // still proceed?
+                var veFound = MainWindow.GetDisplayElements().SearchVisualElementOnMainDataObject(bo,
+                        alsoDereferenceObjects: true, sri: sri);
+                if (veFound == null)
+                    return false;
+
+                // ok .. focus!!
+                MainWindow.GetDisplayElements().TrySelectVisualElement(veFound, wishExpanded: true);
+
+                // remember in history
+                LocationHistory?.Push(veFound);
+                
+                // fake selection
+                MainWindow.RedrawElementView();
+                MainWindow.TakeOverContentEnable(false);
+                MainWindow.UpdateDisplay();
+
+                // finally break
+                return true;
+            }
+
+            // nothing found
+            return false;
+        }
     }
 }

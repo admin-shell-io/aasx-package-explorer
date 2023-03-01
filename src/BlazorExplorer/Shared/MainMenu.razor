@@ -13,16 +13,35 @@
         <a class="navbar-brand" href="#">
             <img src="/image/IDTA_AAS-Logo_Circle.png" height="35" width="35" alt="">
         </a>
-        <div class="navbar-collapse w-100" id="navbarSupportedContent">
+        <div class="navbar col-12" id="navbarSupportedContent">
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <DynamicMenuItem TopMenu="Session.MainMenu?.Menu"
                                 MenuItems="Session.MainMenu?.Menu"
                                 Depth="1" />
             </ul>
 
-            <ul class="navbar-nav ms-auto">
-                <img src="/image/PI40_and_IDTA.png" height="30" alt="">
-            </ul>
+            <div class="d-grid gap-2 d-md-block" style="margin-left:2.0rem;">
+                <button class="btn btn-sm btn-primary-light" type="button"
+                        @onclick='async () => await ClickOnItem("NavigateBack")'>
+                    &#x25C0;
+                </button>
+                <button class="btn btn-sm btn-primary-light" type="button"
+                        @onclick='async () => await ClickOnItem("NavigateHome")'>
+                    &#x29CB;
+                </button>
+            </div>
+
+            <!--
+
+            <button type="button" class="btn btn-primary-light btn-sm" @onclick="() => {}">&#x25C0;</button>
+
+            <button type="button" class="btn btn-primary-light btn-sm" 
+                    style="height:auto.5rem; font-size: 1.5rem; padding-top:0.2rem"
+                    @onclick="() => {}">&#x2302;</button>
+            
+            -->
+            
+            <img class="navbar-nav ms-auto" src="/image/PI40_and_IDTA.png" height="30" alt="">
 
         </div>
     </div>
@@ -30,4 +49,16 @@
 
 @code
 {
+    public async Task ClickOnItem(string menuItemName)
+    {
+        var mi = Session.MainMenu?.Menu?.FindName(menuItemName);
+        if (mi != null)
+        {
+            var ticket = new AasxMenuActionTicket()
+            {
+                MenuItem = mi
+            };
+            await Session.MainMenu?.Menu.ActivateAction(mi, ticket);
+        }
+    }
 }
