@@ -29,11 +29,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
-          
-      - name: Install .NET core 3.0
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '3.1.100'
 
       - name: Install build dependencies
         working-directory: src
