@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 This module contains common functions for continuous integration.
 #>
@@ -92,7 +92,7 @@ Check the version of dotnet-format so that the code is always formatted in the s
 #>
 function AssertDotnetFormatVersion
 {
-    AssertDotnetToolVersion -packageID "dotnet-format" -expectedVersion "5.1.250801"
+    AssertDotnetToolVersion -packageID "dotnet-format" -expectedVersion "4.0.130203"
 }
 
 <#
@@ -101,7 +101,7 @@ Check the version of dead-csharp so that the dead code is always detected in the
 #>
 function AssertDeadCsharpVersion
 {
-    AssertDotnetToolVersion -packageID "deadcsharp" -expectedVersion "2.0.0"
+    AssertDotnetToolVersion -packageID "deadcsharp" -expectedVersion "1.0.0-beta5"
 }
 
 <#
@@ -110,7 +110,7 @@ Check the version of doctest-csharp so that the code is always generated and che
 #>
 function AssertDoctestCsharpVersion
 {
-    AssertDotnetToolVersion -packageID "doctestcsharp" -expectedVersion "2.0.0"
+    AssertDotnetToolVersion -packageID "doctestcsharp" -expectedVersion "1.1.0"
 }
 
 <#
@@ -119,7 +119,7 @@ Check the version of opinionated-csharp-todos so that the TODOs are always inspe
 #>
 function AssertOpinionatedCsharpTodosVersion
 {
-    AssertDotnetToolVersion -packageID "opinionatedcsharptodos" -expectedVersion "2.0.0"
+    AssertDotnetToolVersion -packageID "opinionatedcsharptodos" -expectedVersion "1.0.0-pre1"
 }
 
 function FindNunit3Console
