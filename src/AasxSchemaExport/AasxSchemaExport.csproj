@@ -6,6 +6,7 @@
     <RootNamespace>AasxSchemaExport</RootNamespace>
     <AssemblyName>AasxSchemaExport</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>  
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <ItemGroup>

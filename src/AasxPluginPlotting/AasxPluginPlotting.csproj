@@ -9,7 +9,7 @@
     <!-- force NuGet / Build to put required.dll and more to bin folder -->
     <!-- Drawback: puts all other *.dll as well :-( -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />

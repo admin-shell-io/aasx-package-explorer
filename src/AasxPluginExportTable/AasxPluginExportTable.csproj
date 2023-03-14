@@ -9,6 +9,7 @@
     <!-- Drawback: puts all other *.dll as well :-( -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
     <None Update="AasxPluginExportTable.plugin">

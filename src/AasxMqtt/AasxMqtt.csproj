@@ -5,6 +5,7 @@
     <RootNamespace>AasxMqttServer</RootNamespace>
     <AssemblyName>AasxMqttServer</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
