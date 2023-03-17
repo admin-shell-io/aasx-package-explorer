@@ -28,7 +28,7 @@ namespace AasxPluginSmdExporter.View
     /// <summary>
     /// Interaktionslogik für PhysicalDialog.xaml
     /// </summary>
-    public partial class PhysicalDialog : UserControl, AasxIntegrationBase.IFlyoutControl
+    public partial class PhysicalDialog : UserControl
     {
         public PhysicalDialog()
         {

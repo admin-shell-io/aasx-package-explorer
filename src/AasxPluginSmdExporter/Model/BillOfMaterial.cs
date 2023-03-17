@@ -10,12 +10,12 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AasxPluginSmdExporter.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AdminShellNS;
+using AdminShell_V20;
+using AasxCompatibilityModels;
 
 namespace AasxPluginSmdExporter
 {
@@ -31,9 +31,9 @@ namespace AasxPluginSmdExporter
 
         public Dictionary<string, string> ReferenceToAssets { get; set; } = new Dictionary<string, string>();
 
-        public static Dictionary<string, AdminShellNS.AdminShell.SemanticId> SemanticIdDict { get; set; }
+        public static Dictionary<string, AdminShellV20.SemanticId> SemanticIdDict { get; set; }
 
-        public Dictionary<string, AdminShellNS.AdminShell.Entity> SubmodelElementsAsEntity { get; set; }
+        public Dictionary<string, AdminShellV20.Entity> SubmodelElementsAsEntity { get; set; }
 
         public Dictionary<string, string> PropEntity { get; set; }
 
@@ -51,10 +51,10 @@ namespace AasxPluginSmdExporter
         public BillOfMaterial()
         {
             RelationshipElements = new List<RelationshipElement>();
-            SubmodelElementsAsEntity = new Dictionary<string, AdminShellNS.AdminShell.Entity>();
+            SubmodelElementsAsEntity = new Dictionary<string, AdminShellV20.Entity>();
 
             if (SemanticIdDict == null)
-                SemanticIdDict = new Dictionary<string, AdminShellNS.AdminShell.SemanticId>();
+                SemanticIdDict = new Dictionary<string, AdminShellV20.SemanticId>();
         }
 
         public BillOfMaterial(JObject jObject)
@@ -66,8 +66,8 @@ namespace AasxPluginSmdExporter
             foreach (var subEle in jObject["submodelElements"])
             {
 
-                AdminShellNS.AdminShell.Entity entity = JsonConvert.
-                    DeserializeObject<AdminShellNS.AdminShell.Entity>(subEle.ToString());
+                AdminShellV20.Entity entity = JsonConvert.
+                    DeserializeObject<AdminShellV20.Entity>(subEle.ToString());
                 this.SubmodelElementsAsEntity.Add(entity?.idShort, entity);
             }
         }
@@ -115,8 +115,8 @@ namespace AasxPluginSmdExporter
                     {
                         if (subEle["semanticId"] != null)
                         {
-                            AdminShellNS.AdminShell.SemanticId semantic
-                                = JsonConvert.DeserializeObject<AdminShellNS.AdminShell.SemanticId>
+                            AdminShellV20.SemanticId semantic
+                                = JsonConvert.DeserializeObject<AdminShellV20.SemanticId>
                                 (subEle["semanticId"].ToString());
                             SemanticIdDict.Add(idshort, semantic);
                         }
