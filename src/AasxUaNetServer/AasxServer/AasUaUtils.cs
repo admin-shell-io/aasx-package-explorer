@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using AdminShellNS;
 using Opc.Ua;
 
@@ -34,7 +35,7 @@ namespace AasOpcUaServer
             return clean;
         }
 
-        public static string ToOpcUaReference(AdminShell.Reference refid)
+        public static string ToOpcUaReference(AdminShellV20.Reference refid)
         {
             if (refid == null || refid.IsEmpty)
                 return null;

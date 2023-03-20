@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using AdminShellNS;
 using Opc.Ua;
 
@@ -116,7 +117,7 @@ namespace AasOpcUaServer
         }
 
         public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShell.Identification identification = null,
+            AdminShellV20.Identification identification = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
