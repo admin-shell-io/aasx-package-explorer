@@ -31,22 +31,22 @@ function PackageRelease($outputDir)
     ##
     
     $smallPlugins = $(
-    "AasxPluginAdvancedTextEditor",
-    "AasxPluginBomStructure",
-    "AasxPluginDocumentShelf",
-    "AasxPluginExportTable",
-    "AasxPluginGenericForms",
-    "AasxPluginImageMap",
-    "AasxPluginMtpViewer",
-    "AasxPluginPlotting",
-    "AasxPluginSmdExporter",
-    "AasxPluginTechnicalData",
-    "AasxPluginUaNetClient",
-    "AasxPluginUaNetServer"
+    #"AasxPluginAdvancedTextEditor",
+    #"AasxPluginBomStructure",
+    #"AasxPluginDocumentShelf",
+    #"AasxPluginExportTable",
+    #"AasxPluginGenericForms",
+    #"AasxPluginImageMap",
+    #"AasxPluginMtpViewer",
+    #"AasxPluginPlotting",
+    #"AasxPluginSmdExporter",
+    #"AasxPluginTechnicalData",
+    #"AasxPluginUaNetClient",
+    #"AasxPluginUaNetServer"
     )
 
     $allPlugins = $smallPlugins.Clone()
-    $allPlugins += "AasxPluginWebBrowser"
+    #$allPlugins += "AasxPluginWebBrowser"
 
     function MakePackage($identifier, $plugins)
     {
