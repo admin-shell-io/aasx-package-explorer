@@ -2670,6 +2670,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "id":
                             {
                                 if (keyValue.Value == null)
@@ -3451,6 +3452,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "first":
                             {
                                 if (keyValue.Value == null)
@@ -4062,6 +4064,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "typeValueListElement":
                             {
                                 if (keyValue.Value == null)
@@ -4736,6 +4739,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "extensions":
                             {
                                 if (keyValue.Value == null)
@@ -5377,6 +5381,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "valueType":
                             {
                                 if (keyValue.Value == null)
@@ -5971,6 +5976,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "extensions":
                             {
                                 if (keyValue.Value == null)
@@ -6565,6 +6571,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "valueType":
                             {
                                 if (keyValue.Value == null)
@@ -7158,6 +7165,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "extensions":
                             {
                                 if (keyValue.Value == null)
@@ -7695,6 +7703,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "contentType":
                             {
                                 if (keyValue.Value == null)
@@ -8264,6 +8273,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "contentType":
                             {
                                 if (keyValue.Value == null)
@@ -8834,6 +8844,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "first":
                             {
                                 if (keyValue.Value == null)
@@ -9500,6 +9511,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "entityType":
                             {
                                 if (keyValue.Value == null)
@@ -11280,6 +11292,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "extensions":
                             {
                                 if (keyValue.Value == null)
@@ -12027,6 +12040,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "extensions":
                             {
                                 if (keyValue.Value == null)
@@ -12536,6 +12550,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "id":
                             {
                                 if (keyValue.Value == null)
@@ -13019,6 +13034,7 @@ namespace AasCore.Aas3_0_RC02
                 {
                     switch (keyValue.Key)
                     {
+                        case "$type": break;
                         case "type":
                             {
                                 if (keyValue.Value == null)

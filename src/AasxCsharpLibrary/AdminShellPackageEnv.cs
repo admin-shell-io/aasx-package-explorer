@@ -416,6 +416,7 @@ namespace AdminShellNS
 
                             var node = System.Text.Json.Nodes.JsonNode.Parse(s);
                             aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
+                            openPackage = package;
                             //}
                         }
                     }
@@ -992,7 +993,7 @@ namespace AdminShellNS
             Action lambda,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None)
         {
-            // access 
+            // access
             if (!this.IsOpen)
                 throw (new Exception(
                     string.Format("Could not temporarily close and re-open AASX {0}, because package" +
@@ -1056,7 +1057,7 @@ namespace AdminShellNS
                     //nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
                     //nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
                     //serializer.Serialize(s, _aasEnv, nss);
-                    
+
                     var writer = XmlWriter.Create(s, new XmlWriterSettings() { Indent = true });
                     Xmlization.Serialize.To(
                         _aasEnv, writer);

@@ -340,7 +340,7 @@ namespace AasxPackageExplorer
 
 		/// <summary>
 		/// This function serve as a kind of unified contact point for all kind
-		/// of business functions to trigger loading an item to PackageExplorer data 
+		/// of business functions to trigger loading an item to PackageExplorer data
         /// represented by an item of PackageCentral. This function triggers UI procedures.
 		/// </summary>
 		/// <param name="packItem">PackageCentral item to load to</param>
@@ -581,7 +581,7 @@ namespace AasxPackageExplorer
             // update element view?
             DynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                PackageCentral, DisplayContext, 
+                PackageCentral, DisplayContext,
                 entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
                 flyoutProvider: this,
                 appEventProvider: this,
@@ -1036,7 +1036,7 @@ namespace AasxPackageExplorer
             // log / status line, before setting the last information
             MainTimer_HandleLogMessages();
 
-            // Try to load?            
+            // Try to load?
             if (Options.Curr.AasxToLoad != null)
             {
                 var location = Options.Curr.AasxToLoad;
@@ -1221,7 +1221,7 @@ namespace AasxPackageExplorer
                 // the selection will be shifted ..
                 if (wish.NextFocus != null && DisplayElements != null)
                 {
-                    // for later search in visual elements, expand them all in order to be absolutely 
+                    // for later search in visual elements, expand them all in order to be absolutely
                     // sure to find business object
                     DisplayElements.ExpandAllItems();
 
@@ -1332,7 +1332,7 @@ namespace AasxPackageExplorer
                         }
                     }
 
-                    // 2nd step: redisplay                                                          
+                    // 2nd step: redisplay
                     DispEditEntityPanel.RedisplayRenderedRoot(
                         renderedPanel,
                         update.UpdateMode,
@@ -1523,7 +1523,7 @@ namespace AasxPackageExplorer
                 var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(work);
                 work = sri.CleanReference;
 
-                // for later search in visual elements, expand them all in order to be absolutely 
+                // for later search in visual elements, expand them all in order to be absolutely
                 // sure to find business object
                 this.DisplayElements.ExpandAllItems();
 
@@ -1843,11 +1843,11 @@ namespace AasxPackageExplorer
                 if (rec.LiveObject is Aas.Property prop)
                 {
                     _mainTimer_AnimateDemoValues.Animate(prop,
-                        emitEvent: (prop2, evi2) =>   
+                        emitEvent: (prop2, evi2) =>
                         {
                             // Animate the event visually; create a change event for this.
                             // Note: this might by not ideal, final state
-                            /* TODO (MIHO, 2021-10-28): Check, if a better solution exists 
+                            /* TODO (MIHO, 2021-10-28): Check, if a better solution exists
                              * to instrument event updates in a way that they're automatically
                              * visualized */
                             DisplayElements.PushEvent(new AnyUiLambdaActionPackCntChange()
@@ -1897,7 +1897,7 @@ namespace AasxPackageExplorer
                         continue;
 
                     // now, find the observable (with timestamping!)
-                    var observable = (IDiaryData)env.FindReferableByReference(refEv.Observed);  
+                    var observable = (IDiaryData)env.FindReferableByReference(refEv.Observed);
 
                     // some special cases
                     if (true == refEv.Observed?.Matches(
@@ -2070,7 +2070,7 @@ namespace AasxPackageExplorer
 
             //
             // Investigate on Update Value Events
-            // Note: for the time being, Events will be only valid, if Event and observed entity are 
+            // Note: for the time being, Events will be only valid, if Event and observed entity are
             // within the SAME Submodel
             //
             var veSelected = DisplayElements.SelectedItem;
@@ -2195,12 +2195,12 @@ namespace AasxPackageExplorer
                                    + AasEventMsgEnvelope.TimeToString(_eventHandling.LastReceivedEventTimeStamp);
 
                         // execute and digest results
-                        var lastTS = await
-                            connRest2.PullEvents(qst);
+                        //var lastTS = await
+                        //    connRest2.PullEvents(qst);
 
-                        // remember for next time
-                        if (lastTS != DateTime.MinValue)
-                            _eventHandling.LastReceivedEventTimeStamp = lastTS;
+                        //// remember for next time
+                        //if (lastTS != DateTime.MinValue)
+                        //    _eventHandling.LastReceivedEventTimeStamp = lastTS;
                     }
                     catch (Exception ex)
                     {
@@ -2747,7 +2747,7 @@ namespace AasxPackageExplorer
 
         private void ContentTakeOver_Click(object sender, RoutedEventArgs e)
         {
-            // some more "OK, good to go" 
+            // some more "OK, good to go"
             CheckIfToFlushEvents();
 
             // refresh display
@@ -3374,7 +3374,7 @@ namespace AasxPackageExplorer
 
                     var rowfmtTCAD = AdminShellUtil.CleanHereStringWithNewlines(
                         @"<tr style=""background-color: {0}"">
-                    <td colspan=""2"" 
+                    <td colspan=""2""
                      style=""border-top:none;border-bottom:none;border-left:none;background-color:#FFFFE0"">
                     </td>
                     <td><i>{1}</i></td>
@@ -3451,7 +3451,7 @@ namespace AasxPackageExplorer
 
                 var rowfmtSCAD = AdminShellUtil.CleanHereStringWithNewlines(
                     @"<tr style=""background-color: {0}"">
-                    <td  
+                    <td
                      style=""border-top:none;border-bottom:none;border-left:none;background-color:#FFFFE0"">
                     </td>
                     <td><i>{1}</i></td>
