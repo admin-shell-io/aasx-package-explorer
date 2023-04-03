@@ -250,7 +250,7 @@ namespace BlazorUI.Data
             //if (PackageCentral.MainAvailable)
             //    t += " - " + PackageCentral.MainItem.ToString();
             //if (PackageCentral.AuxAvailable)
-            //    t += " (auxiliary AASX: " + PackageCentral.AuxItem.ToString() + ")";            
+            //    t += " (auxiliary AASX: " + PackageCentral.AuxItem.ToString() + ")";
             // this.Title = t;
 
 #if _log_times
@@ -319,9 +319,9 @@ namespace BlazorUI.Data
         public void ClearAllViews()
         {
             // left side
-            InfoBox.AasId = "<id missing!>";
+            InfoBox.AasId = "";
             InfoBox.HtmlImageData = "";
-            InfoBox.AssetId = "<id missing!>";
+            InfoBox.AssetId = "";
 
             // middle side
             DisplayElements.Clear();
@@ -372,7 +372,7 @@ namespace BlazorUI.Data
         /// </summary>
         public void RedrawAllElementsAndFocus(object nextFocus = null, bool isExpanded = true)
         {
-            // Blazor: refer 
+            // Blazor: refer
             Program.signalNewData(
                 new Program.NewDataAvailableArgs(
                     Program.DataRedrawMode.RebuildTreeKeepOpen, SessionId,
@@ -505,7 +505,7 @@ namespace BlazorUI.Data
                 var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(work);
                 work = sri.CleanReference;
 
-                // for later search in visual elements, expand them all in order to be absolutely 
+                // for later search in visual elements, expand them all in order to be absolutely
                 // sure to find business object
                 this.DisplayElements.ExpandAllItems();
 

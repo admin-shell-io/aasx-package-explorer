@@ -53,14 +53,14 @@ namespace BlazorUI.Data
         public void SetInfos(Aas.AssetAdministrationShell aas, AdminShellPackageEnv env)
         {
             // access
-            AasId = "<id missing!>";
+            AasId = "";
             if (aas == null)
                 return;
 
             // basic data
             if (aas.Id?.HasContent() == true)
                 AasId = aas.Id;
-            AssetId = "<id missing!>";
+            AssetId = "";
             if (aas.AssetInformation?.GlobalAssetId != null)
                 AssetId = aas.AssetInformation.GlobalAssetId.ToStringExtended(2);
 

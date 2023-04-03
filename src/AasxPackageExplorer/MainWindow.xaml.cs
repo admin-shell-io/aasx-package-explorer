@@ -169,9 +169,9 @@ namespace AasxPackageExplorer
         public void ClearAllViews()
         {
             // left side
-            this.AasId.Text = "<id missing!>";
+            this.AasId.Text = "";
             this.AssetPic.Source = null;
-            this.AssetId.Text = "<id missing!>";
+            this.AssetId.Text = "";
 
             // middle side
             DisplayElements.Clear();
@@ -668,11 +668,11 @@ namespace AasxPackageExplorer
 
                 // what is AAS specific?
                 this.AasId.Text = WpfStringAddWrapChars(
-                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.Id, "<id missing!>"));
+                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.Id, ""));
 
                 // what is asset specific?
                 this.AssetPic.Source = null;
-                this.AssetId.Text = "<id missing!>";
+                this.AssetId.Text = "";
                 var asset = tvlaas.theAas.AssetInformation;
                 if (asset != null)
                 {
