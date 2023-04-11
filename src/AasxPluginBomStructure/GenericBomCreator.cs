@@ -511,6 +511,8 @@ namespace AasxPluginBomStructure
                             var n1 = referableToNode[x1];
                             var n2 = referableToNode[x2];
 
+                            // labelText = "";
+
                             var e = graph.AddEdge(n1.Id, labelText, n2.Id);
                             e.UserData = rel;
                             e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.Normal;

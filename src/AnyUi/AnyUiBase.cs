@@ -346,6 +346,37 @@ namespace AnyUi
         public double Y { get; set; }
 
         public AnyUiPoint(double x, double y) { X = x; Y = y; }
+
+        public AnyUiPoint Scale (double? scaleX, double? scaleY)
+        {
+            return new AnyUiPoint(
+                X * (scaleX.HasValue ? scaleX.Value : 1.0),
+                Y * (scaleY.HasValue ? scaleY.Value : 1.0)
+                );
+        }
+
+        public AnyUiPoint AntiScale(double? scaleX, double? scaleY)
+        {
+            return new AnyUiPoint(
+                X / ( (scaleX.HasValue && scaleX.Value != 0.0) ? scaleX.Value : 1.0),
+                Y / ( (scaleY.HasValue && scaleY.Value != 0.0) ? scaleY.Value : 1.0)
+                );
+        }
+    }
+
+    public struct AnyUiDimension
+    {
+        public double Width { get; set; }
+        public double Height { get; set; }
+
+        public AnyUiDimension(double width, double height) 
+        { 
+            Width = width; 
+            Height = height; 
+        }
+
+        public int IntWidth { get => Convert.ToInt32(Width); }
+        public int IntHeight { get => Convert.ToInt32(Height); }
     }
 
     public struct AnyUiRect
@@ -384,6 +415,8 @@ namespace AnyUi
 
             return new AnyUiRect(x0, y0, x2 - x0, y2 - y0);
         }
+
+        public AnyUiDimension Dimension { get => new AnyUiDimension(Width, Height); }
     }
 
     public class AnyUiPointCollection : List<AnyUiPoint>
@@ -877,7 +910,7 @@ namespace AnyUi
             if (relOrigin.HasValue)
                 RelOrigin = relOrigin.Value;
         }
-    }
+   }
 
     public class AnyUiFrameworkElement : AnyUiUIElement
     {
@@ -1339,7 +1372,7 @@ namespace AnyUi
         /// <summary>
         /// Pixel-dimensions of the bitmap given by providing functionality.
         /// </summary>
-        public double PixelWidth, PixelHeight;
+        public AnyUiDimension Dimension;
 
         /// <summary>
         /// Bitmap as data bytes in PNG-format.
@@ -1360,6 +1393,11 @@ namespace AnyUi
         /// Guid of the image. Created by the constructor.
         /// </summary>
         public string ImageGuid = "";
+
+        /// <summary>
+        /// If set, will scale coordinates when emitting events
+        /// </summary>
+        public double? ScaleCoordinates;
 
         /// <summary>
         /// The bitmap data; as anonymous object (because of dependencies).

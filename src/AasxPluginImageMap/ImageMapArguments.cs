@@ -23,6 +23,9 @@ namespace AasxPluginImageMap
     {
         // ReSharper disable UnassignedField.Global
 
+        /// <summary>
+        /// Alignment of elements
+        /// </summary>
         public enum HorizontalAlign { Center, Left, Right };
 
         /// <summary>
@@ -38,6 +41,12 @@ namespace AasxPluginImageMap
         /// Note: e.g. F4
         /// </summary>
         public string fmt;
+
+        /// <summary>
+        /// If given, scale of the annotated element.
+        /// Note: currently only implemented for Blazor, background image
+        /// </summary>
+        public double? scale;
 
         /// <summary>
         /// If given, specifies the factor of the font size with respect to regular size
@@ -65,7 +74,7 @@ namespace AasxPluginImageMap
         public double level0 = 0.0;
 
         /// <summary>
-        /// Uppe value compare level.
+        /// Upper value compare level.
         /// </summary>
         public double level1 = 1.0;
 

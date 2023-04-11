@@ -3571,7 +3571,7 @@ namespace AasxPackageExplorer
 
             if (sender == ButtonHistoryBack)
             {
-                Logic?.LocationHistory?.Pop();
+                await CommandBinding_GeneralDispatch("navigateback", null, new AasxMenuActionTicket());
             }
         }
     }

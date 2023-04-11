@@ -409,7 +409,8 @@ namespace AasxPackageExplorer
         public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
         {
             // access?
-            var ve = SearchVisualElementOnMainDataObject(dataObject);
+            var ve = SearchVisualElementOnMainDataObject(dataObject,
+                alsoDereferenceObjects: true);
             if (ve == null)
                 return false;
 
@@ -434,9 +435,8 @@ namespace AasxPackageExplorer
             if (ve == null)
                 return false;
 
-            // select (but no callback!)
-            SelectSingleVisualElement(ve, preventFireItem: true);
-
+            // try expand all parents
+            // (as this might change "IsSelected", to it first)
             if (wishExpanded == true)
             {
                 // go upward the tree in order to expand, as well
@@ -449,7 +449,12 @@ namespace AasxPackageExplorer
             }
             if (wishExpanded == false)
                 ve.IsExpanded = false;
-            Woodoo(ve);
+
+            // now select (but no callback!)
+            SelectSingleVisualElement(ve, preventFireItem: true);
+
+            // do not need Woodo anymore??
+            // Woodoo(ve);
 
             this.Refresh();
 

@@ -178,8 +178,8 @@ namespace BlazorUI.Data
             try
             {
                 // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
-                //if (!doNotNavigateAfterLoaded)
-                //    UiCheckIfActivateLoadedNavTo();
+                if (!doNotNavigateAfterLoaded)
+                    Logic?.UiCheckIfActivateLoadedNavTo();
 
                 if (indexItems && packItem?.Container?.Env?.AasEnv != null)
                     packItem.Container.SignificantElements

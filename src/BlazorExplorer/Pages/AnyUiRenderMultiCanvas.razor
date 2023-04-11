@@ -43,14 +43,12 @@
     // Dimensioning
     //
 
-    protected Tuple<int, int> GetCanvasDimensions()
+    protected AnyUiDimension GetCanvasDimensions()
     {
         // if background image, then its leading
         if (BackgroundImage?.BitmapInfo != null)
         {
-            return new Tuple<int, int>(
-                Convert.ToInt32(BackgroundImage.BitmapInfo.PixelWidth), 
-                Convert.ToInt32(BackgroundImage.BitmapInfo.PixelHeight));
+            return BackgroundImage.BitmapInfo.Dimension;
         }
 
         // canvas .. look into contents
@@ -61,7 +59,7 @@
                     res = AnyUiRect.Max(res, shp.FindBoundingBox());
 
         // return
-        return new Tuple<int, int>(Convert.ToInt32(res.Width), Convert.ToInt32(res.Height));
+        return res.Dimension;
     }
 
     //
@@ -206,15 +204,15 @@
                     double tHeight = 0.0;
 
 #if __not_supported_by_browsers
-                    if (false)
-                    {
-                        if (fontSpec.HasContent())
-                            await this._context.SetFontAsync(fontSpec);
-                        var meas = await this._context.MeasureTextAsync(text);
-                        if (meas != null)
-                        {
-                            tHeight = meas.ActualBoundingBoxAscent + meas.ActualBoundingBoxDescent;
-                        }
+        if (false)
+            {
+            if (fontSpec.HasContent())
+                await this._context.SetFontAsync(fontSpec);
+            var meas = await this._context.MeasureTextAsync(text);
+            if (meas != null)
+                {
+                tHeight = meas.ActualBoundingBoxAscent + meas.ActualBoundingBoxDescent;
+                }
                     }
 #else
                     {
@@ -311,16 +309,29 @@
             string data = await jsRuntime.InvokeAsync<string>("getDivCanvasOffsets",
                 new object[] { _divCanvas });
             JObject offsets = (JObject)JsonConvert.DeserializeObject(data);
+
             var mousePt = new AnyUiPoint(
                 eventArgs.ClientX - offsets.Value<double>("offsetLeft"),
                 eventArgs.ClientY - offsets.Value<double>("offsetTop"));
 
+            // may be scale the found coordinates
+            var scaledMousePt = mousePt;
+            if (BackgroundImage?.ScaleCoordinates != null)
+            {
+                scaledMousePt = mousePt.AntiScale(
+                    BackgroundImage.ScaleCoordinates,
+                    BackgroundImage.ScaleCoordinates);
+            }
+
             // find a hit
             AnyUiShape found = null;
+
             // iterate over shapes ..
             if (Canvas?.Children != null)
                 foreach (var ch in Canvas.Children)
                 {
+                    // checking with the original mousepoint, as shape coordinates
+                    // are already scaled down!
                     if (ch is AnyUiShape shp
                         && shp.IsHit(mousePt))
                     {
@@ -329,17 +340,18 @@
                     }
                 }
 
+            // but giving back coordinates in orignal dimensions
             if (found != null)
             {
                 // found a canvas element
                 AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(Canvas, 
-                    new AnyUiEventData(AnyUiEventMask.LeftDouble, found, 2, mousePt));
+                    new AnyUiEventData(AnyUiEventMask.LeftDouble, found, 2, scaledMousePt));
             }
             else
             {
                 // found only the image 
                 AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(BackgroundImage, 
-                    new AnyUiEventData(AnyUiEventMask.LeftDouble, BackgroundImage, 2, mousePt));
+                    new AnyUiEventData(AnyUiEventMask.LeftDouble, BackgroundImage, 2, scaledMousePt));
             }
         }
     }
@@ -350,6 +362,12 @@
     // access
     if (Canvas == null)
         return;
+
+    //
+    // Target dimension?
+    //
+
+
 
     //
     // style
@@ -368,10 +386,14 @@
     {
         var path = "/api/image/" + BackgroundImage.ImageGuid;
 
+        // remark: this html in principle is errneous; it displays the image although 
+        // set to none. But all other options will not place both div's on top of each other
         <div style="display:none; ">
-            <img id="@BackgroundImage.ImageGuid" src="@path" @ref="_imgReference" @onload="HandleImageOnLoad"/>
+            <img id="@BackgroundImage.ImageGuid" src="@path" @ref="_imgReference"
+                    alt="backgound image"
+                    @onload="HandleImageOnLoad" />
         </div>
-
+       
         // book keeping
         // TODO: make it nice!!
         var dd = new AnyUiDisplayDataHtml(DisplayData._context);
@@ -386,7 +408,7 @@
 
     var dims = GetCanvasDimensions();
     <div @ref="_divCanvas" @ondblclick="CanvasDoubleClick" style="background-color: transparent">
-        <BECanvas Width="@dims.Item1" Height="@dims.Item2" @ref="_canvasReference"></BECanvas>
+        <BECanvas Width="@dims.IntWidth" Height="@dims.IntHeight" @ref="_canvasReference"></BECanvas>
     </div>
 
     // book keeping

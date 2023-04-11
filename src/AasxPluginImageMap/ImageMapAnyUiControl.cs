@@ -241,7 +241,7 @@ namespace AasxPluginImageMap
                         UpdateMode = AnyUiRenderMode.StatusToUi,
                         UseInnerGrid = true
                     };
-                });
+                });            
 
             // add an Canvas on the same place as the image
             _canvas = AnyUiUIElement.RegisterControl(
@@ -371,6 +371,7 @@ namespace AasxPluginImageMap
                 return;
 
             // image
+            
             // file?
             var fe = _submodel.SubmodelElements.FindFirstSemanticIdAs<Aas.File>(
                 AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile,
@@ -378,20 +379,35 @@ namespace AasxPluginImageMap
             if (fe?.Value == null)
                 return;
 
-            var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, fe.Value);
+            // find args?
+            var q = fe.HasExtensionOfName("ImageMap.Args");
+            var veArgs = ImageMapArguments.Parse(q?.Value);
+
             if (_backgroundImage != null)
             {
+                double? percent = null;
+                if (veArgs?.scale != null)
+                {
+                    percent = 100.0 * veArgs.scale.Value;
+                    _backgroundImage.ScaleCoordinates = veArgs.scale;
+                }
+
+                var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, fe.Value, 
+                            scalePercentage: percent);
+            
                 if (bi != null)
                 {
                     bi.ConvertTo96dpi = true;
                     _backgroundImage.BitmapInfo = bi;
-                    _backgroundSize = bi.PixelWidth + bi.PixelHeight;
+                    _backgroundImage.ScaleCoordinates = veArgs?.scale;
+                    _backgroundSize = bi.Dimension.Width + bi.Dimension.Height;
                 }
                 else
                 {
                     // no image available
                     _backgroundImage.Width = 100;
                     _backgroundImage.Height = 100;
+                    _backgroundImage.ScaleCoordinates = null;
                     _backgroundSize = 100;
                     _backgroundImage.Touch();
                 }
@@ -469,6 +485,11 @@ namespace AasxPluginImageMap
                 fontSize += _backgroundSize.Value / 2500.0;
             }
 
+            // image scale
+            double imgScale = 1.0;
+            if (_backgroundImage.ScaleCoordinates.HasValue)
+                imgScale = _backgroundImage.ScaleCoordinates.Value;
+
             // entities
             int index = -1;
             var activeFe = new List<AnyUiFrameworkElement>();
@@ -500,10 +521,10 @@ namespace AasxPluginImageMap
                     var el = new AnyUiRectangle()
                     {
                         Tag = prect,
-                        X = pts[0],
-                        Y = pts[1],
-                        Width = pts[2] - pts[0],
-                        Height = pts[3] - pts[1],
+                        X = pts[0] * imgScale,
+                        Y = pts[1] * imgScale,
+                        Width = (pts[2] - pts[0]) * imgScale,
+                        Height = (pts[3] - pts[1]) * imgScale,
                         Fill = cols.Item1,
                         Stroke = cols.Item2,
                         StrokeThickness = 1.0f
@@ -516,10 +537,10 @@ namespace AasxPluginImageMap
                         res.Add(new AnyUiLabel()
                         {
                             Tag = prect,
-                            X = pts[0],
-                            Y = pts[1],
-                            Width = pts[2] - pts[0],
-                            Height = pts[3] - pts[1],
+                            X = pts[0] * imgScale,
+                            Y = pts[1] * imgScale,
+                            Width = (pts[2] - pts[0]) * imgScale,
+                            Height = (pts[3] - pts[1]) * imgScale,
                             HorizontalAlignment = AnyUiHorizontalAlignment.Center,
                             HorizontalContentAlignment = AnyUiHorizontalAlignment.Center,
                             VerticalAlignment = AnyUiVerticalAlignment.Center,
@@ -550,10 +571,10 @@ namespace AasxPluginImageMap
                     var el = new AnyUiEllipse()
                     {
                         Tag = pcirc,
-                        X = pts[0] - pts[2],
-                        Y = pts[1] - pts[2],
-                        Width = 2 * pts[2],
-                        Height = 2 * pts[2],
+                        X = (pts[0] - pts[2]) * imgScale,
+                        Y = (pts[1] - pts[2]) * imgScale,
+                        Width = 2 * pts[2] * imgScale,
+                        Height = 2 * pts[2] * imgScale,
                         Fill = cols.Item1,
                         Stroke = cols.Item2,
                         StrokeThickness = 1.0f
@@ -566,10 +587,10 @@ namespace AasxPluginImageMap
                         res.Add(new AnyUiLabel()
                         {
                             Tag = pcirc,
-                            X = pts[0] - pts[2],
-                            Y = pts[1] - pts[2],
-                            Width = 2 * pts[2],
-                            Height = 2 * pts[2],
+                            X = (pts[0] - pts[2]) * imgScale,
+                            Y = (pts[1] - pts[2]) * imgScale,
+                            Width = 2 * pts[2] * imgScale,
+                            Height = 2 * pts[2] * imgScale,
                             HorizontalAlignment = AnyUiHorizontalAlignment.Center,
                             HorizontalContentAlignment = AnyUiHorizontalAlignment.Center,
                             VerticalAlignment = AnyUiVerticalAlignment.Center,
@@ -594,7 +615,7 @@ namespace AasxPluginImageMap
                     // points
                     var pc = new AnyUiPointCollection();
                     for (int i = 0; (2 * i) < pts.Length; i++)
-                        pc.Add(new AnyUiPoint(pts[2 * i], pts[2 * i + 1]));
+                        pc.Add(new AnyUiPoint(pts[2 * i] * imgScale, pts[2 * i + 1] * imgScale));
 
                     // colors
                     var cols = DetermineColors(index, forceTransparent, 0x30, 0xff);

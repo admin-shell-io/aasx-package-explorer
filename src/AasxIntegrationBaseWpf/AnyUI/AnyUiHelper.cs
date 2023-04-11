@@ -36,8 +36,7 @@ namespace AasxIntegrationBaseWpf
                 if (doFreeze)
                     source.Freeze();
                 res.ImageSource = source;
-                res.PixelWidth = source.PixelWidth;
-                res.PixelHeight = source.PixelHeight;
+                res.Dimension = new AnyUiDimension(source.PixelWidth, source.PixelHeight);
 
                 // provide PNG as well
                 BitmapEncoder encoder = new PngBitmapEncoder();

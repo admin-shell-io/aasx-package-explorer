@@ -36,8 +36,7 @@ namespace AasxIntegrationBaseGdi
             {
                 // take over direct data
                 res.ImageSource = source;
-                res.PixelWidth = source.Width;
-                res.PixelHeight = source.Height;
+                res.Dimension = new AnyUiDimension(source.Width, source.Height);
 
                 // provide PNG as well
                 using (var cloneImage = source.Clone())
@@ -59,7 +58,9 @@ namespace AasxIntegrationBaseGdi
             return CreateAnyUiBitmapInfo(bi);
         }
 
-        public static AnyUiBitmapInfo LoadBitmapInfoFromPackage(AdminShellPackageEnv package, string path)
+        public static AnyUiBitmapInfo LoadBitmapInfoFromPackage(
+            AdminShellPackageEnv package, string path,
+            double? scalePercentage = null)
         {
             if (package == null || path == null)
                 return null;
@@ -72,6 +73,12 @@ namespace AasxIntegrationBaseGdi
 
                 // load image
                 var bi = new MagickImage(thumbStream);
+
+                if (scalePercentage.HasValue)
+                {
+                    bi.Resize(new Percentage(scalePercentage.Value));
+                }
+
                 var binfo = CreateAnyUiBitmapInfo(bi);
                 thumbStream.Close();
 
