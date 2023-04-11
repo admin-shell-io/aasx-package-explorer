@@ -8,6 +8,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxCompatibilityModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,13 +26,13 @@ namespace AasxPluginSmdExporter
 
         public string Name { get; set; }
 
-        public AdminShellNS.AdminShell.SemanticId SemanticId { get; set; }
+        public AdminShellV20.SemanticId SemanticId { get; set; }
         public SummingPoint()
         {
             inputs = new List<IOput>();
         }
 
-        public SummingPoint(IOput output, string name, AdminShellNS.AdminShell.SemanticId semanticId)
+        public SummingPoint(IOput output, string name, AdminShellV20.SemanticId semanticId)
         {
             this.output = output;
             this.Name = name;

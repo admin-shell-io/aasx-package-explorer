@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using AasxPluginSmdExporter.Model;
 using Newtonsoft.Json.Linq;
 
@@ -25,10 +26,10 @@ namespace AasxPluginSmdExporter
 
         List<SimulationModel> SimulationModels { get; set; }
 
-        Dictionary<string, AdminShellNS.AdminShell.Entity> SimModelsAsEntities =
-            new Dictionary<string, AdminShellNS.AdminShell.Entity>();
+        Dictionary<string, AdminShellV20.Entity> SimModelsAsEntities =
+            new Dictionary<string, AdminShellV20.Entity>();
 
-        AdminShellNS.AdminShell.Submodel Bom { get; set; }
+        AdminShellV20.Submodel Bom { get; set; }
 
         private int relCount = 0;
 
@@ -71,12 +72,12 @@ namespace AasxPluginSmdExporter
         /// <returns></returns>
         private bool AddBomSubmodel(string name, string name_sm)
         {
-            Bom = new AdminShellNS.AdminShell.Submodel();
+            Bom = new AdminShellV20.Submodel();
             Bom.idShort = name_sm;
             Bom.identification.id = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
             Bom.identification.idType = "IRI";
-            Bom.semanticId = new AdminShellNS.AdminShell.SemanticId();
-            Bom.semanticId.Keys.Add(new AdminShellNS.AdminShell.Key());
+            Bom.semanticId = new AdminShellV20.SemanticId();
+            Bom.semanticId.Keys.Add(new AdminShellV20.Key());
             Bom.semanticId.Keys[0].value = "http://example.com/id/type/submodel/BOM/1/1";
             Bom.semanticId.Keys[0].type = "Submodel";
             Bom.semanticId.Keys[0].idType = "IRI";
@@ -101,7 +102,7 @@ namespace AasxPluginSmdExporter
         private bool AddAas(string name)
         {
 
-            AdminShellNS.AdminShell.AdministrationShell aas = new AdminShellNS.AdminShell.AdministrationShell();
+            AdminShellV20.AdministrationShell aas = new AdminShellV20.AdministrationShell();
 
             aas.idShort = name;
             aas.identification.id = "urn:itsowl.tedz.com:demo:aas:1:1:123";
@@ -139,7 +140,7 @@ namespace AasxPluginSmdExporter
                 {
                     foreach (var output in input.ConnectedTo)
                     {
-                        AdminShellNS.AdminShell.RelationshipElement portAsRel = GetPortsAsRelation(input, output);
+                        AdminShellV20.RelationshipElement portAsRel = GetPortsAsRelation(input, output);
 
                         string test_ent_json = Newtonsoft.Json.JsonConvert.SerializeObject(portAsRel);
 
@@ -156,7 +157,7 @@ namespace AasxPluginSmdExporter
                 {
                     foreach (var port in sim.PhysicalPorts)
                     {
-                        AdminShellNS.AdminShell.RelationshipElement portAsRel =
+                        AdminShellV20.RelationshipElement portAsRel =
                             GetPortsAsRelation(port, port.ConnectedTo[0], 1);
 
                         string test_ent_json = Newtonsoft.Json.JsonConvert.SerializeObject(portAsRel);
@@ -186,7 +187,7 @@ namespace AasxPluginSmdExporter
             {
                 if (!((sim.Inputs.Count == 0 && sim.Outputs.Count == 0) && sim.PhysicalPorts.Count == 0))
                 {
-                    AdminShellNS.AdminShell.Entity simAsEntity = GetSimModelAsEntity(sim, name_sm);
+                    AdminShellV20.Entity simAsEntity = GetSimModelAsEntity(sim, name_sm);
                     foreach (var port in GetPortsAsProp(sim))
                     {
                         simAsEntity.Add(port);
@@ -211,9 +212,9 @@ namespace AasxPluginSmdExporter
         /// </summary>
         /// <param name="simulationModel"></param>
         /// <returns></returns>
-        private List<AdminShellNS.AdminShell.Property> GetPortsAsProp(SimulationModel simulationModel)
+        private List<AdminShellV20.Property> GetPortsAsProp(SimulationModel simulationModel)
         {
-            List<AdminShellNS.AdminShell.Property> ioputs = new List<AdminShellNS.AdminShell.Property>();
+            List<AdminShellV20.Property> ioputs = new List<AdminShellV20.Property>();
             foreach (var input in simulationModel.Inputs)
             {
                 ioputs.Add(GetPortAsProperty(input, "in"));
@@ -239,9 +240,9 @@ namespace AasxPluginSmdExporter
         /// <param name="port"></param>
         /// <param name="direction"></param>
         /// <returns></returns>
-        private AdminShellNS.AdminShell.Property GetPortAsProperty(IOput port, string direction)
+        private AdminShellV20.Property GetPortAsProperty(IOput port, string direction)
         {
-            AdminShellNS.AdminShell.Property port_prop = new AdminShellNS.AdminShell.Property();
+            AdminShellV20.Property port_prop = new AdminShellV20.Property();
             port_prop.idShort = port.IdShort;
             port_prop.AddQualifier("direction", direction);
             port_prop.AddQualifier("Domain", port.Domain);
@@ -259,16 +260,16 @@ namespace AasxPluginSmdExporter
         /// <param name="simulationModel"></param>
         /// <param name="nameSubmodel"></param>
         /// <returns></returns>
-        public AdminShellNS.AdminShell.Entity GetSimModelAsEntity(SimulationModel simulationModel, string nameSubmodel)
+        public AdminShellV20.Entity GetSimModelAsEntity(SimulationModel simulationModel, string nameSubmodel)
         {
 
-            AdminShellNS.AdminShell.Entity entity = new AdminShellNS.AdminShell.Entity();
+            AdminShellV20.Entity entity = new AdminShellV20.Entity();
             entity.idShort = simulationModel.Name;
             entity.entityType = "CoManagedEntity";
             entity.semanticId = simulationModel.SemanticId;
 
             // make new parent
-            var newpar = new AdminShellNS.AdminShell.Referable();
+            var newpar = new AdminShellV20.Referable();
             newpar.idShort = nameSubmodel;
             entity.parent = newpar;
 
@@ -283,38 +284,38 @@ namespace AasxPluginSmdExporter
         /// <param name="output"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public AdminShellNS.AdminShell.RelationshipElement GetPortsAsRelation(IOput input, IOput output, int type = 0)
+        public AdminShellV20.RelationshipElement GetPortsAsRelation(IOput input, IOput output, int type = 0)
         {
 
-            AdminShellNS.AdminShell.Submodel submodel = new AdminShellNS.AdminShell.Submodel();
+            AdminShellV20.Submodel submodel = new AdminShellV20.Submodel();
 
             submodel.identification.id = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
             submodel.identification.idType = "IRI";
 
 
             // Finden der zugehörigen properties der in und out
-            AdminShellNS.AdminShell.Entity entity = new AdminShellNS.AdminShell.Entity();
+            AdminShellV20.Entity entity = new AdminShellV20.Entity();
             entity.idShort = input.Owner;
             entity.parent = submodel;
 
-            AdminShellNS.AdminShell.Property property = new AdminShellNS.AdminShell.Property();
+            AdminShellV20.Property property = new AdminShellV20.Property();
             property.idShort = input.IdShort;
             property.parent = entity;
 
 
-            AdminShellNS.AdminShell.Entity outentity = new AdminShellNS.AdminShell.Entity();
+            AdminShellV20.Entity outentity = new AdminShellV20.Entity();
             outentity.idShort = output.Owner;
             outentity.parent = submodel;
 
-            AdminShellNS.AdminShell.Property outproperty = new AdminShellNS.AdminShell.Property();
+            AdminShellV20.Property outproperty = new AdminShellV20.Property();
             outproperty.idShort = output.IdShort;
             outproperty.parent = outentity;
 
 
             // setzen als first bzw second
 
-            AdminShellNS.AdminShell.RelationshipElement relationshipElement =
-                new AdminShellNS.AdminShell.RelationshipElement();
+            AdminShellV20.RelationshipElement relationshipElement =
+                new AdminShellV20.RelationshipElement();
 
             relationshipElement.first = outproperty.GetReference();
             relationshipElement.second = property.GetReference();
@@ -332,10 +333,10 @@ namespace AasxPluginSmdExporter
         /// <param name="output"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public AdminShellNS.AdminShell.SemanticId SetSemanticIdRelEle(IOput input, IOput output, int type)
+        public AdminShellV20.SemanticId SetSemanticIdRelEle(IOput input, IOput output, int type)
         {
-            AdminShellNS.AdminShell.SemanticId semantic = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
+            AdminShellV20.SemanticId semantic = new AdminShellV20.SemanticId();
+            AdminShellV20.Key key = new AdminShellV20.Key();
             key.idType = "IRI";
             key.index = 0;
             key.local = true;

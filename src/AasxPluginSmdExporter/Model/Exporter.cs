@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using AasxPluginSmdExporter.Model;
 using Newtonsoft.Json.Linq;
 
@@ -554,10 +555,10 @@ namespace AasxPluginSmdExporter
         /// Creates a new semantic id for the summing points
         /// </summary>
         /// <returns></returns>
-        private AdminShellNS.AdminShell.SemanticId createSemanticIdSummingPoint()
+        private AdminShellV20.SemanticId createSemanticIdSummingPoint()
         {
-            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
+            AdminShellV20.SemanticId semanticId = new AdminShellV20.SemanticId();
+            AdminShellV20.Key key = new AdminShellV20.Key();
             key.value = SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Sum");
             key.type = "ConceptDescription";
             key.local = true;
@@ -658,8 +659,8 @@ namespace AasxPluginSmdExporter
             List<SimulationModel> newSimMod = new List<SimulationModel>();
 
 
-            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
+            AdminShellV20.SemanticId semanticId = new AdminShellV20.SemanticId();
+            AdminShellV20.Key key = new AdminShellV20.Key();
             key.value = SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Mult");
             key.type = "ConceptDescription";
             key.local = true;
@@ -830,8 +831,8 @@ namespace AasxPluginSmdExporter
             List<SimulationModel> newSimMod = new List<SimulationModel>();
 
 
-            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
+            AdminShellV20.SemanticId semanticId = new AdminShellV20.SemanticId();
+            AdminShellV20.Key key = new AdminShellV20.Key();
             key.value = "www.tedz.itsowl.com/ids/cd/1132_9030_2102_4033";
             key.type = "ConceptDescription";
             key.local = true;
@@ -881,7 +882,7 @@ namespace AasxPluginSmdExporter
         /// <param name="list"></param>
         /// <returns></returns>
         private static SimulationModel createNode(int nodeCount,
-            AdminShellNS.AdminShell.SemanticId semanticId,
+            AdminShellV20.SemanticId semanticId,
             List<IOput> list)
         {
             SimulationModel nodeModel = new SimulationModel();

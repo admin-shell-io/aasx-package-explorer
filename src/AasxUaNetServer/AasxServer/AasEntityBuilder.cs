@@ -13,7 +13,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
+using AdminShell_V20;
 using Opc.Ua;
+using AasxCompatibilityModels;
+using Extensions;
+using AasCore.Aas3_0_RC02;
 
 namespace AasOpcUaServer
 {
@@ -61,12 +65,12 @@ namespace AasOpcUaServer
             this.theServerOptions = options;
             this.aasTypes.BuildEntites(this);
         }
-
+        
         public class NodeRecord
         {
             public NodeState uanode = null;
-            public AdminShell.Referable referable = null;
-            public AdminShell.Identification identification = null;
+            public AdminShellV20.Referable referable = null;
+            public AdminShellV20.Identification identification = null;
 
             public NodeRecord() { }
             public NodeRecord(NodeState uanode, AdminShell.Referable referable)

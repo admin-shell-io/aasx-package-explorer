@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using Newtonsoft.Json.Linq;
 
 namespace AasxPluginSmdExporter
@@ -32,7 +33,7 @@ namespace AasxPluginSmdExporter
 
         public List<IOput> PhysicalPorts { get; set; } = new List<IOput>();
 
-        public AdminShellNS.AdminShell.SemanticId SemanticId { get; set; }
+        public AdminShellV20.SemanticId SemanticId { get; set; }
 
         public Dictionary<string, Mapping> Mappings { get; set; }
 

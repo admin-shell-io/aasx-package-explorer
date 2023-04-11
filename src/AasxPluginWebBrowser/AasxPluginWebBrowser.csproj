@@ -19,6 +19,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
 
     <CefSharpBuildAction>Content</CefSharpBuildAction>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <!--

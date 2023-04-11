@@ -5,6 +5,7 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>Enable</Nullable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>UseAasxCompatibilityModels</DefineConstants>

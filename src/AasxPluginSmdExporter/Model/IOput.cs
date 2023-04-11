@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -35,7 +36,7 @@ namespace AasxPluginSmdExporter
 
         public List<IOput> ConnectedTo { get; set; } = new List<IOput>();
 
-        public AdminShellNS.AdminShell.SemanticId SemanticId { get; set; }
+        public AdminShellV20.SemanticId SemanticId { get; set; }
 
         public string ConceptDescription { get; set; }
 
@@ -56,7 +57,7 @@ namespace AasxPluginSmdExporter
             this.Domain = "";
         }
 
-        public IOput(string idShort, string owner, AdminShellNS.AdminShell.SemanticId semanticId)
+        public IOput(string idShort, string owner, AdminShellV20.SemanticId semanticId)
         {
             this.IdShort = idShort;
             this.Owner = owner;
@@ -159,7 +160,7 @@ namespace AasxPluginSmdExporter
             {
 
                 this.SemanticId =
-                    JsonConvert.DeserializeObject<AdminShellNS.AdminShell.SemanticId>(token["semanticId"].ToString());
+                    JsonConvert.DeserializeObject<AdminShellV20.SemanticId>(token["semanticId"].ToString());
                 this.ConceptDescription = this.SemanticId?.Keys[0].value;
             }
             else

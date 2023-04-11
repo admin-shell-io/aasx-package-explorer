@@ -10,6 +10,9 @@
     <!-- Used to access the XML summary for Options.cs -->
     <!-- <GenerateDocumentationFile>true</GenerateDocumentationFile> -->
   </PropertyGroup>
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
   <ItemGroup>
     <None Remove="LICENSE.txt" />
     <None Remove="Resources\BuildDate.txt" />

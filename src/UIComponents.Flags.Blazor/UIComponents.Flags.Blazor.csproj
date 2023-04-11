@@ -4,6 +4,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
 	<IsPackable>true</IsPackable>
     <!-- <RazorLangVersion>3.0</RazorLangVersion> -->
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
 	<ItemGroup>
