@@ -51,7 +51,8 @@ function Main
         #"AasxPluginUaNetClient",
         #"AasxPluginUaNetServer",
         "AasxPluginWebBrowser",
-        "BlazorUI"
+        "BlazorExplorer"
+        #"BlazorUI"
         )
 
         foreach ($project in $projects)
@@ -61,7 +62,8 @@ function Main
 
             Write-Host "Building $project to: $projectOutputPath"
 
-            if ($project -ne "BlazorUI")
+            #if ($project -ne "BlazorUI")
+            if ($project -ne "BlazorExplorer")
             {
                 & dotnet.exe publish `
                 --output $projectOutputPath `

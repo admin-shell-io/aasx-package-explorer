@@ -124,9 +124,20 @@ function PackageRelease($outputDir)
         # BlazorUI
         ##
 
-        Write-Host "* Copying BlazorUI to: $destinationDir"
+        <#Write-Host "* Copying BlazorUI to: $destinationDir"
         Copy-Item `
             -Path (Join-Path $buildDir "BlazorUI") `
+            -Recurse `
+            -Destination $destinationDir
+        #>
+
+        ##
+        # BlazorExplorer
+        ##
+
+        Write-Host "* Copying BlazorExlorer to: $destinationDir"
+        Copy-Item `
+            -Path (Join-Path $buildDir "BlazorExplorer") `
             -Recurse `
             -Destination $destinationDir
 
@@ -149,7 +160,7 @@ function PackageRelease($outputDir)
 
     MakePackage -identifier "aasx-package-explorer-small" #-plugins $smallPlugins
 
-    MakePackageBlazor -identifier "aasx-package-explorer-blazorui"
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer"
 
     # Do not copy the source code in the releases.
     # The source code will be distributed automatically through Github releases.
