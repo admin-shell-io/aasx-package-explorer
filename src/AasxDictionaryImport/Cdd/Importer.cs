@@ -187,7 +187,7 @@ namespace AasxDictionaryImport.Cdd
             {
                 IdShort = idShort,
                 Kind = Aas.ModelingKind.Instance,
-                ValueType = Aas.Stringification.DataTypeDefXsdFromString(GetValueType(levelType.Subtype)) 
+                ValueType = Aas.Stringification.DataTypeDefXsdFromString(GetValueType(levelType.Subtype))
                     ?? Aas.DataTypeDefXsd.String,
             };
         }

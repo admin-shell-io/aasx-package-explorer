@@ -1117,7 +1117,7 @@ namespace AasxPackageLogic
                     LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
                 }
             }
-            
+
             if (cmd == "opcuai4aasimport")
             {
                 // filename
@@ -1570,7 +1570,7 @@ namespace AasxPackageLogic
 
                 // remember in history
                 LocationHistory?.Push(veFound);
-                
+
                 // fake selection
                 MainWindow.RedrawElementView();
                 MainWindow.TakeOverContentEnable(false);

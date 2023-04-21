@@ -22,7 +22,7 @@ namespace AnyUi
         /// <summary>
         /// Automatically replace labes starting with IRI with active links
         /// </summary>
-        public bool showIriMode = false;        
+        public bool showIriMode = false;
 
         //
         // Small widgets
@@ -705,7 +705,7 @@ namespace AnyUi
             if (setBold)
                 lab.FontWeight = AnyUiFontWeight.Bold;
             // if (setNoWrap)
-                lab.TextWrapping = AnyUiTextWrapping.NoWrap;
+            lab.TextWrapping = AnyUiTextWrapping.NoWrap;
             if (wrapping.HasValue)
                 lab.TextWrapping = wrapping.Value;
             if (fontSize.HasValue)

@@ -265,7 +265,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 // aas
                 if (fi.AasIds != null)
-                    for (int i=0; i<fi.AasIds.Count; i++)
+                    for (int i = 0; i < fi.AasIds.Count; i++)
                     {
                         // AAS
                         var aasid = fi.AasIds[i];
@@ -273,8 +273,8 @@ namespace AasxPackageLogic.PackageCentral
                             id: aasid,
                             assetInformation: new Aas.AssetInformation(Aas.AssetKind.Instance),
                             idShort: $"AAS{num++:00}_{fi.Tag}",
-                            description: new List<Aas.LangString>() { 
-                                new Aas.LangString("en?", "" + fi.Description) 
+                            description: new List<Aas.LangString>() {
+                                new Aas.LangString("en?", "" + fi.Description)
                             });
                         pkg.AasEnv?.AssetAdministrationShells.Add(aas);
 
@@ -283,8 +283,8 @@ namespace AasxPackageLogic.PackageCentral
                         {
                             aas.AssetInformation = new Aas.AssetInformation(
                                 Aas.AssetKind.Instance,
-                                globalAssetId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, 
-                                    new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, fi.AssetIds[i]) 
+                                globalAssetId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference,
+                                    new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, fi.AssetIds[i])
                                 }
                             ));
                         }

@@ -354,7 +354,7 @@ namespace AasxPackageExplorer
                     // Blazor case
                     x = await _script.Remote?.Location(args);
                 }
-                
+
                 // done
                 return 0;
             }

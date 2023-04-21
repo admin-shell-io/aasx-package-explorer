@@ -104,7 +104,7 @@ namespace AdminShell_V20
             /// Introduced for JSON serialization, can create Referables based on a string name
             /// </summary>
             /// <param name="elementName">string name (standard PascalCased)</param>
-            
+
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {

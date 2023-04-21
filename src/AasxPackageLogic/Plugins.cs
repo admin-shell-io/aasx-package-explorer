@@ -222,7 +222,7 @@ namespace AasxPackageLogic
                             "Cannot invoke methods within instance from " +
                                 "class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
-                    }                    
+                    }
 
                     // adding
                     Log.Singleton.Info(".. adding plugin {0}", pi.name);

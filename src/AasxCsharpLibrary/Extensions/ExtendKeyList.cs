@@ -31,7 +31,7 @@ namespace Extensions
             return same;
         }
 
-        public static List<Key> ReplaceLastKey(this List<Key> keys,List<Key> newKeys)
+        public static List<Key> ReplaceLastKey(this List<Key> keys, List<Key> newKeys)
         {
             var res = new List<Key>(keys);
             if (res.Count < 1 || newKeys == null || newKeys.Count < 1)
@@ -62,7 +62,7 @@ namespace Extensions
             return true;
         }
 
-        public static bool StartsWith(this List<Key> keyList,List<Key> head, bool emptyIsTrue = false,
+        public static bool StartsWith(this List<Key> keyList, List<Key> head, bool emptyIsTrue = false,
                 MatchMode matchMode = MatchMode.Relaxed)
         {
             // access
@@ -165,7 +165,7 @@ namespace Extensions
             return res;
         }
 
-        public static List<Key> SubList(this List<Key> keyList, 
+        public static List<Key> SubList(this List<Key> keyList,
             int startPos, int count = int.MaxValue)
         {
             var res = new List<Key>();

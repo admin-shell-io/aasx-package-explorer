@@ -174,12 +174,12 @@ namespace AasxPluginBomStructure
 
             // web style
             if (st.StartsWith("#") && st.Length >= 7)
-                try 
-                { 
+                try
+                {
                     var r = Convert.ToByte(st.Substring(1, 2), 16);
                     var g = Convert.ToByte(st.Substring(3, 2), 16);
                     var b = Convert.ToByte(st.Substring(5, 2), 16);
-                    var a = (st.Length >= 9) ? Convert.ToByte(st.Substring(7, 2), 16) : (byte) 0xff ;
+                    var a = (st.Length >= 9) ? Convert.ToByte(st.Substring(7, 2), 16) : (byte)0xff;
                     return new Microsoft.Msagl.Drawing.Color(a, r, g, b);
                 }
                 catch (Exception ex)
@@ -194,7 +194,7 @@ namespace AasxPluginBomStructure
                             .Where(f => f.Name.Contains(st, StringComparison.InvariantCultureIgnoreCase))
                             .FirstOrDefault();
             if (prop != null)
-                return (Microsoft.Msagl.Drawing.Color) prop.GetValue(null);
+                return (Microsoft.Msagl.Drawing.Color)prop.GetValue(null);
 
             // default, again
             return Microsoft.Msagl.Drawing.Color.Black;

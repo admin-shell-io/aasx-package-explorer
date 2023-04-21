@@ -11,7 +11,7 @@ namespace Extensions
 
         public static bool IsValid(this List<LangString> langStringSet)
         {
-            if(langStringSet != null && langStringSet.Count >=1)
+            if (langStringSet != null && langStringSet.Count >= 1)
             {
                 return true;
             }
@@ -91,12 +91,12 @@ namespace Extensions
         }
 
         public static List<LangString> ConvertFromV20(
-            this List<LangString> langStringSet, 
+            this List<LangString> langStringSet,
             AasxCompatibilityModels.AdminShellV20.LangStringSet sourceLangStrings)
         {
 
             //if (!sourceLangStrings.langString.IsNullOrEmpty())
-            if (sourceLangStrings.langString!= null && sourceLangStrings.langString.Count != 0)
+            if (sourceLangStrings.langString != null && sourceLangStrings.langString.Count != 0)
             {
                 langStringSet = new List<LangString>();
                 foreach (var sourceLangString in sourceLangStrings.langString)
@@ -109,7 +109,7 @@ namespace Extensions
         }
 
         public static List<LangString> ConvertFromV20(
-            this List<LangString> lss, 
+            this List<LangString> lss,
             AasxCompatibilityModels.AdminShellV20.LangStringSetIEC61360 src)
         {
 

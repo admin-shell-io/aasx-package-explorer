@@ -351,7 +351,7 @@ namespace AasxToolkit
                                     return -1;
                                 }
 
-                                var prop = new Property(DataTypeDefXsd.String, idShort:"test", category:"cat01");
+                                var prop = new Property(DataTypeDefXsd.String, idShort: "test", category: "cat01");
                                 prop.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "www.admin-shell.io/nonsense") });
 
                                 var fil = new AasCore.Aas3_0_RC02.File("", idShort: "test", category: "cat01");

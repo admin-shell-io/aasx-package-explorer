@@ -195,7 +195,7 @@ namespace BlazorExplorer
                 // same tree, only values changed
                 signalNewData(
                     new Program.NewDataAvailableArgs(
-                        DataRedrawMode.ValueChanged, sessionNumber, la)); 
+                        DataRedrawMode.ValueChanged, sessionNumber, la));
             }
 
             // more?
@@ -204,7 +204,7 @@ namespace BlazorExplorer
                 // more severe
                 signalNewData(
                     new Program.NewDataAvailableArgs(
-                        DataRedrawMode.RebuildTreeKeepOpen, sessionNumber, elem.takeOverLambda)); 
+                        DataRedrawMode.RebuildTreeKeepOpen, sessionNumber, elem.takeOverLambda));
             }
         }
 
@@ -294,7 +294,7 @@ namespace BlazorExplorer
         // TODO: Refactor
         public static void Main(string[] args)
         {
-            
+
             // allow long term logging (for report box)
             Log.Singleton.EnableLongTermStore();
 

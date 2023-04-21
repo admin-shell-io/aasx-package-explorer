@@ -322,7 +322,7 @@ namespace AnyUi
 
         public bool AllZero => AllEqual && Left == 0.0;
 
-        public double Width => Left + Right;        
+        public double Width => Left + Right;
     }
 
     public enum AnyUiVisibility : byte
@@ -347,7 +347,7 @@ namespace AnyUi
 
         public AnyUiPoint(double x, double y) { X = x; Y = y; }
 
-        public AnyUiPoint Scale (double? scaleX, double? scaleY)
+        public AnyUiPoint Scale(double? scaleX, double? scaleY)
         {
             return new AnyUiPoint(
                 X * (scaleX.HasValue ? scaleX.Value : 1.0),
@@ -358,8 +358,8 @@ namespace AnyUi
         public AnyUiPoint AntiScale(double? scaleX, double? scaleY)
         {
             return new AnyUiPoint(
-                X / ( (scaleX.HasValue && scaleX.Value != 0.0) ? scaleX.Value : 1.0),
-                Y / ( (scaleY.HasValue && scaleY.Value != 0.0) ? scaleY.Value : 1.0)
+                X / ((scaleX.HasValue && scaleX.Value != 0.0) ? scaleX.Value : 1.0),
+                Y / ((scaleY.HasValue && scaleY.Value != 0.0) ? scaleY.Value : 1.0)
                 );
         }
     }
@@ -369,10 +369,10 @@ namespace AnyUi
         public double Width { get; set; }
         public double Height { get; set; }
 
-        public AnyUiDimension(double width, double height) 
-        { 
-            Width = width; 
-            Height = height; 
+        public AnyUiDimension(double width, double height)
+        {
+            Width = width;
+            Height = height;
         }
 
         public int IntWidth { get => Convert.ToInt32(Width); }
@@ -626,18 +626,18 @@ namespace AnyUi
             UiElement = uiElement;
             Argument = argument;
         }
-	}
+    }
 
-	//
-	// Hierarchy of AnyUI graphical elements (including controls).
-	// This hierarchy stems from the WPF hierarchy but should be sufficiently 
-	// abstracted in order to be implemented an many UI systems
-	//
+    //
+    // Hierarchy of AnyUI graphical elements (including controls).
+    // This hierarchy stems from the WPF hierarchy but should be sufficiently 
+    // abstracted in order to be implemented an many UI systems
+    //
 
-	/// <summary>
-	/// Absolute base class of all AnyUI graphical elements
-	/// </summary>
-	public class AnyUiUIElement
+    /// <summary>
+    /// Absolute base class of all AnyUI graphical elements
+    /// </summary>
+    public class AnyUiUIElement
     {
         // these attributes are typically managed by the (automatic) layout
         // exception: shapes
@@ -721,7 +721,7 @@ namespace AnyUi
         /// <param name="takeOverLambda">Lambda called at the end of a modification</param>
         /// <returns>Passes thru the user control</returns>
         public static T RegisterControl<T>(
-            T cntl, 
+            T cntl,
             Func<object, AnyUiLambdaActionBase> setValue = null,
             Func<object, Task<AnyUiLambdaActionBase>> setValueAsync = null,
             AnyUiLambdaActionBase takeOverLambda = null)
@@ -833,7 +833,7 @@ namespace AnyUi
             {
                 if (o is string ostr)
                 {
-                    if (double.TryParse(ostr, NumberStyles.Float, 
+                    if (double.TryParse(ostr, NumberStyles.Float,
                         CultureInfo.InvariantCulture, out var i))
                         setValue?.Invoke(i);
                     else
@@ -910,7 +910,7 @@ namespace AnyUi
             if (relOrigin.HasValue)
                 RelOrigin = relOrigin.Value;
         }
-   }
+    }
 
     public class AnyUiFrameworkElement : AnyUiUIElement
     {
@@ -1081,7 +1081,7 @@ namespace AnyUi
     public class AnyUiPanel : AnyUiFrameworkElement, IEnumerateChildren, IGetBackground
     {
         public AnyUiBrush Background;
-        
+
         /// <summary>
         /// This property is not directly legacy of WPD nor HTML: <c>Padding</c> will be
         /// applied to all children and their paddings. Experimental.

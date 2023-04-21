@@ -27,9 +27,9 @@ namespace Extensions
 
         public static void Remove(this AnnotatedRelationshipElement annotatedRelationshipElement, ISubmodelElement submodelElement)
         {
-            if(annotatedRelationshipElement != null)
+            if (annotatedRelationshipElement != null)
             {
-                if(annotatedRelationshipElement.Annotations != null)
+                if (annotatedRelationshipElement.Annotations != null)
                 {
                     annotatedRelationshipElement.Annotations.Remove((IDataElement)submodelElement);
                 }
@@ -41,7 +41,7 @@ namespace Extensions
             if (childSubmodelElement == null || childSubmodelElement is not IDataElement)
                 return null;
 
-            annotatedRelationshipElement.Annotations ??= new ();
+            annotatedRelationshipElement.Annotations ??= new();
 
             if (childSubmodelElement != null)
                 childSubmodelElement.Parent = annotatedRelationshipElement;

@@ -65,7 +65,7 @@ namespace AasxPluginKnownSubmodels
                     AasxPredefinedConcepts.ZveiNameplateV10.Static.SM_Nameplate.GetSemanticKey()
                 }.ToList())
             });
-            
+
             opt.Records.Add(new KnownSubmodelsOptionsRecord()
             {
                 Header = "VDMA Article of trade information (Version 0.8)",

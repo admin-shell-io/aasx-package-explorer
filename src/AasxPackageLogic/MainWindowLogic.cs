@@ -44,11 +44,11 @@ namespace AasxPackageExplorer
     /// </summary>
     public class MainWindowLogic
     {
-		/// <summary>
-		/// This instance of <c>PackageCentral</c> shall be accessile for 
+        /// <summary>
+        /// This instance of <c>PackageCentral</c> shall be accessile for 
         /// all abstracted functionality. UI-Windows may link to this.
-		/// </summary>
-		public PackageCentral PackageCentral = new PackageCentral();
+        /// </summary>
+        public PackageCentral PackageCentral = new PackageCentral();
 
         /// <summary>
         /// Will be initialized by the specific main window providing
@@ -122,25 +122,25 @@ namespace AasxPackageExplorer
             Log.Singleton.Error(ex, where);
         }
 
-		/// <summary>
-		/// Only in scriptmode, set ticket result and exception to error.
-		/// Add also to log.
-		/// Do nothing, if not in scriptmode
-		/// </summary>
-		public void LogErrorToTicketOrSilent(
-			AasxMenuActionTicket ticket,
-			string message)
-		{
+        /// <summary>
+        /// Only in scriptmode, set ticket result and exception to error.
+        /// Add also to log.
+        /// Do nothing, if not in scriptmode
+        /// </summary>
+        public void LogErrorToTicketOrSilent(
+            AasxMenuActionTicket ticket,
+            string message)
+        {
             MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, message);
-		}
+        }
 
-		public void LogErrorToTicket(
-			AasxMenuActionTicket ticket,
-			Exception ex,
-			string where)
-		{
+        public void LogErrorToTicket(
+            AasxMenuActionTicket ticket,
+            Exception ex,
+            string where)
+        {
             MainWindowLogic.LogErrorToTicketStatic(ticket, ex, where);
-		}
+        }
 
         //
         // Scripting

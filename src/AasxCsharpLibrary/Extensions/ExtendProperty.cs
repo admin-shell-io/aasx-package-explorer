@@ -20,9 +20,9 @@ namespace Extensions
         #endregion
         public static bool IsValueTrue(this Property property)
         {
-            if(property.ValueType == DataTypeDefXsd.Boolean)
+            if (property.ValueType == DataTypeDefXsd.Boolean)
             {
-                if(property.Value.Equals("true", StringComparison.OrdinalIgnoreCase))
+                if (property.Value.Equals("true", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -232,7 +232,7 @@ namespace Extensions
         }
 #endif
 
-        public static Property Set(this Property prop, 
+        public static Property Set(this Property prop,
             DataTypeDefXsd valueType = DataTypeDefXsd.String, string value = "")
         {
             prop.ValueType = valueType;
@@ -240,14 +240,14 @@ namespace Extensions
             return prop;
         }
 
-        public static Property Set(this Property prop, 
+        public static Property Set(this Property prop,
             KeyTypes type, string value)
         {
             prop.ValueId = ExtendReference.CreateFromKey(new Key(type, value));
             return prop;
         }
 
-        public static Property Set(this Property prop, 
+        public static Property Set(this Property prop,
             Qualifier q)
         {
             if (q != null)

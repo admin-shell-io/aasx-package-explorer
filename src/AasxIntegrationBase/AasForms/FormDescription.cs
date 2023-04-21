@@ -588,7 +588,7 @@ namespace AasxIntegrationBase.AasForms
                 res.Value = this.presetValue;
             if (this.allowedValueTypes.Length == 1)
             {
-                res.ValueType = Aas.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0]) 
+                res.ValueType = Aas.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0])
                     ?? Aas.DataTypeDefXsd.String;
             }
             return res;

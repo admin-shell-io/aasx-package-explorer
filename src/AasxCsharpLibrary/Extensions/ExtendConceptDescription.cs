@@ -14,7 +14,7 @@ namespace Extensions
     {
         #region AasxPackageExplorer
 
-        public static string GetDefaultPreferredName(this ConceptDescription conceptDescription,string defaultLang = null)
+        public static string GetDefaultPreferredName(this ConceptDescription conceptDescription, string defaultLang = null)
         {
             return "" +
                 conceptDescription.GetIEC61360()?
@@ -34,11 +34,11 @@ namespace Extensions
             )
         {
             var eds = new EmbeddedDataSpecification(
-                new Reference(ReferenceTypes.GlobalReference, 
-                new List<Key> { ExtendIDataSpecificationContent.GetKeyForIec61360() }), 
+                new Reference(ReferenceTypes.GlobalReference,
+                new List<Key> { ExtendIDataSpecificationContent.GetKeyForIec61360() }),
                 new DataSpecificationIec61360(
                         ExtendLangStringSet.CreateManyFromStringArray(preferredNames),
-                        new List<LangString> { new LangString("EN?", shortName)},
+                        new List<LangString> { new LangString("EN?", shortName) },
                         unit,
                         unitId,
                         sourceOfDefinition,
@@ -107,14 +107,14 @@ namespace Extensions
         #region ListOfConceptDescription
         public static ConceptDescription AddConceptDescriptionOrReturnExisting(this List<ConceptDescription> conceptDescriptions, ConceptDescription newConceptDescription)
         {
-            if(newConceptDescription == null)
+            if (newConceptDescription == null)
             {
                 return null;
             }
-            if(conceptDescriptions != null)
+            if (conceptDescriptions != null)
             {
                 var existingCd = conceptDescriptions.Where(c => c.Id == newConceptDescription.Id).First();
-                if(existingCd != null)
+                if (existingCd != null)
                 {
                     return existingCd;
                 }
@@ -128,7 +128,7 @@ namespace Extensions
         }
         #endregion
 
-        public static void Validate(this ConceptDescription conceptDescription,AasValidationRecordList results)
+        public static void Validate(this ConceptDescription conceptDescription, AasValidationRecordList results)
         {
             // access
             if (results == null)
@@ -257,7 +257,7 @@ namespace Extensions
             }
 
             //jtikekar:as per old implementation
-            if(srcCD.embeddedDataSpecification != null)
+            if (srcCD.embeddedDataSpecification != null)
             {
                 foreach (var sourceEsd in srcCD.embeddedDataSpecification)
                 {

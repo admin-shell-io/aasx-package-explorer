@@ -159,7 +159,7 @@ namespace AasxDictionaryImport
             eds.DataSpecificationContent = data.ToDataSpecification();
 
             cd.AddIsCaseOf(ExtendReference.CreateFromKey(Aas.KeyTypes.GlobalReference, data.Irdi));
-            
+
             env.Add(cd);
             return cd;
         }

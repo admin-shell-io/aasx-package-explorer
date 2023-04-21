@@ -70,16 +70,16 @@ namespace AasxPackageExplorer
         /// </summary>
         protected AnyUiDisplayContextWpf DisplayContext = null;
 
-		/// <summary>
-		/// This symbol is only a link to the abstract main-windows class.
-		/// </summary>
-		public PackageCentral PackageCentral
+        /// <summary>
+        /// This symbol is only a link to the abstract main-windows class.
+        /// </summary>
+        public PackageCentral PackageCentral
         {
             get => Logic?.PackageCentral;
             // set { _logic ??= new MainWindowDispatch(); _logic.PackageCentral = value; }
         }
 
-		public AasxMenuWpf MainMenu = new AasxMenuWpf();
+        public AasxMenuWpf MainMenu = new AasxMenuWpf();
 
         private string showContentPackageUri = null;
         private string showContentPackageMime = null;
@@ -338,21 +338,21 @@ namespace AasxPackageExplorer
             return ro;
         }
 
-		/// <summary>
-		/// This function serve as a kind of unified contact point for all kind
-		/// of business functions to trigger loading an item to PackageExplorer data 
+        /// <summary>
+        /// This function serve as a kind of unified contact point for all kind
+        /// of business functions to trigger loading an item to PackageExplorer data 
         /// represented by an item of PackageCentral. This function triggers UI procedures.
-		/// </summary>
-		/// <param name="packItem">PackageCentral item to load to</param>
-		/// <param name="takeOverEnv">Already loaded environment to take over (alternative 1)</param>
-		/// <param name="loadLocalFilename">Local filename to read (alternative 2)</param>
-		/// <param name="info">Human information what is loaded</param>
-		/// <param name="onlyAuxiliary">Treat as auxiliary load, not main item load</param>
-		/// <param name="doNotNavigateAfterLoaded">Disable automatic navigate to behaviour</param>
-		/// <param name="takeOverContainer">Already loaded container to take over (alternative 3)</param>
-		/// <param name="storeFnToLRU">Store this filename into last recently used list</param>
-		/// <param name="indexItems">Index loaded contents, e.g. for animate of event sending</param>
-		public void UiLoadPackageWithNew(
+        /// </summary>
+        /// <param name="packItem">PackageCentral item to load to</param>
+        /// <param name="takeOverEnv">Already loaded environment to take over (alternative 1)</param>
+        /// <param name="loadLocalFilename">Local filename to read (alternative 2)</param>
+        /// <param name="info">Human information what is loaded</param>
+        /// <param name="onlyAuxiliary">Treat as auxiliary load, not main item load</param>
+        /// <param name="doNotNavigateAfterLoaded">Disable automatic navigate to behaviour</param>
+        /// <param name="takeOverContainer">Already loaded container to take over (alternative 3)</param>
+        /// <param name="storeFnToLRU">Store this filename into last recently used list</param>
+        /// <param name="indexItems">Index loaded contents, e.g. for animate of event sending</param>
+        public void UiLoadPackageWithNew(
             PackageCentralItem packItem,
             AdminShellPackageEnv takeOverEnv = null,
             string loadLocalFilename = null,
@@ -581,7 +581,7 @@ namespace AasxPackageExplorer
             // update element view?
             DynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                PackageCentral, DisplayContext, 
+                PackageCentral, DisplayContext,
                 entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
                 flyoutProvider: this,
                 appEventProvider: this,
@@ -764,12 +764,12 @@ namespace AasxPackageExplorer
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // basic AnyUI handling
-			DisplayContext = new AnyUiDisplayContextWpf(this, PackageCentral);
+            DisplayContext = new AnyUiDisplayContextWpf(this, PackageCentral);
             Logic.DisplayContext = DisplayContext;
             Logic.MainWindow = this;
 
-			// making up "empty" picture
-			this.AasId.Text = "<id unknown!>";
+            // making up "empty" picture
+            this.AasId.Text = "<id unknown!>";
             this.AssetId.Text = "<id unknown!>";
 
             // logical main menu
@@ -1764,7 +1764,7 @@ namespace AasxPackageExplorer
                     UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }
 
-#endregion
+                #endregion
             }
             catch (Exception ex)
             {
@@ -1843,7 +1843,7 @@ namespace AasxPackageExplorer
                 if (rec.LiveObject is Aas.Property prop)
                 {
                     _mainTimer_AnimateDemoValues.Animate(prop,
-                        emitEvent: (prop2, evi2) =>   
+                        emitEvent: (prop2, evi2) =>
                         {
                             // Animate the event visually; create a change event for this.
                             // Note: this might by not ideal, final state
@@ -1897,7 +1897,7 @@ namespace AasxPackageExplorer
                         continue;
 
                     // now, find the observable (with timestamping!)
-                    var observable = (IDiaryData)env.FindReferableByReference(refEv.Observed);  
+                    var observable = (IDiaryData)env.FindReferableByReference(refEv.Observed);
 
                     // some special cases
                     if (true == refEv.Observed?.Matches(
@@ -2814,7 +2814,7 @@ namespace AasxPackageExplorer
             }
         }
 
-#region Modal Flyovers
+        #region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -3240,7 +3240,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-#endregion
+        #endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {

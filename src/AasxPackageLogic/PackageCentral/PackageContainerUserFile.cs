@@ -37,7 +37,8 @@ namespace AasxPackageLogic.PackageCentral
         public override string Location
         {
             get { return _location; }
-            set {
+            set
+            {
                 SetNewLocation(value); OnPropertyChanged("InfoLocation");
             }
         }
@@ -102,10 +103,10 @@ namespace AasxPackageLogic.PackageCentral
         private void SetNewLocation(string sourceFn)
         {
             // no path information is allow
-			_location = System.IO.Path.GetFileName(sourceFn);
-			IsFormat = EvalFormat(_location);
-			IndirectLoadSave = Options.Curr.IndirectLoadSave && IsFormat == Format.AASX;
-		}
+            _location = System.IO.Path.GetFileName(sourceFn);
+            IsFormat = EvalFormat(_location);
+            IndirectLoadSave = Options.Curr.IndirectLoadSave && IsFormat == Format.AASX;
+        }
 
         public override string ToString()
         {
@@ -151,7 +152,7 @@ namespace AasxPackageLogic.PackageCentral
             return null != CheckBuildAbsoluteUserPath(
                 Options.Curr.UserDir, Options.Curr.UserName,
                 createDirIfNeeded: false);
-		}
+        }
 
         public static string BuildUserFilePath(string fn, bool createDirIfNeeded = false)
         {
@@ -165,7 +166,7 @@ namespace AasxPackageLogic.PackageCentral
             // check for pre-conditions
             var userdir = CheckBuildAbsoluteUserPath(Options.Curr.UserDir, Options.Curr.UserName, createDirIfNeeded);
             if (userdir == null)
-                return null;           
+                return null;
 
             // only now combine
             return System.IO.Path.Combine(userdir, fn);
@@ -181,19 +182,20 @@ namespace AasxPackageLogic.PackageCentral
             if (userdir == null)
                 yield break;
 
-			// but null if not exist
-			if (!System.IO.Directory.Exists(userdir))
-				yield break;
+            // but null if not exist
+            if (!System.IO.Directory.Exists(userdir))
+                yield break;
 
 
             // list
-			var res = new List<string>();            
+            var res = new List<string>();
             try
             {
                 // filter for files and filenames only
                 res = System.IO.Directory.GetFiles(userdir, searchPattern)
                     .Select((path) => System.IO.Path.GetFileName(path)).ToList();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 LogInternally.That.SilentlyIgnoredError(ex);
             }
@@ -275,8 +277,8 @@ namespace AasxPackageLogic.PackageCentral
             }
 
             // prepare user file path
-            var fullItemLocation = (saveAsNewFileName != null) 
-                ? BuildUserFilePath(saveAsNewFileName) 
+            var fullItemLocation = (saveAsNewFileName != null)
+                ? BuildUserFilePath(saveAsNewFileName)
                 : BuildUserFilePath(Location);
 
             // divert on indirect load/ save, to have dedicated try&catch

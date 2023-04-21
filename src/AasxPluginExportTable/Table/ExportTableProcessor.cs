@@ -1134,7 +1134,7 @@ namespace AasxPluginExportTable.Table
                 {
 
                     // make a table
-                    DocumentFormat.OpenXml.Wordprocessing.Table table = 
+                    DocumentFormat.OpenXml.Wordprocessing.Table table =
                         body.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Table());
 
                     // do a process on overall table cells

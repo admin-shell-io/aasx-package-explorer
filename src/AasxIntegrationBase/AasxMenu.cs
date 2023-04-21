@@ -246,7 +246,7 @@ namespace AasxIntegrationBase
     /// <summary>
     /// Base class for menu items with a possible action.
     /// </summary>
-    public abstract class AasxMenuItemBase 
+    public abstract class AasxMenuItemBase
     {
         /// <summary>
         /// Name of the menu item. Relevant. Will be used to differentiate
@@ -700,7 +700,7 @@ namespace AasxIntegrationBase
 
                 // let '+' lead us
                 var parts = mihk.InputGesture.Split('+', StringSplitOptions.RemoveEmptyEntries);
-                for (int i=0;i<parts.Length; i++)
+                for (int i = 0; i < parts.Length; i++)
                 {
                     var part = "" + parts[i].Trim();
                     if (!part.HasContent())

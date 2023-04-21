@@ -157,7 +157,7 @@ namespace AasxPackageExplorer
                         IntPtr.Zero,
                         System.Windows.Int32Rect.Empty,
                         BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
-                
+
                 var img = new System.Windows.Controls.Image();
                 img.Source = imgsrc;
                 img.Height = 200 * csi.normSize;

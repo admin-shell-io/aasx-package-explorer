@@ -199,7 +199,7 @@ namespace AasxPackageLogic
             this.AddHintBubble(
                 stack, hintMode,
                 new HintCheck(() => referable.Category?.HasContent() == true,
-                "The use of category is deprecated. Do not plan to use this information in new developments.", 
+                "The use of category is deprecated. Do not plan to use this information in new developments.",
                 severityLevel: HintCheck.Severity.Notice));
 
             AddKeyValueExRef(
@@ -210,7 +210,7 @@ namespace AasxPackageLogic
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 },
-                comboBoxItems: new string[] {"CONSTANT", "PARAMETER", "VARIABLE"}, comboBoxIsEditable: true);
+                comboBoxItems: new string[] { "CONSTANT", "PARAMETER", "VARIABLE" }, comboBoxIsEditable: true);
 
             this.AddHintBubble(
                 stack, hintMode,
@@ -507,7 +507,7 @@ namespace AasxPackageLogic
                             new HintCheck(
                                 () => references[i]?.IsValid() != true,
                                 "A Reference without Keys makes no sense.")});
-                        
+
                         this.AddKeyReference(
                             stack, String.Format("dataSpec.[{0}]", i), references[i], repo,
                             packages, PackageCentral.PackageCentral.Selector.MainAux,
@@ -515,13 +515,13 @@ namespace AasxPackageLogic
                             addEclassIrdi: true,
                             relatedReferable: relatedReferable,
                             showRefSemId: false);
-                        
+
                         if (i < references.Count - 1)
                             AddVerticalSpace(stack);
                     }
                 }
             }
-        } 
+        }
 
         //Added this method only to support embeddedDS from ConceptDescriptions
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
@@ -609,7 +609,7 @@ namespace AasxPackageLogic
                     //    }
                     //    presetKeys[j] = keys;
                     //}
-                    
+
                     for (int i = 0; i < hasDataSpecification.Count; i++)
                     {
                         //List<string> keys = new List<string>();
@@ -712,10 +712,10 @@ namespace AasxPackageLogic
                             if (buttonNdx == 1)
                                 hasDataSpecification.Add(
                                     new Aas.EmbeddedDataSpecification(
-                                        new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key> { 
-                                            ExtendIDataSpecificationContent.GetKeyForIec61360() 
+                                        new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key> {
+                                            ExtendIDataSpecificationContent.GetKeyForIec61360()
                                         }),
-                                        new Aas.DataSpecificationIec61360(new List<Aas.LangString>() { 
+                                        new Aas.DataSpecificationIec61360(new List<Aas.LangString>() {
                                             new Aas.LangString("EN?", "")
                                         })));
 
@@ -820,14 +820,14 @@ namespace AasxPackageLogic
                                 {
                                     hasDataSpecification[currentI].DataSpecificationContent =
                                         ExtendIDataSpecificationContent.ContentFactoryFor(cntByDs);
-    
+
                                     return new AnyUiLambdaActionRedrawEntity();
                                 }))
                             {
                                 if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.Iec61360)
                                     this.DisplayOrEditEntityDataSpecificationIec61360(
-                                        env, stack, 
-                                        hasDataSpecification[i].DataSpecificationContent 
+                                        env, stack,
+                                        hasDataSpecification[i].DataSpecificationContent
                                             as Aas.DataSpecificationIec61360,
                                         relatedReferable: relatedReferable, superMenu: superMenu);
 
@@ -1028,7 +1028,7 @@ namespace AasxPackageLogic
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return semElem.SemanticId == null 
+                            () => { return semElem.SemanticId == null
                                 || semElem.SemanticId.IsEmpty(); },
                             "Check if you want to add a semantic reference to an external " +
                             "concept repository entry. " + statement,
@@ -1050,7 +1050,7 @@ namespace AasxPackageLogic
                     stack, repo, semElem.SemanticId, "semanticId:", "Create data element!",
                     v =>
                     {
-                        semElem.SemanticId =  new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>()); 
+                        semElem.SemanticId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
@@ -1088,7 +1088,7 @@ namespace AasxPackageLogic
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
-                    () => semElem.SupplementalSemanticIds == null 
+                    () => semElem.SupplementalSemanticIds == null
                         || semElem.SupplementalSemanticIds.Count < 1,
                     "Check if a supplemental semanticId is appropriate here. This only make sense, when " +
                     "the primary semanticId does not semantically identifies all relevant aspects of the " +
@@ -1130,7 +1130,7 @@ namespace AasxPackageLogic
                 }
 
                 // now use the normal mechanism to deal with editMode or not ..
-                if (semElem.SupplementalSemanticIds != null 
+                if (semElem.SupplementalSemanticIds != null
                     && semElem.SupplementalSemanticIds.Count > 0)
                 {
                     for (int i = 0; i < semElem.SupplementalSemanticIds.Count; i++)
@@ -1221,7 +1221,7 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable, 
+                this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable,
                         superMenu: superMenu);
             }
 
@@ -1272,7 +1272,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, $"{key}:", levelColors.SubSection, requestAuxButton: repo != null, 
+            this.AddGroup(stack, $"{key}:", levelColors.SubSection, requestAuxButton: repo != null,
                 auxContextHeader: auxContextHeader, auxContextLambda: auxContextLambda);
 
             if (this.SafeguardAccess(
@@ -1424,8 +1424,8 @@ namespace AasxPackageLogic
                 this.AddKeyReference(
                     stack, "unitId", dsiec.UnitId, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
-                    addExistingEntities: Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference), 
-                    addEclassIrdi: true, 
+                    addExistingEntities: Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference),
+                    addEclassIrdi: true,
                     relatedReferable: relatedReferable);
             }
 
@@ -1538,7 +1538,7 @@ namespace AasxPackageLogic
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.ValueList == null 
+                            () => { return dsiec.ValueList == null
                                 || dsiec.ValueList.ValueReferencePairs == null
                                 || dsiec.ValueList.ValueReferencePairs.Count < 1; },
                             "If the concept features multiple possible discrete values (enumeration), " +
@@ -2284,63 +2284,63 @@ namespace AasxPackageLogic
                             "Add or update file given by selected filename to the AAS environment."),
                     ticketAction: (buttonNdx, ticket) =>
                         {
-                        if (buttonNdx == 0)
-                        {
-                            var uc = new AnyUiDialogueDataOpenFile(
-                            message: "Select a supplemental file to add..");
-                            this.context?.StartFlyoverModal(uc);
-                            if (uc.Result && uc.TargetFileName != null)
+                            if (buttonNdx == 0)
                             {
-                                this.uploadAssistance.SourcePath = uc.TargetFileName;
-                                return new AnyUiLambdaActionRedrawEntity();
+                                var uc = new AnyUiDialogueDataOpenFile(
+                                message: "Select a supplemental file to add..");
+                                this.context?.StartFlyoverModal(uc);
+                                if (uc.Result && uc.TargetFileName != null)
+                                {
+                                    this.uploadAssistance.SourcePath = uc.TargetFileName;
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
                             }
-                        }
 
-                        if (buttonNdx == 1)
-                        {
-                            try
+                            if (buttonNdx == 1)
                             {
-                                var ptd = uploadAssistance.TargetPath.Trim();
-                                var ptfn = System.IO.Path.GetFileName(uploadAssistance.SourcePath);
-                                packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+                                try
+                                {
+                                    var ptd = uploadAssistance.TargetPath.Trim();
+                                    var ptfn = System.IO.Path.GetFileName(uploadAssistance.SourcePath);
+                                    packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
 
-                                var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+                                    var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
 
-                                var targetPath = packages.Main.AddSupplementaryFileToStore(
-                                    uploadAssistance.SourcePath, ptd, ptfn,
-                                    embedAsThumb: false, useMimeType: mimeType);
+                                    var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                        uploadAssistance.SourcePath, ptd, ptfn,
+                                        embedAsThumb: false, useMimeType: mimeType);
 
-                                if (targetPath == null)
+                                    if (targetPath == null)
+                                    {
+                                        Log.Singleton.Error(
+                                            $"Error adding file {uploadAssistance.SourcePath} to package");
+                                    }
+                                    else
+                                    {
+                                        Log.Singleton.Info(
+                                            $"Added {ptfn} to pending package items. A save-operation is required.");
+                                        valueContent = mimeType;
+                                        valuePath = targetPath;
+                                        setOutput?.Invoke(valuePath, valueContent);
+
+                                        // value + struct event
+                                        this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                                        this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+                                    }
+                                }
+                                catch (Exception ex)
                                 {
                                     Log.Singleton.Error(
-                                        $"Error adding file {uploadAssistance.SourcePath} to package");
+                                        ex, $"Adding file {uploadAssistance.SourcePath} to package");
                                 }
-                                else
-                                {
-                                    Log.Singleton.Info(
-                                        $"Added {ptfn} to pending package items. A save-operation is required.");
-                                    valueContent = mimeType;
-                                    valuePath = targetPath;
-                                    setOutput?.Invoke(valuePath, valueContent);
 
-                                    // value + struct event
-                                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
-                                    this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Singleton.Error(
-                                    ex, $"Adding file {uploadAssistance.SourcePath} to package");
+                                // refresh dialogue
+                                uploadAssistance.SourcePath = "";
+                                return new AnyUiLambdaActionRedrawEntity();
                             }
 
-                            // refresh dialogue
-                            uploadAssistance.SourcePath = "";
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }
-
-                        return new AnyUiLambdaActionNone();
-                    });
+                            return new AnyUiLambdaActionNone();
+                        });
             }
 
         }

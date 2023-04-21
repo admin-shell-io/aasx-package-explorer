@@ -153,9 +153,9 @@ namespace AasxIntegrationBase.AasForms
                             {
                                 // add clone
                                 cds.Add(
-                                    new Aas.ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category, 
-                                        masterCd.IdShort, masterCd.DisplayName, masterCd.Description, 
-                                        masterCd.Checksum, masterCd.Administration, 
+                                    new Aas.ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category,
+                                        masterCd.IdShort, masterCd.DisplayName, masterCd.Description,
+                                        masterCd.Checksum, masterCd.Administration,
                                         masterCd.EmbeddedDataSpecifications, masterCd.IsCaseOf));
                             }
                         }

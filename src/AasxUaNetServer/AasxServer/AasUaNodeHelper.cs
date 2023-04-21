@@ -103,7 +103,7 @@ namespace AasOpcUaServer
             }
 
             CheckSetModellingRule(modellingRule, baseObjectType);
-            
+
             return baseObjectType;
         }
 
@@ -169,7 +169,7 @@ namespace AasOpcUaServer
             {
                 baseObject.DisplayName = extraName;
             }
-            
+
             CheckSetModellingRule(modellingRule, baseObject);
 
             return baseObject;

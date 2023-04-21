@@ -101,7 +101,7 @@ namespace AnyUi
         public AnyUiDialogueDataMessageBox(
             string caption = "",
             string message = "",
-            AnyUiMessageBoxButton buttons = AnyUiMessageBoxButton.OKCancel, 
+            AnyUiMessageBoxButton buttons = AnyUiMessageBoxButton.OKCancel,
             AnyUiMessageBoxImage image = AnyUiMessageBoxImage.None,
             double? maxWidth = null)
             : base(caption, maxWidth, message)
@@ -113,11 +113,11 @@ namespace AnyUi
 
     public class AnyUiDialogueDataOpenFile : AnyUiDialogueDataEmpty
     {
-		/// <summary>
-		/// Original file name. <c>TargetFileName</c> might be altered,
+        /// <summary>
+        /// Original file name. <c>TargetFileName</c> might be altered,
         /// when made available by upload or similar.
-		/// </summary>
-		public string OriginalFileName;
+        /// </summary>
+        public string OriginalFileName;
 
         /// <summary>
         /// Filename, under which the file is (at least temporarily) available)
@@ -128,17 +128,17 @@ namespace AnyUi
         /// The <c>Filter</c> string can be decomposed in single items.
         /// </summary>
 		public class FilterItem
-		{
-			public string Name;
-			public string Pattern;
-		}
+        {
+            public string Name;
+            public string Pattern;
+        }
 
-		/// <summary>
-		/// Filter specification for certain file extension. Description and
-		/// filter pattern each delimited by pipe ("|").
-		/// Example: "AASX package files (*.aasx)|*.aasx|All files (*.*)|*.*"
-		/// </summary>
-		public string Filter;
+        /// <summary>
+        /// Filter specification for certain file extension. Description and
+        /// filter pattern each delimited by pipe ("|").
+        /// Example: "AASX package files (*.aasx)|*.aasx|All files (*.*)|*.*"
+        /// </summary>
+        public string Filter;
 
         /// <summary>
         /// Filename, which is initially proposed when the dialogue is opened.
@@ -169,9 +169,9 @@ namespace AnyUi
         public AnyUiDialogueDataOpenFile(
             string caption = "",
             double? maxWidth = null,
-            string message = null,            
+            string message = null,
             string filter = null,
-			string proposeFn = null)
+            string proposeFn = null)
             : base(caption, maxWidth)
         {
             HasModalSpecialOperation = true;
@@ -188,159 +188,159 @@ namespace AnyUi
         public static IList<FilterItem> DecomposeFilter(string filter)
         {
             var res = new List<FilterItem>();
-			
+
             if (filter != null)
-			{
-				var parts = filter.Split('|');
-				for (int i = 0; i < parts.Length; i += 2)
-					res.Add(new FilterItem()
-					{
-						Name = parts[i],
-						Pattern = parts[i + 1]
-					});
-			}
+            {
+                var parts = filter.Split('|');
+                for (int i = 0; i < parts.Length; i += 2)
+                    res.Add(new FilterItem()
+                    {
+                        Name = parts[i],
+                        Pattern = parts[i + 1]
+                    });
+            }
 
             return res;
-		}
+        }
 
-		/// <summary>
-		/// Takes decomposed filter item and applies its pattern to the provide file name
-		/// </summary>
-		/// <param name="fi">Decomposed filter item</param>
-		/// <param name="fn">Ingoing filename</param>
-		/// <param name="final">If 1, will set extension, if no extension is provided. 
+        /// <summary>
+        /// Takes decomposed filter item and applies its pattern to the provide file name
+        /// </summary>
+        /// <param name="fi">Decomposed filter item</param>
+        /// <param name="fn">Ingoing filename</param>
+        /// <param name="final">If 1, will set extension, if no extension is provided. 
         /// If 2, will enfoce that result filename has correct extension</param>
-		public static string ApplyFilterItem(FilterItem fi, string fn, int final = 0)
+        public static string ApplyFilterItem(FilterItem fi, string fn, int final = 0)
         {
             // access
             if (fi == null || fn == null)
                 return fn;
 
             // identif pattern?
-			var m = Regex.Match(fi.Pattern, @"(\.\w+)");
-			if (!m.Success)
-				return fn;
+            var m = Regex.Match(fi.Pattern, @"(\.\w+)");
+            if (!m.Success)
+                return fn;
 
             // extract
-			var fiExt = m.Groups[1].ToString();
-			var fnExt = System.IO.Path.GetExtension(fn);
+            var fiExt = m.Groups[1].ToString();
+            var fnExt = System.IO.Path.GetExtension(fn);
 
-			if (final == 0)
-			{
-				// only change if needed
+            if (final == 0)
+            {
+                // only change if needed
 
-				if (fnExt != "")
-					fn = fn.Substring(0, fn.Length - fnExt.Length) + fiExt;
-			}
+                if (fnExt != "")
+                    fn = fn.Substring(0, fn.Length - fnExt.Length) + fiExt;
+            }
             else
-			if (final == 1)
-			{
-				// add if empty
-				if (fnExt == "" && fiExt != "" && fiExt != "*")
-					fn += fiExt;
-			}
-			else
-			{
-				// enforce always
-				fn = fn.Substring(0, fn.Length - fnExt.Length) + fiExt;
-			}
+            if (final == 1)
+            {
+                // add if empty
+                if (fnExt == "" && fiExt != "" && fiExt != "*")
+                    fn += fiExt;
+            }
+            else
+            {
+                // enforce always
+                fn = fn.Substring(0, fn.Length - fnExt.Length) + fiExt;
+            }
 
             return fn;
-		}
+        }
     }
 
-	public class AnyUiDialogueDataSaveFile : AnyUiDialogueDataEmpty
-	{
-		/// <summary>
-		/// Filename, under which the file shall be available.
-		/// </summary>
-		public string TargetFileName;
+    public class AnyUiDialogueDataSaveFile : AnyUiDialogueDataEmpty
+    {
+        /// <summary>
+        /// Filename, under which the file shall be available.
+        /// </summary>
+        public string TargetFileName;
 
-		/// <summary>
-		/// Filter specification for certain file extension. Description and
-		/// filter pattern each delimited by pipe ("|").
-		/// Example: "AASX package files (*.aasx)|*.aasx|All files (*.*)|*.*"
-		/// </summary>
-		public string Filter;
+        /// <summary>
+        /// Filter specification for certain file extension. Description and
+        /// filter pattern each delimited by pipe ("|").
+        /// Example: "AASX package files (*.aasx)|*.aasx|All files (*.*)|*.*"
+        /// </summary>
+        public string Filter;
 
-		/// <summary>
-		/// Filename, which is initially proposed when the dialogue is opened.
-		/// </summary>
-		public string ProposeFileName;
+        /// <summary>
+        /// Filename, which is initially proposed when the dialogue is opened.
+        /// </summary>
+        public string ProposeFileName;
 
-		/// <summary>
-		/// If true will offer the user to select a user file (only Blazor) or
-		/// a local file.
-		/// </summary>
-		public bool AllowUserFiles;
+        /// <summary>
+        /// If true will offer the user to select a user file (only Blazor) or
+        /// a local file.
+        /// </summary>
+        public bool AllowUserFiles;
 
-		/// <summary>
-		/// If true will offer the user to select a local file.
-		/// </summary>
-		public bool AllowLocalFiles;
+        /// <summary>
+        /// If true will offer the user to select a local file.
+        /// </summary>
+        public bool AllowLocalFiles;
 
-		/// <summary>
-		/// This dialog distincts 3 kinds of location, how a "save as" file could
-		/// be provided to the user.
-		/// </summary>
-		public enum LocationKind { Download, User, Local }
+        /// <summary>
+        /// This dialog distincts 3 kinds of location, how a "save as" file could
+        /// be provided to the user.
+        /// </summary>
+        public enum LocationKind { Download, User, Local }
 
         /// <summary>
         /// Index of the filter selected by the user-
         /// </summary>
         public int FilterIndex;
 
-		/// <summary>
-		/// True, if a user file name was selected instead of a local file.
-		/// </summary>
-		public LocationKind Location;
+        /// <summary>
+        /// True, if a user file name was selected instead of a local file.
+        /// </summary>
+        public LocationKind Location;
 
-		public AnyUiDialogueDataSaveFile(
-			string caption = "",
-			double? maxWidth = null,
-			string message = null,
-			string filter = null,
-			string proposeFn = null)
-			: base(caption, maxWidth)
-		{
-			HasModalSpecialOperation = true;
-			Caption = "Open file";
-			if (caption != null)
-				Caption = caption;
-			Message = "Please select a file via dedicated dialogue.";
-			if (message != null)
-				Message = message;
-			Filter = filter;
-			ProposeFileName = proposeFn;
-		}
-	}
+        public AnyUiDialogueDataSaveFile(
+            string caption = "",
+            double? maxWidth = null,
+            string message = null,
+            string filter = null,
+            string proposeFn = null)
+            : base(caption, maxWidth)
+        {
+            HasModalSpecialOperation = true;
+            Caption = "Open file";
+            if (caption != null)
+                Caption = caption;
+            Message = "Please select a file via dedicated dialogue.";
+            if (message != null)
+                Message = message;
+            Filter = filter;
+            ProposeFileName = proposeFn;
+        }
+    }
 
-	public class AnyUiDialogueDataDownloadFile : AnyUiDialogueDataEmpty
-	{
-		/// <summary>
-		/// Filename, under which the file shall be available.
-		/// </summary>
-		public string Source;
+    public class AnyUiDialogueDataDownloadFile : AnyUiDialogueDataEmpty
+    {
+        /// <summary>
+        /// Filename, under which the file shall be available.
+        /// </summary>
+        public string Source;
 
-		public AnyUiDialogueDataDownloadFile(
-			string caption = "",
-			double? maxWidth = null,
-			string message = null,
-			string source = "")
-			: base(caption, maxWidth)
-		{
-			HasModalSpecialOperation = true;
-			Caption = "Download file";
-			if (caption != null)
-				Caption = caption;
-			Message = "Please select to download file.";
-			if (message != null)
-				Message = message;
-			Source = source;
-		}
-	}
+        public AnyUiDialogueDataDownloadFile(
+            string caption = "",
+            double? maxWidth = null,
+            string message = null,
+            string source = "")
+            : base(caption, maxWidth)
+        {
+            HasModalSpecialOperation = true;
+            Caption = "Download file";
+            if (caption != null)
+                Caption = caption;
+            Message = "Please select to download file.";
+            if (message != null)
+                Message = message;
+            Source = source;
+        }
+    }
 
-	public class AnyUiDialogueDataTextBox : AnyUiDialogueDataBase
+    public class AnyUiDialogueDataTextBox : AnyUiDialogueDataBase
     {
         public enum DialogueOptions { None, FilterAllControlKeys };
 
@@ -406,7 +406,7 @@ namespace AnyUi
         public string Text = "";
         public List<Preset> Presets;
         public bool ReadOnly = false;
-       
+
         public AnyUiDialogueDataTextEditor(
             string caption = "",
             double? maxWidth = null,
@@ -511,12 +511,12 @@ namespace AnyUi
         }
     }
 
-	/// <summary>
-	/// Display a <c>AnyUiStackPanel</c> instead of the <c>Message</c>.
-	/// Note: <c>Message</c> and <c>Image</c>
-	/// </summary>
-	public class AnyUiDialogueDataModalPanel : AnyUiDialogueDataMessageBox
-	{
+    /// <summary>
+    /// Display a <c>AnyUiStackPanel</c> instead of the <c>Message</c>.
+    /// Note: <c>Message</c> and <c>Image</c>
+    /// </summary>
+    public class AnyUiDialogueDataModalPanel : AnyUiDialogueDataMessageBox
+    {
         public AnyUiStackPanel Panel;
 
         protected Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> _renderPanel;
@@ -540,11 +540,11 @@ namespace AnyUi
             Panel = _renderPanel?.Invoke(this);
         }
 
-		public AnyUiDialogueDataModalPanel(
-			string caption = "",
-			double? maxWidth = null)
-			: base(caption, maxWidth: maxWidth)
-		{
-		}
-	}
+        public AnyUiDialogueDataModalPanel(
+            string caption = "",
+            double? maxWidth = null)
+            : base(caption, maxWidth: maxWidth)
+        {
+        }
+    }
 }

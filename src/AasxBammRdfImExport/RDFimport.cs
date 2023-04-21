@@ -461,7 +461,7 @@ namespace AasxBammRdfImExport
 
                     );
                     var msemanticID = ExtendReference.CreateFromKey(Aas.KeyTypes.ConceptDescription, semantic);
-                    var mp =  new Aas.Property(
+                    var mp = new Aas.Property(
                         Aas.DataTypeDefXsd.String, idShort: name, semanticId: msemanticID);
                     mp.Value = description;
                     et.Add(mp);

@@ -246,11 +246,11 @@ namespace AasxPackageLogic
                 if (cpb != null && cpb.Valid && cpb.Items != null && cpb.Items.Count == 1)
                 {
                     if (cpb.Items[0] is CopyPasteItemIdentifiable cpbi && cpbi.entity?.Id != null)
-                        bufferKey = new List<Aas.Key>() { new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id)};
+                        bufferKey = new List<Aas.Key>() { new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id) };
 
                     if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.SemanticId != null)
                         //bufferKey = List<Key>.CreateNew(cpbsm.sm.GetReference()?.First);
-                        bufferKey = new List<Aas.Key>() { cpbsm.sm.GetReference().Keys.First()};
+                        bufferKey = new List<Aas.Key>() { cpbsm.sm.GetReference().Keys.First() };
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null
                         && cpbsme.env.Submodels != null)
@@ -464,22 +464,22 @@ namespace AasxPackageLogic
                 var placement = pcop.GetChildrenPlacement(item.sme) as
                     EnumerationPlacmentOperationVariable;
                 if (placement != null)
-                    //pcop[placement.Direction].Remove(placement.OperationVariable);
+                //pcop[placement.Direction].Remove(placement.OperationVariable);
                 {
-                    if(placement.Direction == OperationVariableDirection.In)
+                    if (placement.Direction == OperationVariableDirection.In)
                     {
                         pcop.InputVariables.Remove(placement.OperationVariable);
                     }
-                    else if(placement.Direction == OperationVariableDirection.Out)
+                    else if (placement.Direction == OperationVariableDirection.Out)
                     {
                         pcop.OutputVariables.Remove(placement.OperationVariable);
                     }
-                    else if(placement.Direction == OperationVariableDirection.InOut)
+                    else if (placement.Direction == OperationVariableDirection.InOut)
                     {
                         pcop.InoutputVariables.Remove(placement.OperationVariable);
                     }
                 }
-                   
+
             }
         }
 
@@ -528,7 +528,7 @@ namespace AasxPackageLogic
                         cpbInternal.Duplicate = buttonNdx == 1;
                         EnumerationPlacmentBase placement = null;
                         //if (parentContainer is IEnumerateChildren enc) //No IEnumerateChildren in V3
-                            placement = parentContainer.GetChildrenPlacement(sme);
+                        placement = parentContainer.GetChildrenPlacement(sme);
                         cpbInternal.Items = new ListOfCopyPasteItem(
                             new CopyPasteItemSME(env, parentContainer, wrapper, sme, placement));
                         cpbInternal.CopyToClipboard(context, cpbInternal.Watermark);
@@ -629,7 +629,7 @@ namespace AasxPackageLogic
                                     createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
                                         annotations, smw2, wrapper, makeUnique);
                                 }
-                                    
+
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is Aas.Operation pcop && wrapper != null)
                                 {
@@ -780,7 +780,8 @@ namespace AasxPackageLogic
                     .AddAction("aas-elem-paste-into", "Paste into",
                         "Adds the content of the paste buffer into the currently selected collection-like element.",
                         inputGesture: "Ctrl+Alt+V"),
-                ticketAction: (buttonNdx, ticket) => {
+                ticketAction: (buttonNdx, ticket) =>
+                {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
                         // store info
@@ -952,7 +953,7 @@ namespace AasxPackageLogic
 
                             //if (sm is IEnumerateChildren smeec)
                             //    smeec.AddChild(smw2);
-                            
+
                             sm.AddChild(smw2);
 
                             // emit event

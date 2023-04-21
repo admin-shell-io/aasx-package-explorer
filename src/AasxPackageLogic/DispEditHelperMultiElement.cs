@@ -74,7 +74,7 @@ namespace AasxPackageLogic
                                 var sme = vesme.theWrapper;
                                 EnumerationPlacmentBase placement = null;
                                 //if (parentContainer is IEnumerateChildren enc)
-                                    placement = pcref.GetChildrenPlacement(sme);
+                                placement = pcref.GetChildrenPlacement(sme);
                                 cpb.Items.Add(new CopyPasteItemSME(env, pcref,
                                     vesme.theWrapper, sme, placement));
                             }
@@ -470,7 +470,7 @@ namespace AasxPackageLogic
                         vesm.theEnv?.Submodels, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vesm.theEnv, parent, this.theCopyPaste, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vesm.theEnv, parent, this.theCopyPaste,
                         entities, superMenu: superMenu);
                 }
 
@@ -484,7 +484,7 @@ namespace AasxPackageLogic
                         aas.Submodels, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vesmr.theEnv, parent, this.theCopyPaste, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vesmr.theEnv, parent, this.theCopyPaste,
                         entities, superMenu: superMenu);
                 }
 
@@ -502,7 +502,7 @@ namespace AasxPackageLogic
                         EntityListMultipleUpDownDeleteHelper<Aas.ISubmodelElement>(stack, repo,
                             smec.Value, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
-                    DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste,
                         entities, superMenu: superMenu);
                 }
 
@@ -527,7 +527,7 @@ namespace AasxPackageLogic
                     }
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, opv.theEnv, parent, this.theCopyPaste, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, opv.theEnv, parent, this.theCopyPaste,
                         entities, superMenu: superMenu);
                 }
 

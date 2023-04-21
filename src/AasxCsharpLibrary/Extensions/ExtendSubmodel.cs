@@ -38,20 +38,20 @@ namespace Extensions
 
         public static void Remove(this Submodel submodel, ISubmodelElement submodelElement)
         {
-            if(submodel != null)
+            if (submodel != null)
             {
-                if(submodel.SubmodelElements != null)
+                if (submodel.SubmodelElements != null)
                 {
                     submodel.SubmodelElements.Remove(submodelElement);
                 }
             }
         }
 
-        public static object AddChild(this Submodel submodel,ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
+        public static object AddChild(this Submodel submodel, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
         {
             if (childSubmodelElement == null)
                 return null;
-            submodel.SubmodelElements ??= new ();
+            submodel.SubmodelElements ??= new();
             if (childSubmodelElement != null)
                 childSubmodelElement.Parent = submodel;
             submodel.SubmodelElements.Add(childSubmodelElement);
@@ -97,7 +97,7 @@ namespace Extensions
         }
 
         #endregion
-        public static void Validate(this Submodel submodel,AasValidationRecordList results)
+        public static void Validate(this Submodel submodel, AasValidationRecordList results)
         {
             // access
             if (results == null)
@@ -105,7 +105,7 @@ namespace Extensions
 
             // check
             submodel.BaseValidation(results);
-            submodel.Kind.Value.Validate(results,submodel);
+            submodel.Kind.Value.Validate(results, submodel);
             submodel.SemanticId.Keys.Validate(results, submodel);
         }
         public static Submodel ConvertFromV10(this Submodel submodel, AasxCompatibilityModels.AdminShellV10.Submodel sourceSubmodel, bool shallowCopy = false)
@@ -440,7 +440,7 @@ namespace Extensions
         }
 
         public static T CreateSMEForCD<T>(
-            this Submodel sm, 
+            this Submodel sm,
             ConceptDescription conceptDescription, string category = null, string idShort = null,
             string idxTemplate = null, int maxNum = 999, bool addSme = false, bool isTemplate = false)
                 where T : ISubmodelElement

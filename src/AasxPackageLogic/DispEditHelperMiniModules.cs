@@ -175,7 +175,7 @@ namespace AasxPackageLogic
             for (int i = 0; i < qualifiers.Count; i++)
             {
                 var qual = qualifiers[i];
-                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: GetWidth(FirstColumnWidth.Small)); 
+                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: GetWidth(FirstColumnWidth.Small));
 
                 int storedI = i;
                 AddGroup(
@@ -308,17 +308,17 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }
                     ))
+                {
+                    AddKeyValueExRef(
+                    substack, "kind", qual, Aas.Stringification.ToString(qual.Kind), null, repo,
+                    v =>
                     {
-                        AddKeyValueExRef(
-                        substack, "kind", qual, Aas.Stringification.ToString(qual.Kind), null, repo,
-                        v =>
-                        {
-                            qual.Kind = Aas.Stringification.QualifierKindFromString((string)v);
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionNone();
-                        },
-                        Enum.GetNames(typeof(Aas.QualifierKind)));
-                    }
+                        qual.Kind = Aas.Stringification.QualifierKindFromString((string)v);
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
+                    Enum.GetNames(typeof(Aas.QualifierKind)));
+                }
 
                 // Type
 
@@ -390,7 +390,7 @@ namespace AasxPackageLogic
                         }))
                 {
                     AddKeyReference(substack, "valueId", qual.ValueId, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: "All", addFromKnown: true,
                         showRefSemId: false,
                         relatedReferable: relatedReferable,
@@ -592,7 +592,7 @@ namespace AasxPackageLogic
                                 var pNew = new Aas.SpecificAssetId("", "", null);
                                 var jsonInput = this.context?.ClipboardGet()?.Text;
                                 if (jsonInput?.HasContent() == true)
-                                { 
+                                {
                                     if (PasteIKVPTextIntoExisting(jsonInput, pNew))
                                     {
                                         pairs.Add(pNew);
@@ -835,7 +835,7 @@ namespace AasxPackageLogic
 
                 int storedI = i;
                 AddGroup(
-                    substack, $"Extension {1 + i}: {AdminShellUtil.ShortenWithEllipses(extension.Name,30)}",
+                    substack, $"Extension {1 + i}: {AdminShellUtil.ShortenWithEllipses(extension.Name, 30)}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, requestContextMenu: repo != null,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
@@ -919,7 +919,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                
+
                 AddHintBubble(
                     substack, hintMode,
                     new[] {
@@ -1144,11 +1144,12 @@ namespace AasxPackageLogic
             AnyUiStackPanel footerPanel = null;
             if (showRefSemId)
             {
-                footerPanel = new AnyUiStackPanel() { 
+                footerPanel = new AnyUiStackPanel()
+                {
                     Margin = new AnyUiThickness(2, 2, 0, 0),
                     Background = AnyUiBrushes.LightGray
                 };
-                
+
                 if (refkeys.ReferredSemanticId == null)
                 {
                     if (repo != null)
@@ -1196,10 +1197,10 @@ namespace AasxPackageLogic
             //
 
             AddKeyListKeys(
-                view, key, refkeys.Keys, repo, packages, selector, 
-                addExistingEntities, addEclassIrdi, addFromKnown, addPresetNames, addPresetKeyLists, 
-                jumpLambda, takeOverLambdaAction, noEditJumpLambda, 
-                relatedReferable, 
+                view, key, refkeys.Keys, repo, packages, selector,
+                addExistingEntities, addEclassIrdi, addFromKnown, addPresetNames, addPresetKeyLists,
+                jumpLambda, takeOverLambdaAction, noEditJumpLambda,
+                relatedReferable,
                 frontPanel: frontPanel,
                 topContextMenu: true,
                 footerPanel: footerPanel,
@@ -1258,9 +1259,9 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             valuePairs.Add(new Aas.ValueReferencePair(
-                                "", 
-                                new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key> { 
-                                    new Aas.Key(Aas.KeyTypes.GlobalReference, "") 
+                                "",
+                                new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key> {
+                                    new Aas.Key(Aas.KeyTypes.GlobalReference, "")
                                 })));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         }
@@ -1323,7 +1324,7 @@ namespace AasxPackageLogic
                                     id: valuePairs[i].ValueId?.GetAsIdentifier(),
                                     idShort: "" + valuePairs[i].Value,
                                     displayName: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
-                                    embeddedDataSpecifications: new List<Aas.EmbeddedDataSpecification> { eds }) ;
+                                    embeddedDataSpecifications: new List<Aas.EmbeddedDataSpecification> { eds });
 
                                 env?.Add(cd);
                             }
@@ -1339,7 +1340,7 @@ namespace AasxPackageLogic
             for (int i = 0; i < valuePairs.Count; i++)
             {
                 var vp = valuePairs[i];
-                var substack = AddSubStackPanel(stack, "", minWidthFirstCol: GetWidth(FirstColumnWidth.Small)); 
+                var substack = AddSubStackPanel(stack, "", minWidthFirstCol: GetWidth(FirstColumnWidth.Small));
 
                 int storedI = i;
                 var txt = AdminShellUtil.ShortenWithEllipses(valuePairs[i].Value, 30);
@@ -1386,7 +1387,8 @@ namespace AasxPackageLogic
                                     //    valuePairs[storedI], Formatting.Indented);
 
                                     var jsonStr = Aas.Jsonization.Serialize.ToJsonObject(valuePairs[storedI])
-                                            .ToJsonString(new System.Text.Json.JsonSerializerOptions() { 
+                                            .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                                            {
                                                 WriteIndented = true
                                             });
 
@@ -1438,7 +1440,7 @@ namespace AasxPackageLogic
                         }))
                 {
                     AddKeyReference(substack, "valueId", vp.ValueId, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: Aas.Stringification.ToString(Aas.KeyTypes.ConceptDescription),
                         addFromKnown: true, showRefSemId: false,
                         relatedReferable: relatedReferable);

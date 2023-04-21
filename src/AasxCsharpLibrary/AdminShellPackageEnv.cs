@@ -213,13 +213,13 @@ namespace AdminShellNS
         {
             //using (var tr = new StringReader(data))
             //{
-                //var serializer = BuildDefaultAasxJsonSerializer();
-                //var rf = (T)serializer.Deserialize(tr, typeof(T));
+            //var serializer = BuildDefaultAasxJsonSerializer();
+            //var rf = (T)serializer.Deserialize(tr, typeof(T));
 
-                var node = System.Text.Json.Nodes.JsonNode.Parse(data);
-                var rf = Jsonization.Deserialize.IReferableFrom(node);
+            var node = System.Text.Json.Nodes.JsonNode.Parse(data);
+            var rf = Jsonization.Deserialize.IReferableFrom(node);
 
-                return (T)rf;
+            return (T)rf;
             //}
         }
 
@@ -406,13 +406,13 @@ namespace AdminShellNS
                         {
                             //using (var file = new StreamReader(s))
                             //{
-                                //JsonSerializer serializer = new JsonSerializer();
-                                //serializer.Converters.Add(
-                                //    new AdminShellConverters.JsonAasxConverter(
-                                //        "modelType", "name"));
+                            //JsonSerializer serializer = new JsonSerializer();
+                            //serializer.Converters.Add(
+                            //    new AdminShellConverters.JsonAasxConverter(
+                            //        "modelType", "name"));
 
-                                //aasEnv = (AasCore.Aas3_0_RC02.Environment)serializer.Deserialize(
-                                //    file, typeof(AasCore.Aas3_0_RC02.Environment));
+                            //aasEnv = (AasCore.Aas3_0_RC02.Environment)serializer.Deserialize(
+                            //    file, typeof(AasCore.Aas3_0_RC02.Environment));
 
                             var node = System.Text.Json.Nodes.JsonNode.Parse(s);
                             aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
@@ -518,14 +518,14 @@ namespace AdminShellNS
             {
                 //using (var file = new StringReader(content))
                 //{
-                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                    //JsonSerializer serializer = new JsonSerializer();
-                    //serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
-                    //_aasEnv = (AasCore.Aas3_0_RC02.Environment)serializer.Deserialize(
-                    //    file, typeof(AasCore.Aas3_0_RC02.Environment));
+                // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                //JsonSerializer serializer = new JsonSerializer();
+                //serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
+                //_aasEnv = (AasCore.Aas3_0_RC02.Environment)serializer.Deserialize(
+                //    file, typeof(AasCore.Aas3_0_RC02.Environment));
 
-                    var node = System.Text.Json.Nodes.JsonNode.Parse(content);
-                    _aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
+                var node = System.Text.Json.Nodes.JsonNode.Parse(content);
+                _aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
                 //}
             }
             catch (Exception ex)
@@ -1056,7 +1056,7 @@ namespace AdminShellNS
                     //nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
                     //nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
                     //serializer.Serialize(s, _aasEnv, nss);
-                    
+
                     var writer = XmlWriter.Create(s, new XmlWriterSettings() { Indent = true });
                     Xmlization.Serialize.To(
                         _aasEnv, writer);

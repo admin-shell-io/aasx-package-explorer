@@ -13,14 +13,14 @@ namespace Extensions
         {
             if (src616360.preferredName != null)
                 ds61360.PreferredName = new List<LangString>().ConvertFromV20(src616360.preferredName);
-            
+
             if (src616360.shortName != null)
                 ds61360.ShortName = new List<LangString>().ConvertFromV20(src616360.shortName);
-                
+
             ds61360.Unit = src616360.unit;
             if (src616360.unitId != null)
                 ds61360.UnitId = ExtensionsUtil.ConvertReferenceFromV20(AasxCompatibilityModels.AdminShellV20.Reference.CreateNew(src616360.unitId.keys), ReferenceTypes.GlobalReference);
-            
+
             ds61360.ValueFormat = src616360.valueFormat;
             ds61360.SourceOfDefinition = src616360.sourceOfDefinition;
             ds61360.Symbol = src616360.symbol;

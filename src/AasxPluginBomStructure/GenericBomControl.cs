@@ -122,7 +122,7 @@ namespace AasxPluginBomStructure
                 TickFrequency = 10,
                 IsSnapToTickEnabled = true,
                 Value = _creatorOptions.LayoutSpacing,
-                Margin = new System.Windows.Thickness(10,0,10,0),
+                Margin = new System.Windows.Thickness(10, 0, 10, 0),
                 VerticalAlignment = System.Windows.VerticalAlignment.Center
             };
             sli.ValueChanged += (s, e) =>

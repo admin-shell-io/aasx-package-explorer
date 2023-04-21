@@ -11,7 +11,7 @@ namespace Extensions
     // TODO (Jui, 2022-12-21): I do not know, if to put the List<> extension here or in a separate file
     public static class ExtendListOfEmbeddedDataSpecification
     {
-        
+
 
         public static EmbeddedDataSpecification FindFirstIEC61360Spec(this List<EmbeddedDataSpecification> list)
         {
@@ -44,16 +44,16 @@ namespace Extensions
     {
         public static EmbeddedDataSpecification ConvertFromV20(this EmbeddedDataSpecification embeddedDataSpecification, AasxCompatibilityModels.AdminShellV20.EmbeddedDataSpecification sourceEmbeddedSpec)
         {
-            if(sourceEmbeddedSpec != null)
+            if (sourceEmbeddedSpec != null)
             {
                 embeddedDataSpecification.DataSpecification = ExtensionsUtil.ConvertReferenceFromV20(sourceEmbeddedSpec.dataSpecification, ReferenceTypes.GlobalReference);
 
                 // TODO (MIHO, 2022-19-12): check again, see questions
                 var o2id = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360";
-                var oldid = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0";                
+                var oldid = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0";
                 var newid = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0";
-                
-                if (sourceEmbeddedSpec.dataSpecification?.Matches("", false, "IRI", oldid, 
+
+                if (sourceEmbeddedSpec.dataSpecification?.Matches("", false, "IRI", oldid,
                     AasxCompatibilityModels.AdminShellV20.Key.MatchMode.Identification) == true)
                 {
                     embeddedDataSpecification.DataSpecification.Keys[0].Value = newid;
@@ -66,7 +66,7 @@ namespace Extensions
                 }
             }
 
-            if(sourceEmbeddedSpec.dataSpecificationContent?.dataSpecificationIEC61360 != null)
+            if (sourceEmbeddedSpec.dataSpecificationContent?.dataSpecificationIEC61360 != null)
             {
                 embeddedDataSpecification.DataSpecificationContent =
                     new DataSpecificationIec61360(null).ConvertFromV20(
@@ -81,8 +81,8 @@ namespace Extensions
                 content = new DataSpecificationIec61360(null);
 
             var res = new EmbeddedDataSpecification(
-                new Reference(ReferenceTypes.GlobalReference, 
-                    new List<Key>( new[] { ExtendIDataSpecificationContent.GetKeyForIec61360() })),
+                new Reference(ReferenceTypes.GlobalReference,
+                    new List<Key>(new[] { ExtendIDataSpecificationContent.GetKeyForIec61360() })),
                 content);
             return res;
         }
@@ -92,7 +92,7 @@ namespace Extensions
             // does content tell something?
             var ctc = ExtendIDataSpecificationContent.GuessContentTypeFor(eds?.DataSpecificationContent);
             var ctr = ExtendIDataSpecificationContent.GuessContentTypeFor(eds?.DataSpecification);
-            
+
             if (ctc == ExtendIDataSpecificationContent.ContentTypes.NoInfo)
                 return false;
 

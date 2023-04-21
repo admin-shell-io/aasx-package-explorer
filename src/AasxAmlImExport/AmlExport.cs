@@ -213,7 +213,7 @@ namespace AasxAmlImExport
 
         private static void SetHasDataSpecification(AttributeSequence aseq, List<EmbeddedDataSpecification> ds)
         {
-            if (aseq == null || ds == null || ds.Count < 1) 
+            if (aseq == null || ds == null || ds.Count < 1)
                 return;
             foreach (var r in ds)
                 AppendAttributeNameAndRole(
@@ -492,7 +492,7 @@ namespace AasxAmlImExport
                                 var annotations = new List<ISubmodelElement>(anno.Annotations);
                                 ExportListOfSme(matcher, internalLinksToCreate, ie, env, annotations);
                             }
-                                
+
                             break;
 
                         case SubmodelElementCollection smec:
@@ -507,7 +507,7 @@ namespace AasxAmlImExport
 
                             ExportListOfSme(matcher, internalLinksToCreate, ie, env, smec.Value);
                             break;
-                        
+
                         case SubmodelElementList smel:
                             // recurse
                             AppendAttributeNameAndRole(
@@ -534,17 +534,17 @@ namespace AasxAmlImExport
 
                                 // just a list of SMEs
                                 var lop = new List<ISubmodelElement>();
-                                foreach(var opVar in op.InputVariables)
+                                foreach (var opVar in op.InputVariables)
                                 {
                                     lop.Add(opVar.Value);
                                 }
-                                
-                                foreach(var opVar in op.OutputVariables)
+
+                                foreach (var opVar in op.OutputVariables)
                                 {
                                     lop.Add(opVar.Value);
                                 }
-                                
-                                foreach(var opVar in op.InoutputVariables)
+
+                                foreach (var opVar in op.InoutputVariables)
                                 {
                                     lop.Add(opVar.Value);
                                 }
@@ -560,7 +560,7 @@ namespace AasxAmlImExport
 
                             // assetRef
                             //TODO: jtikekar SpecficAssetId
-                            if(!ent.GlobalAssetId.IsEmpty())
+                            if (!ent.GlobalAssetId.IsEmpty())
                             {
                                 ExportReferenceWithSme(env, internalLinksToCreate, ie, ent,
                                     ent.GlobalAssetId, "asset", AmlConst.Attributes.Entity_asset, "asset",
@@ -661,7 +661,7 @@ namespace AasxAmlImExport
             // set some data
             //SetIdentification(ie.Attribute, asset.identification);
             //TODO: jtikekar what about specific asset Ids
-            if(!asset.GlobalAssetId.IsEmpty())
+            if (!asset.GlobalAssetId.IsEmpty())
             {
                 SetIdentification(ie.Attribute, asset.GlobalAssetId.GetAsIdentifier());
             }
@@ -969,7 +969,7 @@ namespace AasxAmlImExport
                         dest61360, "symbol", AmlConst.Attributes.CD_DSC61360_Symbol, source61360.Symbol);
                 if (source61360.DataType != null)
                     AppendAttributeNameAndRole(
-                        dest61360, "dataType", AmlConst.Attributes.CD_DSC61360_DataType, 
+                        dest61360, "dataType", AmlConst.Attributes.CD_DSC61360_DataType,
                         Stringification.ToString(source61360.DataType));
                 SetLangStr(
                     dest61360, source61360.Definition, "definition",

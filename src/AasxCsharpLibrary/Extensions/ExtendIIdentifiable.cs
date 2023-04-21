@@ -11,7 +11,7 @@ namespace Extensions
     {
         #region List of Identifiers
 
-        public static string ToStringExtended(this List<IIdentifiable> identifiables,string delimiter = ",")
+        public static string ToStringExtended(this List<IIdentifiable> identifiables, string delimiter = ",")
         {
             return string.Join(delimiter, identifiables.Select((x) => x.Id));
         }

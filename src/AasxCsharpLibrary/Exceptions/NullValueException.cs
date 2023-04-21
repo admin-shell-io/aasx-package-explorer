@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AdminShellNS.Exceptions
 {
-    public class NullValueException: Exception
+    public class NullValueException : Exception
     {
         public NullValueException(string field) : base($"The field {field} is null!!")
         {

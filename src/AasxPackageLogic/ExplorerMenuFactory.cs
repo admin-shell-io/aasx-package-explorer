@@ -159,7 +159,7 @@ namespace AasxPackageExplorer
                     .AddWpfBlazor(name: "RDFRead", header: "Import BAMM RDF into AASX …",
                         help: "Import BAMM RDF into AASX.",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("File", "BAMM file with RDF data.")) )
+                            .Add("File", "BAMM file with RDF data.")))
                 .AddMenu(header: "Export …", attachPoint: "Export", childs: (new AasxMenu())
                     .AddWpfBlazor(name: "ExportAML", header: "Export AutomationML …",
                         help: "Export AML file with AAS entities from AAS environment.",
@@ -205,9 +205,9 @@ namespace AasxPackageExplorer
                         help: "Export TeDZ Simulation Model Description (SMD).",
                         args: new AasxMenuListOfArgDefs()
                             .Add("Machine", "Designation of the machine/ equipment.")
-                            .Add("Model", "Model type, either 'Physical' or 'Signal'.")) )
+                            .Add("Model", "Model type, either 'Physical' or 'Signal'.")))
                 .AddSeparator(filter: AasxMenuFilter.NotBlazor)
-                .AddMenu(header: "Server …", filter: AasxMenuFilter.NotBlazor, 
+                .AddMenu(header: "Server …", filter: AasxMenuFilter.NotBlazor,
                          attachPoint: "Server", childs: (new AasxMenu())
                     .AddWpf(name: "ServerRest", header: "Serve AAS as REST …", inputGesture: "Shift+F6")
                     .AddWpf(name: "MQTTPub", header: "Publish AAS via MQTT …")
@@ -335,7 +335,7 @@ namespace AasxPackageExplorer
 
                     // search here
                     foreach (var pmi in pi.MenuItems)
-                        if (pmi.AttachPoint.Equals(mi.AttachPoint, 
+                        if (pmi.AttachPoint.Equals(mi.AttachPoint,
                             System.StringComparison.InvariantCultureIgnoreCase))
                         {
                             // double the data

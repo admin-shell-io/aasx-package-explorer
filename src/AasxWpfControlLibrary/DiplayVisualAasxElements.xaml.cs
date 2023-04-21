@@ -558,7 +558,7 @@ namespace AasxPackageExplorer
             PackageCentral packages,
             PackageCentral.Selector selector,
             bool editMode = false, string filterElementName = null,
-            bool lazyLoadingFirst = false, 
+            bool lazyLoadingFirst = false,
             int expandModePrimary = 1,
             int expandModeAux = 0)
         {
@@ -863,7 +863,7 @@ namespace AasxPackageExplorer
             // access and check
             var tvi = e?.OriginalSource as TreeViewItem;
             var ve = tvi?.Header as VisualElementGeneric;
-            if (ve == null )
+            if (ve == null)
                 return;
 
             // select (but no callback!)

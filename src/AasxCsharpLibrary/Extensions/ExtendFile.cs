@@ -14,7 +14,7 @@ namespace Extensions
             return "" + file.Value;
         }
 
-        public static void Set(this File file, 
+        public static void Set(this File file,
             string contentType = "", string value = "")
         {
             file.ContentType = contentType;

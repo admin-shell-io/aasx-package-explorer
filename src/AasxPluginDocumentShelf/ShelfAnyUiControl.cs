@@ -130,7 +130,7 @@ namespace AasxPluginDocumentShelf
 
             CurrInst = "" + InstCounter;
             InstCounter++;
-        
+
         }
 
         public void Dispose()
@@ -998,7 +998,7 @@ namespace AasxPluginDocumentShelf
 
             // show digital file
             if (tag == null && menuItemHeader == "Make preview permanent"
-                && e?.ReferableHash != null 
+                && e?.ReferableHash != null
                 && referableHashToCachedBitmap.ContainsKey(e?.ReferableHash)
                 && e.AddPreviewFile != null)
             {
@@ -1020,7 +1020,7 @@ namespace AasxPluginDocumentShelf
                 try
                 {
                     var bi = referableHashToCachedBitmap[e.ReferableHash];
-                    
+
                     // go the easy route first
                     if (bi.PngData != null)
                     {
@@ -1033,7 +1033,7 @@ namespace AasxPluginDocumentShelf
 
                         // prepare upload data
                         var ptd = "/aasx/";
-                        var ptfn = System.IO.Path.GetFileName(pngfn);                        
+                        var ptfn = System.IO.Path.GetFileName(pngfn);
                         _package.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
 
                         // get content type
@@ -1062,7 +1062,7 @@ namespace AasxPluginDocumentShelf
 
                             // re-display also in Explorer
                             _eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements()
-                                { Session = _session });
+                            { Session = _session });
                         }
                     }
                 }
@@ -1276,7 +1276,7 @@ namespace AasxPluginDocumentShelf
                     AnyUiMessageBoxButton.OKCancel,
                     AnyUiMessageBoxImage.Question))
                     return new AnyUiLambdaActionNone();
-                
+
                 // do it
                 try
                 {
@@ -1383,8 +1383,8 @@ namespace AasxPluginDocumentShelf
         {
             // access
             if (_renderedEntities == null || theDocEntitiesToPreview == null || _inDispatcherTimer)
-            if (_renderedEntities == null || theDocEntitiesToPreview == null || _inDispatcherTimer)
-                return;
+                if (_renderedEntities == null || theDocEntitiesToPreview == null || _inDispatcherTimer)
+                    return;
 
             _inDispatcherTimer = true;
             var updateDisplay = false;

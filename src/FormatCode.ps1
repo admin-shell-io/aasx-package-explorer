@@ -15,7 +15,9 @@ function Main
     AssertDotnetFormatVersion
 
     Set-Location $PSScriptRoot
+    dotnet restore
     dotnet format --exclude "**/DocTest*.cs"
+    Read-Host -Prompt "Press Enter to exit"
 }
 
 $previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }

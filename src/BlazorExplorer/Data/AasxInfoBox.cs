@@ -49,7 +49,7 @@ namespace BlazorUI.Data
         /// Converted base64 image data to be displayed
         /// </summary>
         public string HtmlImageData { get; set; }
-        
+
         public void SetInfos(Aas.AssetAdministrationShell aas, AdminShellPackageEnv env)
         {
             // access

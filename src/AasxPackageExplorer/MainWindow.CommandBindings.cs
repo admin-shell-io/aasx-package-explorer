@@ -94,7 +94,7 @@ namespace AasxPackageExplorer
             RedrawAllAasxElements();
             RedrawElementView();
         }
-        
+
         private async Task CommandBinding_GeneralDispatch(
             string cmd,
             AasxMenuItemBase menuItem,
@@ -476,7 +476,7 @@ namespace AasxPackageExplorer
                 // redraw
                 CommandExecution_RedrawAll();
             }
-        }     
+        }
 
         public void CommandBinding_ConnectSecure()
         {
@@ -1012,7 +1012,7 @@ namespace AasxPackageExplorer
             if (sourceFn?.HasContent() != true)
             {
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                
+
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
                 if (caption != null)
@@ -1027,7 +1027,7 @@ namespace AasxPackageExplorer
                     RememberForInitialDirectory(sourceFn);
                     sourceFn = dlg.FileName;
                 }
-                
+
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
             }
 
@@ -1096,7 +1096,7 @@ namespace AasxPackageExplorer
                     Mouse.OverrideCursor = null;
                 }
 #endif
-                }
+            }
 
             // REFACTOR: NO
             if (cmd == "importdictsubmodelelements")
@@ -1132,7 +1132,7 @@ namespace AasxPackageExplorer
                     Mouse.OverrideCursor = null;
                 }
 #endif
-                }
+            }
         }
 
 

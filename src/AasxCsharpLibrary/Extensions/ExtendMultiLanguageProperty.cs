@@ -15,7 +15,7 @@ namespace Extensions
         {
             multiLanguageProperty.Value ??= new List<LangString>();
 
-            multiLanguageProperty.Value.Add(new LangString(defaultLang == null? "en" : defaultLang, text));
+            multiLanguageProperty.Value.Add(new LangString(defaultLang == null ? "en" : defaultLang, text));
         }
 
         #endregion
@@ -107,7 +107,7 @@ namespace Extensions
             return mlp;
         }
 
-        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp, 
+        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp,
             LangString ls)
         {
             if (ls == null)
@@ -118,7 +118,7 @@ namespace Extensions
             return mlp;
         }
 
-        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp, 
+        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp,
             string lang, string str)
         {
             return mlp.Set(new LangString(lang, str));

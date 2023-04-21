@@ -58,7 +58,7 @@ namespace Extensions
 
         public static void ValueFromText(this ISubmodelElement submodelElement, string text, string defaultLang = null)
         {
-            switch(submodelElement)
+            switch (submodelElement)
             {
                 case Property property:
                     {
@@ -216,7 +216,7 @@ namespace Extensions
             //if (submodelElement is AnnotatedRelationshipElement arel && arel.Annotations != null)
             //    foreach (var x in arel.FindDeep<T>())
             //        yield return x;
-    
+
             //if (submodelElement is Entity entity)
             //    foreach (var statement in entity.Statements)
             //        foreach (var x in statement.FindDeep<T>())
@@ -633,7 +633,7 @@ namespace Extensions
                         if (found != null)
                             return found;
                     }
-                    
+
                     // dive into AnnotedRelationshipElement?
                     if (smw is AnnotatedRelationshipElement annotatedRelationshipElement)
                     {
@@ -692,17 +692,17 @@ namespace Extensions
                 if (current is Operation op)
                 {
                     var operationVariables = new List<ISubmodelElement>();
-                    foreach(var opVariable in op.InputVariables)
+                    foreach (var opVariable in op.InputVariables)
                     {
                         operationVariables.Add(opVariable.Value);
                     }
-                    
-                    foreach(var opVariable in op.InoutputVariables)
+
+                    foreach (var opVariable in op.InoutputVariables)
                     {
                         operationVariables.Add(opVariable.Value);
                     }
-                    
-                    foreach(var opVariable in op.OutputVariables)
+
+                    foreach (var opVariable in op.OutputVariables)
                     {
                         operationVariables.Add(opVariable.Value);
                     }
@@ -748,7 +748,7 @@ namespace Extensions
                     // make same things sure
                     dst.IdShort = src.IdShort;
                     dst.Category = src.Category;
-                    dst.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { destSemanticId});
+                    dst.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { destSemanticId });
 
                     // instantanously add it?
                     submodelElements.Add(dst);
@@ -829,7 +829,7 @@ namespace Extensions
             // make same things sure
             dst.IdShort = src.IdShort;
             dst.Category = src.Category;
-            dst.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { destSemanticId});
+            dst.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { destSemanticId });
 
             // instantanously add it?
             if (addSme)
@@ -871,7 +871,7 @@ namespace Extensions
             return default(T);
         }
 
-        public static IEnumerable<ISubmodelElement> FindAllIdShort(this List<ISubmodelElement> submodelElements, 
+        public static IEnumerable<ISubmodelElement> FindAllIdShort(this List<ISubmodelElement> submodelElements,
             string idShort)
         {
             foreach (var smw in submodelElements)
@@ -880,7 +880,7 @@ namespace Extensions
                         yield return smw;
         }
 
-        public static IEnumerable<T> FindAllIdShortAs<T>(this List<ISubmodelElement> submodelElements, 
+        public static IEnumerable<T> FindAllIdShortAs<T>(this List<ISubmodelElement> submodelElements,
             string idShort) where T : class, ISubmodelElement
         {
             foreach (var smw in submodelElements)
@@ -889,13 +889,13 @@ namespace Extensions
                         yield return smw as T;
         }
 
-        public static ISubmodelElement FindFirstIdShort(this List<ISubmodelElement> submodelElements, 
+        public static ISubmodelElement FindFirstIdShort(this List<ISubmodelElement> submodelElements,
             string idShort)
         {
             return submodelElements.FindAllIdShort(idShort)?.FirstOrDefault<ISubmodelElement>();
         }
 
-        public static T FindFirstIdShortAs<T>(this List<ISubmodelElement> submodelElements, 
+        public static T FindFirstIdShortAs<T>(this List<ISubmodelElement> submodelElements,
             string idShort) where T : class, ISubmodelElement
         {
             return submodelElements.FindAllIdShortAs<T>(idShort)?.FirstOrDefault<T>();
@@ -1009,7 +1009,7 @@ namespace Extensions
                         yield return (T)submodelElement;
         }
 
-        public static IEnumerable<T> FindAllSemanticIdAs<T>(this List<ISubmodelElement> submodelELements, 
+        public static IEnumerable<T> FindAllSemanticIdAs<T>(this List<ISubmodelElement> submodelELements,
             Reference semId, MatchMode matchMode = MatchMode.Strict)
         where T : ISubmodelElement
         {
@@ -1020,14 +1020,14 @@ namespace Extensions
                         yield return (T)submodelElement;
         }
 
-        public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements, 
+        public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements,
             Key semId, MatchMode matchMode = MatchMode.Strict)
             where T : ISubmodelElement
         {
             return submodelElements.FindAllSemanticIdAs<T>(semId, matchMode).FirstOrDefault<T>();
         }
 
-        public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements, 
+        public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements,
             Reference semId, MatchMode matchMode = MatchMode.Strict)
             where T : ISubmodelElement
         {
@@ -1200,8 +1200,8 @@ namespace Extensions
         }
 
         public static IEnumerable<T> FindAllSemanticId<T>(
-            this List<ISubmodelElement> smes, 
-            string[] allowedSemanticIds, 
+            this List<ISubmodelElement> smes,
+            string[] allowedSemanticIds,
             bool invertedAllowed = false) where T : ISubmodelElement
         {
             if (allowedSemanticIds == null || allowedSemanticIds.Length < 1)
@@ -1285,8 +1285,8 @@ namespace Extensions
         }
 
         public static IEnumerable<ISubmodelElement> FindAllSemanticId(
-            this List<ISubmodelElement> submodelElements, Key semId, 
-            Type[] allowedTypes = null, 
+            this List<ISubmodelElement> submodelElements, Key semId,
+            Type[] allowedTypes = null,
             MatchMode matchMode = MatchMode.Strict)
         {
             foreach (var smw in submodelElements)
@@ -1313,7 +1313,7 @@ namespace Extensions
         }
 
         public static IEnumerable<T> FindAllSemanticIdAs<T>(
-            this List<ISubmodelElement> smes, 
+            this List<ISubmodelElement> smes,
             ConceptDescription cd, MatchMode matchMode = MatchMode.Strict)
                 where T : ISubmodelElement
         {
@@ -1377,7 +1377,7 @@ namespace Extensions
             elem.DisplayName = source.DisplayName?.Copy();
             elem.Description = source.Description?.Copy();
             elem.Checksum = source.Checksum;
-            
+
             // IHasKind
             if (source.Kind.HasValue)
                 elem.Kind = source.Kind.Value;

@@ -26,9 +26,9 @@ namespace Extensions
 
         public static void Remove(this Entity entity, ISubmodelElement submodelElement)
         {
-            if(entity != null)
+            if (entity != null)
             {
-                if(entity.Statements != null)
+                if (entity.Statements != null)
                 {
                     entity.Statements.Remove(submodelElement);
                 }
@@ -40,7 +40,7 @@ namespace Extensions
             if (childSubmodelElement == null)
                 return null;
             if (entity.Statements == null)
-                entity.Statements = new ();
+                entity.Statements = new();
             if (childSubmodelElement != null)
                 childSubmodelElement.Parent = entity;
             entity.Statements.Add(childSubmodelElement);

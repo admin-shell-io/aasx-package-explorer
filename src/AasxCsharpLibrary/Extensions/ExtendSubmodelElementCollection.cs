@@ -37,9 +37,9 @@ namespace Extensions
 
         public static void Remove(this SubmodelElementCollection submodelElementCollection, ISubmodelElement submodelElement)
         {
-            if(submodelElementCollection != null)
+            if (submodelElementCollection != null)
             {
-                if(submodelElementCollection.Value != null)
+                if (submodelElementCollection.Value != null)
                 {
                     submodelElementCollection.Value.Remove(submodelElement);
                 }
@@ -51,7 +51,7 @@ namespace Extensions
             if (childSubmodelElement == null)
                 return null;
             if (submodelElementCollection.Value == null)
-                submodelElementCollection.Value = new ();
+                submodelElementCollection.Value = new();
             if (childSubmodelElement != null)
                 childSubmodelElement.Parent = submodelElementCollection;
             submodelElementCollection.Value.Add(childSubmodelElement);

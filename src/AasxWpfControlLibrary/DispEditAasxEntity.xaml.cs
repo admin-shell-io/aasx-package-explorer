@@ -208,12 +208,12 @@ namespace AasxPackageExplorer
         }
 #endif
 
-        
+
 
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
-			AnyUiDisplayContextWpf displayContext,
-			ListOfVisualElementBasic entities,
+            AnyUiDisplayContextWpf displayContext,
+            ListOfVisualElementBasic entities,
             bool editMode, bool hintMode = false, bool showIriMode = false,
             VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
@@ -438,7 +438,7 @@ namespace AasxPackageExplorer
                 //
                 // Dispatch: MULTIPLE items
                 //
-                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder, 
+                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder,
                     superMenu: superMenu);
             }
 
@@ -526,8 +526,8 @@ namespace AasxPackageExplorer
             _lastRenderedRootElement = stack;
 #endif
 
-                // return render hints
-                return renderHints;
+            // return render hints
+            return renderHints;
         }
 
         public Tuple<AnyUiDisplayContextWpf, AnyUiUIElement> GetLastRenderedRoot()

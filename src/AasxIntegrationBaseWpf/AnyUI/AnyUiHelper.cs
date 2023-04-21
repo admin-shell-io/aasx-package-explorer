@@ -74,6 +74,6 @@ namespace AasxIntegrationBaseWpf
                 _timer2.Start();
                 return _timer2;
             }
-        }        
+        }
     }
 }

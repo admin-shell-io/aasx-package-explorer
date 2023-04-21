@@ -164,11 +164,11 @@ namespace AasxPredefinedConcepts.Convert
                     if (rf is Aas.ConceptDescription conceptDescription)
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
                                 new Aas.ConceptDescription(
-                                    conceptDescription.Id, conceptDescription.Extensions, 
-                                    conceptDescription.Category, conceptDescription.IdShort, 
-                                    conceptDescription.DisplayName, conceptDescription.Description, 
-                                    conceptDescription.Checksum, conceptDescription.Administration, 
-                                    conceptDescription.EmbeddedDataSpecifications, 
+                                    conceptDescription.Id, conceptDescription.Extensions,
+                                    conceptDescription.Category, conceptDescription.IdShort,
+                                    conceptDescription.DisplayName, conceptDescription.Description,
+                                    conceptDescription.Checksum, conceptDescription.Administration,
+                                    conceptDescription.EmbeddedDataSpecifications,
                                     conceptDescription.IsCaseOf));
 
             // General Info (target cardinality: 1)

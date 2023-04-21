@@ -65,7 +65,7 @@ namespace AasOpcUaServer
             this.theServerOptions = options;
             this.aasTypes.BuildEntites(this);
         }
-        
+
         public class NodeRecord
         {
             public NodeState uanode = null;
@@ -372,7 +372,7 @@ namespace AasOpcUaServer
             string extraName = null)
         {
             BaseObjectState baseObject = AasUaNodeHelper.CreateObject(parent, browseDisplayName, typeDefinitionId, modellingRule, extraName);
-            
+
             baseObject.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, baseObject);
 
             parent?.AddChild(baseObject);

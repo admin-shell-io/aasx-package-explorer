@@ -79,7 +79,7 @@ namespace AasxPluginExportTable.TimeSeries
 
             // ok, go on ..
             var uc = new AnyUiDialogueDataModalPanel(
-                (!doImport) 
+                (!doImport)
                     ? "Export SubmodelElements as Table …"
                     : "Import SubmodelElements from Table …");
             uc.ActivateRenderPanel(record,
@@ -130,7 +130,7 @@ namespace AasxPluginExportTable.TimeSeries
                             AnyUiUIElement.RegisterControl(
                                 helper.AddSmallButtonTo(
                                     g2, 0, 0, content: "Load ..",
-                                    padding: new AnyUiThickness(4, 0, 4, 0)),    
+                                    padding: new AnyUiThickness(4, 0, 4, 0)),
                                 setValueAsync: async (o) =>
                                 {
                                     // ask for filename
@@ -203,7 +203,8 @@ namespace AasxPluginExportTable.TimeSeries
                                         items: pluginOptions.Presets.Select((pr) => "" + pr.Name).ToArray(),
                                         text: "Please select preset to load .."),
                                     minWidth: 350, maxWidth: 400),
-                                    (o) => {
+                                    (o) =>
+                                    {
                                         if (!cbPreset.SelectedIndex.HasValue)
                                             return new AnyUiLambdaActionNone();
                                         var ndx = cbPreset.SelectedIndex.Value;
@@ -214,7 +215,7 @@ namespace AasxPluginExportTable.TimeSeries
                                         uc.Data = newRec;
                                         return new AnyUiLambdaActionModalPanelReRender(uc);
                                     });
-                        
+
                         }
                     }
 
@@ -224,7 +225,7 @@ namespace AasxPluginExportTable.TimeSeries
                             verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                        var g2 = helper.AddSmallGridTo(g, 2, 1, 1, 9, 
+                        var g2 = helper.AddSmallGridTo(g, 2, 1, 1, 9,
                                     new[] { "#", "#", "#", "#", "#", "#", "#", "#", "#" },
                                     padding: new AnyUiThickness(0, 0, 4, 0));
 
@@ -357,7 +358,7 @@ namespace AasxPluginExportTable.TimeSeries
                     // For Top & Body, with 1 + 1 + 1 * Cols, 1 + 1 * Rows 
                     {
                         // dimensions
-                        var totalRows = 1 + record.RealRowsTop + record.RealRowsBody;                        
+                        var totalRows = 1 + record.RealRowsTop + record.RealRowsBody;
                         var totalCols = 1 + record.RealCols;
 
                         // prepare grid
@@ -373,13 +374,13 @@ namespace AasxPluginExportTable.TimeSeries
                             colSpan: 2);
 
                         // column headers
-                        for (int tc=0; tc<totalCols; tc++)
+                        for (int tc = 0; tc < totalCols; tc++)
                         {
                             // first columns label
                             var txtRowHead = (tc == 0) ? "Table" : $"Column {tc}";
 
                             helper.Set(
-                                helper.AddSmallLabelTo(g2, 0, tc, 
+                                helper.AddSmallLabelTo(g2, 0, tc,
                                     content: (tc == 0) ? "Table" : $"Column {tc}",
                                     verticalAlignment: AnyUiVerticalAlignment.Bottom,
                                     verticalContentAlignment: AnyUiVerticalAlignment.Bottom),
@@ -388,8 +389,8 @@ namespace AasxPluginExportTable.TimeSeries
                         }
 
                         // column bodies, row by row
-                        for (int tr=0; tr<totalRows-1; tr++)
-                            for (int tc=0; tc<totalCols; tc++)
+                        for (int tr = 0; tr < totalRows - 1; tr++)
+                            for (int tc = 0; tc < totalCols; tc++)
                             {
                                 // calculate indexes
                                 var isTop = tr < record.RealRowsTop;
@@ -404,12 +405,12 @@ namespace AasxPluginExportTable.TimeSeries
                                 {
                                     // first columns label
                                     var txtRowHead = (isTop ? "Top" : "Body") + "\u00bb"
-                                            + ((rIdx == 0) ? "Head" : $"Row {rIdx}") + ":" ;
+                                            + ((rIdx == 0) ? "Head" : $"Row {rIdx}") + ":";
 
                                     currElem = helper.AddSmallLabelTo(g2, 1 + tr, 0, content: txtRowHead,
                                         verticalAlignment: AnyUiVerticalAlignment.Top,
-                                        verticalContentAlignment: AnyUiVerticalAlignment.Top);                                    
-                                
+                                        verticalContentAlignment: AnyUiVerticalAlignment.Top);
+
                                 }
                                 else
                                 {
@@ -425,7 +426,8 @@ namespace AasxPluginExportTable.TimeSeries
                                             minWidth: 100,
                                             minHeight: 60,
                                             horizontalAlignment: AnyUiHorizontalAlignment.Stretch),
-                                        (s) => {
+                                        (s) =>
+                                        {
                                             record.PutCell(isTop, rIdx, cIdx, s);
                                         });
 

@@ -194,7 +194,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var session = _sessions.CreateNewSession<Session>(args[4]);
                 var opContext = args[5] as PluginOperationContextBase;
                 session.AnyUiControl = AasxPluginDocumentShelf.ShelfAnyUiControl.FillWithAnyUiControls(
-                    _log, args[0], args[1], _options, _eventStack, session, args[2], opContext, 
+                    _log, args[0], args[1], _options, _eventStack, session, args[2], opContext,
                     args[3] as AnyUiContextPlusDialogs, this);
 
                 // give object back

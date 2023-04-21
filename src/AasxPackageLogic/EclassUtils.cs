@@ -526,7 +526,7 @@ namespace AasxPackageLogic
                     res.Id = input[i].IRDI;
 
                     // isCase of
-                    if(res.IsCaseOf.IsNullOrEmpty())
+                    if (res.IsCaseOf.IsNullOrEmpty())
                     {
                         res.IsCaseOf = new List<Aas.Reference>();
                     }

@@ -284,7 +284,7 @@ namespace AasxIntegrationBase
             if (src.AllowSubmodelSemanticId != null)
                 foreach (var assi in src.AllowSubmodelSemanticId)
                     AllowSubmodelSemanticId.Add(
-                        new AAS.Key(Aas.Stringification.KeyTypesFromString(assi?.type) 
+                        new AAS.Key(Aas.Stringification.KeyTypesFromString(assi?.type)
                             ?? Aas.KeyTypes.GlobalReference, assi.value));
         }
 #endif

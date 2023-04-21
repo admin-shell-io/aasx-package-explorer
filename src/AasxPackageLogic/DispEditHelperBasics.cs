@@ -146,7 +146,7 @@ namespace AasxPackageLogic
 
         public bool editMode = false;
         public bool hintMode = false;
-        
+
 
         public ModifyRepo repo = null;
 
@@ -160,7 +160,7 @@ namespace AasxPackageLogic
         // (not always identical to maintain space efficiency)
         //
 
-        public int GetWidth (FirstColumnWidth cw)
+        public int GetWidth(FirstColumnWidth cw)
         {
             if (cw == FirstColumnWidth.Small)
                 return 40;
@@ -221,7 +221,7 @@ namespace AasxPackageLogic
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
-        }        
+        }
 
         //
         // size management
@@ -234,7 +234,7 @@ namespace AasxPackageLogic
                 return normal;
 
             // look at args
-            for (int i=0; (i+1) < args.Length; i += 2)
+            for (int i = 0; (i + 1) < args.Length; i += 2)
             {
                 // schema fulfilled?
                 if (!(args[i] is AnyUiContextCapability capaEn) || !(args[i + 1] is AnyUiThickness ath))
@@ -423,7 +423,7 @@ namespace AasxPackageLogic
                 var cb = AddSmallComboBoxTo(
                     g, 0, 1,
                     margin: NormalOrCapa(
-                        new AnyUiThickness(4, 2, 2, 2), 
+                        new AnyUiThickness(4, 2, 2, 2),
                         AnyUiContextCapability.Blazor, new AnyUiThickness(4, 0, 2, 0)),
                     padding: NormalOrCapa(
                         new AnyUiThickness(2, 0, 2, 0),
@@ -638,7 +638,7 @@ namespace AasxPackageLogic
         }
 
         public void AddActionPanel(
-            AnyUiPanel view, string key, string[] actionStr = null, ModifyRepo repo = null,            
+            AnyUiPanel view, string key, string[] actionStr = null, ModifyRepo repo = null,
             Func<int, AnyUiLambdaActionBase> action = null,
             string[] actionTags = null,
             bool[] addWoEdit = null,
@@ -818,7 +818,7 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        var ls = new Aas.LangString("","");
+                        var ls = new Aas.LangString("", "");
                         langStr?.Add(ls);
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
@@ -1599,7 +1599,7 @@ namespace AasxPackageLogic
             g.ColumnDefinitions[0].MinWidth = GetWidth(FirstColumnWidth.Standard);
 
             // populate key
-            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), 
+            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0),
                 verticalAlignment: AnyUiVerticalAlignment.Center,
                 content: "" + key + ":");
 
@@ -1706,7 +1706,7 @@ namespace AasxPackageLogic
                                 return takeOverLambdaAction;
                             else
                                 return new AnyUiLambdaActionRedrawEntity();
-                        });                
+                        });
 
                 if (!topContextMenu && addEclassIrdi)
                     AnyUiUIElement.RegisterControl(
@@ -1860,7 +1860,7 @@ namespace AasxPackageLogic
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         menuItemLambda: (o) =>
                         {
-                            if (o is int oi && oi >= 0 && (2*oi + 1) < contextHeaders.Count)
+                            if (o is int oi && oi >= 0 && (2 * oi + 1) < contextHeaders.Count)
                             {
                                 if (oi >= auxContextOfs && auxContextLambda != null)
                                     return auxContextLambda(oi - auxContextOfs);
@@ -1929,7 +1929,7 @@ namespace AasxPackageLogic
                         var cbType = AnyUiUIElement.RegisterControl(
                             AddSmallComboBoxTo(
                                 g, 0 + i + rowOfs, 1,
-                                margin: NormalOrCapa( 
+                                margin: NormalOrCapa(
                                     new AnyUiThickness(4, 2, 2, 2),
                                     AnyUiContextCapability.Blazor, new AnyUiThickness(4, 1, 2, -1)),
                                 padding: NormalOrCapa(
@@ -2045,7 +2045,7 @@ namespace AasxPackageLogic
             //
             // in total
             //
-            
+
             view.Children.Add(g);
         }
 
@@ -2210,7 +2210,7 @@ namespace AasxPackageLogic
             // make unqiue
             if (makeUniqueIfNeeded && !(list as List<Aas.ISubmodelElement>)
                 .CheckIdShortIsUnique(entity.IdShort))
-                    this.MakeNewReferableUnique(entity);
+                this.MakeNewReferableUnique(entity);
 
             // delegate
             return AddElementInListBefore<T>(list, entity, existing);
@@ -2229,7 +2229,7 @@ namespace AasxPackageLogic
             // make unqiue
             if (makeUniqueIfNeeded && !(list as List<Aas.ISubmodelElement>)
                 .CheckIdShortIsUnique(entity.IdShort))
-                    this.MakeNewReferableUnique(entity);
+                this.MakeNewReferableUnique(entity);
 
             // delegate
             return AddElementInListAfter<T>(list, entity, existing);
@@ -2433,7 +2433,7 @@ namespace AasxPackageLogic
 
                     // add?
                     if (null == env.FindConceptDescriptionByReference(
-                            new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, newcd.Id)})))
+                            new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, newcd.Id) })))
                     {
                         env.ConceptDescriptions.Add(newcd);
 

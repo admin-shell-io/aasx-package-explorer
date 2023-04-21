@@ -283,7 +283,7 @@ namespace AasxAmlImExport
                 if (ls == null)
                     return null;
 
-                var res = new List<LangString>( ls );
+                var res = new List<LangString>(ls);
                 return res;
             }
 
@@ -364,11 +364,11 @@ namespace AasxAmlImExport
             {
                 //if (parent is IManageSubmodelElements imse)
                 //    imse.Add(se);
-                if(parent is Submodel submodel)
+                if (parent is Submodel submodel)
                 {
                     submodel.Add(se);
                 }
-                else if(parent is SubmodelElementCollection collection)
+                else if (parent is SubmodelElementCollection collection)
                 {
                     collection.Add(se);
                 }
@@ -404,7 +404,7 @@ namespace AasxAmlImExport
                         aas.IdShort = idShort;
                     aas.Id = id;
                     if (version != null && revision != null)
-                        aas.Administration = new AdministrativeInformation(version:version, revision:revision);
+                        aas.Administration = new AdministrativeInformation(version: version, revision: revision);
                     aas.Category = cat;
                     if (desc != null)
                         aas.Description = desc;
@@ -581,7 +581,7 @@ namespace AasxAmlImExport
                         sm.IdShort = idShort;
                     sm.Id = id;
                     if (version != null && revision != null)
-                        sm.Administration = new AdministrativeInformation(version:version, revision:revision);
+                        sm.Administration = new AdministrativeInformation(version: version, revision: revision);
                     sm.Category = cat;
                     if (desc != null)
                         sm.Description = desc;
@@ -624,7 +624,7 @@ namespace AasxAmlImExport
                     if (idShort != null)
                         smec.IdShort = idShort;
                     if (semid != null)
-                        smec.SemanticId = new Reference(ReferenceTypes.ModelReference,ParseAmlReference(semid)?.Keys);
+                        smec.SemanticId = new Reference(ReferenceTypes.ModelReference, ParseAmlReference(semid)?.Keys);
                     if (kind != null)
                         smec.Kind = Stringification.ModelingKindFromString(kind);
                     if (desc != null)
@@ -729,7 +729,7 @@ namespace AasxAmlImExport
                     if (idShort != null)
                         sme.IdShort = idShort;
                     if (semid != null)
-                        sme.SemanticId = new Reference(ReferenceTypes.ModelReference,ParseAmlReference(semid)?.Keys);
+                        sme.SemanticId = new Reference(ReferenceTypes.ModelReference, ParseAmlReference(semid)?.Keys);
                     if (kind != null)
                         sme.Kind = Stringification.ModelingKindFromString(kind);
                     if (desc != null)
@@ -754,7 +754,7 @@ namespace AasxAmlImExport
                             p.ValueId = ParseAmlReference(valueId);
                         if (valueAttr != null)
                             p.ValueType = Stringification.DataTypeDefXsdFromString(ParseAmlDataType(
-                                valueAttr.AttributeDataType)) ?? DataTypeDefXsd.String; 
+                                valueAttr.AttributeDataType)) ?? DataTypeDefXsd.String;
                     }
 
                     if (sme is AasCore.Aas3_0_RC02.Range rng)
@@ -769,7 +769,7 @@ namespace AasxAmlImExport
                         {
                             rng.Min = min;
                             if (minAttr != null)
-                                rng.ValueType = Stringification.DataTypeDefXsdFromString(ParseAmlDataType(minAttr.AttributeDataType)) 
+                                rng.ValueType = Stringification.DataTypeDefXsdFromString(ParseAmlDataType(minAttr.AttributeDataType))
                                     ?? DataTypeDefXsd.String;
                         }
 
@@ -777,7 +777,7 @@ namespace AasxAmlImExport
                         {
                             rng.Max = max;
                             if (maxAttr != null)
-                                rng.ValueType = Stringification.DataTypeDefXsdFromString(ParseAmlDataType(maxAttr.AttributeDataType)) 
+                                rng.ValueType = Stringification.DataTypeDefXsdFromString(ParseAmlDataType(maxAttr.AttributeDataType))
                                     ?? DataTypeDefXsd.String;
                         }
                     }
@@ -907,7 +907,7 @@ namespace AasxAmlImExport
                     cd.IdShort = idShort;
                     cd.Id = id;
                     if (version != null && revision != null)
-                        cd.Administration = new AdministrativeInformation(version:version, revision:revision);
+                        cd.Administration = new AdministrativeInformation(version: version, revision: revision);
                     if (desc != null)
                         cd.Description = desc;
                     if (cat != null)
@@ -1095,7 +1095,7 @@ namespace AasxAmlImExport
                             // consequences that additional properties in the 2nd SM with the same SM get lost!
                             if (null == this.package.AasEnv.FindSubmodelById(sm.Id))
                                 this.package.AasEnv.Submodels.Add(sm);
-                            if(currentAas.Submodels == null)
+                            if (currentAas.Submodels == null)
                             {
                                 currentAas.Submodels = new List<Reference>();
                             }
@@ -1266,9 +1266,9 @@ namespace AasxAmlImExport
                     // Note MIHO, 2020-10-18): I presume, that SMC shall be excluded from th search, hence
                     // do another kind of comparison
                     // reSharper disable once ForCanBeConvertedToForeach
-                    foreach(AasSubmodelElements smeEnum in Enum.GetValues(typeof(AasSubmodelElements)))
+                    foreach (AasSubmodelElements smeEnum in Enum.GetValues(typeof(AasSubmodelElements)))
                     {
-                        if(smeEnum == AasSubmodelElements.SubmodelElement || smeEnum == AasSubmodelElements.SubmodelElementList || smeEnum == AasSubmodelElements.SubmodelElementCollection || smeEnum == AasSubmodelElements.AnnotatedRelationshipElement || smeEnum == AasSubmodelElements.Entity)
+                        if (smeEnum == AasSubmodelElements.SubmodelElement || smeEnum == AasSubmodelElements.SubmodelElementList || smeEnum == AasSubmodelElements.SubmodelElementCollection || smeEnum == AasSubmodelElements.AnnotatedRelationshipElement || smeEnum == AasSubmodelElements.Entity)
                         {
                             continue;
                         }
@@ -1402,7 +1402,7 @@ namespace AasxAmlImExport
 
                             // this will be the parent for child elements
                             this.package.AasEnv.Submodels.Add(sm);
-                            if(currentAas.Submodels == null)
+                            if (currentAas.Submodels == null)
                             {
                                 currentAas.Submodels = new List<Reference>();
                             }

@@ -170,7 +170,7 @@ namespace AasxPredefinedConcepts
                 }
 #endif
                 // TODO (MIHO, 2022-12-31): for V3.0, another method of deserialization is required!!
-                
+
                 res ??= JsonConvert.DeserializeObject<T>(entry.contents);
             }
             catch (Exception ex)
@@ -196,7 +196,7 @@ namespace AasxPredefinedConcepts
                 return null;
 
             // create CD
-            var cd = new Aas.ConceptDescription(id, idShort:idShort);
+            var cd = new Aas.ConceptDescription(id, idShort: idShort);
             var dsiec = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
             var dsc = dsiec.DataSpecificationContent as Aas.DataSpecificationIec61360;
             dsc.PreferredName = new List<Aas.LangString>();

@@ -11,7 +11,7 @@ namespace Extensions
 {
     public static class ExtendIDataSpecificationContent
     {
-        public enum ContentTypes { NoInfo, Iec61360, PhysicalUnit}
+        public enum ContentTypes { NoInfo, Iec61360, PhysicalUnit }
 
         public static Key GetKeyForIec61360()
         {
@@ -34,7 +34,7 @@ namespace Extensions
         {
             if (ct == ContentTypes.Iec61360)
                 return GetKeyForIec61360();
-            if (ct == ContentTypes.PhysicalUnit) 
+            if (ct == ContentTypes.PhysicalUnit)
                 return GetKeyForPhysicalUnit();
             return null;
         }

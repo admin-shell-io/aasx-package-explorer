@@ -191,7 +191,7 @@ namespace AasxIntegrationBase
             }
         }
 
-        public static IEnumerable<EmulateAttribute> EnumerateEmulateAttributes (Aas.IClass obj)
+        public static IEnumerable<EmulateAttribute> EnumerateEmulateAttributes(Aas.IClass obj)
         {
             if (obj is Aas.IReferable)
             {
@@ -647,7 +647,7 @@ namespace AasxIntegrationBase
                 businessObject = obj;
                 log?.Info($"Encouter {elName}: {"" + (obj as Aas.ISubmodelElement)?.GetReference()?.ToStringExtended(1)}");
             }
-            else 
+            else
             if (obj is Aas.Environment)
             {
                 elName = "Environment";

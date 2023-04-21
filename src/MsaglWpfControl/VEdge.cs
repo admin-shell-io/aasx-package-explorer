@@ -81,13 +81,13 @@ namespace Microsoft.Msagl.WpfGraphControl
             if (edge.Attr.ArrowAtTarget)
                 TargetArrowHeadPath = new WPath
                 {
-                    Data = DefiningTargetArrowHead(Edge.GeometryEdge.EdgeGeometry, PathStrokeThickness, 
+                    Data = DefiningTargetArrowHead(Edge.GeometryEdge.EdgeGeometry, PathStrokeThickness,
                             edge.Attr.ArrowheadAtTarget),
                     Tag = this
                 };
 
             SetPathStroke(
-                ArrowHeadIsEmpty(edge.Attr.ArrowheadAtSource), 
+                ArrowHeadIsEmpty(edge.Attr.ArrowheadAtSource),
                 ArrowHeadIsEmpty(edge.Attr.ArrowheadAtTarget));
 
             if (labelFrameworkElement != null)
@@ -154,9 +154,9 @@ namespace Microsoft.Msagl.WpfGraphControl
             var streamGeometry = new WStreamGeometry();
             using (WStreamGeometryContext context = streamGeometry.Open())
             {
-                AddArrow(context, 
-                    Edge.GeometryEdge.Curve.Start, 
-                    Edge.GeometryEdge.EdgeGeometry.SourceArrowhead.TipPosition, 
+                AddArrow(context,
+                    Edge.GeometryEdge.Curve.Start,
+                    Edge.GeometryEdge.EdgeGeometry.SourceArrowhead.TipPosition,
                     PathStrokeThickness,
                     arrStyle);
                 return streamGeometry;
@@ -314,9 +314,9 @@ namespace Microsoft.Msagl.WpfGraphControl
                 dir *= (dl - delta) / dl;
 
                 MPoint start2 = start + 0.4 * dir;
-                MPoint end2 = start + 1.0*dir;
-                MPoint mid = start - 0.2*dir;
-                
+                MPoint end2 = start + 1.0 * dir;
+                MPoint mid = start - 0.2 * dir;
+
                 dir = dir.Rotate(Math.PI / 2);
                 MPoint s = 1.2 * dir * HalfArrowAngleTan;
 

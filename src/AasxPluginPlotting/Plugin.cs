@@ -106,7 +106,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // looking only for Submodels
                 var sm = args[0] as Aas.Submodel;
                 if (sm == null)
-                    return null;               
+                    return null;
 
                 // check for a record in options, that matches Submodel
                 var found = false;

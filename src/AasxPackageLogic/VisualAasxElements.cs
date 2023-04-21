@@ -112,26 +112,26 @@ namespace AasxPackageLogic
             return null;
         }
 
-		/// <summary>
-		/// List all possible strings provided by <c>GetFilterElementInfo()</c>
-		/// </summary>
-		public static IEnumerable<string> GetAllFilterElementInfos()
+        /// <summary>
+        /// List all possible strings provided by <c>GetFilterElementInfo()</c>
+        /// </summary>
+        public static IEnumerable<string> GetAllFilterElementInfos()
         {
             var res = new List<string>();
-			res.Add("All");
-			res.Add("AssetAdministrationShell");
-			res.Add("AssetInformation");
-			res.Add("Submodel");
-			res.Add("SubmodelRef");
-			res.Add("SubmodelElement");
-			foreach (var x in Enum.GetNames(typeof(Aas.KeyTypes)))
-				res.Add(x);
-			res.Add("ConceptDescription");
-			res.Add("OperationVariable");
-			res.Add("SupplementalFile");
-			res.Add("PluginExtension");
-			return res;
-		}
+            res.Add("All");
+            res.Add("AssetAdministrationShell");
+            res.Add("AssetInformation");
+            res.Add("Submodel");
+            res.Add("SubmodelRef");
+            res.Add("SubmodelElement");
+            foreach (var x in Enum.GetNames(typeof(Aas.KeyTypes)))
+                res.Add(x);
+            res.Add("ConceptDescription");
+            res.Add("OperationVariable");
+            res.Add("SupplementalFile");
+            res.Add("PluginExtension");
+            return res;
+        }
 
         /// <summary>
         /// Get the data object the visual element is directly associated, e.g. a submodel reference inside an AAS
@@ -383,15 +383,15 @@ namespace AasxPackageLogic
                     break;
                 }
                 else
-				if (ve.GetMainDataObject() is AdminShellPackageSupplementaryFile psf 
+                if (ve.GetMainDataObject() is AdminShellPackageSupplementaryFile psf
                     && psf.Uri != null)
-				{
-					// super special case of V3: AssetInformation shall be a 1-Key GlobalReference
-					res.Add(new Aas.Key(Aas.KeyTypes.GlobalReference, psf.Uri.ToString()));
-					break;
-				}
-				else
-				if (ve.GetMainDataObject() is Aas.IIdentifiable iddata)
+                {
+                    // super special case of V3: AssetInformation shall be a 1-Key GlobalReference
+                    res.Add(new Aas.Key(Aas.KeyTypes.GlobalReference, psf.Uri.ToString()));
+                    break;
+                }
+                else
+                if (ve.GetMainDataObject() is Aas.IIdentifiable iddata)
                 {
                     // a Identifiable will terminate the list of keys
                     res.Insert(
@@ -555,11 +555,11 @@ namespace AasxPackageLogic
             "Environment", "AdministrationShells", "ConceptDescriptions", "Package", "Orphan Submodels",
             "All Submodels", "Supplemental files", "Value Aas.Reference", "Empty", "Dummy" };
 
-		public static string[] ItemTypeFilter = new string[] {
-			"Environment", "AdministrationShells", "ConceptDescriptions", "Package", "OrphanSubmodels",
-			"AllSubmodels", "SupplementalFiles", "Value.Aas.Reference", "Empty", "Dummy" };
+        public static string[] ItemTypeFilter = new string[] {
+            "Environment", "AdministrationShells", "ConceptDescriptions", "Package", "OrphanSubmodels",
+            "AllSubmodels", "SupplementalFiles", "Value.Aas.Reference", "Empty", "Dummy" };
 
-		public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
+        public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
 
         public string thePackageSourceFn;
         public AdminShellPackageEnv thePackage = null;
@@ -614,18 +614,18 @@ namespace AasxPackageLogic
             return ItemTypeNames[(int)t];
         }
 
-		// MIHO: not needed?
-		// public IClass MainDataObject { set { _mainDataObject = value; } }
+        // MIHO: not needed?
+        // public IClass MainDataObject { set { _mainDataObject = value; } }
 
-		public override string GetFilterElementInfo()
-		{
+        public override string GetFilterElementInfo()
+        {
             var i = (int)theItemType;
             if (i >= ItemTypeFilter.Length)
                 i = 0;
-			return ItemTypeFilter[i];
-		}
+            return ItemTypeFilter[i];
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             if (_mainDataObject != null)
                 return _mainDataObject;
@@ -676,12 +676,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{			
-			return "AssetAdministrationShell";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "AssetAdministrationShell";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theAas;
         }
@@ -727,12 +727,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "AssetInformation";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "AssetInformation";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theAsset;
         }
@@ -778,12 +778,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "SubmodelRef";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "SubmodelRef";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theSubmodelRef;
         }
@@ -835,12 +835,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "Submodel";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "Submodel";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theSubmodel;
         }
@@ -882,12 +882,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "Reference";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "Reference";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theReference;
         }
@@ -938,12 +938,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
+        public override string GetFilterElementInfo()
+        {
             return theWrapper?.GetSelfDescription()?.AasElementName;
-		}
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theWrapper;
         }
@@ -1129,12 +1129,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "OperationVariable";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "OperationVariable";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theOpVar;
         }
@@ -1196,12 +1196,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "ConceptDescription";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "ConceptDescription";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theCD;
         }
@@ -1337,12 +1337,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "ValueReferencePair";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "ValueReferencePair";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theVLP;
         }
@@ -1384,12 +1384,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "SupplementalFile";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "SupplementalFile";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             return theFile;
         }
@@ -1450,12 +1450,12 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-		public override string GetFilterElementInfo()
-		{
-			return "PluginExtension";
-		}
+        public override string GetFilterElementInfo()
+        {
+            return "PluginExtension";
+        }
 
-		public override object GetMainDataObject()
+        public override object GetMainDataObject()
         {
             // challenge: there is no constant business object for these virtual instances
             // idea: create a string in a deterministic way; during comparison it shall give the same result?
@@ -1549,7 +1549,7 @@ namespace AasxPackageLogic
             Aas.ConceptDescription cd, VisualElementGeneric parent)
         {
             // access
-            if (cache == null || cd == null || parent == null) 
+            if (cache == null || cd == null || parent == null)
                 return null;
 
             // CD itself
@@ -1671,7 +1671,7 @@ namespace AasxPackageLogic
                             // .. might have childs
                             if (v.Value != null)
                                 GenerateVisualElementsFromShellEnvAddElements(
-                                    cache, env, sm, ti, elo, v.Value, 
+                                    cache, env, sm, ti, elo, v.Value,
                                     useExistingVE: veopv, indexPos: childPos++);
                         }
 
@@ -1980,7 +1980,7 @@ namespace AasxPackageLogic
                     // note: will be added later to the overall tree
                     tiCDs = new VisualElementEnvironmentItem(
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions,
-                        mainDataObject: env.ConceptDescriptions); 
+                        mainDataObject: env.ConceptDescriptions);
                     tiCDs.SetIsExpandedIfNotTouched(expandMode > 0);
 
                     // the selected sort order may cause disabling of lazy loading for this class!
@@ -2260,7 +2260,7 @@ namespace AasxPackageLogic
             // recursion
             if (recursionDepth > 0)
                 // for some reason, often a "collection modified exception" was occuring
-                for (int i=0; i<tvl.Members.Count; i++)
+                for (int i = 0; i < tvl.Members.Count; i++)
                 {
                     var mem = tvl.Members[i];
                     foreach (var x in FindAllInListOfVisualElements(mem, dataObject, alsoDereferenceObjects,
@@ -2770,7 +2770,7 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.StructuralUpdate)
             {
-                if (data.ThisElem is Environment 
+                if (data.ThisElem is Environment
                     && data.ThisElemLocation == PackCntChangeEventLocation.ListOfConceptDescriptions)
                 {
                     //// find the correct parent(s)

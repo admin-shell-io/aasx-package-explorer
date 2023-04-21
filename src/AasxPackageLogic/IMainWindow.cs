@@ -128,15 +128,15 @@ namespace AasxPackageExplorer
         /// <param name="storeFnToLRU">Store this filename into last recently used list</param>
         /// <param name="indexItems">Index loaded contents, e.g. for animate of event sending</param>
         void UiLoadPackageWithNew(
-			PackageCentralItem packItem,
-			AdminShellPackageEnv takeOverEnv = null,
-			string loadLocalFilename = null,
-			string info = null,
-			bool onlyAuxiliary = false,
-			bool doNotNavigateAfterLoaded = false,
-			PackageContainerBase takeOverContainer = null,
-			string storeFnToLRU = null,
-			bool indexItems = false);
+            PackageCentralItem packItem,
+            AdminShellPackageEnv takeOverEnv = null,
+            string loadLocalFilename = null,
+            string info = null,
+            bool onlyAuxiliary = false,
+            bool doNotNavigateAfterLoaded = false,
+            PackageContainerBase takeOverContainer = null,
+            string storeFnToLRU = null,
+            bool indexItems = false);
 
         /// <summary>
         /// Check for menu switch and flush events, if required.

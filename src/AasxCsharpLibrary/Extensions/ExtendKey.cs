@@ -72,7 +72,7 @@ namespace Extensions
                     return true;
             return false;
         }
-       
+
 
         public static AasValidationAction Validate(this Key key, AasValidationRecordList results, IReferable container)
         {
@@ -125,7 +125,7 @@ namespace Extensions
             return res;
         }
 
-        
+
 
         public static string ToStringExtended(this Key key, int format = 1)
         {
@@ -154,7 +154,7 @@ namespace Extensions
                 if (m.Success)
                 {
                     return new Key(
-                            Stringification.KeyTypesFromString(m.Groups[1].ToString()) ?? KeyTypes.GlobalReference, 
+                            Stringification.KeyTypesFromString(m.Groups[1].ToString()) ?? KeyTypes.GlobalReference,
                             m.Groups[3].ToString());
                 }
             }

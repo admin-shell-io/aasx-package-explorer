@@ -124,7 +124,7 @@ namespace BlazorUI.Data
 
                 // exit to NOT pass on
                 return;
-			}
+            }
 
             // REFACTOR: 100% change
             if (cmd == "about")
@@ -150,61 +150,61 @@ namespace BlazorUI.Data
 
                 // do
                 if (AnyUiMessageBoxResult.OK == await DisplayContext.MessageBoxFlyoutShowAsync(
-                    headerTxt, 
+                    headerTxt,
                     "AASX Package Explorer",
                     AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Information))
                 {
-					await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
-					"https://github.com/admin-shell-io/aasx-package-explorer/");
-				}
+                    await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
+                    "https://github.com/admin-shell-io/aasx-package-explorer/");
+                }
 
                 return;
             }
 
-			// REFACTOR: 100% change
-			if (cmd == "helpgithub")
-			{
-				// start
-				ticket.StartExec();
+            // REFACTOR: 100% change
+            if (cmd == "helpgithub")
+            {
+                // start
+                ticket.StartExec();
 
-				// do
-				await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
-				    "https://github.com/admin-shell/aasx-package-explorer/blob/master/help/index.md");
-
-                return;
-			}
-
-			// REFACTOR: 100% change
-			if (cmd == "faqgithub")
-			{
-				// start
-				ticket.StartExec();
-
-				// do
-				await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
-					"https://github.com/admin-shell-io/questions-and-answers/blob/master/README.md");
+                // do
+                await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
+                    "https://github.com/admin-shell/aasx-package-explorer/blob/master/help/index.md");
 
                 return;
             }
 
-			// REFACTOR: 100% change
-			if (cmd == "helpissues")
-			{
-				// start
-				ticket.StartExec();
+            // REFACTOR: 100% change
+            if (cmd == "faqgithub")
+            {
+                // start
+                ticket.StartExec();
 
-				// do
-				await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
-					"https://github.com/admin-shell-io/aasx-package-explorer/issues");
+                // do
+                await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
+                    "https://github.com/admin-shell-io/questions-and-answers/blob/master/README.md");
 
                 return;
             }
 
-			// REFACTOR: 70% change
-			if (cmd == "helpoptionsinfo")
-			{
-				// start
-				ticket.StartExec();
+            // REFACTOR: 100% change
+            if (cmd == "helpissues")
+            {
+                // start
+                ticket.StartExec();
+
+                // do
+                await BlazorUI.Utils.BlazorUtils.ShowNewBrowserWindow(renderJsRuntime,
+                    "https://github.com/admin-shell-io/aasx-package-explorer/issues");
+
+                return;
+            }
+
+            // REFACTOR: 70% change
+            if (cmd == "helpoptionsinfo")
+            {
+                // start
+                ticket.StartExec();
 
                 // do
                 try
@@ -212,13 +212,13 @@ namespace BlazorUI.Data
                     // make HTML string
                     var htmlStr = Options.ReportOptions(Options.ReportOptionsFormat.Html, Options.Curr);
 
-					// write to temp file
-					var tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".html");
+                    // write to temp file
+                    var tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".html");
                     System.IO.File.WriteAllText(tempFn, htmlStr);
 
                     // show
-					await BlazorUI.Utils.BlazorUtils.DisplayOrDownloadFile(renderJsRuntime, tempFn, "text/html");
-                } 
+                    await BlazorUI.Utils.BlazorUtils.DisplayOrDownloadFile(renderJsRuntime, tempFn, "text/html");
+                }
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, "Generating options information");
@@ -227,32 +227,32 @@ namespace BlazorUI.Data
                 return;
             }
 
-			// REFACTOR: 10% change, no good entity for ClearPasteBuffer()
-			if (cmd == "bufferclear")
-			{
-				// start
-				ticket.StartExec();
+            // REFACTOR: 10% change, no good entity for ClearPasteBuffer()
+            if (cmd == "bufferclear")
+            {
+                // start
+                ticket.StartExec();
 
-				// do
-				ClearPasteBuffer();
-				Log.Singleton.Info("Internal copy/ paste buffer cleared. Pasting of external JSON elements " +
-					"enabled.");
+                // do
+                ClearPasteBuffer();
+                Log.Singleton.Info("Internal copy/ paste buffer cleared. Pasting of external JSON elements " +
+                    "enabled.");
 
                 return;
             }
 
-			// REFACTOR: TODO
-			if (cmd == "exportsmd")
+            // REFACTOR: TODO
+            if (cmd == "exportsmd")
             {
                 Logic.LogErrorToTicket(ticket, "ExportSmd not implemented, yet.");
 
                 return;
             }
 
-			// REFACTOR: TODO
-			if (cmd == "printasset")
-			{
-				Logic.LogErrorToTicket(ticket, "PrintAsset not implemented, yet.");
+            // REFACTOR: TODO
+            if (cmd == "printasset")
+            {
+                Logic.LogErrorToTicket(ticket, "PrintAsset not implemented, yet.");
 
                 return;
             }
@@ -304,7 +304,7 @@ namespace BlazorUI.Data
 
             //    return;
             //}
-           
+
             // REFACTOR: WPF required
             if (cmd == "serverpluginemptysample"
                 || cmd == "serverpluginopcua"

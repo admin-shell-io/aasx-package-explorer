@@ -102,7 +102,7 @@ namespace Extensions
 
         // ReSharper disable MethodOverloadWithOptionalParameter .. this seems to work, anyhow
         // ReSharper disable RedundantArgumentDefaultValue
-        public static string ToStringExtended(this Qualifier q, 
+        public static string ToStringExtended(this Qualifier q,
             int format = 0, string delimiter = ",")
         {
             var res = "" + q.Type;
@@ -129,14 +129,14 @@ namespace Extensions
 
         public static Qualifier FindQualifierOfType(this List<Qualifier> qualifiers, string qualifierType)
         {
-            if(qualifierType == null)
+            if (qualifierType == null)
             {
                 return null;
             }
 
-            foreach(var qualifier in qualifiers)
+            foreach (var qualifier in qualifiers)
             {
-                if(qualifier != null && qualifierType.Equals(qualifier.Type))
+                if (qualifier != null && qualifierType.Equals(qualifier.Type))
                 {
                     return qualifier;
                 }
@@ -147,7 +147,7 @@ namespace Extensions
 
         // ReSharper disable MethodOverloadWithOptionalParameter .. this seems to work, anyhow
         // ReSharper disable RedundantArgumentDefaultValue
-        public static string ToStringExtended(this List<Qualifier> qualifiers, 
+        public static string ToStringExtended(this List<Qualifier> qualifiers,
             int format = 0, string delimiter = ";", string referencesDelimiter = ",")
         {
             var res = "";

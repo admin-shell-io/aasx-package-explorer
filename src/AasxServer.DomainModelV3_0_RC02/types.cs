@@ -10665,7 +10665,7 @@ namespace AasCore.Aas3_0_RC02
             Extensions = extensions;
             IdShort = idShort;
             DisplayName = displayName;
-            Category = category;    
+            Category = category;
             Description = description;
             Checksum = checksum;
             Id = id;

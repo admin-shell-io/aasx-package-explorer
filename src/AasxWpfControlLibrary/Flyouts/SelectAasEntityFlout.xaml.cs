@@ -127,7 +127,7 @@ namespace AasxPackageExplorer
                 ControlClosed?.Invoke();
             }
         }
-       
+
         private void FilterFor(string filter)
         {
             filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(filter);
@@ -137,7 +137,7 @@ namespace AasxPackageExplorer
                 lazyLoadingFirst: true);
         }
 
-        
+
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (DiaData?.PrepareResult(DisplayElements.SelectedItem, DiaData?.Filter) == true)

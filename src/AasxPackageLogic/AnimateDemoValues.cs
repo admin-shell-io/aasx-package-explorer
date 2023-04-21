@@ -119,7 +119,7 @@ namespace AasxPackageLogic
 
         public void Animate(
             Aas.Property prop,
-            Action<Aas.Property, IAasDiaryEntry> emitEvent) 
+            Action<Aas.Property, IAasDiaryEntry> emitEvent)
         {
             // prop needs to exists and have qualifiers
             var ext = prop.HasExtensionOfName("Animate.Args");

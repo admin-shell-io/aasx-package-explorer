@@ -241,7 +241,7 @@ namespace AasxPluginImageMap
                         UpdateMode = AnyUiRenderMode.StatusToUi,
                         UseInnerGrid = true
                     };
-                });            
+                });
 
             // add an Canvas on the same place as the image
             _canvas = AnyUiUIElement.RegisterControl(
@@ -355,7 +355,7 @@ namespace AasxPluginImageMap
                         targetReference = targetRf
                     });
             }
-            
+
             return new AnyUiLambdaActionNone();
         }
 
@@ -371,7 +371,7 @@ namespace AasxPluginImageMap
                 return;
 
             // image
-            
+
             // file?
             var fe = _submodel.SubmodelElements.FindFirstSemanticIdAs<Aas.File>(
                 AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile,
@@ -392,9 +392,9 @@ namespace AasxPluginImageMap
                     _backgroundImage.ScaleCoordinates = veArgs.scale;
                 }
 
-                var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, fe.Value, 
+                var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, fe.Value,
                             scalePercentage: percent);
-            
+
                 if (bi != null)
                 {
                     bi.ConvertTo96dpi = true;
@@ -709,8 +709,8 @@ namespace AasxPluginImageMap
             public double? EvalAsDouble(bool forceDouble = false)
             {
                 // try to convert to double
-                if ((forceDouble 
-                    || ValueType == Aas.DataTypeDefXsd.Float 
+                if ((forceDouble
+                    || ValueType == Aas.DataTypeDefXsd.Float
                     || ValueType == Aas.DataTypeDefXsd.Double))
                 {
                     if (double.TryParse("" + Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))

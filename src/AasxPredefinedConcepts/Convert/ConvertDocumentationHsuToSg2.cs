@@ -98,11 +98,11 @@ namespace AasxPredefinedConcepts.Convert
                     {
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
                                 new Aas.ConceptDescription(
-                                    conceptDescription.Id, conceptDescription.Extensions, 
-                                    conceptDescription.Category, conceptDescription.IdShort, 
-                                    conceptDescription.DisplayName, conceptDescription.Description, 
-                                    conceptDescription.Checksum, conceptDescription.Administration, 
-                                    conceptDescription.EmbeddedDataSpecifications, 
+                                    conceptDescription.Id, conceptDescription.Extensions,
+                                    conceptDescription.Category, conceptDescription.IdShort,
+                                    conceptDescription.DisplayName, conceptDescription.Description,
+                                    conceptDescription.Checksum, conceptDescription.Administration,
+                                    conceptDescription.EmbeddedDataSpecifications,
                                     conceptDescription.IsCaseOf));
                     }
 
@@ -120,7 +120,7 @@ namespace AasxPredefinedConcepts.Convert
                 //using (var smcDoc = Aas.SubmodelElementCollection.CreateNew("" + smcSource.IdShort,
                 //            smcSource.Category,
                 //            Aas.Key.GetFromRef(defsSg2.CD_VDI2770_Document.GetCdReference())))
-                
+
                 Aas.SubmodelElementCollection smcDoc = new Aas.SubmodelElementCollection(idShort: "" + smcSource.IdShort, category: smcSource.Category, semanticId: defsSg2.CD_VDI2770_Document.GetCdReference());
                 //using (var smcDocVersion = Aas.SubmodelElementCollection.CreateNew("DocumentVersion",
                 //            smcSource.Category,

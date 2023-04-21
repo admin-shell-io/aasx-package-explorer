@@ -1390,7 +1390,7 @@ namespace AasxIntegrationBase.AasForms
             {
                 // some more preferences
                 if (parentDesc.allowedValueTypes != null && parentDesc.allowedValueTypes.Length >= 1)
-                    p.ValueType = Aas.Stringification.DataTypeDefXsdFromString(parentDesc.allowedValueTypes[0]) 
+                    p.ValueType = Aas.Stringification.DataTypeDefXsdFromString(parentDesc.allowedValueTypes[0])
                         ?? Aas.DataTypeDefXsd.String;
 
                 if (parentDesc.presetValue != null && parentDesc.presetValue.Length > 0)
@@ -1945,7 +1945,7 @@ namespace AasxIntegrationBase.AasForms
             if (reSource != null)
             {
                 // take over
-                if (reSource.Value != null) 
+                if (reSource.Value != null)
                     re.Value = reSource.Value.Copy();
             }
 
@@ -2113,7 +2113,7 @@ namespace AasxIntegrationBase.AasForms
             var reSource = this.sourceSme as Aas.RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                if (re.First != null) 
+                if (re.First != null)
                     reSource.First = re.First.Copy();
                 if (re.Second != null)
                     reSource.Second = re.Second.Copy();

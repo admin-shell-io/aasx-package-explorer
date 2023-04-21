@@ -26,7 +26,7 @@ namespace AdminShellNS
 
         public static string FormatError(Exception ex, string where)
         {
-            var res =  string.Format("Error: {0}: {1} {2} at {3}.",
+            var res = string.Format("Error: {0}: {1} {2} at {3}.",
                 where,
                 ex.Message,
                 ex.GetExceptionMessages(),

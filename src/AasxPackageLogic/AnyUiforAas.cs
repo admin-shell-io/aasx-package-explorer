@@ -132,126 +132,126 @@ namespace AasxPackageLogic
                 Filter = filter;
         }
 
-		public static string ApplyFullFilterString(string filter)
-		{
-			if (filter == null)
-				return null;
-			var res = filter;
-			if (res.Trim().ToLower() == "submodelelement")
-				foreach (var s in Enum.GetNames(typeof(Aas.AasSubmodelElements)))
-					res += " " + s + " ";
-			if (res.Trim().ToLower() == "all")
-				return null;
-			else
-				return " " + res + " ";
-		}
+        public static string ApplyFullFilterString(string filter)
+        {
+            if (filter == null)
+                return null;
+            var res = filter;
+            if (res.Trim().ToLower() == "submodelelement")
+                foreach (var s in Enum.GetNames(typeof(Aas.AasSubmodelElements)))
+                    res += " " + s + " ";
+            if (res.Trim().ToLower() == "all")
+                return null;
+            else
+                return " " + res + " ";
+        }
 
-		public static bool CheckFilter(string givenFilter, string singleName)
-		{
-			// special case
-			var ff = ApplyFullFilterString(givenFilter);
-			if (ff == null)
-				return true;
+        public static bool CheckFilter(string givenFilter, string singleName)
+        {
+            // special case
+            var ff = ApplyFullFilterString(givenFilter);
+            if (ff == null)
+                return true;
 
-			// regular
-			return (
-				givenFilter == null || singleName == null
-				|| ff.ToLower().IndexOf($"{singleName.ToLower().Trim()} ", StringComparison.Ordinal) >= 0);
-		}
+            // regular
+            return (
+                givenFilter == null || singleName == null
+                || ff.ToLower().IndexOf($"{singleName.ToLower().Trim()} ", StringComparison.Ordinal) >= 0);
+        }
 
-		public bool PrepareResult(
+        public bool PrepareResult(
             VisualElementGeneric selectedItem,
             string filter)
-		{
-			// access
-			if (selectedItem == null)
-				return false;
-			var siMdo = selectedItem.GetMainDataObject();
+        {
+            // access
+            if (selectedItem == null)
+                return false;
+            var siMdo = selectedItem.GetMainDataObject();
 
-			// already one result
-			ResultVisualElement = selectedItem;
+            // already one result
+            ResultVisualElement = selectedItem;
 
-			//
-			// IReferable
-			//
-			if (siMdo is Aas.IReferable dataRef)
-			{
-				// check if a valuable item was selected
-				// new special case: "GlobalReference" allows to select all (2021-09-11)
-				var skip = filter != null &&
-					filter.Trim().ToLower() == Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference).Trim().ToLower();
-				if (!skip)
-				{
-					var elemname = dataRef.GetSelfDescription().AasElementName;
-					var fullFilter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(filter);
-					if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
-						return false;
-				}
+            //
+            // IReferable
+            //
+            if (siMdo is Aas.IReferable dataRef)
+            {
+                // check if a valuable item was selected
+                // new special case: "GlobalReference" allows to select all (2021-09-11)
+                var skip = filter != null &&
+                    filter.Trim().ToLower() == Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference).Trim().ToLower();
+                if (!skip)
+                {
+                    var elemname = dataRef.GetSelfDescription().AasElementName;
+                    var fullFilter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(filter);
+                    if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
+                        return false;
+                }
 
-				// ok, prepare list of keys
-				ResultKeys = selectedItem.BuildKeyListToTop();
+                // ok, prepare list of keys
+                ResultKeys = selectedItem.BuildKeyListToTop();
 
-				return true;
-			}
+                return true;
+            }
 
-			//
-			// other special cases
-			//
-			if (siMdo is Aas.Reference smref &&
-				AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "submodelref"))
-			{
-				ResultKeys = new List<Aas.Key>();
-				ResultKeys.AddRange(smref.Keys);
-				return true;
-			}
+            //
+            // other special cases
+            //
+            if (siMdo is Aas.Reference smref &&
+                AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "submodelref"))
+            {
+                ResultKeys = new List<Aas.Key>();
+                ResultKeys.AddRange(smref.Keys);
+                return true;
+            }
 
-			if (selectedItem is VisualElementPluginExtension vepe)
-			{
-				// get main data object of the parent of the plug in ..
-				var parentMdo = vepe.Parent.GetMainDataObject();
-				if (parentMdo != null)
-				{
-					// safe to return a list for the parent ..
-					// (include AAS, as this is important to plug-ins)
-					ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+            if (selectedItem is VisualElementPluginExtension vepe)
+            {
+                // get main data object of the parent of the plug in ..
+                var parentMdo = vepe.Parent.GetMainDataObject();
+                if (parentMdo != null)
+                {
+                    // safe to return a list for the parent ..
+                    // (include AAS, as this is important to plug-ins)
+                    ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
 
-					// .. enriched by a last element
-					ResultKeys.Add(new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag));
+                    // .. enriched by a last element
+                    ResultKeys.Add(new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag));
 
-					// ok
-					return true;
-				}
-			}
+                    // ok
+                    return true;
+                }
+            }
 
-			if (selectedItem is VisualElementAsset veass
-				&& AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "AssetInformation")
-				&& veass.theAsset != null)
-			{
-				// prepare data
-				ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
-				return true;
-			}
+            if (selectedItem is VisualElementAsset veass
+                && AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "AssetInformation")
+                && veass.theAsset != null)
+            {
+                // prepare data
+                ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+                return true;
+            }
 
-			if (selectedItem is VisualElementOperationVariable veov
-				&& AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "OperationVariable")
-				&& veov.theOpVar?.Value != null)
-			{
-				// prepare data
-				ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
-				return true;
-			}
+            if (selectedItem is VisualElementOperationVariable veov
+                && AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "OperationVariable")
+                && veov.theOpVar?.Value != null)
+            {
+                // prepare data
+                ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+                return true;
+            }
 
-			if (selectedItem is VisualElementSupplementalFile vesf && vesf.theFile != null)
-			{
-				// prepare data
-				ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
-				return true;
-			}
+            if (selectedItem is VisualElementSupplementalFile vesf && vesf.theFile != null)
+            {
+                // prepare data
+                ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+                return true;
+            }
 
-			// uups
-			return false;
-		}
-	}
+            // uups
+            return false;
+        }
+    }
 
     public class AnyUiDialogueDataSelectReferableFromPool : AnyUiDialogueDataBase
     {
@@ -270,48 +270,48 @@ namespace AasxPackageLogic
         }
     }
 
-	public class AnyUiDialogueDataSelectFromRepository : AnyUiDialogueDataBase
-	{
+    public class AnyUiDialogueDataSelectFromRepository : AnyUiDialogueDataBase
+    {
         /// <summary>
         /// Limit the number of buttons shown in the dialogue.
         /// </summary>
         public static int MaxButtonsToShow = 20;
 
-		public IList<PackageContainerRepoItem> Items = null;
-		public PackageContainerRepoItem ResultItem = null;
+        public IList<PackageContainerRepoItem> Items = null;
+        public PackageContainerRepoItem ResultItem = null;
 
-		public AnyUiDialogueDataSelectFromRepository(
-			string caption = "",
-			double? maxWidth = null)
-			: base(caption, maxWidth)
-		{
-		}
+        public AnyUiDialogueDataSelectFromRepository(
+            string caption = "",
+            double? maxWidth = null)
+            : base(caption, maxWidth)
+        {
+        }
 
         public PackageContainerRepoItem SearchId(string aid)
         {
-			// condition
-			aid = aid?.Trim().ToLower();
-			if (aid?.HasContent() != true)
-				return null;
+            // condition
+            aid = aid?.Trim().ToLower();
+            if (aid?.HasContent() != true)
+                return null;
 
-			// first compare against tags
-			if (this.Items != null)
-				foreach (var ri in this.Items)
-					if (aid == ri.Tag.Trim().ToLower())
-						return ri;
+            // first compare against tags
+            if (this.Items != null)
+                foreach (var ri in this.Items)
+                    if (aid == ri.Tag.Trim().ToLower())
+                        return ri;
 
-			// if not, compare asset ids
-			if (this.Items != null)
-				foreach (var ri in this.Items)
-					foreach (var id in ri.EnumerateAssetIds())
-						if (aid == id.Trim().ToLower())
-							return ri;
+            // if not, compare asset ids
+            if (this.Items != null)
+                foreach (var ri in this.Items)
+                    foreach (var id in ri.EnumerateAssetIds())
+                        if (aid == id.Trim().ToLower())
+                            return ri;
 
-			return null;
-		}
-	}
+            return null;
+        }
+    }
 
-	public class AnyUiDialogueDataSelectQualifierPreset : AnyUiDialogueDataBase
+    public class AnyUiDialogueDataSelectQualifierPreset : AnyUiDialogueDataBase
     {
         // in
         // (the presets will be provided by the technology implementation)

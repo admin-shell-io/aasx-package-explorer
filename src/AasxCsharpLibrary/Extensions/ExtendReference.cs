@@ -31,7 +31,7 @@ namespace Extensions
         /// <returns>Reference with guessed type</returns>
         public static Reference CreateFromKey(Key k)
         {
-            var res = new Reference(ReferenceTypes.GlobalReference, new List<Key> { k });   
+            var res = new Reference(ReferenceTypes.GlobalReference, new List<Key> { k });
             res.Type = res.GuessType();
             return res;
         }
@@ -43,11 +43,11 @@ namespace Extensions
         public static Reference CreateFromKey(KeyTypes type,
             string value)
         {
-            var res = new Reference(ReferenceTypes.GlobalReference, 
+            var res = new Reference(ReferenceTypes.GlobalReference,
                         new List<Key> { new Key(type, value) });
             res.Type = res.GuessType();
             return res;
-        }        
+        }
 
         /// <summary>
         /// Formaly a static constructor.
@@ -109,18 +109,18 @@ namespace Extensions
             }
 
             return false;
-        } 
+        }
 
         #endregion
 
-        public static bool Matches (this Reference reference, KeyTypes keyType, string id, MatchMode matchMode = MatchMode.Strict)
+        public static bool Matches(this Reference reference, KeyTypes keyType, string id, MatchMode matchMode = MatchMode.Strict)
         {
-            if(reference.IsEmpty())
+            if (reference.IsEmpty())
             {
                 return false;
             }
 
-            if(reference.Keys.Count == 1)
+            if (reference.Keys.Count == 1)
             {
                 var key = reference.Keys[0];
                 return key.Matches(new Key(keyType, id), matchMode);
@@ -163,7 +163,7 @@ namespace Extensions
 
         public static bool MatchesExactlyOneKey(this Reference reference, Key key, MatchMode matchMode = MatchMode.Strict)
         {
-            if(key == null || reference.Keys == null || reference.Keys.Count != 1)
+            if (key == null || reference.Keys == null || reference.Keys.Count != 1)
             {
                 return false;
             }
@@ -214,7 +214,7 @@ namespace Extensions
 
         public static string ToStringExtended(this Reference reference, int format = 1, string delimiter = ",")
         {
-            if(reference.Keys == null)
+            if (reference.Keys == null)
             {
                 throw new NullValueException("Keys");
             }
@@ -241,8 +241,8 @@ namespace Extensions
         }
 
         public static Key Last(this Reference rf)
-        { 
-            return rf.Keys.Last(); 
+        {
+            return rf.Keys.Last();
         }
 
         public static string ListOfValues(this Reference rf, string delim)

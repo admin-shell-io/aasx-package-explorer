@@ -50,7 +50,7 @@ namespace BlazorUI.Data
                     var ddof = new AnyUiDialogueDataOpenFile();
                     ddof.OriginalFileName = file.Name;
                     ddof.TargetFileName = fn;
-                        
+
                     Status = System.IO.Path.GetFileName(file.Name) + " uploaded. " + DefaultStatus;
 
                     await FileDropped?.Invoke(ddof);

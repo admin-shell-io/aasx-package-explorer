@@ -37,7 +37,7 @@ namespace AasxPluginSmdExporter
         {
             var rec = new SmdExporterOptionsRecord();
             var key = AasxPredefinedConcepts.SmdExporter.Static.SEM_SmdExporterSubmodel.GetAsExactlyOneKey();
-            rec.AllowSubmodelSemanticId.Add( new AdminShellV20.Key(key.Type.ToString(), true, "", key.Value));
+            rec.AllowSubmodelSemanticId.Add(new AdminShellV20.Key(key.Type.ToString(), true, "", key.Value));
 
             var opt = new SmdExporterOptions();
             opt.Records.Add(rec);

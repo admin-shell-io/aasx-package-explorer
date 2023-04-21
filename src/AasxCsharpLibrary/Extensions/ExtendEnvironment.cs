@@ -188,7 +188,7 @@ namespace Extensions
                     var newAas = new AssetAdministrationShell(id: sourceAas.identification.id, null);
                     newAas = newAas.ConvertFromV20(sourceAas);
                     environment.AssetAdministrationShells.Add(newAas);
-                    
+
                     var sourceAsset = sourceEnvironement?.FindAsset(sourceAas.assetRef);
                     if (sourceAsset != null)
                     {
@@ -594,9 +594,9 @@ namespace Extensions
 
         //TODO: jtikekar Need to test
         public static IReferable FindReferableByReference(
-            this AasCore.Aas3_0_RC02.Environment environment, 
-            Reference reference, 
-            int keyIndex = 0, 
+            this AasCore.Aas3_0_RC02.Environment environment,
+            Reference reference,
+            int keyIndex = 0,
             List<ISubmodelElement> submodelElementList = null,
             ReferableRootInfo rootInfo = null)
         {
@@ -682,7 +682,7 @@ namespace Extensions
                         // No?
                         if (submodel == null)
                             return null;
-                        
+
                         // notice in side info
                         if (rootInfo != null)
                         {
@@ -715,7 +715,7 @@ namespace Extensions
             if (firstKeyType.IsSME() && submodelElementList != null)
             {
                 var submodelElement = submodelElementList.Where(
-                    sme => sme.IdShort.Equals(keyList[keyIndex].Value, 
+                    sme => sme.IdShort.Equals(keyList[keyIndex].Value,
                         StringComparison.OrdinalIgnoreCase)).First();
 
                 //This is required element
@@ -906,7 +906,7 @@ namespace Extensions
                 }
 
                 // rename old Asset
-                assetOld.AssetInformation.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, newId)});
+                assetOld.AssetInformation.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, newId) });
 
                 // seems fine
                 return res;
@@ -918,14 +918,14 @@ namespace Extensions
 
         public static AssetAdministrationShell FindAasWithAssetInformation(this AasCore.Aas3_0_RC02.Environment environment, string globalAssetId)
         {
-            if(string.IsNullOrEmpty(globalAssetId))
+            if (string.IsNullOrEmpty(globalAssetId))
             {
                 return null;
             }
 
-            foreach(var aas in environment.AssetAdministrationShells)
+            foreach (var aas in environment.AssetAdministrationShells)
             {
-                if(aas.AssetInformation.GlobalAssetId.GetAsIdentifier().Equals(globalAssetId))
+                if (aas.AssetInformation.GlobalAssetId.GetAsIdentifier().Equals(globalAssetId))
                 {
                     return aas;
                 }
@@ -971,7 +971,7 @@ namespace Extensions
             return res;
         }
 
-        public static Reference CopySubmodelRefAndCD( this AasCore.Aas3_0_RC02.Environment environment,
+        public static Reference CopySubmodelRefAndCD(this AasCore.Aas3_0_RC02.Environment environment,
                 AasCore.Aas3_0_RC02.Environment srcEnv, Reference srcSubRef, bool copySubmodel = false, bool copyCD = false,
                 bool shallowCopy = false)
         {
@@ -985,7 +985,7 @@ namespace Extensions
                 return null;
 
             // 1st result pretty easy (calling function will add this to the appropriate AAS)
-            var dstSubRef =srcSubRef.Copy();
+            var dstSubRef = srcSubRef.Copy();
 
             // get the destination and shall src != dst
             var dstSub = environment.FindSubmodel(dstSubRef);

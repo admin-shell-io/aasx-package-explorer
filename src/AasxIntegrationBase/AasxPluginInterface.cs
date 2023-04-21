@@ -305,7 +305,7 @@ namespace AasxIntegrationBase
         protected PluginSessionCollection _sessions = new PluginSessionCollection();
 
         protected string _pluginName = "(not initialized)";
-        
+
         public string PluginName { get { return _pluginName; } set { _pluginName = value; } }
 
         public string GetPluginName()

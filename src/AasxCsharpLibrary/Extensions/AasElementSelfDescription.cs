@@ -22,7 +22,7 @@ namespace Extensions
         {
             AasElementName = aasElementName;
             ElementAbbreviation = elementAbbreviation;
-            KeyType = keyType; 
+            KeyType = keyType;
             SmeType = smeType;
         }
     }

@@ -681,7 +681,7 @@ namespace AasxPackageLogic.PackageCentral
                     && dataRef is Aas.ISubmodelElement sme
                     && change.CreateAtIndex < 0)
                 {
-                    switch(parent)
+                    switch (parent)
                     {
                         case Aas.Submodel submodel:
                             {
@@ -738,7 +738,7 @@ namespace AasxPackageLogic.PackageCentral
                     && Env?.AasEnv != null)
                 {
                     Env.AasEnv.Submodels.Add(sm);
-                    if(parentAas.Submodels == null)
+                    if (parentAas.Submodels == null)
                     {
                         parentAas.Submodels = new List<Aas.Reference>();
                     }
@@ -792,7 +792,7 @@ namespace AasxPackageLogic.PackageCentral
                             {
                                 if (submodel.SubmodelElements != null)
                                 {
-                                    submodel.SubmodelElements.Remove(sme); 
+                                    submodel.SubmodelElements.Remove(sme);
                                 }
                                 break;
                             }
@@ -800,7 +800,7 @@ namespace AasxPackageLogic.PackageCentral
                             {
                                 if (submodelElementCollection.Value != null)
                                 {
-                                    submodelElementCollection.Value.Remove(sme); 
+                                    submodelElementCollection.Value.Remove(sme);
                                 }
                                 break;
                             }
@@ -808,7 +808,7 @@ namespace AasxPackageLogic.PackageCentral
                             {
                                 if (submodelElementList.Value != null)
                                 {
-                                    submodelElementList.Value.Remove(sme); 
+                                    submodelElementList.Value.Remove(sme);
                                 }
                                 break;
                             }
@@ -816,7 +816,7 @@ namespace AasxPackageLogic.PackageCentral
                             {
                                 if (annotatedRelationshipElement.Annotations != null)
                                 {
-                                    annotatedRelationshipElement.Annotations.Add((Aas.IDataElement)sme); 
+                                    annotatedRelationshipElement.Annotations.Add((Aas.IDataElement)sme);
                                 }
                                 break;
                             }

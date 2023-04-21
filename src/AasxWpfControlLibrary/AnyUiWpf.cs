@@ -290,7 +290,7 @@ namespace AnyUi
                 {
                     if (a is AnyUiFrameworkElement cntl && b is FrameworkElement wpf
                         && mode == AnyUiRenderMode.All)
-                    { 
+                    {
                         if (cntl.Margin != null)
                             wpf.Margin = GetWpfTickness(cntl.Margin);
                         if (cntl.VerticalAlignment.HasValue)
@@ -383,7 +383,7 @@ namespace AnyUi
                        if (rd?.FontSizeRel != null)
                             wpf.FontSize = SystemFonts.MessageFontSize * rd.FontSizeRel.Value;
                        if (cntl.FontSize.HasValue)
-                            wpf.FontSize = SystemFonts.MessageFontSize 
+                            wpf.FontSize = SystemFonts.MessageFontSize
                                 * (rd?.FontSizeRel != null ? rd.FontSizeRel.Value : 1.0f)
                                 * cntl.FontSize.Value;
                        if (cntl.FontWeight.HasValue)
@@ -1217,7 +1217,7 @@ namespace AnyUi
             // recurse (first) in the base types ..
             var bt = searchType.BaseType;
             if (bt != null)
-                GetOrCreateWpfElement(el, superType: bt, 
+                GetOrCreateWpfElement(el, superType: bt,
                     allowReUse: allowReUse, renderDefaults: renderDefaults);
 
             // perform the render action (for this level of attributes, second)
@@ -1230,7 +1230,7 @@ namespace AnyUi
                 if (el is AnyUiScrollViewer cntl && dd.WpfElement is ScrollViewer wpf
                     && cntl.Content != null)
                 {
-                    wpf.Content = GetOrCreateWpfElement(cntl.Content, 
+                    wpf.Content = GetOrCreateWpfElement(cntl.Content,
                         allowReUse: allowReUse, renderDefaults: renderDefaults);
                 }
             }
@@ -1593,14 +1593,14 @@ namespace AnyUi
                 res = uc;
             }
 
-			if (dialogueData is AnyUiDialogueDataSelectFromRepository ddfr)
-			{
-				var uc = new SelectFromRepositoryFlyout();
-				uc.DiaData = ddfr;
-				res = uc;
-			}
+            if (dialogueData is AnyUiDialogueDataSelectFromRepository ddfr)
+            {
+                var uc = new SelectFromRepositoryFlyout();
+                uc.DiaData = ddfr;
+                res = uc;
+            }
 
-			if (dialogueData is AnyUiDialogueDataSelectQualifierPreset ddsq)
+            if (dialogueData is AnyUiDialogueDataSelectQualifierPreset ddsq)
             {
                 var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
                 var uc = new SelectQualifierPresetFlyout(fullfn);
@@ -1871,7 +1871,7 @@ namespace AnyUi
 
             // no, via modal dialog?
             if (sourceFn?.HasContent() != true)
-            {              
+            {
                 if (await StartFlyoverModalAsync(uc))
                 {
                     // house keeping
@@ -1961,7 +1961,7 @@ namespace AnyUi
             // no, via modal dialog?
             if (targetFn?.HasContent() != true)
             {
-                
+
 
                 if (await StartFlyoverModalAsync(uc))
                 {

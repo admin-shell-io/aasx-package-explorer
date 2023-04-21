@@ -69,7 +69,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                     var res = new TraceStateStructuralChangeOneModify()
                     {
                         //CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(List<Aas.Key>.CreateNew(currKey))
-                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.Key>() { currKey})
+                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.Key>() { currKey })
                     };
                     return res;
                 }

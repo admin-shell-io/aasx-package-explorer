@@ -35,7 +35,7 @@ namespace AasxIntegrationBaseWpf
 
         public DynamicContextMenuDispalyDataWpf() { }
 
-        public DynamicContextMenuDispalyDataWpf(Control control) 
+        public DynamicContextMenuDispalyDataWpf(Control control)
         {
             Control = control;
         }
@@ -46,7 +46,7 @@ namespace AasxIntegrationBaseWpf
     /// WPF ContextMenu. For the time being, if is using AasxMeneu items and generates
     /// WPF ContextMenu from it.
     /// </summary>
-    public class DynamicContextMenu 
+    public class DynamicContextMenu
     {
         public AasxMenu Menu = new AasxMenu();
 
@@ -137,7 +137,7 @@ namespace AasxIntegrationBaseWpf
             // access
             if (Menu == null)
                 return;
-            
+
             // attach to menu
             if (lambdaAction != null)
             {
@@ -166,7 +166,7 @@ namespace AasxIntegrationBaseWpf
 
             // show
             cm.PlacementTarget = placementTarget;
-            cm.IsOpen = true;           
+            cm.IsOpen = true;
         }
     }
 }

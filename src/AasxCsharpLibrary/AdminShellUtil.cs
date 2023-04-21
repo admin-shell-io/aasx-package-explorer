@@ -116,7 +116,7 @@ namespace AdminShellNS
 
         public static ISubmodelElement CreateSubmodelElementFromEnum(AasSubmodelElements smeEnum, ISubmodelElement sourceSme = null)
         {
-            switch(smeEnum)
+            switch (smeEnum)
             {
                 case AasSubmodelElements.Property:
                     {
@@ -549,7 +549,7 @@ namespace AdminShellNS
                     break;
 
                 case TypeCode.Single:
-                    if (Single.TryParse("" + value, NumberStyles.Float, 
+                    if (Single.TryParse("" + value, NumberStyles.Float,
                         CultureInfo.InvariantCulture, out var sgl))
                         f.SetValue(obj, sgl);
                     break;

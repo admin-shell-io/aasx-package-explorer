@@ -117,7 +117,7 @@ namespace AasxPackageExplorer
             }
             return dsCollection;
         }
-                      
+
         public static Aas.SubmodelElementCollection BuildIntegerSchema(
             Aas.SubmodelElementCollection dsCollection, JToken interJObject)
         {
