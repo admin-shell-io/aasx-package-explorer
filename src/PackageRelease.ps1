@@ -30,26 +30,26 @@ function PackageRelease($outputDir)
     # Define plugins
     ##
     
-    #$smallPlugins = $(
-    #"AasxPluginAdvancedTextEditor",
-    #"AasxPluginBomStructure",
-    #"AasxPluginDocumentShelf",
-    #"AasxPluginExportTable",
-    #"AasxPluginGenericForms",
-    #"AasxPluginImageMap",
-    #"AasxPluginMtpViewer",
-    #"AasxPluginPlotting",
+    $smallPlugins = $(
+    "AasxPluginAdvancedTextEditor",
+    "AasxPluginBomStructure",
+    "AasxPluginDocumentShelf",
+    "AasxPluginExportTable",
+    "AasxPluginGenericForms",
+    "AasxPluginImageMap",
+    "AasxPluginMtpViewer",
+    "AasxPluginPlotting",
     #"AasxPluginSmdExporter",
-    #"AasxPluginTechnicalData",
+    "AasxPluginTechnicalData",
     #"AasxPluginUaNetClient",
     #"AasxPluginUaNetServer"
-    #)
+    )
 
-    #$allPlugins = $smallPlugins.Clone()
-    #$allPlugins += "AasxPluginWebBrowser"
+    $allPlugins = $smallPlugins.Clone()
+    $allPlugins += "AasxPluginWebBrowser"
 
-    #function MakePackage($identifier, $plugins)
-    function MakePackage($identifier)
+    #function MakePackage($identifier)
+    function MakePackage($identifier, $plugins)
     {
         $destinationDir = Join-Path $outputDir $identifier
 
@@ -87,7 +87,7 @@ function PackageRelease($outputDir)
         # Plug-ins
         ##
 
-        <#$pluginsDir = Join-Path $aasxPEDir "plugins"
+        $pluginsDir = Join-Path $aasxPEDir "plugins"
         New-Item -ItemType Directory -Force -Path $pluginsDir|Out-Null
 
         foreach ($plugin in $plugins)
@@ -97,7 +97,7 @@ function PackageRelease($outputDir)
                 -Path (Join-Path $buildDir $plugin) `
                 -Recurse `
                 -Destination $pluginsDir
-        }#>
+        }
 
         ##
         # Compress
@@ -145,7 +145,7 @@ function PackageRelease($outputDir)
     # Make packages
     ##
 
-    #MakePackage -identifier "aasx-package-explorer" -plugins $allPlugins
+    MakePackage -identifier "aasx-package-explorer" -plugins $allPlugins
 
     MakePackage -identifier "aasx-package-explorer-small" #-plugins $smallPlugins
 

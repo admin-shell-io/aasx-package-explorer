@@ -38,19 +38,19 @@ function Main
         # This list projects that are to be build for the release
         $projects = @(
         "AasxPackageExplorer"
-        #"AasxPluginAdvancedTextEditor",
-        #"AasxPluginBomStructure",
-        #"AasxPluginDocumentShelf",
-        #"AasxPluginExportTable",
-        #"AasxPluginGenericForms",
-        #"AasxPluginImageMap",
-        #"AasxPluginMtpViewer",
-        #"AasxPluginPlotting",
+        "AasxPluginAdvancedTextEditor",
+        "AasxPluginBomStructure",
+        "AasxPluginDocumentShelf",
+        "AasxPluginExportTable",
+        "AasxPluginGenericForms",
+        "AasxPluginImageMap",
+        "AasxPluginMtpViewer",
+        "AasxPluginPlotting",
         #"AasxPluginSmdExporter",
-        #"AasxPluginTechnicalData",
+        "AasxPluginTechnicalData",
         #"AasxPluginUaNetClient",
         #"AasxPluginUaNetServer",
-        #"AasxPluginWebBrowser",
+        "AasxPluginWebBrowser",
         "BlazorUI"
         )
 
