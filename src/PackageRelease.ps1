@@ -40,7 +40,7 @@ function PackageRelease($outputDir)
     "AasxPluginMtpViewer",
     "AasxPluginPlotting",
     #"AasxPluginSmdExporter",
-    "AasxPluginTechnicalData",
+    "AasxPluginTechnicalData"
     #"AasxPluginUaNetClient",
     #"AasxPluginUaNetServer"
     )
