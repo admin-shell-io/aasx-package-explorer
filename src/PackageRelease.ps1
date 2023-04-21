@@ -148,7 +148,7 @@ function PackageRelease($outputDir)
         $archPath = Join-Path $outputDir "$identifier.zip"
         Write-Host "* Compressing: $archPath"
         Compress-Archive `
-            -Path (Join-Path $destinationDir "BlazorUI") `
+            -Path (Join-Path $destinationDir "BlazorExplorer") `
             -DestinationPath $archPath
     }
 
