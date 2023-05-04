@@ -7,12 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxIntegrationBase.AasForms
 {
@@ -88,7 +86,7 @@ namespace AasxIntegrationBase.AasForms
         /// Preset for Referable.description
         /// </summary>
         [JsonProperty(Order = 7)]
-        public List<Aas.LangString> PresetDescription = null;
+        public List<Aas.ILangStringTextType> PresetDescription = null;
 
         /// <summary>
         /// SemanticId of the SubmodelElement. Always required.
@@ -125,12 +123,12 @@ namespace AasxIntegrationBase.AasForms
 
 #if !DoNotUseAasxCompatibilityModels
 
-        public static List<Aas.LangString> ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Description desc)
+        public static List<Aas.ILangStringTextType> ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Description desc)
         {
-            var res = new List<Aas.LangString>();
+            var res = new List<Aas.ILangStringTextType>();
             if (desc?.langString != null)
                 foreach (var ls in desc.langString)
-                    res.Add(new Aas.LangString(ls?.lang, ls?.str));
+                    res.Add(new Aas.LangStringTextType(ls?.lang, ls?.str));
             return res;
         }
 
@@ -588,7 +586,7 @@ namespace AasxIntegrationBase.AasForms
                 res.Value = this.presetValue;
             if (this.allowedValueTypes.Length == 1)
             {
-                res.ValueType = Aas.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0]) 
+                res.ValueType = Aas.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0])
                     ?? Aas.DataTypeDefXsd.String;
             }
             return res;

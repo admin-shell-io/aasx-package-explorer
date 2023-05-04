@@ -1,10 +1,7 @@
-﻿using AasCore.Aas3_0_RC02;
-using AdminShellNS.Display;
+﻿using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -37,9 +34,9 @@ namespace Extensions
 
         public static void Remove(this SubmodelElementCollection submodelElementCollection, ISubmodelElement submodelElement)
         {
-            if(submodelElementCollection != null)
+            if (submodelElementCollection != null)
             {
-                if(submodelElementCollection.Value != null)
+                if (submodelElementCollection.Value != null)
                 {
                     submodelElementCollection.Value.Remove(submodelElement);
                 }
@@ -51,7 +48,7 @@ namespace Extensions
             if (childSubmodelElement == null)
                 return null;
             if (submodelElementCollection.Value == null)
-                submodelElementCollection.Value = new ();
+                submodelElementCollection.Value = new();
             if (childSubmodelElement != null)
                 childSubmodelElement.Parent = submodelElementCollection;
             submodelElementCollection.Value.Add(childSubmodelElement);
@@ -170,7 +167,7 @@ namespace Extensions
 
             if (source is Operation srcOp)
             {
-                Action<List<ISubmodelElement>, List<OperationVariable>> appov = (dst, src) =>
+                Action<List<ISubmodelElement>, List<IOperationVariable>> appov = (dst, src) =>
                 {
                     if (src == null)
                         return;

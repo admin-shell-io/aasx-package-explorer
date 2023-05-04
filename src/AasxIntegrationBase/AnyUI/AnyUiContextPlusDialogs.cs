@@ -70,7 +70,7 @@ namespace AnyUi
     }
 
     public enum AnyUiContextCapability
-    { 
+    {
         /// <summary>
         /// Display is a WPF application. 
         /// Allows hardcoded behaviour. It is recommended to use
@@ -83,15 +83,15 @@ namespace AnyUi
         /// Allows hardcoded behaviour. It is recommended to use
         /// other capablities instead.
         /// </summary>
-        Blazor, 
-        
+        Blazor,
+
         /// <summary>
         /// Display can perform open/save dialogs and further without
         /// utilizing the singleton modal flyover.
         /// Note: display context allows only for one level of
         /// modal / flyover dialogues. NO stacking of dialogues.
         /// </summary>
-        DialogWithoutFlyover 
+        DialogWithoutFlyover
     };
 
     /// <summary>
@@ -251,13 +251,13 @@ namespace AnyUi
         }
 
         public async Task CheckIfDownloadAndStart(
-            LogInstance log, 
-            object location, 
+            LogInstance log,
+            object location,
             string fn,
             string contentType = "application/octet-stream")
         {
             if (location is string ls
-                && ls.Equals(AnyUiDialogueDataSaveFile.LocationKind.Download.ToString(), 
+                && ls.Equals(AnyUiDialogueDataSaveFile.LocationKind.Download.ToString(),
                     StringComparison.InvariantCultureIgnoreCase)
                 && WebBrowserServicesAllowed())
             {
@@ -275,7 +275,7 @@ namespace AnyUi
             }
         }
 
-       
+
         /// <summary>
         /// This function add single rows to a given grid (2 or 3 columns) having
         /// header, edit field and help text for a series of data fields given in

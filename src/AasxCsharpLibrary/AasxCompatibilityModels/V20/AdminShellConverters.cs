@@ -8,11 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using AasxCompatibilityModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -104,7 +100,7 @@ namespace AdminShell_V20
             /// Introduced for JSON serialization, can create Referables based on a string name
             /// </summary>
             /// <param name="elementName">string name (standard PascalCased)</param>
-            
+
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {

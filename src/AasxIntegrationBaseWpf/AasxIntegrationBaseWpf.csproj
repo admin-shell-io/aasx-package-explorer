@@ -7,7 +7,6 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
   </ItemGroup>

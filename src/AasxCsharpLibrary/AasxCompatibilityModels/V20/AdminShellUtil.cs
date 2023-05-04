@@ -11,12 +11,9 @@ using AasxCompatibilityModels;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 //namespace AdminShellNS
 namespace AdminShell_V20
@@ -187,7 +184,7 @@ namespace AdminShell_V20
         public static string CleanHereStringWithNewlines(string here, string nl = null)
         {
             if (nl == null)
-                nl = Environment.NewLine;
+                nl = System.Environment.NewLine;
             var lines = CleanHereStringToArray(here);
             if (lines == null)
                 return null;

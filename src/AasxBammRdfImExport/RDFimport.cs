@@ -10,17 +10,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 // ReSharper disable StringLastIndexOfIsCultureSpecific.1
 
+using AasxBammRdfImExport.RDFentities;
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using AasxBammRdfImExport.RDFentities;
 using VDS.RDF;
 using VDS.RDF.Parsing;
-using VDS.RDF.Writing;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxBammRdfImExport
 {
@@ -30,7 +27,7 @@ namespace AasxBammRdfImExport
         public static AdminShellNS.AdminShellPackageEnv thePackageEnv;
 
         public static void ImportInto(
-            string rdffn, Aas.Environment env, Aas.Submodel sm,
+            string rdffn, Aas.Environment env, Aas.ISubmodel sm,
             Aas.Reference smref)
         {
             thePackageEnv = new AdminShellNS.AdminShellPackageEnv();
@@ -461,7 +458,7 @@ namespace AasxBammRdfImExport
 
                     );
                     var msemanticID = ExtendReference.CreateFromKey(Aas.KeyTypes.ConceptDescription, semantic);
-                    var mp =  new Aas.Property(
+                    var mp = new Aas.Property(
                         Aas.DataTypeDefXsd.String, idShort: name, semanticId: msemanticID);
                     mp.Value = description;
                     et.Add(mp);

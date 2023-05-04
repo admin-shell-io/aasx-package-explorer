@@ -13,6 +13,9 @@
   <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
+	<ItemGroup>
+		<Using Include="AasCore.Aas3_0"/>
+	</ItemGroup>
   <ItemGroup>
     <None Remove="LICENSE.txt" />
     <None Remove="Resources\BuildDate.txt" />
@@ -39,7 +42,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AasxAmlImExport\AasxAmlImExport.csproj" />
     <ProjectReference Include="..\AasxBammRdfImExport\AasxBammRdfImExport.csproj" />
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />

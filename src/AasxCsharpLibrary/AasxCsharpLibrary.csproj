@@ -8,9 +8,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DefineConstants>TRACE;UseAasxCompatibilityModels</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup>
-    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-  </PropertyGroup>
+	<ItemGroup>
+		<Using Include="AasCore.Aas3_0"/>
+	</ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -40,6 +40,6 @@
     <PackageReference Include="System.IO.Packaging" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj" />
+    <ProjectReference Include="..\AasCore.Aas3_0\AasCore.Aas3_0.csproj" />
   </ItemGroup>
 </Project>

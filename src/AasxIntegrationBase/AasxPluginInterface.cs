@@ -7,11 +7,11 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AnyUi;
 using System;
 using System.Collections.Generic;
-using Aas = AasCore.Aas3_0_RC02;
-using AnyUi;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -145,7 +145,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginEventReturnSelectAasEntity : AasxPluginEventReturnBase
     {
-        public List<Aas.Key> resultKeys = null;
+        public List<Aas.IKey> resultKeys = null;
     }
 
     public class AasxPluginEventReturnSelectFile : AasxPluginEventReturnBase
@@ -305,7 +305,7 @@ namespace AasxIntegrationBase
         protected PluginSessionCollection _sessions = new PluginSessionCollection();
 
         protected string _pluginName = "(not initialized)";
-        
+
         public string PluginName { get { return _pluginName; } set { _pluginName = value; } }
 
         public string GetPluginName()

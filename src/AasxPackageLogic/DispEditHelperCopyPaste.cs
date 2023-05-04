@@ -7,18 +7,16 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AdminShellNS.Display;
 using AnyUi;
 using Extensions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
 {
@@ -115,8 +113,8 @@ namespace AasxPackageLogic
         public class CopyPasteItemSubmodel : CopyPasteItemBase
         {
             public object parentContainer = null;
-            public Aas.Reference smref = null;
-            public Aas.Submodel sm = null;
+            public Aas.IReference smref = null;
+            public Aas.ISubmodel sm = null;
 
             public override object GetMainDataObject() { return sm; }
 
@@ -125,8 +123,8 @@ namespace AasxPackageLogic
             public CopyPasteItemSubmodel(
                 object parentContainer,
                 object entity,
-                Aas.Reference smref,
-                Aas.Submodel sm)
+                Aas.IReference smref,
+                Aas.ISubmodel sm)
             {
                 this.parentContainer = parentContainer;
                 this.smref = smref;
@@ -138,7 +136,7 @@ namespace AasxPackageLogic
             {
                 if (smref == null && sm?.Id != null)
                 {
-                    smref = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, sm.Id) });
+                    smref = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, sm.Id) });
                 }
             }
 
@@ -238,19 +236,19 @@ namespace AasxPackageLogic
                 this.Items = null;
             }
 
-            public static Tuple<string[], List<Aas.Key>[]> PreparePresetsForListKeys(
+            public static Tuple<string[], List<Aas.IKey>[]> PreparePresetsForListKeys(
                 CopyPasteBuffer cpb, string label = "Paste")
             {
                 // add from Copy Buffer
-                List<Aas.Key> bufferKey = null;
+                List<Aas.IKey> bufferKey = null;
                 if (cpb != null && cpb.Valid && cpb.Items != null && cpb.Items.Count == 1)
                 {
                     if (cpb.Items[0] is CopyPasteItemIdentifiable cpbi && cpbi.entity?.Id != null)
-                        bufferKey = new List<Aas.Key>() { new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id)};
+                        bufferKey = new List<Aas.IKey>() { new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id) };
 
                     if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.SemanticId != null)
                         //bufferKey = List<Key>.CreateNew(cpbsm.sm.GetReference()?.First);
-                        bufferKey = new List<Aas.Key>() { cpbsm.sm.GetReference().Keys.First()};
+                        bufferKey = new List<Aas.IKey>() { cpbsm.sm.GetReference().Keys.First() };
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null
                         && cpbsme.env.Submodels != null)
@@ -260,13 +258,13 @@ namespace AasxPackageLogic
                             sm?.SetAllParents();
 
                         // collect buffer list
-                        bufferKey = new List<Aas.Key>();
+                        bufferKey = new List<Aas.IKey>();
                         cpbsme.sme.CollectReferencesByParent(bufferKey);
                     }
                 }
 
                 // result
-                return new Tuple<string[], List<Aas.Key>[]>(
+                return new Tuple<string[], List<Aas.IKey>[]>(
                     (bufferKey == null) ? null : new[] { label },
                     (bufferKey == null) ? null : new[] { bufferKey }
                 );
@@ -464,22 +462,22 @@ namespace AasxPackageLogic
                 var placement = pcop.GetChildrenPlacement(item.sme) as
                     EnumerationPlacmentOperationVariable;
                 if (placement != null)
-                    //pcop[placement.Direction].Remove(placement.OperationVariable);
+                //pcop[placement.Direction].Remove(placement.OperationVariable);
                 {
-                    if(placement.Direction == OperationVariableDirection.In)
+                    if (placement.Direction == OperationVariableDirection.In)
                     {
                         pcop.InputVariables.Remove(placement.OperationVariable);
                     }
-                    else if(placement.Direction == OperationVariableDirection.Out)
+                    else if (placement.Direction == OperationVariableDirection.Out)
                     {
                         pcop.OutputVariables.Remove(placement.OperationVariable);
                     }
-                    else if(placement.Direction == OperationVariableDirection.InOut)
+                    else if (placement.Direction == OperationVariableDirection.InOut)
                     {
                         pcop.InoutputVariables.Remove(placement.OperationVariable);
                     }
                 }
-                   
+
             }
         }
 
@@ -528,7 +526,7 @@ namespace AasxPackageLogic
                         cpbInternal.Duplicate = buttonNdx == 1;
                         EnumerationPlacmentBase placement = null;
                         //if (parentContainer is IEnumerateChildren enc) //No IEnumerateChildren in V3
-                            placement = parentContainer.GetChildrenPlacement(sme);
+                        placement = parentContainer.GetChildrenPlacement(sme);
                         cpbInternal.Items = new ListOfCopyPasteItem(
                             new CopyPasteItemSME(env, parentContainer, wrapper, sme, placement));
                         cpbInternal.CopyToClipboard(context, cpbInternal.Watermark);
@@ -629,7 +627,7 @@ namespace AasxPackageLogic
                                     createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
                                         annotations, smw2, wrapper, makeUnique);
                                 }
-                                    
+
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is Aas.Operation pcop && wrapper != null)
                                 {
@@ -639,7 +637,7 @@ namespace AasxPackageLogic
                                     {
                                         var op = new Aas.OperationVariable(smw2);
                                         var opVariables = pcop.GetVars(place.Direction);
-                                        createAtIndex = this.AddElementInListBefore<Aas.OperationVariable>(
+                                        createAtIndex = this.AddElementInListBefore<Aas.IOperationVariable>(
                                             opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
                                     }
@@ -684,7 +682,7 @@ namespace AasxPackageLogic
                                     {
                                         var op = new Aas.OperationVariable(smw2);
                                         var opVariables = pcop.GetVars(place.Direction);
-                                        createAtIndex = this.AddElementInListAfter<Aas.OperationVariable>(
+                                        createAtIndex = this.AddElementInListAfter<Aas.IOperationVariable>(
                                             opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
                                     }
@@ -742,8 +740,8 @@ namespace AasxPackageLogic
             List<T> parentContainer,
             T entity,
             Func<T, T> cloneEntity,
-            Aas.Reference smref,
-            Aas.Submodel sm,
+            Aas.IReference smref,
+            Aas.ISubmodel sm,
             string label = "Buffer:",
             Func<T, T, bool> checkEquality = null,
             Action<CopyPasteItemBase> extraAction = null,
@@ -780,7 +778,8 @@ namespace AasxPackageLogic
                     .AddAction("aas-elem-paste-into", "Paste into",
                         "Adds the content of the paste buffer into the currently selected collection-like element.",
                         inputGesture: "Ctrl+Alt+V"),
-                ticketAction: (buttonNdx, ticket) => {
+                ticketAction: (buttonNdx, ticket) =>
+                {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
                         // store info
@@ -952,7 +951,7 @@ namespace AasxPackageLogic
 
                             //if (sm is IEnumerateChildren smeec)
                             //    smeec.AddChild(smw2);
-                            
+
                             sm.AddChild(smw2);
 
                             // emit event

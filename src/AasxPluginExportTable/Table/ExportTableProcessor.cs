@@ -7,6 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxIntegrationBase.AasForms;
+using AdminShellNS;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,18 +22,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using AasxIntegrationBase;
-using AasxIntegrationBase.AasForms;
-using ClosedXML.Excel;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Newtonsoft.Json;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
 
@@ -43,13 +41,13 @@ namespace AasxPluginExportTable.Table
         /// </summary>
         public Aas.IReferable Parent;
 
-        public Aas.Submodel sm;
+        public Aas.ISubmodel sm;
         public Aas.ISubmodelElement sme;
-        public Aas.ConceptDescription cd;
+        public Aas.IConceptDescription cd;
 
         public ExportTableAasEntitiesItem(
-            int depth, Aas.Submodel sm = null, Aas.ISubmodelElement sme = null,
-            Aas.ConceptDescription cd = null,
+            int depth, Aas.ISubmodel sm = null, Aas.ISubmodelElement sme = null,
+            Aas.IConceptDescription cd = null,
             Aas.IReferable parent = null)
         {
             this.depth = depth;
@@ -176,14 +174,74 @@ namespace AasxPluginExportTable.Table
                 repDict[tag] = value;
             }
 
-            private void repLangStr(string head, Aas.LangString ls)
+            private void repLangStr(string head, Aas.ILangStringTextType ls)
             {
                 if (ls == null)
                     return;
                 rep(head + "@" + "" + ls.Language, "" + ls.Text);
             }
 
-            private void repListOfLangStr(string head, List<Aas.LangString> lss)
+            private void repLangStr(string head, Aas.ILangStringDefinitionTypeIec61360 ls)
+            {
+                if (ls == null)
+                    return;
+                rep(head + "@" + "" + ls.Language, "" + ls.Text);
+            }
+
+            private void repLangStr(string head, Aas.ILangStringShortNameTypeIec61360 ls)
+            {
+                if (ls == null)
+                    return;
+                rep(head + "@" + "" + ls.Language, "" + ls.Text);
+            }
+
+            private void repLangStr(string head, Aas.ILangStringPreferredNameTypeIec61360 ls)
+            {
+                if (ls == null)
+                    return;
+                rep(head + "@" + "" + ls.Language, "" + ls.Text);
+            }
+
+            private void repListOfLangStr(string head, List<Aas.ILangStringTextType> lss)
+            {
+                if (lss == null)
+                    return;
+
+                // entity in total
+                rep(head, "" + lss.ToString());
+
+                // single entities
+                foreach (var ls in lss)
+                    repLangStr(head, ls);
+            }
+
+            private void repListOfLangStr(string head, List<Aas.ILangStringDefinitionTypeIec61360> lss)
+            {
+                if (lss == null)
+                    return;
+
+                // entity in total
+                rep(head, "" + lss.ToString());
+
+                // single entities
+                foreach (var ls in lss)
+                    repLangStr(head, ls);
+            }
+
+            private void repListOfLangStr(string head, List<Aas.ILangStringShortNameTypeIec61360> lss)
+            {
+                if (lss == null)
+                    return;
+
+                // entity in total
+                rep(head, "" + lss.ToString());
+
+                // single entities
+                foreach (var ls in lss)
+                    repLangStr(head, ls);
+            }
+
+            private void repListOfLangStr(string head, List<Aas.ILangStringPreferredNameTypeIec61360> lss)
             {
                 if (lss == null)
                     return;
@@ -218,7 +276,7 @@ namespace AasxPluginExportTable.Table
                     rep(head + "parent", "" + (rfpar.IdShort != null ? rfpar.IdShort : "-"));
             }
 
-            private void repModelingKind(string head, Aas.ModelingKind? k)
+            private void repModelingKind(string head, Aas.ModellingKind? k)
             {
                 if (!k.HasValue)
                     return;
@@ -227,7 +285,7 @@ namespace AasxPluginExportTable.Table
                 rep(head + "kind", "" + k.ToString());
             }
 
-            private void repQualifiable(string head, List<Aas.Qualifier> qualifiers)
+            private void repQualifiable(string head, List<Aas.IQualifier> qualifiers)
             {
                 if (qualifiers == null)
                     return;
@@ -236,7 +294,7 @@ namespace AasxPluginExportTable.Table
                 rep(head + "qualifiers", "" + qualifiers.ToStringExtended(1));
             }
 
-            private void repMultiplicty(string head, List<Aas.Qualifier> qualifiers)
+            private void repMultiplicty(string head, List<Aas.IQualifier> qualifiers)
             {
                 // access
                 if (qualifiers == null)
@@ -274,7 +332,7 @@ namespace AasxPluginExportTable.Table
                 }
             }
 
-            private void repReference(string head, string refName, Aas.Reference rid)
+            private void repReference(string head, string refName, Aas.IReference rid)
             {
                 if (rid == null || refName == null || rid.Keys == null)
                     return;
@@ -346,7 +404,6 @@ namespace AasxPluginExportTable.Table
                     {
                         var head = "Parent.";
                         repReferable(head, parsme);
-                        repModelingKind(head, parsme.Kind);
                         repQualifiable(head, parsme.Qualifiers);
                         repMultiplicty(head, parsme.Qualifiers);
                         //-1- {Reference} = {semanticId, isCaseOf, unitId}
@@ -370,7 +427,6 @@ namespace AasxPluginExportTable.Table
                     {
                         var head = "SME.";
                         repReferable(head, sme);
-                        repModelingKind(head, sme.Kind);
                         repQualifiable(head, sme.Qualifiers);
                         repMultiplicty(head, sme.Qualifiers);
                         repReference(head, "semanticId", sme.SemanticId);
@@ -476,7 +532,7 @@ namespace AasxPluginExportTable.Table
                             //-2- Entity.{entityType, asset}
                             rep("Entity.entityType", "" + Aas.Stringification.ToString(ent.EntityType));
                             if (ent.GlobalAssetId != null)
-                                rep("Entity.globalAssetId", "" + ent.GlobalAssetId.ToStringExtended(1));
+                                rep("Entity.globalAssetId", "" + ent.GlobalAssetId);
                         }
                     }
 
@@ -1134,7 +1190,7 @@ namespace AasxPluginExportTable.Table
                 {
 
                     // make a table
-                    DocumentFormat.OpenXml.Wordprocessing.Table table = 
+                    DocumentFormat.OpenXml.Wordprocessing.Table table =
                         body.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Table());
 
                     // do a process on overall table cells

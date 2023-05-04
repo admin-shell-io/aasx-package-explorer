@@ -7,9 +7,6 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

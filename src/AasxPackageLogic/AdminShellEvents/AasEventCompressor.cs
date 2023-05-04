@@ -7,13 +7,11 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxIntegrationBase.AdminShellEvents
 {
@@ -37,7 +35,7 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         protected class TraceStateStructuralChangeOneModify : TraceStateBase
         {
-            public List<Aas.Key> CurrentPath;
+            public List<Aas.IKey> CurrentPath;
         }
 
         protected TraceStateBase FollowTraceState(TraceStateBase stateIn, AasEventMsgEnvelope ev)
@@ -60,7 +58,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                 // get a current key
                 var rf = evplsc.Changes[0].GetDataAsReferable();
                 rf.Parent = null;
-                Aas.Key currKey = rf.GetReference()?.Keys.Last();
+                Aas.IKey currKey = rf.GetReference()?.Keys.Last();
 
                 // Transition NULL -> structural change
                 if (currKey != null && stateIn == null)
@@ -68,8 +66,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                     // start new state
                     var res = new TraceStateStructuralChangeOneModify()
                     {
-                        //CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(List<Aas.Key>.CreateNew(currKey))
-                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.Key>() { currKey})
+                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.IKey>() { currKey })
                     };
                     return res;
                 }
@@ -79,7 +76,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                     && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath, MatchMode.Relaxed))
                 {
                     // happy path: continue state
-                    stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(new List<Aas.Key>() { currKey });
+                    stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(new List<Aas.IKey>() { currKey });
                     return stateCurr;
                 }
             }

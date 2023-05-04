@@ -114,7 +114,7 @@ namespace AasxIntegrationBaseGdi
                     var response = hc.GetAsync(path).GetAwaiter().GetResult();
 
                     // if you call response.EnsureSuccessStatusCode here it will throw an exception
-                    if (response.StatusCode == HttpStatusCode.Moved 
+                    if (response.StatusCode == HttpStatusCode.Moved
                         || response.StatusCode == HttpStatusCode.Found)
                     {
                         var location = response.Headers.Location;

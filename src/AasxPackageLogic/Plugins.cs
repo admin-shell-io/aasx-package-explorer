@@ -7,14 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using AasxIntegrationBase;
-using AasxIntegrationBase.AdminShellEvents;
-using Newtonsoft.Json;
 
 namespace AasxPackageLogic
 {
@@ -167,7 +167,7 @@ namespace AasxPackageLogic
                         Path.GetFileNameWithoutExtension(tagFn) + ".dll");
 
                 // present?
-                if (File.Exists(dllPath))
+                if (System.IO.File.Exists(dllPath))
                 {
                     var pi = new OptionsInformation.PluginDllInfo(dllPath);
                     infos.Add(pi);
@@ -222,7 +222,7 @@ namespace AasxPackageLogic
                             "Cannot invoke methods within instance from " +
                                 "class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
-                    }                    
+                    }
 
                     // adding
                     Log.Singleton.Info(".. adding plugin {0}", pi.name);
@@ -263,12 +263,12 @@ namespace AasxPackageLogic
                     if (x != null)
                     {
                         if (x.shortLicense.HasContent())
-                            res.shortLicense += x.shortLicense + Environment.NewLine;
+                            res.shortLicense += x.shortLicense + System.Environment.NewLine;
 
                         if (!x.isStandardLicense && x.longLicense.HasContent())
                         {
-                            res.longLicense += $"[{pi.name}]" + Environment.NewLine;
-                            res.longLicense += x.longLicense + Environment.NewLine + Environment.NewLine;
+                            res.longLicense += $"[{pi.name}]" + System.Environment.NewLine;
+                            res.longLicense += x.longLicense + System.Environment.NewLine + System.Environment.NewLine;
                         }
                     }
                 }

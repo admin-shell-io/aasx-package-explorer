@@ -12,30 +12,12 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasxIntegrationBase;
 using AasxPackageExplorer;
-using AasxPackageLogic.PackageCentral;
-using AasxPredefinedConcepts.Convert;
-using AasxSignature;
 using AnyUi;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
 using Extensions;
-using System.Windows;
-using Microsoft.VisualBasic.Logging;
-using AasCore.Aas3_0_RC02;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -71,7 +53,7 @@ namespace AasxPackageLogic
             // available elements in the environment
             var firstAas = pm.AssetAdministrationShells.FirstOrDefault();
 
-            Aas.Submodel firstSm = null;
+            Aas.ISubmodel firstSm = null;
             if (firstAas != null && firstAas.Submodels != null && firstAas.Submodels.Count > 0)
                 firstSm = pm.FindSubmodel(firstAas.Submodels[0]);
 

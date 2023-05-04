@@ -1,12 +1,6 @@
-﻿using AasCore.Aas3_0_RC02;
-using AdminShellNS.Display;
-using System;
+﻿using AdminShellNS.Display;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -29,19 +23,19 @@ namespace Extensions
 
             if (pl.Direction == OperationVariableDirection.In)
             {
-                operation.InputVariables ??= new List<OperationVariable>();
+                operation.InputVariables ??= new List<IOperationVariable>();
                 operation.InputVariables.Add(ov);
             }
 
             if (pl.Direction == OperationVariableDirection.Out)
             {
-                operation.OutputVariables ??= new List<OperationVariable>();
+                operation.OutputVariables ??= new List<IOperationVariable>();
                 operation.OutputVariables.Add(ov);
             }
 
             if (pl.Direction == OperationVariableDirection.InOut)
             {
-                operation.InoutputVariables ??= new List<OperationVariable>();
+                operation.InoutputVariables ??= new List<IOperationVariable>();
                 operation.InoutputVariables.Add(ov);
             }
 
@@ -56,7 +50,7 @@ namespace Extensions
 
             // search
             OperationVariableDirection? dir = null;
-            OperationVariable opvar = null;
+            IOperationVariable opvar = null;
             if (operation.InputVariables != null)
                 foreach (var ov in operation.InputVariables)
                     if (ov?.Value == child)
@@ -87,11 +81,11 @@ namespace Extensions
             return new EnumerationPlacmentOperationVariable()
             {
                 Direction = dir.Value,
-                OperationVariable = opvar
+                OperationVariable = opvar as OperationVariable
             };
         }
 
-        public static List<OperationVariable> GetVars(this Operation op, OperationVariableDirection dir)
+        public static List<IOperationVariable> GetVars(this Operation op, OperationVariableDirection dir)
         {
             if (dir == OperationVariableDirection.In)
                 return op.InputVariables;
@@ -100,8 +94,8 @@ namespace Extensions
             return op.InoutputVariables;
         }
 
-        public static List<OperationVariable> SetVars(
-            this Operation op, OperationVariableDirection dir, List<OperationVariable> value)
+        public static List<IOperationVariable> SetVars(
+            this Operation op, OperationVariableDirection dir, List<IOperationVariable> value)
         {
             if (dir == OperationVariableDirection.In)
             {
@@ -131,15 +125,22 @@ namespace Extensions
             if (source is SubmodelElementCollection srcColl)
             {
                 if (srcColl.Value != null)
-                    elem.InputVariables = srcColl.Value.Copy().Select(
+                {
+                    List<OperationVariable> operationVariables = srcColl.Value.Copy().Select(
                         (isme) => new OperationVariable(isme)).ToList();
+                    elem.InputVariables = operationVariables.ConvertAll(op => (IOperationVariable)op);
+                }
+
             }
 
             if (source is SubmodelElementCollection srcList)
             {
                 if (srcList.Value != null)
-                    elem.InputVariables = srcList.Value.Copy().Select(
+                {
+                    List<OperationVariable> operationVariables = srcList.Value.Copy().Select(
                         (isme) => new OperationVariable(isme)).ToList();
+                    elem.InputVariables = operationVariables.ConvertAll(op => (IOperationVariable)op);
+                }
             }
 
             return elem;

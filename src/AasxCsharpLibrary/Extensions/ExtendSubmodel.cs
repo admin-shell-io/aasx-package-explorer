@@ -1,11 +1,8 @@
-﻿using AasCore.Aas3_0_RC02;
-using AdminShellNS;
+﻿using AdminShellNS;
 using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -38,27 +35,27 @@ namespace Extensions
 
         public static void Remove(this Submodel submodel, ISubmodelElement submodelElement)
         {
-            if(submodel != null)
+            if (submodel != null)
             {
-                if(submodel.SubmodelElements != null)
+                if (submodel.SubmodelElements != null)
                 {
                     submodel.SubmodelElements.Remove(submodelElement);
                 }
             }
         }
 
-        public static object AddChild(this Submodel submodel,ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
+        public static object AddChild(this ISubmodel submodel, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
         {
             if (childSubmodelElement == null)
                 return null;
-            submodel.SubmodelElements ??= new ();
+            submodel.SubmodelElements ??= new();
             if (childSubmodelElement != null)
                 childSubmodelElement.Parent = submodel;
             submodel.SubmodelElements.Add(childSubmodelElement);
             return childSubmodelElement;
         }
 
-        public static Tuple<string, string> ToCaptionInfo(this Submodel submodel)
+        public static Tuple<string, string> ToCaptionInfo(this ISubmodel submodel)
         {
             var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", submodel.IdShort, "<no idShort!>");
             if (submodel.Administration != null)
@@ -69,10 +66,10 @@ namespace Extensions
             return Tuple.Create(caption, info);
         }
 
-        public static IEnumerable<LocatedReference> FindAllReferences(this Submodel submodel)
+        public static IEnumerable<LocatedReference> FindAllReferences(this ISubmodel submodel)
         {
             // not nice: use temp list
-            var temp = new List<Reference>();
+            var temp = new List<IReference>();
 
             // recurse
             submodel.RecurseOnSubmodelElements(null, (state, parents, sme) =>
@@ -97,7 +94,7 @@ namespace Extensions
         }
 
         #endregion
-        public static void Validate(this Submodel submodel,AasValidationRecordList results)
+        public static void Validate(this Submodel submodel, AasValidationRecordList results)
         {
             // access
             if (results == null)
@@ -105,7 +102,7 @@ namespace Extensions
 
             // check
             submodel.BaseValidation(results);
-            submodel.Kind.Value.Validate(results,submodel);
+            submodel.Kind.Value.Validate(results, submodel);
             submodel.SemanticId.Keys.Validate(results, submodel);
         }
         public static Submodel ConvertFromV10(this Submodel submodel, AasxCompatibilityModels.AdminShellV10.Submodel sourceSubmodel, bool shallowCopy = false)
@@ -136,7 +133,7 @@ namespace Extensions
 
             if (sourceSubmodel.semanticId != null)
             {
-                var keyList = new List<Key>();
+                var keyList = new List<IKey>();
                 foreach (var refKey in sourceSubmodel.semanticId.Keys)
                 {
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
@@ -149,18 +146,18 @@ namespace Extensions
                         Console.WriteLine($"KeyType value {refKey.type} not found.");
                     }
                 }
-                submodel.SemanticId = new Reference(ReferenceTypes.GlobalReference, keyList);
+                submodel.SemanticId = new Reference(ReferenceTypes.ExternalReference, keyList);
             }
 
             if (sourceSubmodel.kind != null)
             {
                 if (sourceSubmodel.kind.IsInstance)
                 {
-                    submodel.Kind = ModelingKind.Instance;
+                    submodel.Kind = ModellingKind.Instance;
                 }
                 else
                 {
-                    submodel.Kind = ModelingKind.Template;
+                    submodel.Kind = ModellingKind.Template;
                 }
             }
 
@@ -168,7 +165,7 @@ namespace Extensions
             {
                 if (submodel.Qualifiers == null && submodel.Qualifiers.Count != 0)
                 {
-                    submodel.Qualifiers = new List<Qualifier>();
+                    submodel.Qualifiers = new List<IQualifier>();
                 }
 
                 foreach (var sourceQualifier in sourceSubmodel.qualifiers)
@@ -225,7 +222,7 @@ namespace Extensions
 
             if (srcSM.semanticId != null)
             {
-                var keyList = new List<Key>();
+                var keyList = new List<IKey>();
                 foreach (var refKey in srcSM.semanticId.Keys)
                 {
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
@@ -238,18 +235,18 @@ namespace Extensions
                         Console.WriteLine($"KeyType value {refKey.type} not found.");
                     }
                 }
-                sm.SemanticId = new Reference(ReferenceTypes.GlobalReference, keyList);
+                sm.SemanticId = new Reference(ReferenceTypes.ExternalReference, keyList);
             }
 
             if (srcSM.kind != null)
             {
                 if (srcSM.kind.IsInstance)
                 {
-                    sm.Kind = ModelingKind.Instance;
+                    sm.Kind = ModellingKind.Instance;
                 }
                 else
                 {
-                    sm.Kind = ModelingKind.Template;
+                    sm.Kind = ModellingKind.Template;
                 }
             }
 
@@ -257,7 +254,7 @@ namespace Extensions
             {
                 if (sm.Qualifiers == null)
                 {
-                    sm.Qualifiers = new List<Qualifier>();
+                    sm.Qualifiers = new List<IQualifier>();
                 }
 
                 foreach (var sourceQualifier in srcSM.qualifiers)
@@ -294,7 +291,7 @@ namespace Extensions
             return sm;
         }
 
-        public static T FindFirstIdShortAs<T>(this Submodel submodel, string idShort) where T : ISubmodelElement
+        public static T FindFirstIdShortAs<T>(this ISubmodel submodel, string idShort) where T : ISubmodelElement
         {
 
             var submodelElement = submodel.SubmodelElements.Where(sme => (sme != null) && (sme is T) && sme.IdShort.Equals(idShort, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
@@ -302,7 +299,7 @@ namespace Extensions
             return (T)submodelElement;
         }
 
-        public static IEnumerable<T> FindDeep<T>(this Submodel submodel)
+        public static IEnumerable<T> FindDeep<T>(this ISubmodel submodel)
         {
             if (submodel.SubmodelElements == null || submodel.SubmodelElements.Count == 0)
             {
@@ -316,10 +313,10 @@ namespace Extensions
             }
         }
 
-        public static Reference GetModelReference(this Submodel submodel)
+        public static Reference GetModelReference(this ISubmodel submodel)
         {
             var key = new Key(KeyTypes.Submodel, submodel.Id);
-            var outputReference = new Reference(ReferenceTypes.ModelReference, new List<Key>() { key })
+            var outputReference = new Reference(ReferenceTypes.ModelReference, new List<IKey>() { key })
             {
                 ReferredSemanticId = submodel.SemanticId
             };
@@ -333,7 +330,7 @@ namespace Extensions
         /// </summary>
         public static Key GetSemanticKey(this Submodel submodel)
         {
-            if (submodel.Kind == ModelingKind.Instance)
+            if (submodel.Kind == ModellingKind.Instance)
                 return submodel.SemanticId.GetAsExactlyOneKey();
             else
                 return new Key(KeyTypes.Submodel, submodel.Id);
@@ -346,7 +343,7 @@ namespace Extensions
             return submodel.SubmodelElements;
         }
 
-        public static void RecurseOnSubmodelElements(this Submodel submodel, object state, Func<object, List<IReferable>, ISubmodelElement, bool> lambda)
+        public static void RecurseOnSubmodelElements(this ISubmodel submodel, object state, Func<object, List<IReferable>, ISubmodelElement, bool> lambda)
         {
             submodel.SubmodelElements?.RecurseOnReferables(state, null, (o, par, rf) =>
             {
@@ -357,7 +354,7 @@ namespace Extensions
             });
         }
 
-        public static ISubmodelElement FindSubmodelElementByIdShort(this Submodel submodel, string smeIdShort)
+        public static ISubmodelElement FindSubmodelElementByIdShort(this ISubmodel submodel, string smeIdShort)
         {
             if (submodel.SubmodelElements == null || submodel.SubmodelElements.Count == 0)
             {
@@ -375,7 +372,7 @@ namespace Extensions
             }
         }
 
-        public static void SetAllParents(this Submodel submodel, DateTime timestamp)
+        public static void SetAllParents(this ISubmodel submodel, DateTime timestamp)
         {
             if (submodel.SubmodelElements != null)
                 foreach (var sme in submodel.SubmodelElements)
@@ -410,7 +407,7 @@ namespace Extensions
             }
         }
 
-        public static void SetAllParents(this Submodel submodel)
+        public static void SetAllParents(this ISubmodel submodel)
         {
             if (submodel.SubmodelElements != null)
                 foreach (var sme in submodel.SubmodelElements)
@@ -428,7 +425,7 @@ namespace Extensions
             submodel.SubmodelElements.Add(submodelElement);
         }
 
-        public static void Insert(this Submodel submodel, int index, ISubmodelElement submodelElement)
+        public static void Insert(this ISubmodel submodel, int index, ISubmodelElement submodelElement)
         {
             if (submodel.SubmodelElements == null)
             {
@@ -440,7 +437,7 @@ namespace Extensions
         }
 
         public static T CreateSMEForCD<T>(
-            this Submodel sm, 
+            this Submodel sm,
             ConceptDescription conceptDescription, string category = null, string idShort = null,
             string idxTemplate = null, int maxNum = 999, bool addSme = false, bool isTemplate = false)
                 where T : ISubmodelElement

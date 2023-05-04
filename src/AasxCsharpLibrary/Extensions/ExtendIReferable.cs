@@ -1,13 +1,8 @@
-﻿using AasCore.Aas3_0_RC02;
-using AdminShellNS;
+﻿using AdminShellNS;
 using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -19,15 +14,15 @@ namespace Extensions
                 object state, Func<object, List<IReferable>, IReferable, bool> lambda,
                 bool includeThis = false)
         {
-            if(referable is Submodel submodel)
+            if (referable is Submodel submodel)
             {
                 submodel.RecurseOnReferables(state, lambda, includeThis);
             }
-            else if(referable is SubmodelElementCollection submodelElementCollection)
+            else if (referable is SubmodelElementCollection submodelElementCollection)
             {
                 submodelElementCollection.RecurseOnReferables(state, lambda, includeThis);
             }
-            else if(referable is SubmodelElementList submodelElementList)
+            else if (referable is SubmodelElementList submodelElementList)
             {
                 submodelElementList.RecurseOnReferables(state, lambda, includeThis);
             }
@@ -37,28 +32,28 @@ namespace Extensions
 
         public static void Remove(this IReferable referable, ISubmodelElement submodelElement)
         {
-            if(referable is Submodel submodel)
+            if (referable is Submodel submodel)
             {
                 submodel.Remove(submodelElement);
             }
-            else if(referable is AnnotatedRelationshipElement annotatedRelationshipElement)
+            else if (referable is AnnotatedRelationshipElement annotatedRelationshipElement)
             {
                 annotatedRelationshipElement.Remove(submodelElement);
             }
-            else if(referable is SubmodelElementCollection submodelElementCollection)
+            else if (referable is SubmodelElementCollection submodelElementCollection)
             {
                 submodelElementCollection.Remove(submodelElement);
             }
-            else if(referable is SubmodelElementList submodelElementList)
+            else if (referable is SubmodelElementList submodelElementList)
             {
                 submodelElementList.Remove(submodelElement);
             }
-            else if(referable is Entity entity)
+            else if (referable is Entity entity)
             {
                 entity.Remove(submodelElement);
             }
         }
-        
+
         public static void Add(this IReferable referable, ISubmodelElement submodelElement)
         {
             if (referable is Submodel submodel)
@@ -87,7 +82,7 @@ namespace Extensions
 
         public static EnumerationPlacmentBase GetChildrenPlacement(this IReferable referable, ISubmodelElement submodelElement)
         {
-            if(referable is Operation operation)
+            if (referable is Operation operation)
             {
                 return operation.GetChildrenPlacement(submodelElement);
             }
@@ -114,12 +109,12 @@ namespace Extensions
         #region ListOfReferables
         public static Reference GetReference(this List<IReferable> referables)
         {
-            return new Reference(ReferenceTypes.GlobalReference, referables.ToKeyList());
+            return new Reference(ReferenceTypes.ExternalReference, referables.ToKeyList());
         }
 
-        public static List<Key> ToKeyList(this List<IReferable> referables)
+        public static List<IKey> ToKeyList(this List<IReferable> referables)
         {
-            var res = new List<Key>();
+            var res = new List<IKey>();
             foreach (var rf in referables)
                 res.Add(new Key(rf.GetSelfDescription()?.KeyType ?? KeyTypes.GlobalReference, rf.IdShort));
             return res;
@@ -133,7 +128,7 @@ namespace Extensions
             return rf.IdShort.Trim();
         }
 
-        public static Reference GetReference(this IReferable referable)
+        public static IReference GetReference(this IReferable referable)
         {
             if (referable is IIdentifiable identifiable)
             {
@@ -146,19 +141,19 @@ namespace Extensions
             else
                 return null;
         }
-        public static void Validate(this IReferable referable,AasValidationRecordList results)
+        public static void Validate(this IReferable referable, AasValidationRecordList results)
         {
             referable.BaseValidation(results);
-            
-            if(referable is ConceptDescription conceptDescription)
+
+            if (referable is ConceptDescription conceptDescription)
             {
                 conceptDescription.Validate(results);
             }
-            else if(referable is Submodel submodel)
+            else if (referable is Submodel submodel)
             {
                 submodel.Validate(results);
             }
-            else if(referable is ISubmodelElement submodelElement)
+            else if (referable is ISubmodelElement submodelElement)
             {
                 submodelElement.Validate(results);
             }
@@ -202,107 +197,107 @@ namespace Extensions
         {
             if (referable is AssetAdministrationShell)
             {
-                return new AasElementSelfDescription("AssetAdministrationShell", "AAS", 
+                return new AasElementSelfDescription("AssetAdministrationShell", "AAS",
                     KeyTypes.AssetAdministrationShell, null);
             }
             else if (referable is ConceptDescription)
             {
-                return new AasElementSelfDescription("ConceptDescription", "CD", 
+                return new AasElementSelfDescription("ConceptDescription", "CD",
                     KeyTypes.ConceptDescription, null);
             }
             else if (referable is Submodel)
             {
-                return new AasElementSelfDescription("Submodel", "SM", 
+                return new AasElementSelfDescription("Submodel", "SM",
                     KeyTypes.Submodel, null);
             }
             else if (referable is Property)
             {
-                return new AasElementSelfDescription("Property", "Prop", 
+                return new AasElementSelfDescription("Property", "Prop",
                     KeyTypes.Property, AasSubmodelElements.Property);
             }
             else if (referable is MultiLanguageProperty)
             {
-                return new AasElementSelfDescription("MultiLanguageProperty", "MLP", 
+                return new AasElementSelfDescription("MultiLanguageProperty", "MLP",
                     KeyTypes.MultiLanguageProperty, AasSubmodelElements.MultiLanguageProperty);
             }
-            else if(referable is AasCore.Aas3_0_RC02.Range)
+            else if (referable is AasCore.Aas3_0.Range)
             {
-                return new AasElementSelfDescription("Range", "Range", 
+                return new AasElementSelfDescription("Range", "Range",
                     KeyTypes.Range, AasSubmodelElements.Range);
             }
-            else if(referable is Blob)
+            else if (referable is Blob)
             {
-                return new AasElementSelfDescription("Blob", "Blob", 
+                return new AasElementSelfDescription("Blob", "Blob",
                     KeyTypes.Blob, AasSubmodelElements.Blob);
             }
-            else if(referable is AasCore.Aas3_0_RC02.File)
+            else if (referable is AasCore.Aas3_0.File)
             {
-                return new AasElementSelfDescription("File", "File", 
+                return new AasElementSelfDescription("File", "File",
                     KeyTypes.File, AasSubmodelElements.File);
             }
-            else if(referable is ReferenceElement)
+            else if (referable is ReferenceElement)
             {
-                return new AasElementSelfDescription("ReferenceElement", "Ref", 
+                return new AasElementSelfDescription("ReferenceElement", "Ref",
                     KeyTypes.ReferenceElement, AasSubmodelElements.ReferenceElement);
             }
-            else if(referable is RelationshipElement)
+            else if (referable is RelationshipElement)
             {
-                return new AasElementSelfDescription("RelationshipElement", "Rel", 
+                return new AasElementSelfDescription("RelationshipElement", "Rel",
                     KeyTypes.RelationshipElement, AasSubmodelElements.RelationshipElement);
             }
-            else if(referable is AnnotatedRelationshipElement)
+            else if (referable is AnnotatedRelationshipElement)
             {
-                return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA", 
+                return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA",
                     KeyTypes.AnnotatedRelationshipElement, AasSubmodelElements.AnnotatedRelationshipElement);
             }
-            else if(referable is Capability)
+            else if (referable is Capability)
             {
-                return new AasElementSelfDescription("Capability", "Cap", 
+                return new AasElementSelfDescription("Capability", "Cap",
                     KeyTypes.Capability, AasSubmodelElements.Capability);
             }
-            else if(referable is SubmodelElementCollection)
+            else if (referable is SubmodelElementCollection)
             {
-                return new AasElementSelfDescription("SubmodelElementCollection", "SMC", 
+                return new AasElementSelfDescription("SubmodelElementCollection", "SMC",
                     KeyTypes.SubmodelElementCollection, AasSubmodelElements.SubmodelElementCollection);
             }
-            else if(referable is SubmodelElementList)
+            else if (referable is SubmodelElementList)
             {
-                return new AasElementSelfDescription("SubmodelElementList", "SML", 
+                return new AasElementSelfDescription("SubmodelElementList", "SML",
                     KeyTypes.SubmodelElementList, AasSubmodelElements.SubmodelElementList);
             }
-            else if(referable is Operation)
+            else if (referable is Operation)
             {
-                return new AasElementSelfDescription("Operation", "Opr", 
+                return new AasElementSelfDescription("Operation", "Opr",
                     KeyTypes.Operation, AasSubmodelElements.Operation);
             }
-            else if(referable is Entity)
+            else if (referable is Entity)
             {
-                return new AasElementSelfDescription("Entity", "Ent", 
+                return new AasElementSelfDescription("Entity", "Ent",
                     KeyTypes.Entity, AasSubmodelElements.Entity);
             }
-            else if(referable is BasicEventElement)
+            else if (referable is BasicEventElement)
             {
-                return new AasElementSelfDescription("BasicEventElement", "Evt", 
-                    
+                return new AasElementSelfDescription("BasicEventElement", "Evt",
+
                     KeyTypes.BasicEventElement, AasSubmodelElements.BasicEventElement);
             }
-            else if(referable is IDataElement)
+            else if (referable is IDataElement)
             {
-                return new AasElementSelfDescription("DataElement", "DE", 
+                return new AasElementSelfDescription("DataElement", "DE",
                     KeyTypes.DataElement, AasSubmodelElements.DataElement);
             }
-            else if(referable is ISubmodelElement)
+            else if (referable is ISubmodelElement)
             {
-                return new AasElementSelfDescription("SubmodelElement", "SME", 
+                return new AasElementSelfDescription("SubmodelElement", "SME",
                     KeyTypes.SubmodelElement, AasSubmodelElements.SubmodelElement);
             }
             else
             {
-                return new AasElementSelfDescription("Referable", "Ref", 
+                return new AasElementSelfDescription("Referable", "Ref",
                     KeyTypes.Referable, null);
             }
         }
-        public static void CollectReferencesByParent(this IReferable referable, List<Key> refs)
+        public static void CollectReferencesByParent(this IReferable referable, List<IKey> refs)
         {
             // access
             if (refs == null)
@@ -316,7 +311,7 @@ namespace Extensions
                 {
                     //var k = Key.CreateNew(
                     //    idf.GetElementName(), true, idf.identification?.idType, idf.identification?.id);
-                    
+
                     var key = new Key((KeyTypes)Stringification.KeyTypesFromString(idf.GetType().Name), idf.Id);
                     refs.Insert(0, key);
                 }
@@ -470,11 +465,11 @@ namespace Extensions
             return head + myid;
         }
 
-        public static void AddDescription(this IReferable referable,string language, string Text)
+        public static void AddDescription(this IReferable referable, string language, string Text)
         {
             if (referable.Description == null)
-                referable.Description = new List<LangString>();
-            referable.Description.Add(new LangString(language, Text));
+                referable.Description = new List<ILangStringTextType>();
+            referable.Description.Add(new LangStringTextType(language, Text));
         }
 
         public static List<IReferable> ListOfIReferableFrom(
@@ -511,7 +506,7 @@ namespace Extensions
             return jar;
         }
 
-        public static IEnumerable<Qualifier> FindAllQualifierType(this IReferable rf, string qualifierType)
+        public static IEnumerable<IQualifier> FindAllQualifierType(this IReferable rf, string qualifierType)
         {
             if (!(rf is IQualifiable rfq) || rfq.Qualifiers == null || qualifierType == null)
                 yield break;
@@ -520,7 +515,7 @@ namespace Extensions
                     yield return q;
         }
 
-        public static Qualifier HasQualifierOfType(this IReferable rf, string qualifierType)
+        public static IQualifier HasQualifierOfType(this IReferable rf, string qualifierType)
         {
             if (!(rf is IQualifiable rfq) || rfq.Qualifiers == null)
                 return null;
@@ -535,12 +530,12 @@ namespace Extensions
             if (!(rf is IQualifiable rfq))
                 return null;
             if (rfq.Qualifiers == null)
-                rfq.Qualifiers = new List<Qualifier>();
+                rfq.Qualifiers = new List<IQualifier>();
             rfq.Qualifiers.Add(q);
             return q;
         }
 
-        public static IEnumerable<Extension> FindAllExtensionName(this IReferable rf, string extensionName)
+        public static IEnumerable<IExtension> FindAllExtensionName(this IReferable rf, string extensionName)
         {
             if (!(rf is IHasExtensions rfe) || rfe.Extensions == null)
                 yield break;
@@ -550,7 +545,7 @@ namespace Extensions
         }
 
 
-        public static Extension HasExtensionOfName(this IReferable rf, string extensionName)
+        public static IExtension HasExtensionOfName(this IReferable rf, string extensionName)
         {
             if (!(rf is IHasExtensions rfe) || rfe.Extensions == null)
                 return null;
@@ -563,8 +558,8 @@ namespace Extensions
         public static Extension Add(this IReferable rf, Extension ext)
         {
             if (rf.Extensions == null)
-                rf.Extensions = new List<Extension>();
-            rf.Extensions.Add(ext); 
+                rf.Extensions = new List<IExtension>();
+            rf.Extensions.Add(ext);
             return ext;
         }
 
@@ -575,22 +570,22 @@ namespace Extensions
                 return;
 
             // Qualifiers to migrate
-            var toMigrate = new[] { 
+            var toMigrate = new[] {
                 "Animate.Args", "Plotting.Args", "TimeSeries.Args", "BOM.Args", "ImageMap.Args"
             };
 
-            List<Qualifier> toMove = new List<Qualifier>();
+            List<IQualifier> toMove = new List<IQualifier>();
             foreach (var q in iq.Qualifiers)
                 foreach (var tm in toMigrate)
                     if (q?.Type?.Equals(tm, StringComparison.InvariantCultureIgnoreCase) == true)
                         toMove.Add(q);
 
             // now move these 
-            for (int i=0; i<toMove.Count; i++)
+            for (int i = 0; i < toMove.Count; i++)
             {
                 var q = toMove[i];
                 var ext = new Extension(
-                    name: q.Type, semanticId: q.SemanticId, 
+                    name: q.Type, semanticId: q.SemanticId,
                     valueType: q.ValueType, value: q.Value);
                 rf.Add(ext);
                 iq.Qualifiers.Remove(q);

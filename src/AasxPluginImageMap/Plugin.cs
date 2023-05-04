@@ -281,7 +281,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
                     idShort: "TextDisplay02", addSme: true)?
                         .Set(Aas.DataTypeDefXsd.String, "3.1415")
-                        .Set(new Aas.Extension("ImageMap.Args", valueType: Aas.DataTypeDefXsd.String, 
+                        .Set(new Aas.Extension("ImageMap.Args", valueType: Aas.DataTypeDefXsd.String,
                              value: "{ fmt: \"F2\" }"));
 
                 smcVE.CreateSMEForCD<Aas.ReferenceElement>(

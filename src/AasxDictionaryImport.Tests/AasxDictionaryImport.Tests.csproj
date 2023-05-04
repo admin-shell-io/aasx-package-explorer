@@ -18,7 +18,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj" />
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
   </ItemGroup>

@@ -1,10 +1,6 @@
-﻿using AasCore.Aas3_0_RC02;
-using AasxCompatibilityModels;
+﻿using AasxCompatibilityModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -16,7 +12,7 @@ namespace Extensions
             Reference outputReference = null;
             if (sourceReference != null)
             {
-                var keyList = new List<Key>();
+                var keyList = new List<IKey>();
                 foreach (var refKey in sourceReference.Keys)
                 {
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
@@ -40,7 +36,7 @@ namespace Extensions
             Reference outputReference = null;
             if (sourceReference != null)
             {
-                var keyList = new List<Key>();
+                var keyList = new List<IKey>();
                 foreach (var refKey in sourceReference.Keys)
                 {
                     // Fix, as Asset does not exist anymore
@@ -63,26 +59,26 @@ namespace Extensions
             return outputReference;
         }
 
-        internal static List<LangString> ConvertDescriptionFromV10(AdminShellV10.Description sourceDescription)
+        internal static List<ILangStringTextType> ConvertDescriptionFromV10(AdminShellV10.Description sourceDescription)
         {
-            var newLangStrList = new List<LangString>();
+            var newLangStrList = new List<ILangStringTextType>();
             foreach (var ls in sourceDescription.langString)
             {
-                newLangStrList.Add(new LangString(ls.lang, ls.str));
+                newLangStrList.Add(new LangStringTextType(ls.lang, ls.str));
             }
 
-            return new List<LangString>(newLangStrList);
+            return new List<ILangStringTextType>(newLangStrList);
         }
 
-        internal static List<LangString> ConvertDescriptionFromV20(AdminShellV20.Description sourceDescription)
+        internal static List<ILangStringTextType> ConvertDescriptionFromV20(AdminShellV20.Description sourceDescription)
         {
-            var newLangStrList = new List<LangString>();
+            var newLangStrList = new List<ILangStringTextType>();
             foreach (var ls in sourceDescription.langString)
             {
-                newLangStrList.Add(new LangString(ls.lang, ls.str));
+                newLangStrList.Add(new LangStringTextType(ls.lang, ls.str));
             }
 
-            return new List<LangString>(newLangStrList);
+            return new List<ILangStringTextType>(newLangStrList);
         }
 
         internal static KeyTypes GetKeyType(IClass aasElement)
@@ -101,7 +97,7 @@ namespace Extensions
                 MultiLanguageProperty => KeyTypes.MultiLanguageProperty,
                 Property => KeyTypes.Property,
                 Operation => KeyTypes.Operation,
-                AasCore.Aas3_0_RC02.Range => KeyTypes.Range,
+                AasCore.Aas3_0.Range => KeyTypes.Range,
                 ReferenceElement => KeyTypes.ReferenceElement,
                 RelationshipElement => KeyTypes.RelationshipElement,
                 AnnotatedRelationshipElement => KeyTypes.AnnotatedRelationshipElement,

@@ -1,12 +1,7 @@
-﻿using AasCore.Aas3_0_RC02;
-using AasxCompatibilityModels;
-using AdminShellNS;
+﻿using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -14,7 +9,7 @@ namespace Extensions
     {
         #region AasxPackageExplorer
 
-        public static string GetDefaultPreferredName(this ConceptDescription conceptDescription,string defaultLang = null)
+        public static string GetDefaultPreferredName(this ConceptDescription conceptDescription, string defaultLang = null)
         {
             return "" +
                 conceptDescription.GetIEC61360()?
@@ -34,20 +29,20 @@ namespace Extensions
             )
         {
             var eds = new EmbeddedDataSpecification(
-                new Reference(ReferenceTypes.GlobalReference, 
-                new List<Key> { ExtendIDataSpecificationContent.GetKeyForIec61360() }), 
+                new Reference(ReferenceTypes.ExternalReference,
+                new List<IKey> { ExtendIDataSpecificationContent.GetKeyForIec61360() }),
                 new DataSpecificationIec61360(
-                        ExtendLangStringSet.CreateManyFromStringArray(preferredNames),
-                        new List<LangString> { new LangString("EN?", shortName)},
+                        ExtendLangStringSet.CreateManyPreferredNamesFromStringArray(preferredNames),
+                        new List<ILangStringShortNameTypeIec61360> { new LangStringShortNameTypeIec61360("EN?", shortName) },
                         unit,
                         unitId,
                         sourceOfDefinition,
                         symbol,
                         Stringification.DataTypeIec61360FromString(dataType),
-                        ExtendLangStringSet.CreateManyFromStringArray(definition)
+                        ExtendLangStringSet.CreateManyDefinitionFromStringArray(definition)
                     ));
 
-            conceptDescription.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification> { eds };
+            conceptDescription.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification> { eds };
 
             // TODO (MIHO, 2022-12-22): Check, but I think it makes no sense
             // conceptDescription.IsCaseOf ??= new List<Reference>();
@@ -68,7 +63,7 @@ namespace Extensions
 
         */
 
-        public static Tuple<string, string> ToCaptionInfo(this ConceptDescription conceptDescription)
+        public static Tuple<string, string> ToCaptionInfo(this IConceptDescription conceptDescription)
         {
             var caption = "";
             if (!string.IsNullOrEmpty(conceptDescription.IdShort))
@@ -81,40 +76,43 @@ namespace Extensions
             return Tuple.Create(caption, info);
         }
 
-        public static string GetDefaultShortName(this ConceptDescription conceptDescription, string defaultLang = null)
+        public static string GetDefaultShortName(this IConceptDescription conceptDescription, string defaultLang = null)
         {
             return "" +
                     conceptDescription.GetIEC61360()?
                         .ShortName?.GetDefaultString(defaultLang);
         }
 
-        public static DataSpecificationIec61360 GetIEC61360(this ConceptDescription conceptDescription)
+        public static DataSpecificationIec61360 GetIEC61360(this IConceptDescription conceptDescription)
         {
             return conceptDescription.EmbeddedDataSpecifications?.GetIEC61360Content();
         }
 
+        //TODO:jtikekar DataSpecificationPhysicalUnit
+#if SupportDataSpecificationPhysicalUnit
         public static DataSpecificationPhysicalUnit GetPhysicalUnit(this ConceptDescription conceptDescription)
         {
             return conceptDescription.EmbeddedDataSpecifications?.GetPhysicalUnitContent();
-        }
+        } 
+#endif
 
-        public static IEnumerable<Reference> FindAllReferences(this ConceptDescription conceptDescription)
+        public static IEnumerable<Reference> FindAllReferences(this IConceptDescription conceptDescription)
         {
             yield break;
         }
 
         #endregion
         #region ListOfConceptDescription
-        public static ConceptDescription AddConceptDescriptionOrReturnExisting(this List<ConceptDescription> conceptDescriptions, ConceptDescription newConceptDescription)
+        public static IConceptDescription AddConceptDescriptionOrReturnExisting(this List<IConceptDescription> conceptDescriptions, ConceptDescription newConceptDescription)
         {
-            if(newConceptDescription == null)
+            if (newConceptDescription == null)
             {
                 return null;
             }
-            if(conceptDescriptions != null)
+            if (conceptDescriptions != null)
             {
                 var existingCd = conceptDescriptions.Where(c => c.Id == newConceptDescription.Id).First();
-                if(existingCd != null)
+                if (existingCd != null)
                 {
                     return existingCd;
                 }
@@ -128,7 +126,7 @@ namespace Extensions
         }
         #endregion
 
-        public static void Validate(this ConceptDescription conceptDescription,AasValidationRecordList results)
+        public static void Validate(this ConceptDescription conceptDescription, AasValidationRecordList results)
         {
             // access
             if (results == null)
@@ -213,7 +211,7 @@ namespace Extensions
             {
                 if (conceptDescription.IsCaseOf == null)
                 {
-                    conceptDescription.IsCaseOf = new List<Reference>();
+                    conceptDescription.IsCaseOf = new List<IReference>();
                 }
                 foreach (var caseOf in sourceConceptDescription.IsCaseOf)
                 {
@@ -237,7 +235,7 @@ namespace Extensions
             if (srcCD.identification?.id != null)
                 cd.Id = srcCD.identification.id;
 
-            if (srcCD.description != null)
+            if (srcCD.description != null && srcCD.description.langString.Count >= 1)
                 cd.Description = ExtensionsUtil.ConvertDescriptionFromV20(srcCD.description);
 
             if (srcCD.administration != null)
@@ -248,7 +246,7 @@ namespace Extensions
             {
                 if (cd.IsCaseOf == null)
                 {
-                    cd.IsCaseOf = new List<Reference>();
+                    cd.IsCaseOf = new List<IReference>();
                 }
                 foreach (var caseOf in srcCD.IsCaseOf)
                 {
@@ -257,13 +255,13 @@ namespace Extensions
             }
 
             //jtikekar:as per old implementation
-            if(srcCD.embeddedDataSpecification != null)
+            if (srcCD.embeddedDataSpecification != null)
             {
-                foreach (var sourceEsd in srcCD.embeddedDataSpecification)
+                foreach (var sourceEds in srcCD.embeddedDataSpecification)
                 {
-                    var esd = new EmbeddedDataSpecification(null, null);
-                    esd.ConvertFromV20(sourceEsd);
-                    cd.AddEmbeddedDataSpecification(esd);
+                    var eds = new EmbeddedDataSpecification(null, null);
+                    eds.ConvertFromV20(sourceEds);
+                    cd.AddEmbeddedDataSpecification(eds);
                 }
             }
 
@@ -275,7 +273,7 @@ namespace Extensions
             if (cd == null)
                 return null;
             if (cd.EmbeddedDataSpecifications == null)
-                cd.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
+                cd.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
             if (eds == null)
                 return null;
             cd.EmbeddedDataSpecifications.Add(eds);
@@ -285,14 +283,14 @@ namespace Extensions
         public static Reference GetCdReference(this ConceptDescription conceptDescription)
         {
             var key = new Key(KeyTypes.ConceptDescription, conceptDescription.Id);
-            return new Reference(ReferenceTypes.ModelReference, new List<Key> { key });
+            return new Reference(ReferenceTypes.ModelReference, new List<IKey> { key });
         }
 
         public static void AddIsCaseOf(this ConceptDescription cd,
             Reference ico)
         {
             if (cd.IsCaseOf == null)
-                cd.IsCaseOf = new List<Reference>();
+                cd.IsCaseOf = new List<IReference>();
             cd.IsCaseOf.Add(ico);
         }
     }

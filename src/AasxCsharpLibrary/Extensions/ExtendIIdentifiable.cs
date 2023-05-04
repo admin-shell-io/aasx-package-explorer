@@ -1,9 +1,5 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -11,16 +7,17 @@ namespace Extensions
     {
         #region List of Identifiers
 
-        public static string ToStringExtended(this List<IIdentifiable> identifiables,string delimiter = ",")
+        public static string ToStringExtended(this List<IIdentifiable> identifiables, string delimiter = ",")
         {
             return string.Join(delimiter, identifiables.Select((x) => x.Id));
         }
 
         #endregion
-        public static Reference GetReference(this IIdentifiable identifiable)
+        public static IReference GetReference(this IIdentifiable identifiable)
         {
             var key = new Key(ExtensionsUtil.GetKeyType(identifiable), identifiable.Id);
-            var outputReference = new Reference(ReferenceTypes.ModelReference, new List<Key>() { key });
+            //TODO:jtikekar if model or Global reference?
+            var outputReference = new Reference(ReferenceTypes.ModelReference, new List<IKey>() { key });
 
             return outputReference;
         }

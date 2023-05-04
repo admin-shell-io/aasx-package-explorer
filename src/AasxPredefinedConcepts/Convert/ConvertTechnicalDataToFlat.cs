@@ -7,14 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MergeIntoPattern
 
@@ -68,7 +64,7 @@ namespace AasxPredefinedConcepts.Convert
             // convert in place: detach old SMEs, change semanticId
             var smcOldTD = sm.SubmodelElements;
             sm.SubmodelElements = new List<Aas.ISubmodelElement>();
-            sm.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
+            sm.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
 
             // find all technical properties
             foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(

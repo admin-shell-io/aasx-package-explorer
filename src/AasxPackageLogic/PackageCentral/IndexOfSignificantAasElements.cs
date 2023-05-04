@@ -7,14 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -43,7 +39,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// This reference is (kind of long-lasting) stored in the <c>IndexOfSignificantAasElements</c>
         /// </summary>
-        public Aas.Reference Reference;
+        public Aas.IReference Reference;
 
         /// <summary>
         /// This object reference will be filled out upon retrieval!
@@ -65,7 +61,7 @@ namespace AasxPackageLogic.PackageCentral
 
         public void Add(
             SignificantAasElement kind,
-            Aas.Submodel sm,
+            Aas.ISubmodel sm,
             List<Aas.IReferable> parents,
             Aas.ISubmodelElement sme)
         {
@@ -88,7 +84,7 @@ namespace AasxPackageLogic.PackageCentral
             _records = new MultiValueDictionary<SignificantAasElement, SignificantAasElemRecord>();
 
             // find all Submodels in use, but no one twice
-            var visited = new Dictionary<Aas.Submodel, bool>();
+            var visited = new Dictionary<Aas.ISubmodel, bool>();
             foreach (var sm in env.FindAllSubmodelGroupedByAAS())
                 if (!visited.ContainsKey(sm))
                     visited.Add(sm, true);

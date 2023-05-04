@@ -12,9 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxDictionaryImport.Model
 {
@@ -241,7 +239,7 @@ namespace AasxDictionaryImport.Model
         /// <returns>true if the import was successful, or false if the import failed or if this element cannot be
         /// converted to an AAS submodel</returns>
         bool ImportSubmodelInto(Aas.Environment env,
-            Aas.AssetAdministrationShell adminShell);
+            Aas.IAssetAdministrationShell adminShell);
 
         /// <summary>
         /// Converts this element into a AAS submodel element (i. e. a property or a collection) and adds it to the
@@ -437,7 +435,7 @@ namespace AasxDictionaryImport.Model
 
         /// <inheritdoc/>
         public virtual bool ImportSubmodelInto(Aas.Environment env,
-            Aas.AssetAdministrationShell adminShell) => false;
+            Aas.IAssetAdministrationShell adminShell) => false;
 
         /// <inheritdoc/>
         public virtual bool ImportSubmodelElementsInto(Aas.Environment env,

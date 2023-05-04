@@ -360,7 +360,7 @@ namespace AasxPackageLogic.PackageCentral
             // copy temp file
             try
             {
-                File.Copy(TempFn, targetFilename, overwrite: true);
+                System.IO.File.Copy(TempFn, targetFilename, overwrite: true);
             }
             catch (Exception ex)
             {
@@ -400,10 +400,10 @@ namespace AasxPackageLogic.PackageCentral
 
             // BEGIN Workaround behind some proxies
             // Stream is sent twice, if proxy-authorization header is not set
-            string proxyFile = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "/proxy.dat";
+            string proxyFile = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/proxy.dat";
             string username = "";
             string password = "";
-            if (File.Exists(proxyFile))
+            if (System.IO.File.Exists(proxyFile))
             {
                 using (StreamReader sr = new StreamReader(proxyFile))
                 {
@@ -430,7 +430,7 @@ namespace AasxPackageLogic.PackageCentral
                 $"and request {requestPath} .. ");
 
             // make base64
-            var ba = File.ReadAllBytes(copyFn);
+            var ba = System.IO.File.ReadAllBytes(copyFn);
             var base64 = Convert.ToBase64String(ba);
             //// var msBase64 = new MemoryStream(Encoding.UTF8.GetBytes(base64));
 

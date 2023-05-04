@@ -114,7 +114,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var lic = new AasxPluginResultLicense();
                 lic.shortLicense = "The OpenXML SDK is under MIT license." + System.Environment.NewLine +
                     "The ClosedXML library is under MIT license." + System.Environment.NewLine +
-                    "The ExcelNumberFormat number parser is licensed under the MIT license." 
+                    "The ExcelNumberFormat number parser is licensed under the MIT license."
                     + System.Environment.NewLine +
                     "The FastMember reflection access is licensed under Apache License 2.0 (Apache - 2.0).";
 
@@ -241,7 +241,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args != null && args.Length >= 3
                     && args[0] is string cmd
                     && args[1] is AasxMenuActionTicket ticket
-                    && args[2] is AnyUiContextPlusDialogs displayContext)                  
+                    && args[2] is AnyUiContextPlusDialogs displayContext)
                 {
                     if (cmd == "exporttable")
                     {
@@ -275,6 +275,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // default
             return null;
         }
-        
+
     }
 }

@@ -20,7 +20,6 @@
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.370.12" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxUaNetServer\AasxUaNetServer.csproj" />
   </ItemGroup>

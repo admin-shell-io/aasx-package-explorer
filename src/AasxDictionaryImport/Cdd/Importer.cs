@@ -8,12 +8,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxDictionaryImport.Cdd
 {
@@ -54,7 +53,7 @@ namespace AasxDictionaryImport.Cdd
         /// <param name="cls">The IEC CDD class to import</param>
         /// <param name="adminShell">The admin shell to import the submodel into</param>
         /// <returns>true if the class was imported successfully</returns>
-        public bool ImportSubmodel(ClassWrapper cls, Aas.AssetAdministrationShell adminShell)
+        public bool ImportSubmodel(ClassWrapper cls, Aas.IAssetAdministrationShell adminShell)
         {
             if (!cls.IsSelected)
                 return false;
@@ -186,8 +185,7 @@ namespace AasxDictionaryImport.Cdd
             return new Aas.Property(Aas.DataTypeDefXsd.String)
             {
                 IdShort = idShort,
-                Kind = Aas.ModelingKind.Instance,
-                ValueType = Aas.Stringification.DataTypeDefXsdFromString(GetValueType(levelType.Subtype)) 
+                ValueType = Aas.Stringification.DataTypeDefXsdFromString(GetValueType(levelType.Subtype))
                     ?? Aas.DataTypeDefXsd.String,
             };
         }

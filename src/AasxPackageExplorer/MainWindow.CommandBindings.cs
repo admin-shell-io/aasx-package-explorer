@@ -10,29 +10,25 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
+using AdminShellNS;
+using AnyUi;
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using AasxIntegrationBase;
-using AasxPackageLogic;
-using AasxPackageLogic.PackageCentral;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using AnyUi;
-using Jose;
-using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {
@@ -94,7 +90,7 @@ namespace AasxPackageExplorer
             RedrawAllAasxElements();
             RedrawElementView();
         }
-        
+
         private async Task CommandBinding_GeneralDispatch(
             string cmd,
             AasxMenuItemBase menuItem,
@@ -476,7 +472,7 @@ namespace AasxPackageExplorer
                 // redraw
                 CommandExecution_RedrawAll();
             }
-        }     
+        }
 
         public void CommandBinding_ConnectSecure()
         {
@@ -598,7 +594,7 @@ namespace AasxPackageExplorer
             // start
             ticket?.StartExec();
 
-            if (ticket.AAS == null || ticket.AssetInfo?.GlobalAssetId?.IsValid() != true)
+            if (ticket.AAS == null || string.IsNullOrEmpty(ticket.AssetInfo?.GlobalAssetId))
             {
                 Logic?.LogErrorToTicket(ticket,
                     "No asset selected or no asset identification for printing code sheet.");
@@ -610,7 +606,7 @@ namespace AasxPackageExplorer
             try
             {
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                AasxPrintFunctions.PrintSingleAssetCodeSheet(ticket.AssetInfo.GlobalAssetId.Keys[0].Value, ticket.AAS.IdShort);
+                AasxPrintFunctions.PrintSingleAssetCodeSheet(ticket.AssetInfo.GlobalAssetId, ticket.AAS.IdShort);
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
             }
             catch (Exception ex)
@@ -965,8 +961,8 @@ namespace AasxPackageExplorer
         public bool MenuSelectEnvSubmodel(
             AasxMenuActionTicket ticket,
             out Aas.Environment env,
-            out Aas.Submodel sm,
-            out Aas.Reference smr,
+            out Aas.ISubmodel sm,
+            out Aas.IReference smr,
             string msg)
         {
             env = null;
@@ -1012,7 +1008,7 @@ namespace AasxPackageExplorer
             if (sourceFn?.HasContent() != true)
             {
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                
+
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
                 if (caption != null)
@@ -1027,7 +1023,7 @@ namespace AasxPackageExplorer
                     RememberForInitialDirectory(sourceFn);
                     sourceFn = dlg.FileName;
                 }
-                
+
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
             }
 
@@ -1054,7 +1050,7 @@ namespace AasxPackageExplorer
 
                 // which item selected?
                 Aas.Environment env = PackageCentral.Main.AasEnv;
-                Aas.AssetAdministrationShell aas = null;
+                Aas.IAssetAdministrationShell aas = null;
                 if (DisplayElements.SelectedItem != null)
                 {
                     if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)
@@ -1096,7 +1092,7 @@ namespace AasxPackageExplorer
                     Mouse.OverrideCursor = null;
                 }
 #endif
-                }
+            }
 
             // REFACTOR: NO
             if (cmd == "importdictsubmodelelements")
@@ -1132,7 +1128,7 @@ namespace AasxPackageExplorer
                     Mouse.OverrideCursor = null;
                 }
 #endif
-                }
+            }
         }
 
 

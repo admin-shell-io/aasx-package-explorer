@@ -7,18 +7,16 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPackageLogic;
+using AnyUi;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Aas = AasCore.Aas3_0_RC02;
-using AasxIntegrationBase;
-using AasxPackageLogic;
-using AdminShellNS;
-using Newtonsoft.Json;
-using AnyUi;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {

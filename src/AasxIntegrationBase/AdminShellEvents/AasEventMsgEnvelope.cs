@@ -10,18 +10,13 @@ This source code may use other Open Source software components (see LICENSE.txt)
 // to be disabled for AASX Server
 #define UseMarkup
 
+using AasxIntegrationBase.MiniMarkup;
+using Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
-using AasxIntegrationBase;
-using AasxIntegrationBase.MiniMarkup;
-using AdminShellNS;
-using Extensions;
-using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxIntegrationBase.AdminShellEvents
 {
@@ -37,23 +32,23 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// Reference to the source EventElement, including identification of  AAS,  Submodel, SubmodelElements.
         /// </summary>
-        public Aas.Reference Source { get; set; }
+        public Aas.IReference Source { get; set; }
 
         /// <summary>
         /// SematicId  of  the  source  EventElement,  if available.
         /// </summary>
-        public Aas.Reference SourceSemanticId { get; set; }
+        public Aas.IReference SourceSemanticId { get; set; }
 
         /// <summary>
         /// Reference  to  the  Referable,  which  defines  the scope  of  the  event.  Can  be  AAS,  Submodel, 
         /// SubmodelElementCollection  or SubmodelElement. 
         /// </summary>
-        public Aas.Reference ObservableReference { get; set; }
+        public Aas.IReference ObservableReference { get; set; }
 
         /// <summary>
         /// SemanticId  of  the  Referable,  which  defines  the scope of the event, if available. 
         /// </summary>
-        public Aas.Reference ObservableSemanticId { get; set; }
+        public Aas.IReference ObservableSemanticId { get; set; }
 
         /// <summary>
         /// Information for the outer message infrastructure for  scheduling the  event to the  respective 
@@ -168,10 +163,10 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         public AasEventMsgEnvelope(
             DateTime timestamp,
-            Aas.Reference source = null,
-            Aas.Reference sourceSemanticId = null,
-            Aas.Reference observableReference = null,
-            Aas.Reference observableSemanticId = null,
+            Aas.IReference source = null,
+            Aas.IReference sourceSemanticId = null,
+            Aas.IReference observableReference = null,
+            Aas.IReference observableSemanticId = null,
             string topic = null,
             string subject = null,
             AasPayloadBase payload = null,

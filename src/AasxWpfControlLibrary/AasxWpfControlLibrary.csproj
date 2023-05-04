@@ -13,7 +13,6 @@
     <None Remove="Resources\IDTA_AAS-Logo_80x72_RGB.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />

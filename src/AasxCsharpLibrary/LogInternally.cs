@@ -7,7 +7,6 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
 using Exception = System.Exception;
 
 namespace AdminShellNS
@@ -26,7 +25,7 @@ namespace AdminShellNS
 
         public static string FormatError(Exception ex, string where)
         {
-            var res =  string.Format("Error: {0}: {1} {2} at {3}.",
+            var res = string.Format("Error: {0}: {1} {2} at {3}.",
                 where,
                 ex.Message,
                 ex.GetExceptionMessages(),
@@ -35,7 +34,7 @@ namespace AdminShellNS
             var inner = ex.InnerException;
             while (inner != null)
             {
-                res += $"Inner message: {inner.Message}" + Environment.NewLine;
+                res += $"Inner message: {inner.Message}" + System.Environment.NewLine;
                 inner = inner.InnerException;
             }
 

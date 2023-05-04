@@ -7,14 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MergeIntoPattern
 
@@ -69,7 +65,7 @@ namespace AasxPredefinedConcepts.Convert
             // convert in place: detach old SMEs, change semanticId
             var smcOldSg2 = sm.SubmodelElements;
             sm.SubmodelElements = new List<Aas.ISubmodelElement>();
-            sm.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { defsV11.SM_ManufacturerDocumentation.SemanticId.GetAsExactlyOneKey() });
+            sm.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>() { defsV11.SM_ManufacturerDocumentation.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -95,11 +91,10 @@ namespace AasxPredefinedConcepts.Convert
                     if (rf is Aas.ConceptDescription conceptDescription)
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
                             new Aas.ConceptDescription(
-                                conceptDescription.Id, conceptDescription.Extensions, 
-                                conceptDescription.Category, conceptDescription.IdShort, 
-                                conceptDescription.DisplayName, conceptDescription.Description, 
-                                conceptDescription.Checksum, conceptDescription.Administration, 
-                                conceptDescription.EmbeddedDataSpecifications, 
+                                conceptDescription.Id, conceptDescription.Extensions,
+                                conceptDescription.Category, conceptDescription.IdShort,
+                                conceptDescription.DisplayName, conceptDescription.Description, conceptDescription.Administration,
+                                conceptDescription.EmbeddedDataSpecifications,
                                 conceptDescription.IsCaseOf));
 
             // ok, go thru the old == SG2 records

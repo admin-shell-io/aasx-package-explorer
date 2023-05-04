@@ -1,10 +1,7 @@
-﻿using AasCore.Aas3_0_RC02;
-using AdminShellNS.Display;
+﻿using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -26,9 +23,9 @@ namespace Extensions
 
         public static void Remove(this Entity entity, ISubmodelElement submodelElement)
         {
-            if(entity != null)
+            if (entity != null)
             {
-                if(entity.Statements != null)
+                if (entity.Statements != null)
                 {
                     entity.Statements.Remove(submodelElement);
                 }
@@ -40,7 +37,7 @@ namespace Extensions
             if (childSubmodelElement == null)
                 return null;
             if (entity.Statements == null)
-                entity.Statements = new ();
+                entity.Statements = new();
             if (childSubmodelElement != null)
                 childSubmodelElement.Parent = entity;
             entity.Statements.Add(childSubmodelElement);
@@ -73,8 +70,8 @@ namespace Extensions
             if (sourceEntity.assetRef != null)
             {
                 //TODO:jtikekar whether to convert to Global or specific asset id
-                var assetRef = ExtensionsUtil.ConvertReferenceFromV20(sourceEntity.assetRef, ReferenceTypes.GlobalReference);
-                entity.GlobalAssetId = assetRef;
+                var assetRef = ExtensionsUtil.ConvertReferenceFromV20(sourceEntity.assetRef, ReferenceTypes.ExternalReference);
+                entity.GlobalAssetId = assetRef.GetAsIdentifier();
             }
 
             return entity;

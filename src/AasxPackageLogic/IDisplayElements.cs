@@ -12,28 +12,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 
 using AasxPackageLogic;
-using AnyUi;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using Org.Webpki.JsonCanonicalizer;
-using System.IO;
-using System.Windows;
-using AasxIntegrationBase;
-using Jose;
-using System.Threading;
-using AasxPackageLogic.PackageCentral;
-using Newtonsoft.Json.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
 
 namespace AasxPackageExplorer
 {
@@ -83,7 +61,7 @@ namespace AasxPackageExplorer
         /// by the main data object (e.g. an AAS, SME, ..)
         /// </summary>
         bool TrySelectMainDataObject(object dataObject, bool? wishExpanded);
-        
+
     }
-   
+
 }

@@ -10,33 +10,11 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasxIntegrationBase;
-using AasxPackageExplorer;
-using AasxPackageLogic.PackageCentral;
-using AasxPredefinedConcepts.Convert;
-using AasxSignature;
-using AnyUi;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Extensions;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using System.Windows;
-using System.Windows.Controls;
-using Microsoft.VisualBasic.Logging;
-using Microsoft.Windows.Themes;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -49,10 +27,10 @@ namespace AasxPackageLogic
     {
         public VisualElementGeneric VisualElement = null;
         public string ReferableAasId = null;
-        public Aas.Reference ReferableReference = null;
+        public Aas.IReference ReferableReference = null;
 
         public VisualElementHistoryItem(VisualElementGeneric VisualElement,
-            string ReferableAasId = null, Aas.Reference ReferableReference = null)
+            string ReferableAasId = null, Aas.IReference ReferableReference = null)
         {
             this.VisualElement = VisualElement;
             this.ReferableAasId = ReferableAasId;
@@ -116,7 +94,7 @@ namespace AasxPackageLogic
 
             // check, if ve can identify a IReferable, to which a symbolic link can be done ..
             string aasid = null;
-            Aas.Reference refref = null;
+            Aas.IReference refref = null;
 
             if (veAas != null && veRef != null)
             {
@@ -137,7 +115,7 @@ namespace AasxPackageLogic
             // in case of plug in, make it more specific
             if (ve is VisualElementPluginExtension vepe && vepe.theExt?.Tag != null)
             {
-                refref = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag) });
+                refref = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag) });
             }
 
             // add, only if not already there

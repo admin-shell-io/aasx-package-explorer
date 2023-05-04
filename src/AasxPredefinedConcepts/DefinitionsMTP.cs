@@ -7,13 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 // reSharper disable UnusedType.Global
 // reSharper disable ClassNeverInstantiated.Global
@@ -51,9 +46,9 @@ namespace AasxPredefinedConcepts
                 this.DomainInfo = "Module Type Package (MTP)";
 
                 // IReferable
-                SEM_MtpSubmodel = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/submodel") });
+                SEM_MtpSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/submodel") });
 
-                SEM_MtpInstanceSubmodel = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel") });
+                SEM_MtpInstanceSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel") });
 
                 CD_MtpTypeSubmodel = CreateSparseConceptDescription("en", "IRI",
                     "MtpTypeSubmodel",

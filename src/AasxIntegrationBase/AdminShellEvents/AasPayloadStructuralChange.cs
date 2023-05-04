@@ -10,18 +10,13 @@ This source code may use other Open Source software components (see LICENSE.txt)
 // to be disabled for AASX Server
 #define UseMarkup 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
 using AdminShellNS.DiaryData;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -37,7 +32,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// Single item of a structural change payload
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
-    public class AasPayloadStructuralChangeItem : IAasPayloadItem, IAasDiaryEntry 
+    public class AasPayloadStructuralChangeItem : IAasPayloadItem, IAasDiaryEntry
     {
         /// <summary>
         /// Reason for the change. According to CRUD principle.
@@ -55,7 +50,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// Observable of the defined Event. 
         /// Is null / empty, if identical to Observable.
         /// </summary>
-        public List<Aas.Key> Path { get; set; }
+        public List<Aas.IKey> Path { get; set; }
 
         /// <summary>
         /// JSON-Serialization of the Submodel, SMC, SME which was denoted by Observabale and Path.
@@ -82,7 +77,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         public AasPayloadStructuralChangeItem(
             DateTime timeStamp,
             StructuralChangeReason reason,
-            List<Aas.Key> path = null,
+            List<Aas.IKey> path = null,
             int createAtIndex = -1,
             string data = null)
         {

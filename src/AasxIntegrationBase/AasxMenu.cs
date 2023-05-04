@@ -7,19 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AdminShellNS;
 using AnyUi;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxIntegrationBase
 {
@@ -246,7 +241,7 @@ namespace AasxIntegrationBase
     /// <summary>
     /// Base class for menu items with a possible action.
     /// </summary>
-    public abstract class AasxMenuItemBase 
+    public abstract class AasxMenuItemBase
     {
         /// <summary>
         /// Name of the menu item. Relevant. Will be used to differentiate
@@ -700,7 +695,7 @@ namespace AasxIntegrationBase
 
                 // let '+' lead us
                 var parts = mihk.InputGesture.Split('+', StringSplitOptions.RemoveEmptyEntries);
-                for (int i=0;i<parts.Length; i++)
+                for (int i = 0; i < parts.Length; i++)
                 {
                     var part = "" + parts[i].Trim();
                     if (!part.HasContent())
@@ -837,22 +832,22 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public Aas.AssetAdministrationShell AAS;
+        public Aas.IAssetAdministrationShell AAS;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public Aas.AssetInformation AssetInfo;
+        public Aas.IAssetInformation AssetInfo;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public Aas.Submodel Submodel;
+        public Aas.ISubmodel Submodel;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public Aas.Reference SubmodelRef;
+        public Aas.IReference SubmodelRef;
 
         /// <summary>
         /// Filled by the currently selected element.

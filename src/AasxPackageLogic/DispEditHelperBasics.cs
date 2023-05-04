@@ -7,17 +7,6 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design.Serialization;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using Aas = AasCore.Aas3_0_RC02;
-using AasxCompatibilityModels;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
@@ -26,7 +15,12 @@ using AdminShellNS.DiaryData;
 using AnyUi;
 using Extensions;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
 {
@@ -146,7 +140,7 @@ namespace AasxPackageLogic
 
         public bool editMode = false;
         public bool hintMode = false;
-        
+
 
         public ModifyRepo repo = null;
 
@@ -160,7 +154,7 @@ namespace AasxPackageLogic
         // (not always identical to maintain space efficiency)
         //
 
-        public int GetWidth (FirstColumnWidth cw)
+        public int GetWidth(FirstColumnWidth cw)
         {
             if (cw == FirstColumnWidth.Small)
                 return 40;
@@ -221,7 +215,7 @@ namespace AasxPackageLogic
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
-        }        
+        }
 
         //
         // size management
@@ -234,7 +228,7 @@ namespace AasxPackageLogic
                 return normal;
 
             // look at args
-            for (int i=0; (i+1) < args.Length; i += 2)
+            for (int i = 0; (i + 1) < args.Length; i += 2)
             {
                 // schema fulfilled?
                 if (!(args[i] is AnyUiContextCapability capaEn) || !(args[i + 1] is AnyUiThickness ath))
@@ -423,7 +417,7 @@ namespace AasxPackageLogic
                 var cb = AddSmallComboBoxTo(
                     g, 0, 1,
                     margin: NormalOrCapa(
-                        new AnyUiThickness(4, 2, 2, 2), 
+                        new AnyUiThickness(4, 2, 2, 2),
                         AnyUiContextCapability.Blazor, new AnyUiThickness(4, 0, 2, 0)),
                     padding: NormalOrCapa(
                         new AnyUiThickness(2, 0, 2, 0),
@@ -638,7 +632,7 @@ namespace AasxPackageLogic
         }
 
         public void AddActionPanel(
-            AnyUiPanel view, string key, string[] actionStr = null, ModifyRepo repo = null,            
+            AnyUiPanel view, string key, string[] actionStr = null, ModifyRepo repo = null,
             Func<int, AnyUiLambdaActionBase> action = null,
             string[] actionTags = null,
             bool[] addWoEdit = null,
@@ -755,9 +749,9 @@ namespace AasxPackageLogic
             AddActionPanel(view, key, new[] { actionStr }, repo, action, firstColumnWidth: firstColumnWidth);
         }
 
-        public void AddKeyListLangStr(
-            AnyUiStackPanel view, string key, List<Aas.LangString> langStr, ModifyRepo repo = null,
-            Aas.IReferable relatedReferable = null)
+        public void AddKeyListLangStr<T>(
+        AnyUiStackPanel view, string key, List<IAbstractLangString> langStr, ModifyRepo repo = null,
+        Aas.IReferable relatedReferable = null) where T : IAbstractLangString
         {
             // sometimes needless to show
             if (repo == null && (langStr == null || langStr.Count < 1))
@@ -818,8 +812,30 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        var ls = new Aas.LangString("","");
-                        langStr?.Add(ls);
+
+                        //TODO:jtikekar need to test
+                        if (typeof(T) is ILangStringTextType)
+                        {
+                            langStr?.Add(new LangStringTextType("", ""));
+                        }
+                        else if (typeof(T) is ILangStringNameType)
+                        {
+                            langStr?.Add(new LangStringNameType("", ""));
+                        }
+                        else if (typeof(T) is ILangStringPreferredNameTypeIec61360)
+                        {
+                            langStr?.Add(new LangStringPreferredNameTypeIec61360("", ""));
+                        }
+                        else if (typeof(T) is ILangStringShortNameTypeIec61360)
+                        {
+                            langStr?.Add(new LangStringShortNameTypeIec61360("", ""));
+                        }
+                        else if (typeof(T) is ILangStringDefinitionTypeIec61360)
+                        {
+                            langStr?.Add(new LangStringDefinitionTypeIec61360("", ""));
+                        }
+                        //langStr?.Add(new T { Language = "", Text = "" });
+
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     });
@@ -873,7 +889,9 @@ namespace AasxPackageLogic
                         // check here, if to hightlight
                         if (tbLang != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].Language.GetHashCode() &&
-                                (this.highlightField.containingObject == langStr[currentI]))
+                                //(this.highlightField.containingObject == langStr[currentI]))
+                                //TODO:jtikekar need to test
+                                CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
                             this.HighligtStateElement(tbLang, true);
 
                         // str
@@ -896,7 +914,9 @@ namespace AasxPackageLogic
                         // check here, if to hightlight
                         if (tbStr != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].Text.GetHashCode() &&
-                                (this.highlightField.containingObject == langStr[currentI]))
+                                //(this.highlightField.containingObject == langStr[currentI]))
+                                //TODO:jtikekar need to test
+                                CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
                             this.HighligtStateElement(tbStr, true);
 
                         // button [-]
@@ -919,7 +939,7 @@ namespace AasxPackageLogic
             view.Children.Add(g);
         }
 
-        public List<Aas.Key> SmartSelectAasEntityKeys(
+        public List<Aas.IKey> SmartSelectAasEntityKeys(
             PackageCentral.PackageCentral packages,
             PackageCentral.PackageCentral.Selector selector, string filter = null)
         {
@@ -1555,17 +1575,17 @@ namespace AasxPackageLogic
 
         public void AddKeyListKeys(
             AnyUiStackPanel view, string key,
-            List<Aas.Key> keys,
+            List<Aas.IKey> keys,
             ModifyRepo repo = null,
             PackageCentral.PackageCentral packages = null,
             PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
             string addExistingEntities = null,
             bool addEclassIrdi = false,
             bool addFromKnown = false,
-            string[] addPresetNames = null, List<Aas.Key>[] addPresetKeyLists = null,
-            Func<List<Aas.Key>, AnyUiLambdaActionBase> jumpLambda = null,
+            string[] addPresetNames = null, List<Aas.IKey>[] addPresetKeyLists = null,
+            Func<List<Aas.IKey>, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
-            Func<List<Aas.Key>, AnyUiLambdaActionBase> noEditJumpLambda = null,
+            Func<List<Aas.IKey>, AnyUiLambdaActionBase> noEditJumpLambda = null,
             Aas.IReferable relatedReferable = null,
             Action<Aas.IReferable> emitCustomEvent = null,
             AnyUiPanel frontPanel = null,
@@ -1599,7 +1619,7 @@ namespace AasxPackageLogic
             g.ColumnDefinitions[0].MinWidth = GetWidth(FirstColumnWidth.Standard);
 
             // populate key
-            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), 
+            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0),
                 verticalAlignment: AnyUiVerticalAlignment.Center,
                 content: "" + key + ":");
 
@@ -1706,7 +1726,7 @@ namespace AasxPackageLogic
                                 return takeOverLambdaAction;
                             else
                                 return new AnyUiLambdaActionRedrawEntity();
-                        });                
+                        });
 
                 if (!topContextMenu && addEclassIrdi)
                     AnyUiUIElement.RegisterControl(
@@ -1860,7 +1880,7 @@ namespace AasxPackageLogic
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         menuItemLambda: (o) =>
                         {
-                            if (o is int oi && oi >= 0 && (2*oi + 1) < contextHeaders.Count)
+                            if (o is int oi && oi >= 0 && (2 * oi + 1) < contextHeaders.Count)
                             {
                                 if (oi >= auxContextOfs && auxContextLambda != null)
                                     return auxContextLambda(oi - auxContextOfs);
@@ -1929,7 +1949,7 @@ namespace AasxPackageLogic
                         var cbType = AnyUiUIElement.RegisterControl(
                             AddSmallComboBoxTo(
                                 g, 0 + i + rowOfs, 1,
-                                margin: NormalOrCapa( 
+                                margin: NormalOrCapa(
                                     new AnyUiThickness(4, 2, 2, 2),
                                     AnyUiContextCapability.Blazor, new AnyUiThickness(4, 1, 2, -1)),
                                 padding: NormalOrCapa(
@@ -2009,11 +2029,11 @@ namespace AasxPackageLogic
                                                 action = true;
                                                 break;
                                             case 1:
-                                                MoveElementInListUpwards<Aas.Key>(keys, keys[currentI]);
+                                                MoveElementInListUpwards<Aas.IKey>(keys, keys[currentI]);
                                                 action = true;
                                                 break;
                                             case 2:
-                                                MoveElementInListDownwards<Aas.Key>(keys, keys[currentI]);
+                                                MoveElementInListDownwards<Aas.IKey>(keys, keys[currentI]);
                                                 action = true;
                                                 break;
                                         }
@@ -2045,7 +2065,7 @@ namespace AasxPackageLogic
             //
             // in total
             //
-            
+
             view.Children.Add(g);
         }
 
@@ -2210,7 +2230,7 @@ namespace AasxPackageLogic
             // make unqiue
             if (makeUniqueIfNeeded && !(list as List<Aas.ISubmodelElement>)
                 .CheckIdShortIsUnique(entity.IdShort))
-                    this.MakeNewReferableUnique(entity);
+                this.MakeNewReferableUnique(entity);
 
             // delegate
             return AddElementInListBefore<T>(list, entity, existing);
@@ -2229,7 +2249,7 @@ namespace AasxPackageLogic
             // make unqiue
             if (makeUniqueIfNeeded && !(list as List<Aas.ISubmodelElement>)
                 .CheckIdShortIsUnique(entity.IdShort))
-                    this.MakeNewReferableUnique(entity);
+                this.MakeNewReferableUnique(entity);
 
             // delegate
             return AddElementInListAfter<T>(list, entity, existing);
@@ -2433,7 +2453,7 @@ namespace AasxPackageLogic
 
                     // add?
                     if (null == env.FindConceptDescriptionByReference(
-                            new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, newcd.Id)})))
+                            new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, newcd.Id) })))
                     {
                         env.ConceptDescriptions.Add(newcd);
 
@@ -2482,9 +2502,9 @@ namespace AasxPackageLogic
             // Part 0 : define a lambda
             //
 
-            Action<Aas.Reference, Aas.IReferable> actionAddCD = (newid, rf) =>
+            Action<Aas.IReference, Aas.IReferable> actionAddCD = (newid, rf) =>
             {
-                if (newid == null || newid.Count() < 1)
+                if (newid == null || newid.Keys.Count() < 1)
                 {
                     noValidId++;
                 }
@@ -2494,13 +2514,13 @@ namespace AasxPackageLogic
                     if (repairSemIds)
                     {
                         if (rf is Aas.Submodel rfsm && rfsm.SemanticId != null
-                            && rfsm.SemanticId.Count() >= 1)
+                            && rfsm.SemanticId.Keys.Count() >= 1)
                         {
                             rfsm.SemanticId.Keys[0].Type = Aas.KeyTypes.Submodel;
                         }
 
                         if (rf is Aas.ISubmodelElement rfsme && rfsme.SemanticId != null
-                            && rfsme.SemanticId.Count() >= 1)
+                            && rfsme.SemanticId.Keys.Count() >= 1)
                         {
                             rfsme.SemanticId.Keys[0].Type = Aas.KeyTypes.ConceptDescription;
                         }
@@ -2734,7 +2754,7 @@ namespace AasxPackageLogic
         /// </summary>
         public class DiaryReference
         {
-            public List<Aas.Key> OriginalPath;
+            public List<Aas.IKey> OriginalPath;
 
             public DiaryReference() { }
 

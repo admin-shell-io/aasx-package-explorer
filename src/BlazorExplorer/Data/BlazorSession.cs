@@ -275,7 +275,7 @@ namespace BlazorUI.Data
             PackageCentral.ChangeEventHandler = (data) =>
             {
                 // if (data.Reason == PackCntChangeEventReason.Exception)
-                    Log.Singleton.Info("PackageCentral events: " + data.Info);
+                Log.Singleton.Info("PackageCentral events: " + data.Info);
                 //DisplayElements.PushEvent(new AnyUiLambdaActionPackCntChange() { Change = data });
                 return false;
             };
@@ -330,7 +330,7 @@ namespace BlazorUI.Data
 
             helper = new DispEditHelperMultiElement();
             helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
-            
+
             // some functionality still uses repo != null to detect editMode!!
             repo = new ModifyRepo();
             helper.editMode = EditMode;
@@ -393,24 +393,24 @@ namespace BlazorUI.Data
             {
                 LogInternally.That.CompletelyIgnoredError(ex);
             }
-        }       
+        }
 
-		public void ClearPasteBuffer()
-		{
-			if (helper.theCopyPaste != null)
-				helper.theCopyPaste.Clear();
-		}
+        public void ClearPasteBuffer()
+        {
+            if (helper.theCopyPaste != null)
+                helper.theCopyPaste.Clear();
+        }
 
-		/// <summary>
-		/// This functions prepares display data and element panel to be rendered
-		/// by a razor page.
-		/// Note: in BlazorUI was in Index.razor; however complex code and better
-		/// maintained in Session.
-		/// </summary>
-		/// <returns>If contents could be rendered</returns>
-		public bool PrepareDisplayDataAndElementPanel(
+        /// <summary>
+        /// This functions prepares display data and element panel to be rendered
+        /// by a razor page.
+        /// Note: in BlazorUI was in Index.razor; however complex code and better
+        /// maintained in Session.
+        /// </summary>
+        /// <returns>If contents could be rendered</returns>
+        public bool PrepareDisplayDataAndElementPanel(
             IJSRuntime jsRuntime,
-            AnyUiDisplayContextHtml displayContext, 
+            AnyUiDisplayContextHtml displayContext,
             ref DispEditHelperMultiElement helper,
             ref AnyUiStackPanel elementPanel,
             ref AasxMenuBlazor dynamicMenu)
@@ -502,7 +502,7 @@ namespace BlazorUI.Data
 
                         // may dispose old (other plugin)
                         if (LoadedPluginInstance == null
-                            || LoadedPluginNode != DisplayElements.SelectedItem 
+                            || LoadedPluginNode != DisplayElements.SelectedItem
                             || LoadedPluginInstance != vepe.thePlugin)
                         {
                             // invalidate, fill new
@@ -523,7 +523,7 @@ namespace BlazorUI.Data
                                 {
                                     vepe.thePlugin?.InvokeAction(
                                         "update-anyui-visual-extension",
-                                        elementPanel, displayContext, 
+                                        elementPanel, displayContext,
                                         SessionId);
                                 }
                                 else
@@ -610,7 +610,7 @@ namespace BlazorUI.Data
         /// </summary>
         public void MainTimerTick()
         {
-//            MainTimer_HandleLogMessages();
+            //            MainTimer_HandleLogMessages();
         }
 
         /// <summary>
@@ -744,7 +744,7 @@ namespace BlazorUI.Data
 
             // AASX to add (to last repo)
             var fr = PackageCentral.Repositories?.LastOrDefault();
-            if (ext == ".aasx" 
+            if (ext == ".aasx"
                 && (modi & BlazorInput.KeyboardModifiers.Ctrl) != 0
                 && fr != null && (fr is PackageContainerListLocal))
             {

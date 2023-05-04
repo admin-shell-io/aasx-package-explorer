@@ -105,7 +105,7 @@ namespace AasOpcUaServer
             {
                 id = Utils.IncrementIdentifier(ref m_lastUsedTypeId);
             }
-            
+
             return new NodeId(id, m_typeNamespaceIndex);
         }
 
@@ -205,7 +205,7 @@ namespace AasOpcUaServer
 
             return folder;
         }
-        
+
         /// <summary>
         /// Does any initialization required before the address space can be used.
         /// </summary>
@@ -250,7 +250,7 @@ namespace AasOpcUaServer
                 // create dictionary entries
                 builder.RootMissingDictionaryEntries = builder.CreateAddObject(
                     topOfDict,
-                    AasUaBaseEntity.CreateMode.Instance, 
+                    AasUaBaseEntity.CreateMode.Instance,
                     "DictionaryEntries",
                     ReferenceTypeIds.HasComponent,
                     builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
@@ -317,7 +317,7 @@ namespace AasOpcUaServer
                         Utils.Trace(ex, "When exporting to {0}", "" + theServerOptions.ExportFilename);
                     }
                 }
-            
+
                 Debug.WriteLine("Done creating custom address space!");
                 Utils.Trace(Utils.TraceMasks.Operation, "Done creating custom address space!");
             }

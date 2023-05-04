@@ -33,9 +33,9 @@ namespace AasxPackageExplorer
 {
     public partial class SelectFromRepositoryFlyout : UserControl, IFlyoutControl
     {
-		public AnyUiDialogueDataSelectFromRepository DiaData = new AnyUiDialogueDataSelectFromRepository();
+        public AnyUiDialogueDataSelectFromRepository DiaData = new AnyUiDialogueDataSelectFromRepository();
 
-		public event IFlyoutControlAction ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public SelectFromRepositoryFlyout()
         {
@@ -122,10 +122,10 @@ namespace AasxPackageExplorer
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // load items
-			LoadAasxRepoFile(DiaData?.Items);
+            LoadAasxRepoFile(DiaData?.Items);
 
-			// window default
-			this.TextBoxAssetId.Text = "";
+            // window default
+            this.TextBoxAssetId.Text = "";
             this.TextBoxAssetId.Focus();
             this.TextBoxAssetId.Select(0, 999);
             FocusManager.SetFocusedElement(this, this.TextBoxAssetId);
@@ -135,7 +135,8 @@ namespace AasxPackageExplorer
         {
             // search
             var ri = DiaData?.SearchId(TextBoxAssetId.Text);
-            if (ri != null) {
+            if (ri != null)
+            {
                 DiaData.Result = true;
                 DiaData.ResultItem = ri;
                 ControlClosed?.Invoke();

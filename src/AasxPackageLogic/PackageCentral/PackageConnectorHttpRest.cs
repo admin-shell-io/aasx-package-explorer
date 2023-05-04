@@ -7,19 +7,6 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Threading;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxOpenIdClient;
@@ -27,7 +14,15 @@ using AdminShellNS;
 using Extensions;
 using IdentityModel.Client;
 using Newtonsoft.Json;
-using SSIExtension;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -205,7 +200,7 @@ namespace AasxPackageLogic.PackageCentral
         /// </summary>
         /// <returns>True, if an event was emitted</returns>
         public async Task<bool> SimulateUpdateValuesEventByGetAsync(
-            Aas.Submodel rootSubmodel,
+            Aas.ISubmodel rootSubmodel,
             Aas.BasicEventElement sourceEvent,
             Aas.IReferable requestedElement,
             DateTime timestamp,
@@ -325,7 +320,7 @@ namespace AasxPackageLogic.PackageCentral
                         if (tuple.path != null)
                         {
                             // List<Key> from path
-                            var kl = new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.SubmodelElement, tuple.path.ToObject<string[]>()) };
+                            var kl = new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.SubmodelElement, tuple.path.ToObject<string[]>()) };
                             // goal (1)
                             pluv.Values.Add(
                                 new AasPayloadUpdateValueItem(kl, "" + tuple.Value));
@@ -333,7 +328,7 @@ namespace AasxPackageLogic.PackageCentral
                             // goal (2)
                             if (wrappers != null)
                             {
-                                var x = wrappers.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.GlobalReference, kl), keyIndex: 0);
+                                var x = wrappers.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, kl), keyIndex: 0);
                                 if (x is Aas.Property prop)
                                 {
                                     if (tuple.Value != null)
@@ -475,7 +470,7 @@ namespace AasxPackageLogic.PackageCentral
                         Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1?.IdShort).SubstringMax(0, 3)
                     };
                     fi.AasIds.Add("" + x.Item1?.Id);
-                    fi.AssetIds.Add("" + x.Item2?.GlobalAssetId.GetAsIdentifier());
+                    fi.AssetIds.Add("" + x.Item2?.GlobalAssetId);
                     res.Add(fi);
                 }
                 catch (Exception ex)
@@ -602,28 +597,28 @@ namespace AasxPackageLogic.PackageCentral
                 return;
 
             // try determine tarket of "Observable"/"path"
-            var targetKl = new List<Aas.Key>();
+            var targetKl = new List<Aas.IKey>();
             Aas.IReferable target = null;
             if (change.Path?.IsEmpty() == false)
             {
                 if (env.ObservableReference?.Keys != null)
-                    targetKl = new List<Aas.Key>(env.ObservableReference.Keys);
+                    targetKl = new List<Aas.IKey>(env.ObservableReference.Keys);
 
                 targetKl.AddRange(change.Path);
 
                 if (targetKl.First().IsAbsolute())
                     //target = Env?.AasEnv?.FindReferableByReference(targetKl);
-                    target = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.GlobalReference, targetKl));
+                    target = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, targetKl));
             }
 
             // try evaluate parent of target?
-            var parentKl = new List<Aas.Key>(targetKl);
+            var parentKl = new List<Aas.IKey>(targetKl);
             Aas.IReferable parent = null;
             if (parentKl.Count > 1)
             {
                 parentKl.RemoveAt(parentKl.Count - 1);
                 //parent = Env?.AasEnv?.FindReferableByReference(parentKl);
-                parent = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.GlobalReference, parentKl));
+                parent = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, parentKl));
             }
 
             // create
@@ -681,7 +676,7 @@ namespace AasxPackageLogic.PackageCentral
                     && dataRef is Aas.ISubmodelElement sme
                     && change.CreateAtIndex < 0)
                 {
-                    switch(parent)
+                    switch (parent)
                     {
                         case Aas.Submodel submodel:
                             {
@@ -738,9 +733,9 @@ namespace AasxPackageLogic.PackageCentral
                     && Env?.AasEnv != null)
                 {
                     Env.AasEnv.Submodels.Add(sm);
-                    if(parentAas.Submodels == null)
+                    if (parentAas.Submodels == null)
                     {
-                        parentAas.Submodels = new List<Aas.Reference>();
+                        parentAas.Submodels = new List<Aas.IReference>();
                     }
                     parentAas.Submodels.Add(sm?.GetReference());
                     change.FoundReferable = dataRef;
@@ -792,7 +787,7 @@ namespace AasxPackageLogic.PackageCentral
                             {
                                 if (submodel.SubmodelElements != null)
                                 {
-                                    submodel.SubmodelElements.Remove(sme); 
+                                    submodel.SubmodelElements.Remove(sme);
                                 }
                                 break;
                             }
@@ -800,7 +795,7 @@ namespace AasxPackageLogic.PackageCentral
                             {
                                 if (submodelElementCollection.Value != null)
                                 {
-                                    submodelElementCollection.Value.Remove(sme); 
+                                    submodelElementCollection.Value.Remove(sme);
                                 }
                                 break;
                             }
@@ -808,7 +803,7 @@ namespace AasxPackageLogic.PackageCentral
                             {
                                 if (submodelElementList.Value != null)
                                 {
-                                    submodelElementList.Value.Remove(sme); 
+                                    submodelElementList.Value.Remove(sme);
                                 }
                                 break;
                             }
@@ -816,7 +811,7 @@ namespace AasxPackageLogic.PackageCentral
                             {
                                 if (annotatedRelationshipElement.Annotations != null)
                                 {
-                                    annotatedRelationshipElement.Annotations.Add((Aas.IDataElement)sme); 
+                                    annotatedRelationshipElement.Annotations.Add((Aas.IDataElement)sme);
                                 }
                                 break;
                             }
@@ -841,7 +836,7 @@ namespace AasxPackageLogic.PackageCentral
                     && target is Aas.Submodel sm
                     && Env?.AasEnv != null)
                 {
-                    Aas.Reference smrefFound = null;
+                    Aas.IReference smrefFound = null;
                     foreach (var smref in parentAas.Submodels)
                         if (smref.MatchesExactlyOneKey(targetKl.Last(), MatchMode.Relaxed))
                             smrefFound = smref;
@@ -887,18 +882,18 @@ namespace AasxPackageLogic.PackageCentral
                 return;
 
             // try determine tarket of "Observable"/"path"
-            var targetKl = new List<Aas.Key>();
+            var targetKl = new List<Aas.IKey>();
             Aas.IReferable target = null;
             if (value.Path?.IsEmpty() == false)
             {
                 if (env.ObservableReference?.Keys != null)
-                    targetKl = new List<Aas.Key>(env.ObservableReference.Keys);
+                    targetKl = new List<Aas.IKey>(env.ObservableReference.Keys);
 
                 targetKl.AddRange(value.Path);
 
                 if (targetKl.First().IsAbsolute())
                     //target = Env?.AasEnv?.FindReferableByReference(targetKl);
-                    target = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.GlobalReference, targetKl));
+                    target = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, targetKl));
             }
 
             // no target?

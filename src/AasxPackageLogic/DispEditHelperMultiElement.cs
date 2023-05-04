@@ -7,21 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
-using AdminShellNS;
 using AdminShellNS.Display;
 using AnyUi;
 using Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
 {
@@ -74,7 +68,7 @@ namespace AasxPackageLogic
                                 var sme = vesme.theWrapper;
                                 EnumerationPlacmentBase placement = null;
                                 //if (parentContainer is IEnumerateChildren enc)
-                                    placement = pcref.GetChildrenPlacement(sme);
+                                placement = pcref.GetChildrenPlacement(sme);
                                 cpb.Items.Add(new CopyPasteItemSME(env, pcref,
                                     vesme.theWrapper, sme, placement));
                             }
@@ -330,7 +324,7 @@ namespace AasxPackageLogic
                 if (nd != null)
                 {
                     if (rf2.Description == null)
-                        rf2.Description = new List<Aas.LangString>();
+                        rf2.Description = new List<Aas.ILangStringTextType>();
                     rf2LangString.Text = nd;
                 }
             }
@@ -465,12 +459,12 @@ namespace AasxPackageLogic
                 if (first is VisualElementSubmodel vesm)
                 {
                     // up down delete
-                    var bos = entities.GetListOfBusinessObjects<Aas.Submodel>();
+                    var bos = entities.GetListOfBusinessObjects<Aas.ISubmodel>();
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         vesm.theEnv?.Submodels, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vesm.theEnv, parent, this.theCopyPaste, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vesm.theEnv, parent, this.theCopyPaste,
                         entities, superMenu: superMenu);
                 }
 
@@ -478,13 +472,13 @@ namespace AasxPackageLogic
                     && aas.Submodels != null)
                 {
                     // up down delete
-                    var bos = entities.GetListOfMapResults<Aas.Reference,
+                    var bos = entities.GetListOfMapResults<Aas.IReference,
                        VisualElementSubmodelRef>((ve) => ve?.theSubmodelRef);
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         aas.Submodels, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vesmr.theEnv, parent, this.theCopyPaste, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vesmr.theEnv, parent, this.theCopyPaste,
                         entities, superMenu: superMenu);
                 }
 
@@ -502,7 +496,7 @@ namespace AasxPackageLogic
                         EntityListMultipleUpDownDeleteHelper<Aas.ISubmodelElement>(stack, repo,
                             smec.Value, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
-                    DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste,
                         entities, superMenu: superMenu);
                 }
 
@@ -518,7 +512,7 @@ namespace AasxPackageLogic
                     // up down delete
                     if (sameDir)
                     {
-                        var bos = entities.GetListOfMapResults<Aas.OperationVariable,
+                        var bos = entities.GetListOfMapResults<Aas.IOperationVariable,
                            VisualElementOperationVariable>((ve) => ve?.theOpVar);
                         var operationVariables = oppa.GetVars(opv.theDir);
                         EntityListMultipleUpDownDeleteHelper(stack, repo,
@@ -527,14 +521,14 @@ namespace AasxPackageLogic
                     }
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, opv.theEnv, parent, this.theCopyPaste, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, opv.theEnv, parent, this.theCopyPaste,
                         entities, superMenu: superMenu);
                 }
 
                 if (first is VisualElementConceptDescription vecd)
                 {
                     // up down delete
-                    var bos = entities.GetListOfBusinessObjects<Aas.ConceptDescription>();
+                    var bos = entities.GetListOfBusinessObjects<Aas.IConceptDescription>();
 
                     EntityListMultipleUpDownDeleteHelper(
                         stack, repo,
@@ -558,7 +552,7 @@ namespace AasxPackageLogic
                 if (first is VisualElementAdminShell veaas)
                 {
                     // up down delete
-                    var bos = entities.GetListOfBusinessObjects<Aas.AssetAdministrationShell>();
+                    var bos = entities.GetListOfBusinessObjects<Aas.IAssetAdministrationShell>();
 
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         veaas.theEnv?.AssetAdministrationShells, bos, indexInfo, superMenu: superMenu,

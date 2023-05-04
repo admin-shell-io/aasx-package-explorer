@@ -7,13 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
 {
@@ -45,7 +40,7 @@ namespace AasxPredefinedConcepts
             this.DomainInfo = "Plugin ImageMap";
 
             // IReferable
-            SEM_ImageMapSubmodel = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0") });
+            SEM_ImageMapSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0") });
 
             CD_ImageFile = CreateSparseConceptDescription("en", "IRI",
                 "ImageFile",

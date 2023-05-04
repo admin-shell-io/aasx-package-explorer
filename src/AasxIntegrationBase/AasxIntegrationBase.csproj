@@ -5,8 +5,12 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
+
+	<ItemGroup>
+		<Using Include="AasCore.Aas3_0"/>
+	</ItemGroup>
+	
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
   </ItemGroup>
   <ItemGroup>

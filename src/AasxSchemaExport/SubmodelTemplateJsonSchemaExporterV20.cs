@@ -6,13 +6,12 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Extensions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxSchemaExport
 {
@@ -20,7 +19,7 @@ namespace AasxSchemaExport
     {
         private List<Func<SubmodelElementDefinitionContext, bool>> _submodelElementDefinitionSuppliers;
 
-        public string ExportSchema(Aas.Submodel submodel)
+        public string ExportSchema(Aas.ISubmodel submodel)
         {
             var schema = new JObject();
 
@@ -50,7 +49,7 @@ namespace AasxSchemaExport
             };
         }
 
-        private void AddRootData(JObject schema, Aas.Submodel submodel)
+        private void AddRootData(JObject schema, Aas.ISubmodel submodel)
         {
             schema[Tokens.Schema] = Constants.JsonSchemaDraftVersion;
             schema[Tokens.Title] = $"AssetAdministrationShell{submodel.IdShort}";
@@ -85,7 +84,7 @@ namespace AasxSchemaExport
             }}");
         }
 
-        private void AddDefinitionForSubmodelElements(JObject schema, Aas.Submodel submodel)
+        private void AddDefinitionForSubmodelElements(JObject schema, Aas.ISubmodel submodel)
         {
             AddDefinitionReferenceToRootAllOf(schema, Tokens.Elements);
 

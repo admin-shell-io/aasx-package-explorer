@@ -431,18 +431,18 @@ namespace AasxPluginTechnicalData
                 var clr = new List<ClassificationRecord>();
                 foreach (var smc in
                         smcClassifications.Value.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
-                            theDefs.CD_ProductClassificationItem.GetSingleKey(), 
+                            theDefs.CD_ProductClassificationItem.GetSingleKey(),
                             MatchMode.Relaxed))
                 {
                     var sys = (
                         "" +
                         smc.Value.FindFirstSemanticIdAs<Aas.Property>(
-                            theDefs.CD_ProductClassificationSystem.GetSingleKey(), 
+                            theDefs.CD_ProductClassificationSystem.GetSingleKey(),
                             MatchMode.Relaxed)?.Value).Trim();
                     var ver = (
                         "" +
                         smc.Value.FindFirstSemanticIdAs<Aas.Property>(
-                            theDefs.CD_ClassificationSystemVersion.GetSingleKey(), 
+                            theDefs.CD_ClassificationSystemVersion.GetSingleKey(),
                             MatchMode.Relaxed)?.Value).Trim();
                     var cls = (
                         "" +
@@ -732,7 +732,7 @@ namespace AasxPluginTechnicalData
                 // Lines
                 foreach (var sme in
                     smcFurther.Value.FindAllSemanticId(
-                        theDefs.CD_TextStatement.GetSingleKey(), 
+                        theDefs.CD_TextStatement.GetSingleKey(),
                         allowedTypes: ExtendISubmodelElement.PROP_MLP, MatchMode.Relaxed))
                     tsl.Add("" + sme?.ValueAsText(defaultLang));
             }

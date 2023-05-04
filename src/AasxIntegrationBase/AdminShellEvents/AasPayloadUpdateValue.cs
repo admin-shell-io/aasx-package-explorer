@@ -10,18 +10,12 @@ This source code may use other Open Source software components (see LICENSE.txt)
 // to be disabled for AASX Server
 #define UseMarkup 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
-using AdminShellNS;
 using AdminShellNS.DiaryData;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Xml.Serialization;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -39,7 +33,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// Path of the element to be updated. Contains one or more Keys, relative to the Observable of
         /// the defined Event.
         /// </summary>
-        public List<Aas.Key> Path { get; set; }
+        public List<Aas.IKey> Path { get; set; }
 
         /// <summary>
         /// Serialized updated value of the updated element.
@@ -49,7 +43,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// ValueId of the update element.
         /// </summary>
-        public Aas.Reference ValueId { get; set; }
+        public Aas.IReference ValueId { get; set; }
 
         /// <summary>
         /// Direct reference to Referable, when value item was successfully processed.
@@ -63,7 +57,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         //
 
         public AasPayloadUpdateValueItem(
-            List<Aas.Key> path = null,
+            List<Aas.IKey> path = null,
             string value = null,
             Aas.Reference valueId = null)
         {

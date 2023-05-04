@@ -7,19 +7,18 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxIntegrationBaseWpf;
+using AasxPackageLogic;
+using AnyUi;
+using Extensions;
 using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using AasxIntegrationBase;
-using AasxIntegrationBaseWpf;
-using AasxPackageLogic;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using AnyUi;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {

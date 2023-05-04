@@ -1,11 +1,4 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Extensions
+﻿namespace Extensions
 {
     public static class ExtendFile
     {
@@ -14,7 +7,7 @@ namespace Extensions
             return "" + file.Value;
         }
 
-        public static void Set(this File file, 
+        public static void Set(this File file,
             string contentType = "", string value = "")
         {
             file.ContentType = contentType;
@@ -46,7 +39,7 @@ namespace Extensions
                 elem.Value = srcProp.Value;
             }
 
-            if (source is AasCore.Aas3_0_RC02.Range srcRng)
+            if (source is AasCore.Aas3_0.Range srcRng)
             {
                 elem.Value = srcRng.Min;
             }

@@ -1,17 +1,16 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace Extensions
 {
+    //TODO:jtikekar remove or seperate
     public static class ExtendLangStringSet
     {
         #region AasxPackageExplorer
 
-        public static bool IsValid(this List<LangString> langStringSet)
+        public static bool IsValid(this List<ILangStringNameType> langStringSet)
         {
-            if(langStringSet != null && langStringSet.Count >=1)
+            if (langStringSet != null && langStringSet.Count >= 1)
             {
                 return true;
             }
@@ -20,7 +19,7 @@ namespace Extensions
         }
 
         #endregion
-        public static bool IsEmpty(this List<LangString> langStringSet)
+        public static bool IsEmpty(this List<ILangStringNameType> langStringSet)
         {
             if (langStringSet == null || langStringSet.Count == 0)
             {
@@ -29,7 +28,7 @@ namespace Extensions
 
             return false;
         }
-        public static string GetDefaultString(this List<LangString> langStringSet, string defaultLang = null)
+        public static string GetDefaultString(this List<ILangStringTextType> langStringSet, string defaultLang = null)
         {
             // start
             if (defaultLang == null)
@@ -49,36 +48,49 @@ namespace Extensions
             return res;
         }
 
-        public static List<LangString> Create(string language, string text)
+        public static List<T> Create<T>(string language, string text) where T : IAbstractLangString, new()
         {
-            return new List<LangString> { new LangString(language, text) };
+            return new List<T> { new T { Language = language, Text = text } };
         }
 
-        public static List<LangString> CreateManyFromStringArray(string[] s)
+        public static List<ILangStringNameType> CreateLangStringNameType(string language, string text)
+        {
+            return new List<ILangStringNameType> { new LangStringNameType(language, text) };
+        }
+
+        public static List<ILangStringTextType> CreateLangStringTextType(string language, string text)
+        {
+            return new List<ILangStringTextType> { new LangStringTextType(language, text) };
+        }
+
+        public static List<ILangStringPreferredNameTypeIec61360> CreateManyPreferredNamesFromStringArray(string[] s)
         {
             if (s == null)
                 return null;
-            var r = new List<LangString>();
+            var r = new List<ILangStringPreferredNameTypeIec61360>();
             var i = 0;
             while ((i + 1) < s.Length)
             {
-                r.Add(new LangString(s[i], s[i + 1]));
+                r.Add(new LangStringPreferredNameTypeIec61360(s[i], s[i + 1]));
+                i += 2;
+            }
+            return r;
+        }
+        public static List<ILangStringDefinitionTypeIec61360> CreateManyDefinitionFromStringArray(string[] s)
+        {
+            if (s == null)
+                return null;
+            var r = new List<ILangStringDefinitionTypeIec61360>();
+            var i = 0;
+            while ((i + 1) < s.Length)
+            {
+                r.Add(new LangStringDefinitionTypeIec61360(s[i], s[i + 1]));
                 i += 2;
             }
             return r;
         }
 
-        // TODO (Jui, 2023-01-05): Check why the generic Copy<T> does not apply here?!
-        public static List<LangString> Copy(this List<LangString> original)
-        {
-            var res = new List<LangString>();
-            if (original != null)
-                foreach (var o in original)
-                    res.Add(o.Copy());
-            return res;
-        }
-
-        public static List<LangString> Set(this List<LangString> lss, string lang, string text)
+        public static List<ILangStringTextType> Set(this List<ILangStringTextType> lss, string lang, string text)
         {
             foreach (var ls in lss)
                 if (ls.Language.Trim().ToLower() == lang?.Trim().ToLower())
@@ -86,80 +98,28 @@ namespace Extensions
                     ls.Text = text;
                     return lss;
                 }
-            lss.Add(new LangString(lang, text));
+            lss.Add(new LangStringTextType(lang, text));
             return lss;
         }
 
-        public static List<LangString> ConvertFromV20(
-            this List<LangString> langStringSet, 
+        public static List<ILangStringTextType> ConvertFromV20(
+            this List<ILangStringTextType> langStringSet,
             AasxCompatibilityModels.AdminShellV20.LangStringSet sourceLangStrings)
         {
 
             //if (!sourceLangStrings.langString.IsNullOrEmpty())
-            if (sourceLangStrings.langString!= null && sourceLangStrings.langString.Count != 0)
+            if (sourceLangStrings.langString != null && sourceLangStrings.langString.Count != 0)
             {
-                langStringSet = new List<LangString>();
+                langStringSet = new List<ILangStringTextType>();
                 foreach (var sourceLangString in sourceLangStrings.langString)
                 {
-                    var langString = new LangString(sourceLangString.lang, sourceLangString.str);
+                    var langString = new LangStringTextType(sourceLangString.lang, sourceLangString.str);
                     langStringSet.Add(langString);
                 }
             }
             return langStringSet;
         }
 
-        public static List<LangString> ConvertFromV20(
-            this List<LangString> lss, 
-            AasxCompatibilityModels.AdminShellV20.LangStringSetIEC61360 src)
-        {
-
-            //if (!sourceLangStrings.langString.IsNullOrEmpty())
-            if (src != null && src.Count != 0)
-            {
-                lss = new List<LangString>();
-                foreach (var sourceLangString in src)
-                {
-                    var langString = new LangString(sourceLangString.lang, sourceLangString.str);
-                    lss.Add(langString);
-                }
-            }
-            return lss;
-        }
-
-        public static List<LangString> Parse(string cell)
-        {
-            // access
-            if (cell == null)
-                return null;
-
-            // iterative approach
-            var res = new List<LangString>();
-            while (true)
-            {
-                // trivial case and finite end
-                if (!cell.Contains("@"))
-                {
-                    if (cell.Trim() != "")
-                        res.Add(new LangString(ExtendLangString.LANG_DEFAULT, cell));
-                    break;
-                }
-
-                // OK, pick the next couple
-                var m = Regex.Match(cell, @"(.*?)@(\w+)", RegexOptions.Singleline);
-                if (!m.Success)
-                {
-                    // take emergency exit?
-                    res.Add(new LangString("??", cell));
-                    break;
-                }
-
-                // use the match and shorten cell ..
-                res.Add(new LangString(m.Groups[2].ToString(), m.Groups[1].ToString().Trim()));
-                cell = cell.Substring(m.Index + m.Length);
-            }
-
-            return res;
-        }
 
     }
 }

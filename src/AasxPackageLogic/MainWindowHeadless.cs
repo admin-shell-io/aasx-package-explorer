@@ -15,27 +15,17 @@ using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
 using AasxPredefinedConcepts.Convert;
 using AasxSignature;
+using AdminShellNS;
 using AnyUi;
+using Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using System.Windows;
-using System.Windows.Controls;
-using Microsoft.VisualBasic.Logging;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -610,7 +600,7 @@ namespace AasxPackageLogic
             if (cmd == "exportjsonschema")
             {
                 // arguments
-                if (ticket.Env == null 
+                if (ticket.Env == null
                     || ticket.Submodel == null || ticket.SubmodelElement != null
                     || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
@@ -838,7 +828,7 @@ namespace AasxPackageLogic
                 {
                     // Submodel needs an identification
                     smres.Id = "";
-                    if (smres.Kind == null || smres.Kind == Aas.ModelingKind.Instance)
+                    if (smres.Kind == null || smres.Kind == Aas.ModellingKind.Instance)
                         smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelInstance);
                     else
@@ -925,103 +915,103 @@ namespace AasxPackageLogic
                 }
             }
 
-			if (cmd == "filerepoquery")
-			{
-				ticket.StartExec();
+            if (cmd == "filerepoquery")
+            {
+                ticket.StartExec();
 
-				// access
-				if (PackageCentral.Repositories == null || PackageCentral.Repositories.Count < 1)
-				{
-					LogErrorToTicket(ticket,
-						"AASX File Repository: No repository currently available! Please open.");
-					return;
-				}
+                // access
+                if (PackageCentral.Repositories == null || PackageCentral.Repositories.Count < 1)
+                {
+                    LogErrorToTicket(ticket,
+                        "AASX File Repository: No repository currently available! Please open.");
+                    return;
+                }
 
-				// make a lambda
-				Action<PackageContainerRepoItem> lambda = (ri) =>
-				{
-					var fr = PackageCentral.Repositories?.FindRepository(ri);
+                // make a lambda
+                Action<PackageContainerRepoItem> lambda = (ri) =>
+                {
+                    var fr = PackageCentral.Repositories?.FindRepository(ri);
 
-					if (fr != null && ri?.Location != null)
-					{
-						// which file?
-						var loc = fr?.GetFullItemLocation(ri.Location);
-						if (loc == null)
-							return;
+                    if (fr != null && ri?.Location != null)
+                    {
+                        // which file?
+                        var loc = fr?.GetFullItemLocation(ri.Location);
+                        if (loc == null)
+                            return;
 
-						// start animation
-						fr.StartAnimation(ri,
-							PackageContainerRepoItem.VisualStateEnum.ReadFrom);
+                        // start animation
+                        fr.StartAnimation(ri,
+                            PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
-						try
-						{
-							// load
-							Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
+                        try
+                        {
+                            // load
+                            Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
                             MainWindow?.UiLoadPackageWithNew(
-							    PackageCentral.MainItem, null, loc, onlyAuxiliary: false);
-						}
-						catch (Exception ex)
-						{
-							Log.Singleton.Error(
-								ex, $"When switching to AASX repository location {loc}.");
-						}
-					}
-				};
+                                PackageCentral.MainItem, null, loc, onlyAuxiliary: false);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(
+                                ex, $"When switching to AASX repository location {loc}.");
+                        }
+                    }
+                };
 
-				// get the list of items
-				var repoItems = PackageCentral.Repositories.EnumerateItems().ToList();
+                // get the list of items
+                var repoItems = PackageCentral.Repositories.EnumerateItems().ToList();
 
-				// scripted?
-				if (ticket["Index"] is int)
-				{
-					var ri = (int)ticket["Index"];
-					if (ri < 0 || ri >= repoItems.Count)
-					{
-						LogErrorToTicket(ticket, "Repo Query: Index out of bounds");
-						return;
-					}
-					lambda(repoItems[ri]);
-				}
-				else
-				if (ticket["AAS"] is string aasid)
-				{
-					var ri = PackageCentral.Repositories.FindByAasId(aasid);
-					if (ri == null)
-					{
-						LogErrorToTicket(ticket, "Repo Query: AAS-Id not found");
-						return;
-					}
-					lambda(ri);
-				}
-				else
-				if (ticket["Asset"] is string aid)
-				{
-					var ri = PackageCentral.Repositories.FindByAssetId(aid);
-					if (ri == null)
-					{
-						LogErrorToTicket(ticket, "Repo Query: Asset-Id not found");
-						return;
-					}
-					lambda(ri);
-				}
-				else
-				{
-					// dialogue
-					if (DisplayContext == null)
-					{
-						LogErrorToTicket(ticket, "Repo Query: No AnyUI context found. Could not display.");
-						return;
-					}
+                // scripted?
+                if (ticket["Index"] is int)
+                {
+                    var ri = (int)ticket["Index"];
+                    if (ri < 0 || ri >= repoItems.Count)
+                    {
+                        LogErrorToTicket(ticket, "Repo Query: Index out of bounds");
+                        return;
+                    }
+                    lambda(repoItems[ri]);
+                }
+                else
+                if (ticket["AAS"] is string aasid)
+                {
+                    var ri = PackageCentral.Repositories.FindByAasId(aasid);
+                    if (ri == null)
+                    {
+                        LogErrorToTicket(ticket, "Repo Query: AAS-Id not found");
+                        return;
+                    }
+                    lambda(ri);
+                }
+                else
+                if (ticket["Asset"] is string aid)
+                {
+                    var ri = PackageCentral.Repositories.FindByAssetId(aid);
+                    if (ri == null)
+                    {
+                        LogErrorToTicket(ticket, "Repo Query: Asset-Id not found");
+                        return;
+                    }
+                    lambda(ri);
+                }
+                else
+                {
+                    // dialogue
+                    if (DisplayContext == null)
+                    {
+                        LogErrorToTicket(ticket, "Repo Query: No AnyUI context found. Could not display.");
+                        return;
+                    }
 
-					var uc = new AnyUiDialogueDataSelectFromRepository();
+                    var uc = new AnyUiDialogueDataSelectFromRepository();
                     uc.Caption = "Select in repository";
                     uc.Items = repoItems;
-					if (DisplayContext.StartFlyoverModal(uc))
+                    if (DisplayContext.StartFlyoverModal(uc))
                     {
-						lambda(uc.ResultItem);
-					}
-				}
-			}
+                        lambda(uc.ResultItem);
+                    }
+                }
+            }
 
             //
             // Plugins

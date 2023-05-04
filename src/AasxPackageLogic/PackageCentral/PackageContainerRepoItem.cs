@@ -7,19 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -208,7 +204,7 @@ namespace AasxPackageLogic.PackageCentral
                     if (ids != null && ids.Count > 0)
                     {
                         if (info != "")
-                            info += Environment.NewLine;
+                            info += System.Environment.NewLine;
                         info += head;
                         foreach (var id in ids)
                             info += "" + id + ",";

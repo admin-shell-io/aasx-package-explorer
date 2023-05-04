@@ -8,15 +8,15 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using AasCore.Aas3_0;
+using AasxPackageLogic;
+using AdminShellNS;
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using AasxPackageLogic;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxDictionaryImport
 {
@@ -46,7 +46,7 @@ namespace AasxDictionaryImport
         /// <returns>A new submodel with the given data</returns>
         public static Aas.Submodel CreateSubmodel(
             Aas.Environment env,
-            Aas.AssetAdministrationShell adminShell, Iec61360Data data)
+            Aas.IAssetAdministrationShell adminShell, Iec61360Data data)
         {
             // We need this to ensure that we don't use the same AAS ID twice when importing multiple submodels (as
             // GenerateIdAccordingTemplate uses the timestamp as part of the ID).
@@ -54,7 +54,7 @@ namespace AasxDictionaryImport
             var submodel = new Aas.Submodel(
                 id: AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance),
                 idShort: data.IdShort,
-                kind: Aas.ModelingKind.Instance
+                kind: Aas.ModellingKind.Instance
             );
 
             AddDescriptions(submodel, data);
@@ -76,8 +76,7 @@ namespace AasxDictionaryImport
             Aas.Environment env, Iec61360Data data)
         {
             var collection = new Aas.SubmodelElementCollection(
-                idShort: data.IdShort,
-                kind: Aas.ModelingKind.Instance
+                idShort: data.IdShort
             );
             InitSubmodelElement(env, collection, data);
             return collection;
@@ -95,7 +94,6 @@ namespace AasxDictionaryImport
         {
             var property = new Aas.Property(
                 idShort: data.IdShort,
-                kind: Aas.ModelingKind.Instance,
                 valueType: Aas.Stringification.DataTypeDefXsdFromString(valueType) ?? DataTypeDefXsd.String
             );
             InitSubmodelElement(env, property, data);
@@ -125,8 +123,8 @@ namespace AasxDictionaryImport
             var eds = cd.EmbeddedDataSpecifications.FindFirstIEC61360Spec();
             if (eds != null)
             {
-                eds.DataSpecification = new Reference(ReferenceTypes.GlobalReference,
-                    new List<Key>(new[] { ExtendIDataSpecificationContent.GetKeyForIec61360() }));
+                eds.DataSpecification = new Reference(ReferenceTypes.ExternalReference,
+                    new List<IKey>(new[] { ExtendIDataSpecificationContent.GetKeyForIec61360() }));
             }
 
             submodel.SemanticId = cd.GetReference().Copy();
@@ -142,8 +140,8 @@ namespace AasxDictionaryImport
             var eds = cd.EmbeddedDataSpecifications.FindFirstIEC61360Spec();
             if (eds != null)
             {
-                eds.DataSpecification = new Reference(ReferenceTypes.GlobalReference,
-                    new List<Key>(new[] { ExtendIDataSpecificationContent.GetKeyForIec61360() }));
+                eds.DataSpecification = new Reference(ReferenceTypes.ExternalReference,
+                    new List<IKey>(new[] { ExtendIDataSpecificationContent.GetKeyForIec61360() }));
             }
 
             submodelElement.SemanticId = cd.GetReference().Copy();
@@ -159,7 +157,7 @@ namespace AasxDictionaryImport
             eds.DataSpecificationContent = data.ToDataSpecification();
 
             cd.AddIsCaseOf(ExtendReference.CreateFromKey(Aas.KeyTypes.GlobalReference, data.Irdi));
-            
+
             env.Add(cd);
             return cd;
         }
@@ -280,17 +278,41 @@ namespace AasxDictionaryImport
         /// are added to the set.
         /// </summary>
         /// <returns>A LangStringSet with the values form this multi string</returns>
-        public List<Aas.LangString> ToLangStringSet()
+        public List<Aas.ILangStringDefinitionTypeIec61360> ToLangStringDefinitionTypeIec61360()
         {
-            var set = new List<Aas.LangString>();
+            var set = new List<Aas.ILangStringDefinitionTypeIec61360>();
             foreach (var lang in Languages)
             {
                 var value = Get(lang);
                 if (value.Length > 0)
-                    set.Add(new Aas.LangString(lang, value));
+                    set.Add(new Aas.LangStringDefinitionTypeIec61360(lang, value));
             }
             return set;
         }
+        public List<Aas.ILangStringPreferredNameTypeIec61360> ToLangStringPreferredNameTypeIec61360()
+        {
+            var set = new List<Aas.ILangStringPreferredNameTypeIec61360>();
+            foreach (var lang in Languages)
+            {
+                var value = Get(lang);
+                if (value.Length > 0)
+                    set.Add(new Aas.LangStringPreferredNameTypeIec61360(lang, value));
+            }
+            return set;
+        }
+        public List<Aas.ILangStringShortNameTypeIec61360> ToLangStringShortNameTypeIec61360()
+        {
+            var set = new List<Aas.ILangStringShortNameTypeIec61360>();
+            foreach (var lang in Languages)
+            {
+                var value = Get(lang);
+                if (value.Length > 0)
+                    set.Add(new Aas.LangStringShortNameTypeIec61360(lang, value));
+            }
+            return set;
+        }
+
+
 
         /// <inheritdoc/>
         public override string ToString()
@@ -391,9 +413,9 @@ namespace AasxDictionaryImport
         {
             var ds = new Aas.DataSpecificationIec61360(null)
             {
-                Definition = Definition.ToLangStringSet(),
-                PreferredName = PreferredName.ToLangStringSet(),
-                ShortName = ShortName.ToLangStringSet(),
+                Definition = Definition.ToLangStringDefinitionTypeIec61360(),
+                PreferredName = PreferredName.ToLangStringPreferredNameTypeIec61360(),
+                ShortName = ShortName.ToLangStringShortNameTypeIec61360(),
             };
 
             if (DefinitionSource.Length > 0)

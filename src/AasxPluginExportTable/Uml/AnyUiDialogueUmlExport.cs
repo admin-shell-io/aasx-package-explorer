@@ -133,7 +133,7 @@ namespace AasxPluginExportTable.Uml
                 });
             if (!(await displayContext.StartFlyoverModalAsync(uc)))
                 return;
-            
+
             // stop
             await Task.Delay(2000);
 

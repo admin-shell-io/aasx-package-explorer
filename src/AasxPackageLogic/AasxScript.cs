@@ -7,23 +7,20 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using Scripting.SSharp.Runtime;
-using Scripting.SSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxPackageLogic;
+using Scripting.SSharp;
+using Scripting.SSharp.Runtime;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading;
-using System.Windows;
 using System.Diagnostics;
 using System.IO;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {
@@ -354,7 +351,7 @@ namespace AasxPackageExplorer
                     // Blazor case
                     x = await _script.Remote?.Location(args);
                 }
-                
+
                 // done
                 return 0;
             }

@@ -7,22 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AdminShellNS.DiaryData;
-using AnyUi;
 using Extensions;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable UnassignedField.Global
 
@@ -119,7 +112,7 @@ namespace AasxPackageLogic
 
         public void Animate(
             Aas.Property prop,
-            Action<Aas.Property, IAasDiaryEntry> emitEvent) 
+            Action<Aas.Property, IAasDiaryEntry> emitEvent)
         {
             // prop needs to exists and have qualifiers
             var ext = prop.HasExtensionOfName("Animate.Args");

@@ -7,29 +7,17 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using AasxWpfControlLibrary;
 using AnyUi;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using static AnyUi.AnyUiDisplayContextWpf;
-using static QRCoder.QRCodeGenerator;
-using System.Collections;
-using System.IO.Packaging;
 
 namespace AasxPackageExplorer
 {
@@ -208,12 +196,12 @@ namespace AasxPackageExplorer
         }
 #endif
 
-        
+
 
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
-			AnyUiDisplayContextWpf displayContext,
-			ListOfVisualElementBasic entities,
+            AnyUiDisplayContextWpf displayContext,
+            ListOfVisualElementBasic entities,
             bool editMode, bool hintMode = false, bool showIriMode = false,
             VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
@@ -438,7 +426,7 @@ namespace AasxPackageExplorer
                 //
                 // Dispatch: MULTIPLE items
                 //
-                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder, 
+                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder,
                     superMenu: superMenu);
             }
 
@@ -526,8 +514,8 @@ namespace AasxPackageExplorer
             _lastRenderedRootElement = stack;
 #endif
 
-                // return render hints
-                return renderHints;
+            // return render hints
+            return renderHints;
         }
 
         public Tuple<AnyUiDisplayContextWpf, AnyUiUIElement> GetLastRenderedRoot()

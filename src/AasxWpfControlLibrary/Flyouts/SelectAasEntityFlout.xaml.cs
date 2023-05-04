@@ -7,30 +7,16 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using AasxWpfControlLibrary;
-using AdminShellNS;
-using Extensions;
-using Newtonsoft.Json;
 using AnyUi;
+using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {
@@ -127,7 +113,7 @@ namespace AasxPackageExplorer
                 ControlClosed?.Invoke();
             }
         }
-       
+
         private void FilterFor(string filter)
         {
             filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(filter);
@@ -137,7 +123,7 @@ namespace AasxPackageExplorer
                 lazyLoadingFirst: true);
         }
 
-        
+
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (DiaData?.PrepareResult(DisplayElements.SelectedItem, DiaData?.Filter) == true)

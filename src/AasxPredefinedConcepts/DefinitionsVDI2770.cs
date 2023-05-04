@@ -8,12 +8,8 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
 {

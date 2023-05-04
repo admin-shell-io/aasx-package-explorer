@@ -26,8 +26,8 @@ namespace AasxPluginExportTable
         //
 
         public enum FormatEnum { TSF = 0, LaTex, Word, Excel, NarkdownGH }
-        public static string[] FormatNames = new string[] { 
-            "Tab separated", "LaTex", "Word", "Excel", "Markdown (GH)" 
+        public static string[] FormatNames = new string[] {
+            "Tab separated", "LaTex", "Word", "Excel", "Markdown (GH)"
         };
 
         //
@@ -159,7 +159,7 @@ namespace AasxPluginExportTable
                 if (Body == null)
                     Body = new List<string>();
                 list = Body;
-            }                       
+            }
 
             // which index
             var ndx = col + row * RealCols;
@@ -176,7 +176,7 @@ namespace AasxPluginExportTable
         /// Changes the matrix dimensions. Will set the new values to Rows/ Cols.
         /// </summary>
         public void ReArrange(
-            int oldRowsTop, int oldRowsBody, int oldCols, 
+            int oldRowsTop, int oldRowsBody, int oldCols,
             int newRowsTop, int newRowsBody, int newCols)
         {
             // save lists

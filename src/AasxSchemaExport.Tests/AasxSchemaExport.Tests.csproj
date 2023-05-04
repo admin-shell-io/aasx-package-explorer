@@ -72,10 +72,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj">
-      <Project>{9863799b-4e44-4da2-9120-c85c7985bc6d}</Project>
-      <Name>AasxCsharpLibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AasxSchemaExport\AasxSchemaExport.csproj">
       <Project>{7af15339-d2fb-45dc-8efe-a06f8b3709fa}</Project>
       <Name>AasxSchemaExport</Name>

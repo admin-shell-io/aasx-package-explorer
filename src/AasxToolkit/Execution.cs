@@ -7,17 +7,13 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasCore.Aas3_0_RC02;
 using Extensions;
 using System.Collections.Generic;
-using System.ComponentModel;
 using AasFormUtils = AasxIntegrationBase.AasForms.AasFormUtils;
 using AasSchemaValidation = AdminShellNS.AasSchemaValidation;
 using AasValidationRecordList = AdminShellNS.AasValidationRecordList;
-//using AdminShell = AdminShellNS.AdminShell;
 using AdminShellPackageEnv = AdminShellNS.AdminShellPackageEnv;
 using AdminShellUtil = AdminShellNS.AdminShellUtil;
-//using AdminShellV20 = AdminShellNS.AdminShellV20;
 using AmlExport = AasxAmlImExport.AmlExport;
 using AmlImport = AasxAmlImExport.AmlImport;
 using Console = System.Console;
@@ -351,11 +347,11 @@ namespace AasxToolkit
                                     return -1;
                                 }
 
-                                var prop = new Property(DataTypeDefXsd.String, idShort:"test", category:"cat01");
-                                prop.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "www.admin-shell.io/nonsense") });
+                                var prop = new Property(DataTypeDefXsd.String, idShort: "test", category: "cat01");
+                                prop.SemanticId = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "www.admin-shell.io/nonsense") });
 
-                                var fil = new AasCore.Aas3_0_RC02.File("", idShort: "test", category: "cat01");
-                                fil.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "www.admin-shell.io/nonsense") });
+                                var fil = new AasCore.Aas3_0.File("", idShort: "test", category: "cat01");
+                                fil.SemanticId = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "www.admin-shell.io/nonsense") });
                                 fil.Parent = fil;
 
                                 var so = new AdminShellUtil.SearchOptions();

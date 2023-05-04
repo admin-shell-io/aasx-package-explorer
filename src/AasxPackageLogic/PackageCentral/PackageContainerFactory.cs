@@ -63,12 +63,12 @@ namespace AasxPackageLogic.PackageCentral
             // starts with user file scheme
             if (ll.StartsWith(PackageContainerUserFile.Scheme))
             {
-				return new PackageContainerGuess()
-				{
-					Location = location.Substring(PackageContainerUserFile.Scheme.Length),
-					GuessedType = typeof(PackageContainerUserFile)
-				};
-			}
+                return new PackageContainerGuess()
+                {
+                    Location = location.Substring(PackageContainerUserFile.Scheme.Length),
+                    GuessedType = typeof(PackageContainerUserFile)
+                };
+            }
 
             // starts with http ?
             if (ll.StartsWith("http://") || ll.StartsWith("https://"))
@@ -193,17 +193,17 @@ namespace AasxPackageLogic.PackageCentral
                 return cnt;
             }
 
-			if (guess.GuessedType == typeof(PackageContainerUserFile))
-			{
-				var cnt = await PackageContainerUserFile.CreateAndLoadAsync(
-							packageCentral, location, fullItemLocation,
-							overrideLoadResident, takeOver, 
-							containerOptions, runtimeOptions);
-				return cnt;
-			}
+            if (guess.GuessedType == typeof(PackageContainerUserFile))
+            {
+                var cnt = await PackageContainerUserFile.CreateAndLoadAsync(
+                            packageCentral, location, fullItemLocation,
+                            overrideLoadResident, takeOver,
+                            containerOptions, runtimeOptions);
+                return cnt;
+            }
 
-			// check FileInfo for (possible?) local file
-			FileInfo fi = null;
+            // check FileInfo for (possible?) local file
+            FileInfo fi = null;
             try
             {
                 fi = new FileInfo(location);

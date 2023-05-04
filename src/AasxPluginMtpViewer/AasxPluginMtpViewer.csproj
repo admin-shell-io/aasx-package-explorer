@@ -25,12 +25,10 @@
     <EmbeddedResource Include="Resources\LICENSE.TXT" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
     <ProjectReference Include="..\WpfMtpControl\WpfMtpControl.csproj" />
-    <ProjectReference Include="..\AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Opc.Ua.SampleClient.Config.xml">

@@ -5,17 +5,12 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {
@@ -35,7 +30,7 @@ namespace AasxPackageExplorer
         static string[] names_LEVELTYPE = new string[] { "MIN", "MAX", "TYP", "NOM" };
 
         public static void ImportBMEcatToSubModel(
-            string inputFn, Aas.Environment env, Aas.Submodel sm,
+            string inputFn, Aas.Environment env, Aas.ISubmodel sm,
             Aas.Reference smref)
         {
             // Select between BMEcat and XML publication
@@ -158,7 +153,7 @@ namespace AasxPackageExplorer
                                         //var p = Aas.Property.CreateNew(
                                         //    cd.GetDefaultShortName(), "PARAMETER",
                                         //    Key.GetFromRef(cd.GetCdReference()));
-                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
+                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -332,7 +327,7 @@ namespace AasxPackageExplorer
                                                 //var p = Aas.Property.CreateNew(
                                                 //    cd.GetDefaultShortName(), "PARAMETER",
                                                 //    Key.GetFromRef(cd.GetCdReference()));
-                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
+                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                                 p.Value = FVALUE[k];
 
                                                 if (StackPointer_FID == 0) // am Submodell

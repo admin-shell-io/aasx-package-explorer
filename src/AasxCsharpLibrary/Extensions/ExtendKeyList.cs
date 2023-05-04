@@ -1,25 +1,18 @@
-﻿using AasCore.Aas3_0_RC02;
-using AasxCompatibilityModels;
-using AdminShellNS;
-using System;
+﻿using AdminShellNS;
+using Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
-using Extensions;
 
 namespace Extensions
 {
     public static class ExtendKeyList
     {
-        public static bool IsEmpty(this List<Key> keys)
+        public static bool IsEmpty(this List<IKey> keys)
         {
             return keys.Count < 1;
         }
 
-        public static bool Matches(this List<Key> keys, List<Key> other, MatchMode matchMode = MatchMode.Strict)
+        public static bool Matches(this List<IKey> keys, List<IKey> other, MatchMode matchMode = MatchMode.Strict)
         {
             if (other == null || other.Count != keys.Count)
                 return false;
@@ -31,9 +24,9 @@ namespace Extensions
             return same;
         }
 
-        public static List<Key> ReplaceLastKey(this List<Key> keys,List<Key> newKeys)
+        public static List<IKey> ReplaceLastKey(this List<IKey> keys, List<IKey> newKeys)
         {
-            var res = new List<Key>(keys);
+            var res = new List<IKey>(keys);
             if (res.Count < 1 || newKeys == null || newKeys.Count < 1)
                 return res;
 
@@ -42,7 +35,7 @@ namespace Extensions
             return res;
         }
 
-        public static bool StartsWith(this List<Key> keyList, List<Key> otherKeyList)
+        public static bool StartsWith(this List<IKey> keyList, List<IKey> otherKeyList)
         {
             if (otherKeyList == null || otherKeyList.Count == 0)
                 return false;
@@ -62,7 +55,7 @@ namespace Extensions
             return true;
         }
 
-        public static bool StartsWith(this List<Key> keyList,List<Key> head, bool emptyIsTrue = false,
+        public static bool StartsWith(this List<IKey> keyList, List<IKey> head, bool emptyIsTrue = false,
                 MatchMode matchMode = MatchMode.Relaxed)
         {
             // access
@@ -86,12 +79,12 @@ namespace Extensions
             return true;
         }
 
-        public static string ToStringExtended(this List<Key> keys, int format = 1, string delimiter = ",")
+        public static string ToStringExtended(this List<IKey> keys, int format = 1, string delimiter = ",")
         {
             return string.Join(delimiter, keys.Select((k) => k.ToStringExtended(format)));
         }
 
-        public static void Validate(this List<Key> keys, AasValidationRecordList results,
+        public static void Validate(this List<IKey> keys, AasValidationRecordList results,
                 IReferable container)
         {
             // access
@@ -121,7 +114,7 @@ namespace Extensions
             return res;
         }
 
-        public static List<Key> Parse(string input)
+        public static List<IKey> Parse(string input)
         {
             // access
             if (input == null)
@@ -129,7 +122,7 @@ namespace Extensions
 
             // split
             var parts = input.Split(',', ';');
-            var kl = new List<Key>();
+            var kl = new List<IKey>();
 
             foreach (var p in parts)
             {
@@ -145,7 +138,7 @@ namespace Extensions
         /// Take only idShort, ignore all other key-types and create a '/'-separated list
         /// </summary>
         /// <returns>Empty string or list of idShorts</returns>
-        public static string BuildIdShortPath(this List<Key> keyList,
+        public static string BuildIdShortPath(this List<IKey> keyList,
             int startPos = 0, int count = int.MaxValue)
         {
             if (keyList == null || startPos >= keyList.Count)
@@ -165,10 +158,10 @@ namespace Extensions
             return res;
         }
 
-        public static List<Key> SubList(this List<Key> keyList, 
+        public static List<IKey> SubList(this List<IKey> keyList,
             int startPos, int count = int.MaxValue)
         {
-            var res = new List<Key>();
+            var res = new List<IKey>();
             if (startPos >= keyList.Count())
                 return res;
             int nr = 0;

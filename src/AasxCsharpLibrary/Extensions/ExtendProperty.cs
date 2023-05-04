@@ -1,10 +1,7 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -20,9 +17,9 @@ namespace Extensions
         #endregion
         public static bool IsValueTrue(this Property property)
         {
-            if(property.ValueType == DataTypeDefXsd.Boolean)
+            if (property.ValueType == DataTypeDefXsd.Boolean)
             {
-                if(property.Value.Equals("true", StringComparison.OrdinalIgnoreCase))
+                if (property.Value.Equals("true", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -71,10 +68,9 @@ namespace Extensions
             property.Value = sourceProperty.value;
             if (sourceProperty.valueId != null)
             {
-                var keyList = new List<Key>();
+                var keyList = new List<IKey>();
                 foreach (var refKey in sourceProperty.valueId.Keys)
                 {
-                    //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
                     if (keyType != null)
                     {
@@ -85,7 +81,7 @@ namespace Extensions
                         Console.WriteLine($"KeyType value {sourceProperty.valueType} not found for property {property.IdShort}");
                     }
                 }
-                property.ValueId = new Reference(ReferenceTypes.GlobalReference, keyList);
+                property.ValueId = new Reference(ReferenceTypes.ExternalReference, keyList);
             }
 
             return property;
@@ -110,7 +106,7 @@ namespace Extensions
             property.Value = sourceProperty.value;
             if (sourceProperty.valueId != null)
             {
-                var keyList = new List<Key>();
+                var keyList = new List<IKey>();
                 foreach (var refKey in sourceProperty.valueId.Keys)
                 {
                     //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
@@ -124,7 +120,7 @@ namespace Extensions
                         Console.WriteLine($"KeyType value {sourceProperty.valueType} not found for property {property.IdShort}");
                     }
                 }
-                property.ValueId = new Reference(ReferenceTypes.GlobalReference, keyList);
+                property.ValueId = new Reference(ReferenceTypes.ExternalReference, keyList);
             }
 
             return property;
@@ -145,7 +141,7 @@ namespace Extensions
                     elem.ValueId = srcProp.ValueId.Copy();
             }
 
-            if (source is AasCore.Aas3_0_RC02.Range srcRng)
+            if (source is AasCore.Aas3_0.Range srcRng)
             {
                 elem.ValueType = srcRng.ValueType;
                 elem.Value = srcRng.Min;
@@ -232,7 +228,7 @@ namespace Extensions
         }
 #endif
 
-        public static Property Set(this Property prop, 
+        public static Property Set(this Property prop,
             DataTypeDefXsd valueType = DataTypeDefXsd.String, string value = "")
         {
             prop.ValueType = valueType;
@@ -240,14 +236,14 @@ namespace Extensions
             return prop;
         }
 
-        public static Property Set(this Property prop, 
+        public static Property Set(this Property prop,
             KeyTypes type, string value)
         {
             prop.ValueId = ExtendReference.CreateFromKey(new Key(type, value));
             return prop;
         }
 
-        public static Property Set(this Property prop, 
+        public static Property Set(this Property prop,
             Qualifier q)
         {
             if (q != null)

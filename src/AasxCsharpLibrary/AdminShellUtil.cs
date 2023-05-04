@@ -7,20 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasCore.Aas3_0_RC02;
+using AasxCompatibilityModels;
 using Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using static AasxCompatibilityModels.AdminShellV20.SubmodelElementWrapper;
-using static Extensions.ExtendIDataSpecificationContent;
 
 namespace AdminShellNS
 {
@@ -43,6 +38,210 @@ namespace AdminShellNS
         #endregion
 
         #region V3 Methods
+
+        public static void EnumerateSearchable(
+            SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options,
+            object businessObject = null)
+        {
+            // access
+            if (results == null || obj == null || options == null)
+                return;
+            Type objType = obj.GetType();
+
+            // depth
+            if (depth > options.maxDepth)
+                return;
+
+            // try to get element name of an AAS entity
+            string elName = null;
+            if (obj is IReferable)
+            {
+                elName = (obj as IReferable).GetType().Name;
+                businessObject = obj;
+            }
+
+            // enrich qualified name, accordingly
+            var qualifiedName = qualifiedNameHead;
+            if (elName != null)
+                qualifiedName = qualifiedName + (qualifiedName.Length > 0 ? "." : "") + elName;
+
+            // do NOT dive into objects, which are not in the reight assembly
+            if (options.allowedAssemblies == null || !options.allowedAssemblies.Contains(objType.Assembly))
+                return;
+
+            // do not dive into enums
+            if (objType.IsEnum)
+                return;
+
+            // look at fields, first
+            var fields = objType.GetFields();
+            foreach (var fi in fields)
+            {
+                // is the object marked to be skipped?
+                var x3 = fi.GetCustomAttribute<AdminShell.SkipForReflection>();
+                if (x3 != null)
+                    continue;
+
+                var x4 = fi.GetCustomAttribute<AdminShell.SkipForSearch>();
+                if (x4 != null)
+                    continue;
+
+                // get value(s)
+                var fieldValue = fi.GetValue(obj);
+                if (fieldValue == null)
+                    continue;
+                var valueElems = fieldValue as IList;
+                if (valueElems != null)
+                {
+                    // field is a collection .. dive deeper, if allowed
+                    foreach (var el in valueElems)
+                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject);
+                }
+                else
+                {
+                    // field is a single entity .. check it
+                    CheckSearchable(
+                        results, options, qualifiedName, businessObject, fi, fieldValue, obj,
+                        () => { return fieldValue.GetHashCode(); });
+
+                    // dive deeper ..
+                    EnumerateSearchable(results, fieldValue, qualifiedName, depth + 1, options, businessObject);
+                }
+            }
+
+            // properties & objects behind
+            var properties = objType.GetProperties();
+            foreach (var pi in properties)
+            {
+                var gip = pi.GetIndexParameters();
+                if (gip.Length > 0)
+                    // no indexed properties, yet
+                    continue;
+
+                // is the object marked to be skipped?
+                var x3 = pi.GetCustomAttribute<AdminShell.SkipForReflection>();
+                if (x3 != null)
+                    continue;
+
+                var x4 = pi.GetCustomAttribute<AdminShell.SkipForSearch>();
+                if (x4 != null)
+                    continue;
+
+                // get value(s)
+                var propValue = pi.GetValue(obj, null);
+                if (propValue == null)
+                    continue;
+                var valueElems = propValue as IList;
+                if (valueElems != null)
+                {
+                    // property is a collection .. dive deeper, if allowed
+                    foreach (var el in valueElems)
+                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject);
+                }
+                else
+                {
+                    // field is a single entity .. check it
+                    CheckSearchable(
+                        results, options, qualifiedName, businessObject, pi, propValue, obj,
+                        () => { return propValue.GetHashCode(); });
+
+                    // dive deeper ..
+                    EnumerateSearchable(results, propValue, qualifiedName, depth + 1, options, businessObject);
+                }
+            }
+        }
+
+        public static void CheckSearchable(
+            SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
+            MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash)
+        {
+            // try get a speaking name
+            var metaModelName = "<unknown>";
+            var x1 = mi.GetCustomAttribute<AdminShell.MetaModelName>();
+            if (x1 != null && x1.name != null)
+                metaModelName = x1.name;
+
+            // check if this object is searchable
+            var x2 = mi.GetCustomAttribute<AdminShell.TextSearchable>();
+            if (x2 != null)
+            {
+                // what to check?
+                string foundText = "" + memberValue?.ToString();
+
+                // find options
+                var found = true;
+                if (options.findText != null)
+                    found = foundText.IndexOf(
+                        options.findText, options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
+
+                // add?
+                if (found)
+                {
+                    var sri = new SearchResultItem();
+                    sri.searchOptions = options;
+                    sri.qualifiedNameHead = qualifiedNameHead;
+                    sri.metaModelName = metaModelName;
+                    sri.businessObject = businessObject;
+                    sri.foundText = foundText;
+                    sri.foundObject = memberValue;
+                    sri.containingObject = containingObject;
+                    if (getMemberHash != null)
+                        sri.foundHash = getMemberHash();
+
+                    // avoid duplicates
+                    if (!results.foundResults.Contains(sri))
+                        results.foundResults.Add(sri);
+                }
+            }
+        }
+
+        public class SearchResultItem : IEquatable<SearchResultItem>
+        {
+            public SearchOptions searchOptions;
+            public string qualifiedNameHead;
+            public string metaModelName;
+            public object businessObject;
+            public string foundText;
+            public object foundObject;
+            public object containingObject;
+            public int foundHash;
+
+            public bool Equals(SearchResultItem other)
+            {
+                if (other == null)
+                    return false;
+
+                return this.qualifiedNameHead == other.qualifiedNameHead &&
+                       this.metaModelName == other.metaModelName &&
+                       this.businessObject == other.businessObject &&
+                       this.containingObject == other.containingObject &&
+                       this.foundText == other.foundText &&
+                       this.foundHash == other.foundHash;
+            }
+        }
+
+        public class SearchResults
+        {
+            public int foundIndex = 0;
+            public List<SearchResultItem> foundResults = new List<SearchResultItem>();
+
+            public void Clear()
+            {
+                foundIndex = -1;
+                foundResults.Clear();
+            }
+        }
+
+        public class SearchOptions
+        {
+            public Assembly[] allowedAssemblies = null;
+            public int maxDepth = int.MaxValue;
+            public bool findFirst = false;
+            public int skipFirstResults = 0;
+            public string findText = null;
+            public bool isIgnoreCase = false;
+            public bool isRegex = false;
+        }
 
         public static string[] GetPopularMimeTypes()
         {
@@ -88,9 +287,9 @@ namespace AdminShellNS
                 return AasSubmodelElements.Property;
             if (typeof(T) == typeof(MultiLanguageProperty))
                 return AasSubmodelElements.MultiLanguageProperty;
-            if (typeof(T) == typeof(AasCore.Aas3_0_RC02.Range))
+            if (typeof(T) == typeof(AasCore.Aas3_0.Range))
                 return AasSubmodelElements.Range;
-            if (typeof(T) == typeof(AasCore.Aas3_0_RC02.File))
+            if (typeof(T) == typeof(AasCore.Aas3_0.File))
                 return AasSubmodelElements.File;
             if (typeof(T) == typeof(Blob))
                 return AasSubmodelElements.Blob;
@@ -116,7 +315,7 @@ namespace AdminShellNS
 
         public static ISubmodelElement CreateSubmodelElementFromEnum(AasSubmodelElements smeEnum, ISubmodelElement sourceSme = null)
         {
-            switch(smeEnum)
+            switch (smeEnum)
             {
                 case AasSubmodelElements.Property:
                     {
@@ -128,11 +327,11 @@ namespace AdminShellNS
                     }
                 case AasSubmodelElements.Range:
                     {
-                        return new AasCore.Aas3_0_RC02.Range(DataTypeDefXsd.String).UpdateFrom(sourceSme);
+                        return new AasCore.Aas3_0.Range(DataTypeDefXsd.String).UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.File:
                     {
-                        return new AasCore.Aas3_0_RC02.File("").UpdateFrom(sourceSme);
+                        return new AasCore.Aas3_0.File("").UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.Blob:
                     {
@@ -549,7 +748,7 @@ namespace AdminShellNS
                     break;
 
                 case TypeCode.Single:
-                    if (Single.TryParse("" + value, NumberStyles.Float, 
+                    if (Single.TryParse("" + value, NumberStyles.Float,
                         CultureInfo.InvariantCulture, out var sgl))
                         f.SetValue(obj, sgl);
                     break;
@@ -568,33 +767,6 @@ namespace AdminShellNS
                     f.SetValue(obj, isFalse);
                     break;
             }
-        }
-
-        //
-        // some URL enabled path handling
-        //
-
-        /// <summary>
-        /// Uses <c>System.IO.Path.GetExtension()</c> to determine the extension part
-        /// of a path. If a URL based query is added to the extension, remove this.
-        /// </summary>
-        public static string GetExtensionWoQuery(string fn)
-        {
-            // access
-            if (fn == null)
-                return null;
-
-            // use system function
-            var ext = System.IO.Path.GetExtension(fn).ToLower().Trim();
-
-            // as URLs *might* have an extension, but a loto f query string afterwards,
-            // lets try to cut of it
-            var extMatch = Regex.Match(ext, @"([._A-Za-z0-9]+)");
-            if (extMatch.Success)
-                ext = extMatch.Groups[1].ToString();
-
-            // ok
-            return ext;
         }
 
         //

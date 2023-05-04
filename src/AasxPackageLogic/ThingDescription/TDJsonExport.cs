@@ -7,22 +7,11 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Extensions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Xml;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using Microsoft.VisualBasic.FileIO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {
@@ -194,7 +183,7 @@ namespace AasxPackageExplorer
             return semJObject;
         }
 
-        public static List<JToken> enumELement(List<Aas.Qualifier> qualCollection)
+        public static List<JToken> enumELement(List<Aas.IQualifier> qualCollection)
         {
 
             List<JToken> enums = new List<JToken>();
@@ -236,7 +225,7 @@ namespace AasxPackageExplorer
                     JObject _titlesJObject = new JObject();
                     Aas.MultiLanguageProperty mlp = (Aas.MultiLanguageProperty)dsElement.Copy();
                     var _titles = mlp.Value.Copy();
-                    foreach (Aas.LangString _title in _titles)
+                    foreach (Aas.ILangStringTextType _title in _titles)
                     {
                         _titlesJObject[_title.Language] = _title.Text;
                     }
@@ -261,7 +250,7 @@ namespace AasxPackageExplorer
             }
             if (sem.Description != null)
             {
-                List<Aas.LangString> tdDescription = sem.Description;
+                List<Aas.ILangStringTextType> tdDescription = sem.Description;
                 if (tdDescription.Count != 1)
                 {
                     semJObject["description"] = tdDescription[0].Text;
@@ -269,7 +258,7 @@ namespace AasxPackageExplorer
                     JObject descriptions = new JObject();
                     for (index = 1; index < tdDescription.Count; index++)
                     {
-                        Aas.LangString desc = tdDescription[index];
+                        Aas.ILangStringTextType desc = tdDescription[index];
                         descriptions[desc.Language] = desc.Text;
                     }
                     semJObject["descriptions"] = JToken.FromObject(descriptions);
@@ -503,7 +492,7 @@ namespace AasxPackageExplorer
             }
             if (sschemaSem.Description != null)
             {
-                List<Aas.LangString> tdDescription = sschemaSem.Description;
+                List<Aas.ILangStringTextType> tdDescription = sschemaSem.Description;
                 if (tdDescription.Count != 1)
                 {
                     sschemaJOBject["description"] = tdDescription[0].Text;
@@ -511,7 +500,7 @@ namespace AasxPackageExplorer
                     JObject descriptions = new JObject();
                     for (index = 1; index < tdDescription.Count; index++)
                     {
-                        Aas.LangString desc = tdDescription[index];
+                        Aas.ILangStringTextType desc = tdDescription[index];
                         descriptions[desc.Language] = desc.Text;
                     }
                     sschemaJOBject["descriptions"] = descriptions;
@@ -602,7 +591,7 @@ namespace AasxPackageExplorer
             return semJObject;
         }
 
-        public static JObject ExportSMtoJson(Aas.Submodel sm)
+        public static JObject ExportSMtoJson(Aas.ISubmodel sm)
         {
             JObject exportData = new JObject();
             try
@@ -619,7 +608,7 @@ namespace AasxPackageExplorer
                 // description
                 if (sm.Description != null)
                 {
-                    List<Aas.LangString> tdDescription = sm.Description;
+                    List<Aas.ILangStringTextType> tdDescription = sm.Description;
                     if (tdDescription.Count != 1)
                     {
                         TDJson["description"] = tdDescription[0].Text;
@@ -627,7 +616,7 @@ namespace AasxPackageExplorer
                         JObject descriptions = new JObject();
                         for (index = 1; index < tdDescription.Count; index++)
                         {
-                            Aas.LangString desc = tdDescription[index];
+                            Aas.ILangStringTextType desc = tdDescription[index];
                             descriptions[desc.Language] = desc.Text;
                         }
                         TDJson["descriptions"] = descriptions;
@@ -641,7 +630,7 @@ namespace AasxPackageExplorer
                 if (sm.Administration != null)
                 {
                     JObject versionInfo = new JObject();
-                    Aas.AdministrativeInformation adm = sm.Administration;
+                    Aas.IAdministrativeInformation adm = sm.Administration;
                     if (adm.Version != "")
                     {
                         versionInfo["instance"] = adm.Version;
@@ -677,7 +666,7 @@ namespace AasxPackageExplorer
                             JObject _titlesJObject = new JObject();
                             Aas.MultiLanguageProperty mlp = (Aas.MultiLanguageProperty)tdElement.Copy();
                             var _titles = mlp.Value.Copy();
-                            foreach (Aas.LangString _title in _titles)
+                            foreach (Aas.ILangStringTextType _title in _titles)
                             {
                                 _titlesJObject[_title.Language] = _title.Text;
                             }

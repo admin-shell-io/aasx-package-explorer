@@ -7,16 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using AasxIntegrationBase;
-using AdminShellNS;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -110,7 +104,7 @@ namespace AasxPackageLogic.PackageCentral
                     var bdfn = Path.Combine(backupDir, $"backup{ndx:000}{bext}");
                     Env.TemporarilySaveCloseAndReOpenPackage(() =>
                     {
-                        File.Copy(Env.Filename, bdfn, overwrite: true);
+                        System.IO.File.Copy(Env.Filename, bdfn, overwrite: true);
                     });
                 }
             }

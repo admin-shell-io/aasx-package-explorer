@@ -1,9 +1,5 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -13,9 +9,9 @@ namespace Extensions
 
         public static void ValueFromText(this MultiLanguageProperty multiLanguageProperty, string text, string defaultLang)
         {
-            multiLanguageProperty.Value ??= new List<LangString>();
+            multiLanguageProperty.Value ??= new List<ILangStringTextType>();
 
-            multiLanguageProperty.Value.Add(new LangString(defaultLang == null? "en" : defaultLang, text));
+            multiLanguageProperty.Value.Add(new LangStringTextType(defaultLang == null ? "en" : defaultLang, text));
         }
 
         #endregion
@@ -36,7 +32,7 @@ namespace Extensions
 
             if (sourceProperty.valueId != null)
             {
-                var keyList = new List<Key>();
+                var keyList = new List<IKey>();
                 foreach (var refKey in sourceProperty.valueId.Keys)
                 {
                     //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
@@ -50,12 +46,12 @@ namespace Extensions
                         Console.WriteLine($"KeyType value not found for property {property.IdShort}");
                     }
                 }
-                property.ValueId = new Reference(ReferenceTypes.GlobalReference, keyList);
+                property.ValueId = new Reference(ReferenceTypes.ExternalReference, keyList);
             }
 
-            var newLangStrings = new List<LangString>();
+            var newLangStrings = new List<ILangStringTextType>();
 
-            List<LangString> newLangStringSet = new(newLangStrings);
+            List<ILangStringTextType> newLangStringSet = new(newLangStrings);
 
             property.Value = newLangStringSet.ConvertFromV20(sourceProperty.value);
 
@@ -73,7 +69,7 @@ namespace Extensions
 
             if (source is Property srcProp)
             {
-                elem.Value = new List<LangString> { new LangString("EN?", srcProp.Value) };
+                elem.Value = new List<ILangStringTextType> { new LangStringTextType("EN?", srcProp.Value) };
                 if (srcProp.ValueId != null)
                     elem.ValueId = srcProp.ValueId.Copy();
             }
@@ -86,42 +82,42 @@ namespace Extensions
                     elem.ValueId = srcMlp.ValueId.Copy();
             }
 
-            if (source is AasCore.Aas3_0_RC02.Range srcRng)
+            if (source is AasCore.Aas3_0.Range srcRng)
             {
                 if (srcRng.Min != null)
-                    elem.Value = new List<LangString> { new LangString("EN?", srcRng.Min) };
+                    elem.Value = new List<ILangStringTextType> { new LangStringTextType("EN?", srcRng.Min) };
             }
 
             if (source is File srcFile)
             {
-                elem.Value = new List<LangString> { new LangString("EN?", srcFile.Value) };
+                elem.Value = new List<ILangStringTextType> { new LangStringTextType("EN?", srcFile.Value) };
             }
 
             return elem;
         }
 
         public static MultiLanguageProperty Set(this MultiLanguageProperty mlp,
-            List<LangString> ls)
+            List<ILangStringTextType> ls)
         {
             mlp.Value = ls;
             return mlp;
         }
 
-        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp, 
-            LangString ls)
+        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp,
+            LangStringTextType ls)
         {
             if (ls == null)
                 return mlp;
             if (mlp.Value == null)
-                mlp.Value = new List<LangString>();
+                mlp.Value = new List<ILangStringTextType>();
             mlp.Value.Set(ls.Language, ls.Text);
             return mlp;
         }
 
-        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp, 
+        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp,
             string lang, string str)
         {
-            return mlp.Set(new LangString(lang, str));
+            return mlp.Set(new LangStringTextType(lang, str));
         }
     }
 }

@@ -7,15 +7,11 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
-using AasxIntegrationBase;
 using AdminShellNS;
 using Extensions;
+using System;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MergeIntoPattern
 
@@ -71,7 +67,7 @@ namespace AasxPredefinedConcepts.Convert
             // convert in place: detach old SMEs, change semanticId
             var smcOldHsu = sm.SubmodelElements;
             sm.SubmodelElements = new List<Aas.ISubmodelElement>();
-            sm.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { defsSg2.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey() });
+            sm.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>() { defsSg2.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -98,11 +94,11 @@ namespace AasxPredefinedConcepts.Convert
                     {
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
                                 new Aas.ConceptDescription(
-                                    conceptDescription.Id, conceptDescription.Extensions, 
-                                    conceptDescription.Category, conceptDescription.IdShort, 
-                                    conceptDescription.DisplayName, conceptDescription.Description, 
-                                    conceptDescription.Checksum, conceptDescription.Administration, 
-                                    conceptDescription.EmbeddedDataSpecifications, 
+                                    conceptDescription.Id, conceptDescription.Extensions,
+                                    conceptDescription.Category, conceptDescription.IdShort,
+                                    conceptDescription.DisplayName, conceptDescription.Description,
+                                    conceptDescription.Administration,
+                                    conceptDescription.EmbeddedDataSpecifications,
                                     conceptDescription.IsCaseOf));
                     }
 
@@ -120,7 +116,7 @@ namespace AasxPredefinedConcepts.Convert
                 //using (var smcDoc = Aas.SubmodelElementCollection.CreateNew("" + smcSource.IdShort,
                 //            smcSource.Category,
                 //            Aas.Key.GetFromRef(defsSg2.CD_VDI2770_Document.GetCdReference())))
-                
+
                 Aas.SubmodelElementCollection smcDoc = new Aas.SubmodelElementCollection(idShort: "" + smcSource.IdShort, category: smcSource.Category, semanticId: defsSg2.CD_VDI2770_Document.GetCdReference());
                 //using (var smcDocVersion = Aas.SubmodelElementCollection.CreateNew("DocumentVersion",
                 //            smcSource.Category,
@@ -186,7 +182,7 @@ namespace AasxPredefinedConcepts.Convert
 
                     var referenceElement = smcDoc.Value.CreateSMEForCD<Aas.ReferenceElement>(defsSg2.CD_VDI2770_ReferencedObject,
                             addSme: true);
-                    referenceElement.Value = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>());
+                    referenceElement.Value = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>());
 
                     // DocumentVersion
 
@@ -230,7 +226,7 @@ namespace AasxPredefinedConcepts.Convert
                                 cdSrc[i].GetSingleKey());
                         if (asProp != null)
                         {
-                            target.Value = new List<Aas.LangString>() { new Aas.LangString("en?", "" + asProp.Value) };
+                            target.Value = new List<Aas.ILangStringTextType>() { new Aas.LangStringTextType("en?", "" + asProp.Value) };
                         }
 
                         var asMLP = smcSource.Value.FindFirstSemanticIdAs<Aas.MultiLanguageProperty>(

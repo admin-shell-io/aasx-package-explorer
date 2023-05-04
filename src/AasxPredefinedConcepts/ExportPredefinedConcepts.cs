@@ -7,22 +7,18 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
 {
     public static class ExportPredefinedConcepts
     {
-        public static void Export(Aas.Environment env, Aas.Submodel sm, string fn)
+        public static void Export(Aas.Environment env, Aas.ISubmodel sm, string fn)
         {
             // access
             if (fn == null || env == null || sm == null || sm.IdShort == null || sm.SubmodelElements == null)
@@ -43,7 +39,7 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("Phase (1) Check, which ConceptDescriptions need to be exported:");
                 snippets.WriteLine("===============================================================");
 
-                var usedCds = new Dictionary<string, Aas.ConceptDescription>();
+                var usedCds = new Dictionary<string, Aas.IConceptDescription>();
                 foreach (var sme in sm.SubmodelElements?.FindDeep<Aas.ISubmodelElement>())
                 {
                     // for SME, try to lookup CD

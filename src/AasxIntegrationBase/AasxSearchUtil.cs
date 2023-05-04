@@ -7,20 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasxIntegrationBase;
+using Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0; //TODO:jtikekar change to AAS
 
 namespace AasxIntegrationBase
 {
@@ -191,7 +185,7 @@ namespace AasxIntegrationBase
             }
         }
 
-        public static IEnumerable<EmulateAttribute> EnumerateEmulateAttributes (Aas.IClass obj)
+        public static IEnumerable<EmulateAttribute> EnumerateEmulateAttributes(Aas.IClass obj)
         {
             if (obj is Aas.IReferable)
             {
@@ -243,7 +237,8 @@ namespace AasxIntegrationBase
                 yield return new EmulateAttribute("Value", textSearchable: true);
             }
 
-            if (obj is Aas.LangString)
+            //TODO:jtikekar support other forms of LangString 
+            if (obj is Aas.ILangStringTextType)
             {
                 yield return new EmulateAttribute("Language", textSearchable: true);
                 yield return new EmulateAttribute("Text", textSearchable: true);
@@ -647,7 +642,7 @@ namespace AasxIntegrationBase
                 businessObject = obj;
                 log?.Info($"Encouter {elName}: {"" + (obj as Aas.ISubmodelElement)?.GetReference()?.ToStringExtended(1)}");
             }
-            else 
+            else
             if (obj is Aas.Environment)
             {
                 elName = "Environment";

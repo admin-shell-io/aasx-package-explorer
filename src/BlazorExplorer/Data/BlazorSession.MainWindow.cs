@@ -41,15 +41,15 @@ namespace BlazorUI.Data
         /// Check for menu switch and flush events, if required.
         /// </summary>
         public void CheckIfToFlushEvents()
-		{
-			if (MainMenu?.IsChecked("CompressEvents") == true)
-			{
-				var evs = _eventCompressor?.Flush();
-				if (evs != null)
-					foreach (var ev in evs)
-						PackageCentral?.PushEvent(ev);
-			}
-		}
+        {
+            if (MainMenu?.IsChecked("CompressEvents") == true)
+            {
+                var evs = _eventCompressor?.Flush();
+                if (evs != null)
+                    foreach (var ev in evs)
+                        PackageCentral?.PushEvent(ev);
+            }
+        }
 
         /// <summary>
         /// Clears the status line and pending errors.

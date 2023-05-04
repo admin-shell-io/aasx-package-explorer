@@ -8,14 +8,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using AasxPackageLogic;
+using AdminShellNS;
+using Extensions;
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using AasxPackageLogic;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxDictionaryImport
 {
@@ -71,7 +71,7 @@ namespace AasxDictionaryImport
         /// created</param>
         /// <returns>true if at least one submodel was imported</returns>
         public static bool ImportSubmodel(Window window, Aas.Environment env,
-            string defaultSourceDir, Aas.AssetAdministrationShell? adminShell = null)
+            string defaultSourceDir, Aas.IAssetAdministrationShell? adminShell = null)
         {
             adminShell ??= CreateAdminShell(env);
             return PerformImport(window, ImportMode.Submodels, defaultSourceDir,

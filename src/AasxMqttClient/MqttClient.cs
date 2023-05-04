@@ -15,21 +15,19 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
+using AdminShellNS;
 using AnyUi;
+using Extensions;
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using AasCore.Aas3_0_RC02;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxMqttClient
 {
@@ -269,9 +267,9 @@ namespace AasxMqttClient
         }
 
         private void PublishSingleValues_FirstTimeSubmodel(
-            Aas.AssetAdministrationShell aas,
-            Aas.Submodel sm,
-            List<Aas.Key> startPath)
+            Aas.IAssetAdministrationShell aas,
+            Aas.ISubmodel sm,
+            List<Aas.IKey> startPath)
         {
             // trivial
             if (aas == null || sm == null)
@@ -318,7 +316,7 @@ namespace AasxMqttClient
         private void PublishSingleValues_ChangeItem(
             AasEventMsgEnvelope ev,
             ExtendEnvironment.ReferableRootInfo ri,
-            List<Aas.Key> startPath,
+            List<Aas.IKey> startPath,
             AasPayloadStructuralChangeItem ci)
         {
             // trivial
@@ -390,7 +388,7 @@ namespace AasxMqttClient
         private void PublishSingleValues_UpdateItem(
             AasEventMsgEnvelope ev,
             ExtendEnvironment.ReferableRootInfo ri,
-            List<Aas.Key> startPath,
+            List<Aas.IKey> startPath,
             AasPayloadUpdateValueItem ui)
         {
             // trivial
@@ -440,14 +438,14 @@ namespace AasxMqttClient
 
             // aas / sm already available in rootInfo, prepare idShortPath
             var sourcePathStr = "";
-            var sourcePath = new List<Aas.Key>();
+            var sourcePath = new List<Aas.IKey>();
             if (ev.Source?.Keys != null && ri != null && ev.Source.Keys.Count > ri.NrOfRootKeys)
             {
                 sourcePath = ev.Source.Keys.SubList(ri.NrOfRootKeys);
                 sourcePathStr = sourcePath.BuildIdShortPath();
             }
 
-            var observablePath = new List<Aas.Key>();
+            var observablePath = new List<Aas.IKey>();
             if (ev.ObservableReference?.Keys != null && ri != null
                 && ev.ObservableReference.Keys.Count > ri.NrOfRootKeys)
             {

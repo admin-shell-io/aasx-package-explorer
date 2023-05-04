@@ -1,13 +1,15 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
+    public static class CompareUtils
+    {
+        public static bool Compare<T>(T x, T y)
+        {
+            return EqualityComparer<T>.Default.Equals(x, y);
+        }
+    }
     public class ComparerIdShort : IComparer<IReferable>
     {
         public int Compare(IReferable a, IReferable b)
@@ -25,6 +27,8 @@ namespace Extensions
                 CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace);
         }
     }
+
+
 
     public class ComparerIndexed : IComparer<IReferable>
     {

@@ -94,7 +94,7 @@ namespace BlazorUI.Utils
                 else
                 {
                     // no file, hand over directly to the browser
-                    
+
                     // combine information WITHOUT query path
                     var fileName = System.IO.Path.GetFileNameWithoutExtension(fn) + ext;
 
@@ -120,15 +120,15 @@ namespace BlazorUI.Utils
         public static async Task CloseBrowserWindow(IJSRuntime runtime)
         {
             if (runtime != null)
-			    await runtime.InvokeVoidAsync($"window.close");
-		}
+                await runtime.InvokeVoidAsync($"window.close");
+        }
 
-		public static async Task ShowNewBrowserWindow(IJSRuntime runtime, string url)
-		{
+        public static async Task ShowNewBrowserWindow(IJSRuntime runtime, string url)
+        {
             if (runtime != null)
             {
                 await runtime.InvokeAsync<object>("open", url, "_blank");
-			}
-		}
-	}
+            }
+        }
+    }
 }

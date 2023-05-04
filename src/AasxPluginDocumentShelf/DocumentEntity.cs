@@ -514,7 +514,7 @@ namespace AasxPluginDocumentShelf
 
                         ent.AddPreviewFile = (ent2, path2, contentType2) =>
                         {
-                            var fl2 = new Aas.File(contentType2, 
+                            var fl2 = new Aas.File(contentType2,
                                 idShort: "PreviewFile",
                                 semanticId: defs11.CD_PreviewFile?.GetReference(),
                                 value: path2);

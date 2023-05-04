@@ -7,28 +7,16 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPluginExportTable.Table;
+using AnyUi;
+using Extensions;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Xml;
-using System.Xml.Schema;
-using AasxIntegrationBase;
-using AasxIntegrationBase.AasForms;
-using Newtonsoft.Json;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using AnyUi;
-using System.Reflection;
-using AasxPluginExportTable.Table;
-using DocumentFormat.OpenXml.Drawing.Charts;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPluginExportTable.TimeSeries
 {
@@ -79,7 +67,7 @@ namespace AasxPluginExportTable.TimeSeries
 
             // ok, go on ..
             var uc = new AnyUiDialogueDataModalPanel(
-                (!doImport) 
+                (!doImport)
                     ? "Export SubmodelElements as Table …"
                     : "Import SubmodelElements from Table …");
             uc.ActivateRenderPanel(record,
@@ -130,7 +118,7 @@ namespace AasxPluginExportTable.TimeSeries
                             AnyUiUIElement.RegisterControl(
                                 helper.AddSmallButtonTo(
                                     g2, 0, 0, content: "Load ..",
-                                    padding: new AnyUiThickness(4, 0, 4, 0)),    
+                                    padding: new AnyUiThickness(4, 0, 4, 0)),
                                 setValueAsync: async (o) =>
                                 {
                                     // ask for filename
@@ -203,7 +191,8 @@ namespace AasxPluginExportTable.TimeSeries
                                         items: pluginOptions.Presets.Select((pr) => "" + pr.Name).ToArray(),
                                         text: "Please select preset to load .."),
                                     minWidth: 350, maxWidth: 400),
-                                    (o) => {
+                                    (o) =>
+                                    {
                                         if (!cbPreset.SelectedIndex.HasValue)
                                             return new AnyUiLambdaActionNone();
                                         var ndx = cbPreset.SelectedIndex.Value;
@@ -214,7 +203,7 @@ namespace AasxPluginExportTable.TimeSeries
                                         uc.Data = newRec;
                                         return new AnyUiLambdaActionModalPanelReRender(uc);
                                     });
-                        
+
                         }
                     }
 
@@ -224,7 +213,7 @@ namespace AasxPluginExportTable.TimeSeries
                             verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                        var g2 = helper.AddSmallGridTo(g, 2, 1, 1, 9, 
+                        var g2 = helper.AddSmallGridTo(g, 2, 1, 1, 9,
                                     new[] { "#", "#", "#", "#", "#", "#", "#", "#", "#" },
                                     padding: new AnyUiThickness(0, 0, 4, 0));
 
@@ -357,7 +346,7 @@ namespace AasxPluginExportTable.TimeSeries
                     // For Top & Body, with 1 + 1 + 1 * Cols, 1 + 1 * Rows 
                     {
                         // dimensions
-                        var totalRows = 1 + record.RealRowsTop + record.RealRowsBody;                        
+                        var totalRows = 1 + record.RealRowsTop + record.RealRowsBody;
                         var totalCols = 1 + record.RealCols;
 
                         // prepare grid
@@ -373,13 +362,13 @@ namespace AasxPluginExportTable.TimeSeries
                             colSpan: 2);
 
                         // column headers
-                        for (int tc=0; tc<totalCols; tc++)
+                        for (int tc = 0; tc < totalCols; tc++)
                         {
                             // first columns label
                             var txtRowHead = (tc == 0) ? "Table" : $"Column {tc}";
 
                             helper.Set(
-                                helper.AddSmallLabelTo(g2, 0, tc, 
+                                helper.AddSmallLabelTo(g2, 0, tc,
                                     content: (tc == 0) ? "Table" : $"Column {tc}",
                                     verticalAlignment: AnyUiVerticalAlignment.Bottom,
                                     verticalContentAlignment: AnyUiVerticalAlignment.Bottom),
@@ -388,8 +377,8 @@ namespace AasxPluginExportTable.TimeSeries
                         }
 
                         // column bodies, row by row
-                        for (int tr=0; tr<totalRows-1; tr++)
-                            for (int tc=0; tc<totalCols; tc++)
+                        for (int tr = 0; tr < totalRows - 1; tr++)
+                            for (int tc = 0; tc < totalCols; tc++)
                             {
                                 // calculate indexes
                                 var isTop = tr < record.RealRowsTop;
@@ -404,12 +393,12 @@ namespace AasxPluginExportTable.TimeSeries
                                 {
                                     // first columns label
                                     var txtRowHead = (isTop ? "Top" : "Body") + "\u00bb"
-                                            + ((rIdx == 0) ? "Head" : $"Row {rIdx}") + ":" ;
+                                            + ((rIdx == 0) ? "Head" : $"Row {rIdx}") + ":";
 
                                     currElem = helper.AddSmallLabelTo(g2, 1 + tr, 0, content: txtRowHead,
                                         verticalAlignment: AnyUiVerticalAlignment.Top,
-                                        verticalContentAlignment: AnyUiVerticalAlignment.Top);                                    
-                                
+                                        verticalContentAlignment: AnyUiVerticalAlignment.Top);
+
                                 }
                                 else
                                 {
@@ -425,7 +414,8 @@ namespace AasxPluginExportTable.TimeSeries
                                             minWidth: 100,
                                             minHeight: 60,
                                             horizontalAlignment: AnyUiHorizontalAlignment.Stretch),
-                                        (s) => {
+                                        (s) =>
+                                        {
                                             record.PutCell(isTop, rIdx, cIdx, s);
                                         });
 
@@ -551,7 +541,7 @@ namespace AasxPluginExportTable.TimeSeries
         private static void ExportTable_EnumerateSubmodel(
             List<ExportTableAasEntitiesList> list, Aas.Environment env,
             bool broadSearch, bool actInHierarchy, int depth,
-            Aas.Submodel sm, Aas.ISubmodelElement sme)
+            Aas.ISubmodel sm, Aas.ISubmodelElement sme)
         {
             // check
             if (list == null || env == null || sm == null)

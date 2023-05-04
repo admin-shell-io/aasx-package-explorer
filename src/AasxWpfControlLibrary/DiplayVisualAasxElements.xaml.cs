@@ -7,32 +7,21 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Aas = AasCore.Aas3_0_RC02;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using AasxWpfControlLibrary;
-using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
-using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using Aas = AasCore.Aas3_0;
 using Key = System.Windows.Input.Key;
 
 namespace AasxPackageExplorer
@@ -553,7 +542,7 @@ namespace AasxPackageExplorer
             PackageCentral packages,
             PackageCentral.Selector selector,
             bool editMode = false, string filterElementName = null,
-            bool lazyLoadingFirst = false, 
+            bool lazyLoadingFirst = false,
             int expandModePrimary = 1,
             int expandModeAux = 0)
         {
@@ -858,7 +847,7 @@ namespace AasxPackageExplorer
             // access and check
             var tvi = e?.OriginalSource as TreeViewItem;
             var ve = tvi?.Header as VisualElementGeneric;
-            if (ve == null )
+            if (ve == null)
                 return;
 
             // select (but no callback!)

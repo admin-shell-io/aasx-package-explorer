@@ -11,29 +11,24 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 
-using AasxPackageLogic;
-using AnyUi;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using Org.Webpki.JsonCanonicalizer;
-using System.IO;
-using System.Windows;
 using AasxIntegrationBase;
-using Jose;
-using System.Threading;
-using AasxPackageLogic.PackageCentral;
-using Newtonsoft.Json.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
+using AasxPackageLogic;
 using Extensions;
+using Jose;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Org.Webpki.JsonCanonicalizer;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {
@@ -172,9 +167,9 @@ namespace AasxPackageExplorer
         /// Performs a signing of a Submodel or SubmodelElement
         /// </summary>
         public bool Tool_Security_Sign(
-            Aas.Submodel rootSm,
+            Aas.ISubmodel rootSm,
             Aas.ISubmodelElement rootSme,
-            Aas.Environment env,
+            Aas.IEnvironment env,
             bool useX509)
         {
             // access
@@ -182,7 +177,7 @@ namespace AasxPackageExplorer
                 return false;
 
             // ported from MainWindow_CommandBindings
-            Aas.Submodel sm = null;
+            Aas.ISubmodel sm = null;
             Aas.SubmodelElementCollection smc = null;
             Aas.SubmodelElementCollection smcp = null;
             if (rootSm != null)
@@ -450,7 +445,7 @@ namespace AasxPackageExplorer
         /// Validates a certificate
         /// </summary>
         public bool Tool_Security_ValidateCertificate(
-            Aas.Submodel rootSm,
+            Aas.ISubmodel rootSm,
             Aas.ISubmodelElement rootSme,
             Aas.Environment env,
             AasxMenuActionTicket ticket = null)
@@ -464,7 +459,7 @@ namespace AasxPackageExplorer
             // ported from MainWindow_CommandBindings
             List<Aas.SubmodelElementCollection> existing = new List<Aas.SubmodelElementCollection>();
             List<Aas.SubmodelElementCollection> validate = new List<Aas.SubmodelElementCollection>();
-            Aas.Submodel sm = null;
+            Aas.ISubmodel sm = null;
             Aas.SubmodelElementCollection smc = null;
             Aas.SubmodelElementCollection smcp = null;
             bool smcIsSignature = false;
@@ -847,7 +842,7 @@ namespace AasxPackageExplorer
         /// Populates an existingSubmodel with values from OPC UA.
         /// </summary>
         public void Tool_OpcUaClientRead(
-            Aas.Submodel sm,
+            Aas.ISubmodel sm,
             AasxMenuActionTicket ticket = null)
         {
             try
@@ -979,7 +974,7 @@ namespace AasxPackageExplorer
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_ReadSubmodel(
-            Aas.Submodel sm,
+            Aas.ISubmodel sm,
             Aas.Environment env,
             string sourceFn,
             AasxMenuActionTicket ticket = null)
@@ -1069,7 +1064,7 @@ namespace AasxPackageExplorer
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelPut(
-            Aas.Submodel sm,
+            Aas.ISubmodel sm,
             string url,
             AasxMenuActionTicket ticket = null)
         {
@@ -1101,7 +1096,7 @@ namespace AasxPackageExplorer
         /// </summary>
         public void Tool_SubmodelGet(
             Aas.Environment env,
-            Aas.Submodel sm,
+            Aas.ISubmodel sm,
             string url,
             AasxMenuActionTicket ticket = null)
         {

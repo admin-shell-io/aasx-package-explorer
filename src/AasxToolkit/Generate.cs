@@ -7,16 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using AasCore.Aas3_0_RC02;
 using AasxPredefinedConcepts;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
-using NJsonSchema.Validation;
-using Environment = AasCore.Aas3_0_RC02.Environment;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Environment = AasCore.Aas3_0.Environment;
 
 namespace AasxToolkit
 {
@@ -170,16 +168,16 @@ namespace AasxToolkit
                 Log.WriteLine(2, "Create AAS ..");
                 var aas1 = new AssetAdministrationShell(repo.CreateOneTimeId(), new AssetInformation(AssetKind.Instance), idShort: "AAS_3s7plfdrs35", administration: new AdministrativeInformation(version: "1", revision: "0"));
 
-                aas1.DerivedFrom = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.AssetAdministrationShell, "www.admin-shell.io/aas/sample-series-aas/1/1") });
+                aas1.DerivedFrom = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.AssetAdministrationShell, "www.admin-shell.io/aas/sample-series-aas/1/1") });
 
                 aasenv1.AssetAdministrationShells.Add(aas1);
                 aas1.AssetInformation = asset1;
 
                 // Link things together
                 Log.WriteLine(2, "Linking entities to AAS ..");
-                if(aas1.Submodels == null)
+                if (aas1.Submodels == null)
                 {
-                    aas1.Submodels = new List<Reference>();
+                    aas1.Submodels = new List<IReference>();
                 }
                 aas1.Submodels.Add(subCad.GetReference());
                 aas1.Submodels.Add(subDocu.GetReference());
@@ -244,7 +242,7 @@ namespace AasxToolkit
                     "en", "Collection of properties, which make a file for a CAD system accessible." }
             );
 
-            var cdFile = new ConceptDescription(repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"), idShort:"File");
+            var cdFile = new ConceptDescription(repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"), idShort: "File");
             aasenv.ConceptDescriptions.Add(cdFile);
             cdFile.SetIEC61360Spec(
                 preferredNames: new[] { "de", "Enthaltene CAD Datei", "en", "Embedded CAD file" },
@@ -254,7 +252,7 @@ namespace AasxToolkit
                     "de", "Verweis auf enthaltene CAD Datei.", "en", "Reference to embedded CAD file." }
             );
 
-            var cdFormat = new ConceptDescription("0173-1#02-ZAA120#007", idShort:"FileFormat");
+            var cdFormat = new ConceptDescription("0173-1#02-ZAA120#007", idShort: "FileFormat");
             aasenv.ConceptDescriptions.Add(cdFormat);
             cdFormat.SetIEC61360Spec(
                 preferredNames: new[] { "de", "Filetype CAD", "en", "Filetype CAD" },
@@ -269,7 +267,7 @@ namespace AasxToolkit
             var sub1 = new Submodel(repo.CreateOneTimeId());
             sub1.IdShort = "CAD";
             aasenv.Submodels.Add(sub1);
-            sub1.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/cad/1/1") });
+            sub1.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<IKey>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/cad/1/1") });
 
             // for each cad file in prefs
             int ndx = 0;
@@ -288,7 +286,7 @@ namespace AasxToolkit
                 sub1.Add(propGroup);
 
                 // FILE
-                var propFile = new AasCore.Aas3_0_RC02.File("", idShort: "File", category: "PARAMETER", semanticId: cdFile.GetCdReference());
+                var propFile = new AasCore.Aas3_0.File("", idShort: "File", category: "PARAMETER", semanticId: cdFile.GetCdReference());
                 propGroup.Add(propFile);
                 propFile.ContentType = AdminShellPackageEnv.GuessMimeType(fr.fn);
                 propFile.Value = "" + fr.targetdir.Trim() + Path.GetFileName(fr.fn);
@@ -296,7 +294,7 @@ namespace AasxToolkit
                 // FILEFORMAT
                 var propType = new ReferenceElement(idShort: "FileFormat", category: "PARAMETER", semanticId: cdFormat.GetCdReference());
                 propGroup.Add(propType);
-                propType.Value = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "" + fr.args[0]) });
+                propType.Value = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "" + fr.args[0]) });
             }
 
             return sub1;
@@ -316,14 +314,14 @@ namespace AasxToolkit
 
             // SUB MODEL
             var sub1 = new Submodel(
-                preDefs.SM_VDI2770_Documentation.Id, preDefs.SM_VDI2770_Documentation.Extensions, 
-                preDefs.SM_VDI2770_Documentation.Category, preDefs.SM_VDI2770_Documentation.IdShort, 
-                preDefs.SM_VDI2770_Documentation.DisplayName, preDefs.SM_VDI2770_Documentation.Description, 
-                preDefs.SM_VDI2770_Documentation.Checksum, preDefs.SM_VDI2770_Documentation.Administration, 
-                preDefs.SM_VDI2770_Documentation.Kind, preDefs.SM_VDI2770_Documentation.SemanticId, 
-                preDefs.SM_VDI2770_Documentation.SupplementalSemanticIds, 
-                preDefs.SM_VDI2770_Documentation.Qualifiers, 
-                preDefs.SM_VDI2770_Documentation.EmbeddedDataSpecifications, 
+                preDefs.SM_VDI2770_Documentation.Id, preDefs.SM_VDI2770_Documentation.Extensions,
+                preDefs.SM_VDI2770_Documentation.Category, preDefs.SM_VDI2770_Documentation.IdShort,
+                preDefs.SM_VDI2770_Documentation.DisplayName, preDefs.SM_VDI2770_Documentation.Description,
+                preDefs.SM_VDI2770_Documentation.Administration,
+                preDefs.SM_VDI2770_Documentation.Kind, preDefs.SM_VDI2770_Documentation.SemanticId,
+                preDefs.SM_VDI2770_Documentation.SupplementalSemanticIds,
+                preDefs.SM_VDI2770_Documentation.Qualifiers,
+                preDefs.SM_VDI2770_Documentation.EmbeddedDataSpecifications,
                 preDefs.SM_VDI2770_Documentation.SubmodelElements);
             sub1.Id = repo.CreateOneTimeId();
             aasenv.Submodels.Add(sub1);
@@ -361,7 +359,7 @@ namespace AasxToolkit
                     p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                     {
                         p.Value = "" + args[0];
-                        p.ValueId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, args[2])});
+                        p.ValueId = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, args[2]) });
                         p0.Add(p);
                     }
 
@@ -384,7 +382,7 @@ namespace AasxToolkit
                     // Document version
 
                     cd = preDefs.CD_VDI2770_DocumentVersion;
-                    var p1 = new SubmodelElementCollection(idShort: "DocumentVersion01", category:"CONSTANT", semanticId: cd.GetCdReference());
+                    var p1 = new SubmodelElementCollection(idShort: "DocumentVersion01", category: "CONSTANT", semanticId: cd.GetCdReference());
                     {
                         p0.Add(p1);
 
@@ -399,7 +397,7 @@ namespace AasxToolkit
                                 prop2.Value = "" + lngs[i];
                             }
                         }
-                            
+
 
                         // VERSION
                         cd = preDefs.CD_VDI2770_DocumentVersionId;
@@ -417,16 +415,16 @@ namespace AasxToolkit
                         //using (var mlp = MultiLanguageProperty.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        var mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category:"CONSTANT", semanticId: cd.GetReference());
+                        var mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(mlp);
-                            if(mlp.Value == null)
+                            if (mlp.Value == null)
                             {
-                                mlp.Value = new List<LangString>();
+                                mlp.Value = new List<ILangStringTextType>();
                             }
-                            mlp.Value.Add(new LangString("en", args[3]));
-                            mlp.Value.Add(new LangString("de", "Deutsche Übersetzung von: " + args[3]));
-                            mlp.Value.Add(new LangString("FR", "Traduction française de: " + args[3]));
+                            mlp.Value.Add(new LangStringTextType("en", args[3]));
+                            mlp.Value.Add(new LangStringTextType("de", "Deutsche Übersetzung von: " + args[3]));
+                            mlp.Value.Add(new LangStringTextType("FR", "Traduction française de: " + args[3]));
                         }
 
                         // SUMMARY
@@ -437,9 +435,9 @@ namespace AasxToolkit
                         mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(p);
-                            mlp.Value.Add(new LangString("en", "Summary for: " + args[3]));
-                            mlp.Value.Add(new LangString("de", "Zusammenfassung von: " + args[3]));
-                            mlp.Value.Add(new LangString("FR", "Résumé de: " + args[3]));
+                            mlp.Value.Add(new LangStringTextType("en", "Summary for: " + args[3]));
+                            mlp.Value.Add(new LangStringTextType("de", "Zusammenfassung von: " + args[3]));
+                            mlp.Value.Add(new LangStringTextType("FR", "Résumé de: " + args[3]));
                         }
 
                         // TITLE
@@ -450,9 +448,9 @@ namespace AasxToolkit
                         mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(mlp);
-                            mlp.Value.Add(new LangString("en", "Keywords for: " + args[3]));
-                            mlp.Value.Add(new LangString("de", "Stichwörter für: " + args[3]));
-                            mlp.Value.Add(new LangString("FR", "Repèrs par: " + args[3]));
+                            mlp.Value.Add(new LangStringTextType("en", "Keywords for: " + args[3]));
+                            mlp.Value.Add(new LangStringTextType("de", "Stichwörter für: " + args[3]));
+                            mlp.Value.Add(new LangStringTextType("FR", "Repèrs par: " + args[3]));
                         }
 
                         // SET DATE
@@ -519,7 +517,7 @@ namespace AasxToolkit
                             //using (var file = File.CreateNew(
                             //    cd.GetDefaultPreferredName(), "CONSTANT",
                             //    Key.GetFromRef(cd.GetReference())))
-                            var file = new AasCore.Aas3_0_RC02.File("", idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
+                            var file = new AasCore.Aas3_0.File("", idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                             {
                                 p1.Add(file);
                                 file.ContentType = AdminShellPackageEnv.GuessMimeType(fn);
@@ -533,7 +531,7 @@ namespace AasxToolkit
                             //using (var p = File.CreateNew(
                             //    cd.GetDefaultPreferredName(), "CONSTANT",
                             //    Key.GetFromRef(cd.GetReference())))
-                            var file = new AasCore.Aas3_0_RC02.File("", idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
+                            var file = new AasCore.Aas3_0.File("", idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                             {
                                 p1.Add(file);
                                 file.ContentType = AdminShellPackageEnv.GuessMimeType(url);
@@ -584,7 +582,7 @@ namespace AasxToolkit
             var sub1 = new Submodel(repo.CreateOneTimeId());
             sub1.IdShort = "Datatsheet";
             aasenv.Submodels.Add(sub1);
-            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/datasheet/1/1") });
+            sub1.SemanticId = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/datasheet/1/1") });
 
             // CONCEPT: Manufacturer
             var cd = new ConceptDescription("0173-1#02-AAO677#001", idShort: "Manufacturer");
@@ -692,7 +690,7 @@ namespace AasxToolkit
             // CONCEPT: Weight
             //using (var cd = ConceptDescription.CreateNew(
             //    "Weight", Identification.IRDI, "0173-1#02-AAS627#001"))
-                cd = new ConceptDescription("0173-1#02-AAS627#001", idShort:"Weight");
+            cd = new ConceptDescription("0173-1#02-AAS627#001", idShort: "Weight");
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -710,7 +708,7 @@ namespace AasxToolkit
                 //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
                 var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                p.Qualifiers = new List<Qualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value:"SPEC", semanticId:new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId:new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF579") })) };
+                p.Qualifiers = new List<IQualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value: "SPEC", semanticId: new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId: new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF579") })) };
                 //p.AddQualifier("life cycle qual", "SPEC",
                 //    KeyList.CreateNew(
                 //        "GlobalReference", false, Identification.IRDI,
@@ -726,7 +724,7 @@ namespace AasxToolkit
                 //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
                 var p2 = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p2);
-                p.Qualifiers = new List<Qualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value: "BUILT", semanticId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF573") })) };
+                p.Qualifiers = new List<IQualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value: "BUILT", semanticId: new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId: new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF573") })) };
                 p2.ValueType = DataTypeDefXsd.Double;
                 p2.Value = "23.05";
             }
@@ -747,13 +745,13 @@ namespace AasxToolkit
 
                 //var p = ReferenceElement.CreateNew(
                 //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
-                var p = new ReferenceElement(idShort:cd.GetDefaultPreferredName(),category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new ReferenceElement(idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 //p.Value = p.Value = Reference.CreateNew(
                 //    Key.CreateNew(
                 //        "GlobalReference", false, Identification.IRDI,
                 //        "0173-1#07-AAA878#004")); // Polyamide (PA)
-                p.Value = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0173-1#07-AAA878#004") });
+                p.Value = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0173-1#07-AAA878#004") });
             }
 
             // Nice
@@ -767,7 +765,7 @@ namespace AasxToolkit
             var sub1 = new Submodel(repo.CreateOneTimeId());
             sub1.IdShort = "VariousItems";
             aasenv.Submodels.Add(sub1);
-            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/various/1/1") });
+            sub1.SemanticId = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/various/1/1") });
 
             ISubmodelElement sme1, sme2;
 
@@ -790,12 +788,12 @@ namespace AasxToolkit
                 //            Key.GetFromRef(cd.GetReference()));
                 var p = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                if(p.Value == null)
+                if (p.Value == null)
                 {
-                    p.Value = new List<LangString>();
+                    p.Value = new List<ILangStringTextType>();
                 }
-                p.Value.Add(new LangString("en", "An english value."));
-                p.Value.Add(new LangString("de", "Ein deutscher Wert."));
+                p.Value.Add(new LangStringTextType("en", "An english value."));
+                p.Value.Add(new LangStringTextType("de", "Ein deutscher Wert."));
                 sme1 = p;
             }
 
@@ -820,7 +818,7 @@ namespace AasxToolkit
 
                 //var p = Range.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
                 //            Key.GetFromRef(cd.GetReference()));
-                var p = new AasCore.Aas3_0_RC02.Range(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new AasCore.Aas3_0.Range(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.Min = "11.5";
                 p.Max = "13.8";
@@ -832,7 +830,7 @@ namespace AasxToolkit
             //    "VerConn",
             //    idType: Identification.IRDI,  // immer IRDI für ECLASS
             //    id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei ECLASS
-                cd = new ConceptDescription("0173-1#02-XXX992#001", idShort: "VerConn");
+            cd = new ConceptDescription("0173-1#02-XXX992#001", idShort: "VerConn");
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -849,7 +847,7 @@ namespace AasxToolkit
                 //var ar = AnnotatedRelationshipElement.CreateNew(
                 //    cd.GetDefaultPreferredName(), "PARAMETER",
                 //    Key.GetFromRef(cd.GetReference()));
-                var ar = new AnnotatedRelationshipElement(sme1.GetModelReference(), sme2.GetModelReference(), idShort:cd.GetDefaultPreferredName(), category:"PARAMETER", semanticId:cd.GetReference());
+                var ar = new AnnotatedRelationshipElement(sme1.GetModelReference(), sme2.GetModelReference(), idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(ar);
 
                 ar.Annotations = new List<IDataElement>();
@@ -869,7 +867,7 @@ namespace AasxToolkit
             var sub1 = new Submodel(repo.CreateOneTimeId());
             sub1.IdShort = "BOM-ECAD";
             aasenv.Submodels.Add(sub1);
-            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/BOM/1/1") });
+            sub1.SemanticId = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/BOM/1/1") });
 
             // CONCEPT: electrical plan
 
@@ -958,11 +956,11 @@ namespace AasxToolkit
             // ENTITIES
 
             var ps001 = new Entity(
-                EntityType.CoManagedEntity, idShort:"PowerSource001");
+                EntityType.CoManagedEntity, idShort: "PowerSource001");
             sub1.Add(ps001);
             var ps001_1 = new Property(DataTypeDefXsd.String, idShort: "1", category: "CONSTANT", semanticId: cdContact1.GetCdReference());
             var ps001_2 = new Property(DataTypeDefXsd.String, idShort: "2", category: "CONSTANT", semanticId: cdContact2.GetCdReference());
-            if(ps001.Statements == null)
+            if (ps001.Statements == null)
             {
                 ps001.Statements = new List<ISubmodelElement>();
             }
@@ -970,7 +968,7 @@ namespace AasxToolkit
             ps001.Statements.Add(ps001_2);
 
             var sw001 = new Entity(
-                EntityType.CoManagedEntity, idShort:"Switch001");
+                EntityType.CoManagedEntity, idShort: "Switch001");
             sub1.Add(sw001);
             var sw001_1 = new Property(DataTypeDefXsd.String, idShort: "1", category: "CONSTANT", semanticId: cdContact1.GetCdReference());
             var sw001_2 = new Property(DataTypeDefXsd.String, idShort: "2", category: "CONSTANT", semanticId: cdContact2.GetCdReference());
@@ -983,7 +981,7 @@ namespace AasxToolkit
 
             //TODO: jtikekar keyType should be AssetInformation
             var la001 = new Entity(
-                EntityType.SelfManagedEntity, idShort:"Lamp001", globalAssetId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Identifiable, "example.com/assets/23224234234232342343234") }));
+                EntityType.SelfManagedEntity, idShort: "Lamp001", globalAssetId: "example.com/assets/23224234234232342343234");
             sub1.Add(la001);
             var la001_1 = new Property(DataTypeDefXsd.String, idShort: "1", category: "CONSTANT", semanticId: cdContact1.GetCdReference());
             var la001_2 = new Property(DataTypeDefXsd.String, idShort: "2", category: "CONSTANT", semanticId: cdContact2.GetCdReference());
@@ -1015,7 +1013,7 @@ namespace AasxToolkit
             var sub1 = new Submodel(repo.CreateOneTimeId());
             sub1.IdShort = "BOM-ASSETS";
             aasenv.Submodels.Add(sub1);
-            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/BOM/1/1") });
+            sub1.SemanticId = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/BOM/1/1") });
 
             // CONCEPT: Generic asset decomposition
 
@@ -1040,28 +1038,28 @@ namespace AasxToolkit
             // ENTITIES
 
             var axisGroup = new Entity(
-                EntityType.CoManagedEntity, idShort:"AxisGroup001");
+                EntityType.CoManagedEntity, idShort: "AxisGroup001");
             sub1.Add(axisGroup);
 
             var motor = new Entity(
-                EntityType.CoManagedEntity, idShort:"Motor002");
+                EntityType.CoManagedEntity, idShort: "Motor002");
             sub1.Add(motor);
 
             var encoder = new Entity(
-                EntityType.CoManagedEntity, idShort:"Encoder003");
+                EntityType.CoManagedEntity, idShort: "Encoder003");
             sub1.Add(encoder);
 
             var gearbox = new Entity(
-                EntityType.CoManagedEntity, idShort:"Gearbox003");
+                EntityType.CoManagedEntity, idShort: "Gearbox003");
             sub1.Add(gearbox);
 
             var amp = new Entity(
-                EntityType.CoManagedEntity, idShort:"ServoAmplifier004");
+                EntityType.CoManagedEntity, idShort: "ServoAmplifier004");
             sub1.Add(amp);
 
             // RELATIONS
 
-            if(sub1.SubmodelElements == null)
+            if (sub1.SubmodelElements == null)
             {
                 sub1.SubmodelElements = new List<ISubmodelElement>();
             }
@@ -1082,7 +1080,7 @@ namespace AasxToolkit
             var sub1 = new Submodel(repo.CreateOneTimeId());
             sub1.IdShort = "EnergyMode";
             aasenv.Submodels.Add(sub1);
-            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/energymode/1/1") });
+            sub1.SemanticId = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/energymode/1/1") });
 
             // CONCEPT: SetMode
             var theOp = new Operation();
@@ -1119,9 +1117,9 @@ namespace AasxToolkit
                 var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
 
                 var ovp = new OperationVariable(p);
-                if(theOp.InputVariables == null)
+                if (theOp.InputVariables == null)
                 {
-                    theOp.InputVariables = new List<OperationVariable>();
+                    theOp.InputVariables = new List<IOperationVariable>();
                 }
 
                 theOp.InputVariables.Add(ovp);

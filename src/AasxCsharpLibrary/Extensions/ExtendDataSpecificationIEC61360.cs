@@ -1,9 +1,4 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Extensions
 {
@@ -12,15 +7,19 @@ namespace Extensions
         public static DataSpecificationIec61360 ConvertFromV20(this DataSpecificationIec61360 ds61360, AasxCompatibilityModels.AdminShellV20.DataSpecificationIEC61360 src616360)
         {
             if (src616360.preferredName != null)
-                ds61360.PreferredName = new List<LangString>().ConvertFromV20(src616360.preferredName);
-            
+                ds61360.PreferredName = new List<ILangStringPreferredNameTypeIec61360>().ConvertFromV20(src616360.preferredName);
+
             if (src616360.shortName != null)
-                ds61360.ShortName = new List<LangString>().ConvertFromV20(src616360.shortName);
-                
-            ds61360.Unit = src616360.unit;
+                ds61360.ShortName = new List<ILangStringShortNameTypeIec61360>().ConvertFromV20(src616360.shortName);
+
+            if (!string.IsNullOrEmpty(src616360.unit))
+            {
+                ds61360.Unit = src616360.unit;
+            }
+
             if (src616360.unitId != null)
-                ds61360.UnitId = ExtensionsUtil.ConvertReferenceFromV20(AasxCompatibilityModels.AdminShellV20.Reference.CreateNew(src616360.unitId.keys), ReferenceTypes.GlobalReference);
-            
+                ds61360.UnitId = ExtensionsUtil.ConvertReferenceFromV20(AasxCompatibilityModels.AdminShellV20.Reference.CreateNew(src616360.unitId.keys), ReferenceTypes.ExternalReference);
+
             ds61360.ValueFormat = src616360.valueFormat;
             ds61360.SourceOfDefinition = src616360.sourceOfDefinition;
             ds61360.Symbol = src616360.symbol;
@@ -32,7 +31,10 @@ namespace Extensions
                 ds61360.DataType = Stringification.DataTypeIec61360FromString(dt);
             }
             if (src616360.definition != null)
-                ds61360.Definition = new List<LangString>().ConvertFromV20(src616360.definition);
+                ds61360.Definition = new List<ILangStringDefinitionTypeIec61360>().ConvertFromV20(src616360.definition);
+
+            //TODO:jtikekar check with Andreas
+            ds61360.Value = "";
 
             return ds61360;
         }

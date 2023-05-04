@@ -11,30 +11,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 
-using AasxPackageLogic;
-using AnyUi;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using Org.Webpki.JsonCanonicalizer;
-using System.IO;
-using System.Windows;
 using AasxIntegrationBase;
-using Jose;
-using System.Threading;
+using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using Newtonsoft.Json.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using AasxIntegrationBase.AdminShellEvents;
+using AnyUi;
+using System;
 
 namespace AasxPackageExplorer
 {
@@ -44,11 +25,11 @@ namespace AasxPackageExplorer
     /// </summary>
     public class MainWindowLogic
     {
-		/// <summary>
-		/// This instance of <c>PackageCentral</c> shall be accessile for 
+        /// <summary>
+        /// This instance of <c>PackageCentral</c> shall be accessile for 
         /// all abstracted functionality. UI-Windows may link to this.
-		/// </summary>
-		public PackageCentral PackageCentral = new PackageCentral();
+        /// </summary>
+        public PackageCentral PackageCentral = new PackageCentral();
 
         /// <summary>
         /// Will be initialized by the specific main window providing
@@ -122,25 +103,25 @@ namespace AasxPackageExplorer
             Log.Singleton.Error(ex, where);
         }
 
-		/// <summary>
-		/// Only in scriptmode, set ticket result and exception to error.
-		/// Add also to log.
-		/// Do nothing, if not in scriptmode
-		/// </summary>
-		public void LogErrorToTicketOrSilent(
-			AasxMenuActionTicket ticket,
-			string message)
-		{
+        /// <summary>
+        /// Only in scriptmode, set ticket result and exception to error.
+        /// Add also to log.
+        /// Do nothing, if not in scriptmode
+        /// </summary>
+        public void LogErrorToTicketOrSilent(
+            AasxMenuActionTicket ticket,
+            string message)
+        {
             MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, message);
-		}
+        }
 
-		public void LogErrorToTicket(
-			AasxMenuActionTicket ticket,
-			Exception ex,
-			string where)
-		{
+        public void LogErrorToTicket(
+            AasxMenuActionTicket ticket,
+            Exception ex,
+            string where)
+        {
             MainWindowLogic.LogErrorToTicketStatic(ticket, ex, where);
-		}
+        }
 
         //
         // Scripting

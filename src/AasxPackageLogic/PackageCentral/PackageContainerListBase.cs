@@ -7,18 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AdminShellNS;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
-using AasxIntegrationBase;
-using AasxPackageLogic.PackageCentral;
-using AdminShellNS;
-using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -265,7 +262,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 // aas
                 if (fi.AasIds != null)
-                    for (int i=0; i<fi.AasIds.Count; i++)
+                    for (int i = 0; i < fi.AasIds.Count; i++)
                     {
                         // AAS
                         var aasid = fi.AasIds[i];
@@ -273,8 +270,8 @@ namespace AasxPackageLogic.PackageCentral
                             id: aasid,
                             assetInformation: new Aas.AssetInformation(Aas.AssetKind.Instance),
                             idShort: $"AAS{num++:00}_{fi.Tag}",
-                            description: new List<Aas.LangString>() { 
-                                new Aas.LangString("en?", "" + fi.Description) 
+                            description: new List<Aas.ILangStringTextType>() {
+                                new Aas.LangStringTextType("en?", "" + fi.Description)
                             });
                         pkg.AasEnv?.AssetAdministrationShells.Add(aas);
 
@@ -283,10 +280,7 @@ namespace AasxPackageLogic.PackageCentral
                         {
                             aas.AssetInformation = new Aas.AssetInformation(
                                 Aas.AssetKind.Instance,
-                                globalAssetId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, 
-                                    new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, fi.AssetIds[i]) 
-                                }
-                            ));
+                                globalAssetId: fi.AssetIds[i]);
                         }
                     }
             }

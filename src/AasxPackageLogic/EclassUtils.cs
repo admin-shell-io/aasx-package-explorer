@@ -7,17 +7,13 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Extensions;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using Microsoft.IdentityModel.Tokens;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
 {
@@ -472,9 +468,9 @@ namespace AasxPackageLogic
             return otherwise;
         }
 
-        private static void FindChildLangStrings(
+        private static void FindChildLangStrings<T>(
             XmlNode node, string childName, string childChildName, string langCodeAttrib,
-            Action<Aas.LangString> action)
+            Action<T> action) where T : IAbstractLangString
         {
             if (node == null || action == null)
                 return;
@@ -486,8 +482,22 @@ namespace AasxPackageLogic
                     foreach (XmlNode ni in nl)
                         if (ni.Attributes != null && ni.Attributes[langCodeAttrib] != null)
                         {
-                            var ls = new Aas.LangString(ni.Attributes["language_code"].InnerText, ni.InnerText);
-                            action(ls);
+                            object ls = null;
+                            if (typeof(T) is ILangStringTextType)
+                            {
+                                ls = new LangStringTextType(ni.Attributes["language_code"].InnerText, ni.InnerText);
+                            }
+                            else if (typeof(T) is ILangStringPreferredNameTypeIec61360)
+                            {
+                                ls = new LangStringPreferredNameTypeIec61360(ni.Attributes["language_code"].InnerText, ni.InnerText);
+                            }
+                            else if (typeof(T) is ILangStringDefinitionTypeIec61360)
+                            {
+                                ls = new LangStringDefinitionTypeIec61360(ni.Attributes["language_code"].InnerText, ni.InnerText);
+                            }
+
+                            //var ls1 = new T { Language = ni.Attributes["language_code"].InnerText, Text = ni.InnerText };
+                            action((T)ls);
                         }
             }
         }
@@ -504,8 +514,10 @@ namespace AasxPackageLogic
 
             // MIHO 2020-10-02: fix bug, create IEC61360 content
             var eds = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
-            res.EmbeddedDataSpecifications = new List<Aas.EmbeddedDataSpecification>();
-            res.EmbeddedDataSpecifications.Add(eds);
+            res.EmbeddedDataSpecifications = new List<Aas.IEmbeddedDataSpecification>
+            {
+                eds
+            };
             var ds = eds.DataSpecificationContent as Aas.DataSpecificationIec61360;
 
             // over all, first is significant
@@ -526,12 +538,12 @@ namespace AasxPackageLogic
                     res.Id = input[i].IRDI;
 
                     // isCase of
-                    if(res.IsCaseOf.IsNullOrEmpty())
+                    if (res.IsCaseOf.IsNullOrEmpty())
                     {
-                        res.IsCaseOf = new List<Aas.Reference>();
+                        res.IsCaseOf = new List<Aas.IReference>();
                     }
 
-                    res.IsCaseOf.Add(new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, input[i].IRDI) }));
+                    res.IsCaseOf.Add(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.GlobalReference, input[i].IRDI) }));
 
                     // administration
                     res.Administration = new Aas.AdministrativeInformation();
@@ -540,11 +552,11 @@ namespace AasxPackageLogic
                         res.Administration.Revision = "" + n1.InnerText;
 
                     // short name -> TBD in future
-                    FindChildLangStrings(node, "short_name", "label", "language_code", (ls) =>
+                    FindChildLangStrings<ILangStringShortNameTypeIec61360>(node, "short_name", "label", "language_code", (ls) =>
                     {
-                        ds.ShortName = new List<Aas.LangString>
+                        ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
                         {
-                            new Aas.LangString("EN?", ls.Text)
+                            new Aas.LangStringShortNameTypeIec61360("EN?", ls.Text)
                         };
                         res.IdShort = ls.Text;
                     });
@@ -574,7 +586,7 @@ namespace AasxPackageLogic
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            ds.UnitId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, urefIrdi.Trim()) });
+                                            ds.UnitId = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.GlobalReference, urefIrdi.Trim()) });
                                             ds.Unit = xiun.InnerText.Trim();
                                         }
                                 }
@@ -583,19 +595,19 @@ namespace AasxPackageLogic
                 }
 
                 // all have language texts
-                FindChildLangStrings(node, "preferred_name", "label", "language_code", (ls) =>
+                FindChildLangStrings<ILangStringPreferredNameTypeIec61360>(node, "preferred_name", "label", "language_code", (ls) =>
                 {
                     if (ds.PreferredName == null)
-                        ds.PreferredName = new List<Aas.LangString>();
+                        ds.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>();
 
                     // ReSharper disable PossibleNullReferenceException -- ignore a false positive
                     ds.PreferredName.Add(ls);
                 });
 
-                FindChildLangStrings(node, "definition", "text", "language_code", (ls) =>
+                FindChildLangStrings<ILangStringDefinitionTypeIec61360>(node, "definition", "text", "language_code", (ls) =>
                 {
                     if (ds.Definition == null)
-                        ds.PreferredName = new List<Aas.LangString>();
+                        ds.Definition = new List<Aas.ILangStringDefinitionTypeIec61360>();
 
                     // ReSharper disable PossibleNullReferenceException -- ignore a false positive
                     ds.Definition.Add(ls);
@@ -635,9 +647,9 @@ namespace AasxPackageLogic
                                 sn += part;
                             }
                             // set it
-                            ds.ShortName = new List<Aas.LangString>
+                            ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
                             {
-                                new Aas.LangString("EN?", sn)
+                                new Aas.LangStringShortNameTypeIec61360("EN?", sn)
                             };
                         }
                     }

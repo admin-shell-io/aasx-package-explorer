@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AAS = AasCore.Aas3_0_RC02;
+using AAS = AasCore.Aas3_0;
 
 namespace Extensions
 {
     public static class ExtendRange
     {
-        public static string ValueAsText(this AasCore.Aas3_0_RC02.Range range)
+        public static string ValueAsText(this AasCore.Aas3_0.Range range)
         {
             return "" + range.Min + " .. " + range.Max;
         }
 
-        public static AasCore.Aas3_0_RC02.Range ConvertFromV20(this AasCore.Aas3_0_RC02.Range range, AasxCompatibilityModels.AdminShellV20.Range sourceRange)
+        public static AasCore.Aas3_0.Range ConvertFromV20(this AasCore.Aas3_0.Range range, AasxCompatibilityModels.AdminShellV20.Range sourceRange)
         {
             if (sourceRange == null)
             {

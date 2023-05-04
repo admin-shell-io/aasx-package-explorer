@@ -7,17 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Web;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
+using System.Web;
 
 // ReSharper disable UnassignedField.Global
 
@@ -91,12 +88,12 @@ namespace AasxPackageLogic
             return st;
         }
 
-		private static string HtmlEsc(string st)
-		{			
-			return HttpUtility.HtmlEncode(st);
-		}
+        private static string HtmlEsc(string st)
+        {
+            return HttpUtility.HtmlEncode(st);
+        }
 
-		public static string ReportOptions(ReportOptionsFormat fmt,
+        public static string ReportOptions(ReportOptionsFormat fmt,
             OptionsInformation options = null)
         {
             var sb = new StringBuilder();
@@ -119,23 +116,23 @@ namespace AasxPackageLogic
                     $"| {MdEsc(arg),-20} | {MdEsc(description)} |");
             };
 
-			Action appendTableHeaderHtml = () =>
-			{
+            Action appendTableHeaderHtml = () =>
+            {
                 sb.AppendLine($"<tr><th>JSON option</th><th>Command line</th>" +
                     $"<th>Argument</th><th>Description</th></tr>");
-			};
+            };
 
-			Action<string, string, string, string> appendTableRowHtml = (json, cmd, arg, description) =>
-			{
-				sb.AppendLine($"<tr><td>{HtmlEsc(json)}</td><td>{HtmlEsc(cmd)}</td>" +
-					$"<td>{HtmlEsc(arg)}</td><td>{HtmlEsc(description)}</td></tr>");
-			};
+            Action<string, string, string, string> appendTableRowHtml = (json, cmd, arg, description) =>
+            {
+                sb.AppendLine($"<tr><td>{HtmlEsc(json)}</td><td>{HtmlEsc(cmd)}</td>" +
+                    $"<td>{HtmlEsc(arg)}</td><td>{HtmlEsc(description)}</td></tr>");
+            };
 
-			//
-			// Regular options
-			//
+            //
+            // Regular options
+            //
 
-			if (fmt == ReportOptionsFormat.Markdown)
+            if (fmt == ReportOptionsFormat.Markdown)
             {
                 sb.AppendLine("# Regular options for JSON and command line");
                 sb.AppendLine();
@@ -147,8 +144,8 @@ namespace AasxPackageLogic
 
             if (fmt == ReportOptionsFormat.Html)
             {
-				var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
-					@"<!doctype html>
+                var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<!doctype html>
                     <html lang=en>
                     <head>
                     <style>
@@ -181,7 +178,7 @@ namespace AasxPackageLogic
                     <table>");
 
                 sb.AppendLine(htmlHeader);
-			}
+            }
 
             var fields = typeof(OptionsInformation).GetFields(BindingFlags.Public | BindingFlags.Instance);
             var first = true;
@@ -200,16 +197,16 @@ namespace AasxPackageLogic
                             appendTableRowMd(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
                         }
 
-						if (fmt == ReportOptionsFormat.Html)
-						{
-							if (first)
-							{
-								first = false;
-								appendTableHeaderHtml();
-							}
-							appendTableRowHtml(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
-						}
-					}
+                        if (fmt == ReportOptionsFormat.Html)
+                        {
+                            if (first)
+                            {
+                                first = false;
+                                appendTableHeaderHtml();
+                            }
+                            appendTableRowHtml(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
+                        }
+                    }
             }
 
             sb.AppendLine("</table>");
@@ -234,17 +231,17 @@ namespace AasxPackageLogic
 
             if (fmt == ReportOptionsFormat.Html)
             {
-				sb.AppendLine("<h1>Special options for JSON and command line</h1>");
-				sb.AppendLine("<h4>The following options are also be provided.</h4>");
+                sb.AppendLine("<h1>Special options for JSON and command line</h1>");
+                sb.AppendLine("<h4>The following options are also be provided.</h4>");
                 sb.AppendLine("<table>");
-				appendTableHeaderHtml();
-				appendTableRowHtml("", "-read-json", "<path>", "Reads a JSON formatted options file.");
-				appendTableRowHtml("", "-write-json", "<path>", "Writes the currently loaded options " +
-					"into a JSON formatted file.");
-				sb.AppendLine("</table>");
-			}
+                appendTableHeaderHtml();
+                appendTableRowHtml("", "-read-json", "<path>", "Reads a JSON formatted options file.");
+                appendTableRowHtml("", "-write-json", "<path>", "Writes the currently loaded options " +
+                    "into a JSON formatted file.");
+                sb.AppendLine("</table>");
+            }
 
-			sb.AppendLine();
+            sb.AppendLine();
 
             //
             // Report current options?
@@ -269,13 +266,13 @@ namespace AasxPackageLogic
                     sb.AppendLine();
                 }
 
-				sb.AppendLine("<h1>Current options</h1>");
-				sb.AppendLine("<h4>The following options are currently loaded or set by default.</h4>");
+                sb.AppendLine("<h1>Current options</h1>");
+                sb.AppendLine("<h4>The following options are currently loaded or set by default.</h4>");
 
-				sb.AppendLine("<pre>");
+                sb.AppendLine("<pre>");
                 sb.AppendLine(HtmlEsc(jsonStr));
-				sb.AppendLine("</pre>");
-			}
+                sb.AppendLine("</pre>");
+            }
 
             //
             // Footer
@@ -287,11 +284,11 @@ namespace AasxPackageLogic
                 sb.AppendLine("</html>");
             }
 
-			//
-			// End of report
-			//
+            //
+            // End of report
+            //
 
-			return sb.ToString();
+            return sb.ToString();
         }
     }
 
@@ -451,15 +448,15 @@ namespace AasxPackageLogic
             Cmd = "-user-name")]
         public string UserName = null;
 
-		[OptionDescription(Description =
-	        "If true, will allow the storage of local files. The server functions might restrict this.",
-	        Cmd = "-allow-local-files")]
-		public bool AllowLocalFiles = true;
+        [OptionDescription(Description =
+            "If true, will allow the storage of local files. The server functions might restrict this.",
+            Cmd = "-allow-local-files")]
+        public bool AllowLocalFiles = true;
 
-		/// <summary>
-		/// Enumeration of generic accent color names
-		/// </summary>
-		public enum ColorNames
+        /// <summary>
+        /// Enumeration of generic accent color names
+        /// </summary>
+        public enum ColorNames
         {
             LightAccentColor = 0, DarkAccentColor, DarkestAccentColor, FocusErrorBrush, FocusErrorColor
         };
@@ -623,7 +620,7 @@ namespace AasxPackageLogic
             try
             {
                 var jsonStr = JsonConvert.SerializeObject(optionsInformation, Formatting.Indented);
-                File.WriteAllText(filename, jsonStr);
+                System.IO.File.WriteAllText(filename, jsonStr);
             }
             catch (Exception ex)
             {
@@ -638,7 +635,7 @@ namespace AasxPackageLogic
         {
             try
             {
-                var jsonStr = File.ReadAllText(fn);
+                var jsonStr = System.IO.File.ReadAllText(fn);
                 JsonConvert.PopulateObject(jsonStr, optionsInformation);
             }
             catch (Exception ex)
@@ -959,7 +956,7 @@ namespace AasxPackageLogic
         {
             try
             {
-                var optionsTxt = File.ReadAllText(filename);
+                var optionsTxt = System.IO.File.ReadAllText(filename);
                 var argsFromFile = optionsTxt.Split(
                     new[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 OptionsInformation.ParseArgs(argsFromFile, optionsInformation);

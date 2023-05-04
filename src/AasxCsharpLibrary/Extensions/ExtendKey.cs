@@ -1,26 +1,20 @@
-﻿using AasCore.Aas3_0_RC02;
-using AasxCompatibilityModels;
-using AdminShellNS;
+﻿using AdminShellNS;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Extensions
 {
     public static class ExtendKey
     {
-        public static Key CreateFrom(Reference r)
+        public static IKey CreateFrom(Reference r)
         {
             if (r == null || r.Count() != 1)
                 return null;
             return r.Keys[0].Copy();
         }
 
-        public static bool Matches(this Key key,
+        public static bool Matches(this IKey key,
                 KeyTypes type, string id, MatchMode matchMode = MatchMode.Strict)
         {
             if (matchMode == MatchMode.Strict)
@@ -35,7 +29,7 @@ namespace Extensions
 
             return false;
         }
-        public static bool Matches(this Key key, Key otherKey)
+        public static bool Matches(this IKey key, IKey otherKey)
         {
             if (otherKey == null)
             {
@@ -50,7 +44,7 @@ namespace Extensions
             return false;
         }
 
-        public static bool Matches(this Key key, Key otherKey, MatchMode matchMode = MatchMode.Strict)
+        public static bool Matches(this IKey key, IKey otherKey, MatchMode matchMode = MatchMode.Strict)
         {
             if (matchMode == MatchMode.Strict)
                 return key.Type == otherKey.Type && key.Value == otherKey.Value;
@@ -65,16 +59,16 @@ namespace Extensions
             return false;
         }
 
-        public static bool MatchesSetOfTypes(this Key key, IEnumerable<KeyTypes> set)
+        public static bool MatchesSetOfTypes(this IKey key, IEnumerable<KeyTypes> set)
         {
             foreach (var kt in set)
                 if (key.Type == kt)
                     return true;
             return false;
         }
-       
 
-        public static AasValidationAction Validate(this Key key, AasValidationRecordList results, IReferable container)
+
+        public static AasValidationAction Validate(this IKey key, AasValidationRecordList results, IReferable container)
         {
             // access
             if (results == null || container == null)
@@ -125,16 +119,16 @@ namespace Extensions
             return res;
         }
 
-        
 
-        public static string ToStringExtended(this Key key, int format = 1)
+
+        public static string ToStringExtended(this IKey key, int format = 1)
         {
             if (format == 2)
                 return "" + key.Value;
             return $"[{key.Type}, {key.Value}]";
         }
 
-        public static bool IsAbsolute(this Key key)
+        public static bool IsAbsolute(this IKey key)
         {
             return key.Type == KeyTypes.GlobalReference || key.Type == KeyTypes.AssetAdministrationShell || key.Type == KeyTypes.Submodel;
         }
@@ -154,7 +148,7 @@ namespace Extensions
                 if (m.Success)
                 {
                     return new Key(
-                            Stringification.KeyTypesFromString(m.Groups[1].ToString()) ?? KeyTypes.GlobalReference, 
+                            Stringification.KeyTypesFromString(m.Groups[1].ToString()) ?? KeyTypes.GlobalReference,
                             m.Groups[3].ToString());
                 }
             }

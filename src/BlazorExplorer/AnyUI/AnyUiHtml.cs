@@ -56,17 +56,17 @@ namespace AnyUi
         /// </summary>
 		public IJSRuntime JsRuntime;
 
-		/// <summary>
-		/// Distincts the different working mode of display and
-		/// execution of the event loop.
-		/// </summary>
-		public AnyUiHtmlBackgroundActionType BackgroundAction;
+        /// <summary>
+        /// Distincts the different working mode of display and
+        /// execution of the event loop.
+        /// </summary>
+        public AnyUiHtmlBackgroundActionType BackgroundAction;
 
-		/// <summary>
-		/// If <c>true</c>, a special HTML dialog rendering will occur for
-		/// the event.
-		/// </summary>
-		public bool EventOpen;
+        /// <summary>
+        /// If <c>true</c>, a special HTML dialog rendering will occur for
+        /// the event.
+        /// </summary>
+        public bool EventOpen;
 
         /// <summary>
         /// Will be raised if the modal event shall be closed.
@@ -114,7 +114,7 @@ namespace AnyUi
             SessionId = sessionId;
         }
 
-		// service function
+        // service function
 
         /// <summary>
         /// Notify closing of modal dialog, for book (time) keeping.
@@ -147,11 +147,11 @@ namespace AnyUi
             }
         }
 
-		/// <summary>
-		/// Will set all important flags in a way, that the event can be executed.
-		/// </summary>
-		/// <param name="diaData"></param>
-		public T StartModal<T>(T diaData) where T : AnyUiDialogueDataBase
+        /// <summary>
+        /// Will set all important flags in a way, that the event can be executed.
+        /// </summary>
+        /// <param name="diaData"></param>
+        public T StartModal<T>(T diaData) where T : AnyUiDialogueDataBase
         {
             if (diaData == null)
             {
@@ -169,35 +169,35 @@ namespace AnyUi
 
         public void ResetModal()
         {
-			DialogueData = null;
-			SpecialAction = null;
-			EventOpen = false;
-			EventDone = false;
-		}
+            DialogueData = null;
+            SpecialAction = null;
+            EventOpen = false;
+            EventDone = false;
+        }
 
-		public T StartModalSpecialAction<T>(T sdData) where T : AnyUiSpecialActionBase
-		{
-			ResetModal();
-
-			if (sdData == null)
-			{
-				EventDone = true;
-				return null;
-			}
-
-			EventOpen = true;
-			SpecialAction = sdData;
-			return sdData;
-		}
-
-		public void EndModal(bool result)
+        public T StartModalSpecialAction<T>(T sdData) where T : AnyUiSpecialActionBase
         {
-			if (DialogueData != null)
+            ResetModal();
+
+            if (sdData == null)
+            {
+                EventDone = true;
+                return null;
+            }
+
+            EventOpen = true;
+            SpecialAction = sdData;
+            return sdData;
+        }
+
+        public void EndModal(bool result)
+        {
+            if (DialogueData != null)
                 DialogueData.Result = result;
-			ResetModal();
-			EventDone = true;
-		}
-	}
+            ResetModal();
+            EventDone = true;
+        }
+    }
 
     public enum AnyUiHtmlFillMode { None, FillWidth }
 
@@ -272,7 +272,7 @@ namespace AnyUi
                 sessions.Add(s);
             }
         }
-        
+
         public static void DeleteEventSession(int sessionNumber)
         {
             lock (staticHtmlDotnetLock)
@@ -290,7 +290,7 @@ namespace AnyUi
                     sessions.Remove(found);
             }
         }
-        
+
         public static AnyUiHtmlEventSession FindEventSession(int sessionNumber)
         {
             AnyUiHtmlEventSession found = null;
@@ -397,53 +397,54 @@ namespace AnyUi
                         }
 
                         // simply do event loop (but here in the "background")
-                        while (!s.EventDone) 
+                        while (!s.EventDone)
                             Thread.Sleep(1);
-                        
+
                         s.EventOpen = false;
                         s.EventDone = false;
                         s.BackgroundAction = AnyUiHtmlBackgroundActionType.None;
                         s.SpecialAction = null;
 
-						// trigger display(again)
-						//Program.signalNewData(
-						//    new Program.NewDataAvailableArgs(
-						//        Program.DataRedrawMode.None, evs.SessionId));
-						s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
+                        // trigger display(again)
+                        //Program.signalNewData(
+                        //    new Program.NewDataAvailableArgs(
+                        //        Program.DataRedrawMode.None, evs.SessionId));
+                        s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
 
                         // remember close
                         s.NotifyModalClose();
 
                         // directly concern about the results
                         if (sacm.ResultIndex >= 0)
-						{
-							int bufferedI = sacm.ResultIndex;
-							var action2 = sacm.MenuItemLambda?.Invoke(bufferedI);
+                        {
+                            int bufferedI = sacm.ResultIndex;
+                            var action2 = sacm.MenuItemLambda?.Invoke(bufferedI);
                             if (action2 == null && sacm.MenuItemLambdaAsync != null)
                             {
                                 Program.signalNewData(
                                     new Program.NewDataAvailableArgs(
-                                        Program.DataRedrawMode.None, 
+                                        Program.DataRedrawMode.None,
                                         s.SessionId,
-                                        newLambdaAction: new AnyUiLambdaActionExecuteSpecialAction() { 
+                                        newLambdaAction: new AnyUiLambdaActionExecuteSpecialAction()
+                                        {
                                             SpecialAction = sacm,
                                             Arg = bufferedI
-                                        }, 
+                                        },
                                         onlyUpdatePanel: true));
                             }
-						}
-					}
+                        }
+                    }
 
-					if (s.BackgroundAction == AnyUiHtmlBackgroundActionType.SetValue
-						&& s.SpecialAction is AnyUiSpecialActionSetValue sasv)
-					{
-						// simply do event loop (but here in the "background")
-						// while (!s.EventDone) Task.Delay(1);
+                    if (s.BackgroundAction == AnyUiHtmlBackgroundActionType.SetValue
+                        && s.SpecialAction is AnyUiSpecialActionSetValue sasv)
+                    {
+                        // simply do event loop (but here in the "background")
+                        // while (!s.EventDone) Task.Delay(1);
                         // reset everything
-						s.EventOpen = false;
-						s.EventDone = false;
-						s.BackgroundAction = AnyUiHtmlBackgroundActionType.None;
-						s.SpecialAction = null;
+                        s.EventOpen = false;
+                        s.EventDone = false;
+                        s.BackgroundAction = AnyUiHtmlBackgroundActionType.None;
+                        s.SpecialAction = null;
 
                         // notify close
                         s.NotifyModalClose();
@@ -478,11 +479,11 @@ namespace AnyUi
                                         },
                                         onlyUpdatePanel: true));
                         }
-					}
+                    }
 
-					i++;
+                    i++;
                 }
-                
+
                 // ReSharper enable InconsistentlySynchronizedField
                 Thread.Sleep(50);
             }
@@ -499,15 +500,15 @@ namespace AnyUi
                 {
                     lock (dc.htmlDotnetLock)
                     {
-						//while (found.htmlDotnetEventIn) Task.Delay(1);
-						//found.htmlEventInputs.Clear();
-						//found.htmlDotnetEventType = "setValueLambda";
-						//found.htmlDotnetEventInputs.Add(el);
-						//found.htmlDotnetEventInputs.Add(o);
-						//found.htmlDotnetEventIn = true;
+                        //while (found.htmlDotnetEventIn) Task.Delay(1);
+                        //found.htmlEventInputs.Clear();
+                        //found.htmlDotnetEventType = "setValueLambda";
+                        //found.htmlDotnetEventInputs.Add(el);
+                        //found.htmlDotnetEventInputs.Add(o);
+                        //found.htmlDotnetEventIn = true;
 
-						// simply treat woodoo as error!
-						evs.JsRuntime = dc._jsRuntime;
+                        // simply treat woodoo as error!
+                        evs.JsRuntime = dc._jsRuntime;
 
                         // temporarily deactivated (develop modal panel)
                         if (evs.EventOpen)
@@ -520,13 +521,13 @@ namespace AnyUi
                         evs.BackgroundAction = AnyUiHtmlBackgroundActionType.SetValue;
                         evs.ResetModal();
                         evs.SpecialAction = new AnyUiSpecialActionSetValue(uiElement, argument);
-					}
+                    }
                 }
             }
         }
 
         public static void specialActionContextMenuHtml(
-            AnyUiUIElement el, 
+            AnyUiUIElement el,
             AnyUiSpecialActionContextMenu cntlcm,
             AnyUiDisplayContextHtml context)
         {
@@ -553,24 +554,24 @@ namespace AnyUi
                         evs.JsRuntime = dc._jsRuntime;
 
                         // prepare
-						if (evs.EventOpen)
-					    {
-						    Log.Singleton.Error("Error in starting special action as some modal dialogue " +
-							    "is still active. Aborting!!");
-						    return;
-					    }
+                        if (evs.EventOpen)
+                        {
+                            Log.Singleton.Error("Error in starting special action as some modal dialogue " +
+                                "is still active. Aborting!!");
+                            return;
+                        }
 
                         // wait?
                         evs.WaitMinimumForModalOpen();
 
                         // start modal
                         evs.BackgroundAction = AnyUiHtmlBackgroundActionType.ContextMenu;
-					    evs.StartModalSpecialAction(cntlcm);
+                        evs.StartModalSpecialAction(cntlcm);
 
-					    // trigger display
-					    Program.signalNewData(
-						    new Program.NewDataAvailableArgs(
-							    Program.DataRedrawMode.None, evs.SessionId));
+                        // trigger display
+                        Program.signalNewData(
+                            new Program.NewDataAvailableArgs(
+                                Program.DataRedrawMode.None, evs.SessionId));
 
                         // wait modal
                         //while (!evs.EventDone) Task.Delay(1);
@@ -620,7 +621,7 @@ namespace AnyUi
             // trigger display
             Program.signalNewData(
                 new Program.NewDataAvailableArgs(
-                    Program.DataRedrawMode.None, evs.SessionId)); 
+                    Program.DataRedrawMode.None, evs.SessionId));
 
             // wait modal
             while (!evs.EventDone) Thread.Sleep(1);
@@ -669,7 +670,7 @@ namespace AnyUi
             {
                 await Task.Delay(1);
             }
-            
+
             evs.EventOpen = false;
             evs.EventDone = false;
 
@@ -695,54 +696,54 @@ namespace AnyUi
         /// <param name="proposeFn">Filename, which is initially proposed when the dialogue is opened.</param>
         /// <returns>Dialogue data including filenames</returns>
         public override AnyUiDialogueDataOpenFile OpenFileFlyoutShow(
-			string caption, 
-            string message, 
+            string caption,
+            string message,
             string proposeFn = null,
             string filter = null)
-		{
-			var evs = FindEventSession(_bi.SessionId);
+        {
+            var evs = FindEventSession(_bi.SessionId);
             if (evs == null)
                 return null;
 
             evs.WaitMinimumForModalOpen();
 
-			var dd = evs.StartModal(new AnyUiDialogueDataOpenFile(
-				caption: caption, 
+            var dd = evs.StartModal(new AnyUiDialogueDataOpenFile(
+                caption: caption,
                 message: message,
                 filter: filter,
                 proposeFn: proposeFn));
 
-			// trigger display
-			Program.signalNewData(
-				new Program.NewDataAvailableArgs(
-					Program.DataRedrawMode.None, evs.SessionId));
+            // trigger display
+            Program.signalNewData(
+                new Program.NewDataAvailableArgs(
+                    Program.DataRedrawMode.None, evs.SessionId));
 
-			// wait modal
-			while (!evs.EventDone) Thread.Sleep(1);
-			evs.EventDone = false;
+            // wait modal
+            while (!evs.EventDone) Thread.Sleep(1);
+            evs.EventDone = false;
 
             // dialog result
             if (dd.Result)
                 return dd;
-			return null;
-		}
+            return null;
+        }
 
-		/// <summary>
-		/// Shows specified dialogue hardware-independent. The technology implementation will show the
-		/// dialogue based on the type of provided <c>dialogueData</c>. 
-		/// Modal dialogue: this function will block, until user ends dialogue.
-		/// </summary>
-		/// <param name="dialogueData"></param>
-		/// <returns>If the dialogue was end with "OK" or similar success.</returns>
-		public override bool StartFlyoverModal(AnyUiDialogueDataBase dialogueData)
+        /// <summary>
+        /// Shows specified dialogue hardware-independent. The technology implementation will show the
+        /// dialogue based on the type of provided <c>dialogueData</c>. 
+        /// Modal dialogue: this function will block, until user ends dialogue.
+        /// </summary>
+        /// <param name="dialogueData"></param>
+        /// <returns>If the dialogue was end with "OK" or similar success.</returns>
+        public override bool StartFlyoverModal(AnyUiDialogueDataBase dialogueData)
         {
-			var evs = FindEventSession(_bi.SessionId);
-			if (dialogueData == null || evs == null)
-				return false;
+            var evs = FindEventSession(_bi.SessionId);
+            if (dialogueData == null || evs == null)
+                return false;
 
             evs.WaitMinimumForModalOpen();
 
-			var dd = evs.StartModal(dialogueData);
+            var dd = evs.StartModal(dialogueData);
 
             // trigger display
             Program.signalNewData(
@@ -752,7 +753,7 @@ namespace AnyUi
             // wait modal
             while (!evs.EventDone) Task.Delay(1);
             evs.EventOpen = false;
-			evs.EventDone = false;
+            evs.EventDone = false;
 
             // trigger display (again)
             //Program.signalNewData(
@@ -764,66 +765,66 @@ namespace AnyUi
 
             return dd.Result;
 
-			//// access
-			//if (dialogueData == null)
-			//    return false;
+            //// access
+            //if (dialogueData == null)
+            //    return false;
 
-			//// make sure to reset
-			//dialogueData.Result = false;
+            //// make sure to reset
+            //dialogueData.Result = false;
 
-			//AnyUiHtmlEventSession found = null;
-			//lock (htmlDotnetLock)
-			//{
-			//    foreach (var s in sessions)
-			//    {
-			//        if (_bi.SessionId == s.SessionId)
-			//        {
-			//            found = s;
-			//            break;
-			//        }
-			//    }
-			//}
+            //AnyUiHtmlEventSession found = null;
+            //lock (htmlDotnetLock)
+            //{
+            //    foreach (var s in sessions)
+            //    {
+            //        if (_bi.SessionId == s.SessionId)
+            //        {
+            //            found = s;
+            //            break;
+            //        }
+            //    }
+            //}
 
-			//if (found != null)
-			//{
-			//    found.htmlEventInputs.Clear();
-			//    found.htmlEventType = "StartFlyoverModal";
-			//    found.htmlEventInputs.Add(dialogueData);
+            //if (found != null)
+            //{
+            //    found.htmlEventInputs.Clear();
+            //    found.htmlEventType = "StartFlyoverModal";
+            //    found.htmlEventInputs.Add(dialogueData);
 
-			//    found.htmlEventIn = true;
-			//    Program.signalNewData(
-			//        new Program.NewDataAvailableArgs(
-			//            Program.DataRedrawMode.RebuildTreeKeepOpen, found.SessionId)); // build new tree
+            //    found.htmlEventIn = true;
+            //    Program.signalNewData(
+            //        new Program.NewDataAvailableArgs(
+            //            Program.DataRedrawMode.RebuildTreeKeepOpen, found.SessionId)); // build new tree
 
-			//    while (!found.htmlEventOut) Task.Delay(1);
-			//    if (dialogueData is AnyUiDialogueDataTextEditor ddte)
-			//    {
-			//        if (found.htmlEventOutputs.Count == 2)
-			//        {
-			//            ddte.Text = (string)found.htmlEventOutputs[0];
-			//            ddte.Result = (bool)found.htmlEventOutputs[1];
-			//        }
-			//    }
-			//    if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
-			//    {
-			//        ddsfl.Result = false;
-			//        if (found.htmlEventOutputs.Count == 1)
-			//        {
-			//            int iDdsfl = (int)found.htmlEventOutputs[0];
-			//            ddsfl.Result = true;
-			//            ddsfl.ResultIndex = iDdsfl;
-			//            ddsfl.ResultItem = ddsfl.ListOfItems[iDdsfl];
-			//        }
-			//    }
-			//    found.htmlEventType = "";
-			//    found.htmlEventOutputs.Clear();
-			//    found.htmlEventOut = false;
-			//    found.htmlEventInputs.Clear();
-			//    found.htmlDotnetEventIn = false;
-			//}
-			//// result
-			//return dialogueData.Result;
-		}
+            //    while (!found.htmlEventOut) Task.Delay(1);
+            //    if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+            //    {
+            //        if (found.htmlEventOutputs.Count == 2)
+            //        {
+            //            ddte.Text = (string)found.htmlEventOutputs[0];
+            //            ddte.Result = (bool)found.htmlEventOutputs[1];
+            //        }
+            //    }
+            //    if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+            //    {
+            //        ddsfl.Result = false;
+            //        if (found.htmlEventOutputs.Count == 1)
+            //        {
+            //            int iDdsfl = (int)found.htmlEventOutputs[0];
+            //            ddsfl.Result = true;
+            //            ddsfl.ResultIndex = iDdsfl;
+            //            ddsfl.ResultItem = ddsfl.ListOfItems[iDdsfl];
+            //        }
+            //    }
+            //    found.htmlEventType = "";
+            //    found.htmlEventOutputs.Clear();
+            //    found.htmlEventOut = false;
+            //    found.htmlEventInputs.Clear();
+            //    found.htmlDotnetEventIn = false;
+            //}
+            //// result
+            //return dialogueData.Result;
+        }
 
         public async override Task<bool> StartFlyoverModalAsync(AnyUiDialogueDataBase dialogueData, Action rerender = null)
         {
@@ -839,7 +840,7 @@ namespace AnyUi
             if (rerender != null)
             {
                 rerender.Invoke();
-            }   
+            }
             else
             {
                 Program.signalNewData(
@@ -897,7 +898,7 @@ namespace AnyUi
                 try
                 {
                     _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", cb.Text);
-                } 
+                }
                 catch (Exception ex)
                 {
                     LogInternally.That.SilentlyIgnoredError(ex);
@@ -935,16 +936,16 @@ namespace AnyUi
         /// </summary>
         /// <returns>The dialog data containing the filename or <c>null</c></returns>
         public async override Task<AnyUiDialogueDataOpenFile> MenuSelectOpenFilenameAsync(
-			AasxMenuActionTicket ticket,
-			string argName,
-			string caption,
-			string proposeFn,
-			string filter,
-			string msg,
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeFn,
+            string filter,
+            string msg,
             bool requireNoFlyout = false)
-		{
-			// filename
-			var sourceFn = ticket?[argName] as string;
+        {
+            // filename
+            var sourceFn = ticket?[argName] as string;
 
             // no direct queries
             if (sourceFn?.HasContent() != true && requireNoFlyout)
@@ -952,91 +953,91 @@ namespace AnyUi
 
             // ok, modal?
             if (sourceFn?.HasContent() != true)
-			{
-				var uc = new AnyUiDialogueDataOpenFile(
-					caption: caption,
-					message: "Select filename by uploading it or from stored user files.",
-					filter: filter, proposeFn: proposeFn);
-				uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
-
-				if (await StartFlyoverModalAsync(uc))
-				{
-					// house keeping
-					RememberForInitialDirectory(uc.TargetFileName);
-
-					// modify
-					if (uc.ResultUserFile)
-						uc.TargetFileName = PackageContainerUserFile.Scheme + uc.TargetFileName;
-
-					// ok
-					return uc;
-				}
-			}
-
-			if (sourceFn?.HasContent() != true)
             {
-				MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
-				return null;
-			}
+                var uc = new AnyUiDialogueDataOpenFile(
+                    caption: caption,
+                    message: "Select filename by uploading it or from stored user files.",
+                    filter: filter, proposeFn: proposeFn);
+                uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
 
-			return new AnyUiDialogueDataOpenFile()
-			{
-				OriginalFileName = sourceFn,
-				TargetFileName = sourceFn
-			};
-		}
+                if (await StartFlyoverModalAsync(uc))
+                {
+                    // house keeping
+                    RememberForInitialDirectory(uc.TargetFileName);
 
-		/// <summary>
-		/// If ticket does not contain the filename named by <c>argName</c>,
-		/// read it by the user.
-		/// </summary>
-		public async override Task<bool> MenuSelectOpenFilenameToTicketAsync(
-			AasxMenuActionTicket ticket,
-			string argName,
-			string caption,
-			string proposeFn,
-			string filter,
-			string msg)
-		{
-			var uc = await MenuSelectOpenFilenameAsync(ticket, argName, caption, proposeFn, filter, msg);
-			if (uc?.Result == true)
-			{
-				ticket[argName] = uc.TargetFileName;
-				return true;
-			}
-			return false;
-		}
+                    // modify
+                    if (uc.ResultUserFile)
+                        uc.TargetFileName = PackageContainerUserFile.Scheme + uc.TargetFileName;
 
-		/// <summary>
-		/// Selects a filename to write either from user or from ticket.
-		/// </summary>
-		/// <returns>The dialog data containing the filename or <c>null</c></returns>
-		public async override Task<AnyUiDialogueDataSaveFile> MenuSelectSaveFilenameAsync(
-			AasxMenuActionTicket ticket,
-			string argName,
-			string caption,
-			string proposeFn,
-			string filter,
-			string msg,
+                    // ok
+                    return uc;
+                }
+            }
+
+            if (sourceFn?.HasContent() != true)
+            {
+                MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
+                return null;
+            }
+
+            return new AnyUiDialogueDataOpenFile()
+            {
+                OriginalFileName = sourceFn,
+                TargetFileName = sourceFn
+            };
+        }
+
+        /// <summary>
+        /// If ticket does not contain the filename named by <c>argName</c>,
+        /// read it by the user.
+        /// </summary>
+        public async override Task<bool> MenuSelectOpenFilenameToTicketAsync(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeFn,
+            string filter,
+            string msg)
+        {
+            var uc = await MenuSelectOpenFilenameAsync(ticket, argName, caption, proposeFn, filter, msg);
+            if (uc?.Result == true)
+            {
+                ticket[argName] = uc.TargetFileName;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Selects a filename to write either from user or from ticket.
+        /// </summary>
+        /// <returns>The dialog data containing the filename or <c>null</c></returns>
+        public async override Task<AnyUiDialogueDataSaveFile> MenuSelectSaveFilenameAsync(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeFn,
+            string filter,
+            string msg,
             bool requireNoFlyout = false)
-		{
-			// filename
-			var targetFn = ticket?[argName] as string;
+        {
+            // filename
+            var targetFn = ticket?[argName] as string;
 
             // no direct queries
             if (targetFn?.HasContent() != true && requireNoFlyout)
                 return null;
 
             // ok, modal?
-			if (targetFn?.HasContent() != true)
-			{
-				var uc = new AnyUiDialogueDataSaveFile(
-					caption: caption,
-					message: "Select filename and how to provide the file. " +
+            if (targetFn?.HasContent() != true)
+            {
+                var uc = new AnyUiDialogueDataSaveFile(
+                    caption: caption,
+                    message: "Select filename and how to provide the file. " +
                     "It might be possible to store files " +
                     "as user file or on a local file system.",
-					filter: filter, proposeFn: proposeFn);
-				
+                    filter: filter, proposeFn: proposeFn);
+
                 uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
                 uc.AllowLocalFiles = Options.Curr.AllowLocalFiles;
 
@@ -1045,105 +1046,105 @@ namespace AnyUi
                     // house keeping
                     RememberForInitialDirectory(uc.TargetFileName);
 
-					// ok
-					return uc;
-				}
-			}
+                    // ok
+                    return uc;
+                }
+            }
 
-			if (targetFn?.HasContent() != true)
+            if (targetFn?.HasContent() != true)
             {
-				MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
-				return null;
-			}
+                MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
+                return null;
+            }
 
-			return new AnyUiDialogueDataSaveFile()
-			{
-				TargetFileName = targetFn
-			};
-		}
+            return new AnyUiDialogueDataSaveFile()
+            {
+                TargetFileName = targetFn
+            };
+        }
 
-		/// <summary>
-		/// If ticket does not contain the filename named by <c>argName</c>,
-		/// read it by the user.
-		/// </summary>
-		public async override Task<bool> MenuSelectSaveFilenameToTicketAsync(
-			AasxMenuActionTicket ticket,
-			string argName,
-			string caption,
-			string proposeFn,
-			string filter,
-			string msg,
-			string argFilterIndex = null,
+        /// <summary>
+        /// If ticket does not contain the filename named by <c>argName</c>,
+        /// read it by the user.
+        /// </summary>
+        public async override Task<bool> MenuSelectSaveFilenameToTicketAsync(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeFn,
+            string filter,
+            string msg,
+            string argFilterIndex = null,
             string argLocation = null)
-		{
+        {
             var uc = await MenuSelectSaveFilenameAsync(ticket, argName, caption, proposeFn, filter, msg);
-			
+
             if (uc.Result && uc.TargetFileName.HasContent())
             {
-				ticket[argName] = uc.TargetFileName;
-				if (argFilterIndex?.HasContent() == true)
-					ticket[argFilterIndex] = uc.FilterIndex;
+                ticket[argName] = uc.TargetFileName;
+                if (argFilterIndex?.HasContent() == true)
+                    ticket[argFilterIndex] = uc.FilterIndex;
                 if (argLocation?.HasContent() == true)
                     ticket[argLocation] = uc.Location.ToString();
                 return true;
-			}
-			return false;
-		}
+            }
+            return false;
+        }
 
-		/// <summary>
-		/// Selects a text either from user or from ticket.
-		/// </summary>
-		/// <returns>Success</returns>
-		public async override Task<AnyUiDialogueDataTextBox> MenuSelectTextAsync(
-			AasxMenuActionTicket ticket,
-			string argName,
-			string caption,
-			string proposeText,
-			string msg)
-		{
-			// filename
-			var targetText = ticket?[argName] as string;
+        /// <summary>
+        /// Selects a text either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public async override Task<AnyUiDialogueDataTextBox> MenuSelectTextAsync(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeText,
+            string msg)
+        {
+            // filename
+            var targetText = ticket?[argName] as string;
 
-			if (targetText?.HasContent() != true)
-			{
-				var uc = new AnyUiDialogueDataTextBox(caption, symbol: AnyUiMessageBoxImage.Question);
-				uc.Text = proposeText;
-				await StartFlyoverModalAsync(uc);
-				if (uc.Result)
-					targetText = uc.Text;
-			}
-            
             if (targetText?.HasContent() != true)
             {
-				MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
-				return null;
-			}
+                var uc = new AnyUiDialogueDataTextBox(caption, symbol: AnyUiMessageBoxImage.Question);
+                uc.Text = proposeText;
+                await StartFlyoverModalAsync(uc);
+                if (uc.Result)
+                    targetText = uc.Text;
+            }
 
-			return new AnyUiDialogueDataTextBox()
+            if (targetText?.HasContent() != true)
+            {
+                MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
+                return null;
+            }
+
+            return new AnyUiDialogueDataTextBox()
             {
                 Text = targetText
             };
-		}
+        }
 
-		/// <summary>
-		/// Selects a text either from user or from ticket.
-		/// </summary>
-		/// <returns>Success</returns>
-		public async override Task<bool> MenuSelectTextToTicketAsync(
-			AasxMenuActionTicket ticket,
-			string argName,
-			string caption,
-			string proposeText,
-			string msg)
-		{
+        /// <summary>
+        /// Selects a text either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public async override Task<bool> MenuSelectTextToTicketAsync(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeText,
+            string msg)
+        {
             var uc = await MenuSelectTextAsync(ticket, argName, caption, proposeText, msg);
             if (uc.Result)
-			{
-				ticket[argName] = uc.Text;
-				return true;
-			}
-			return false;
-		}
+            {
+                ticket[argName] = uc.Text;
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// The display context tells, if user files are allowable for the application
@@ -1224,8 +1225,8 @@ namespace AnyUi
                 for (int c = 0; c < maxdim.Item2; c++)
                 {
                     double colMax = 0.0;
-                    for (int r=0; r<maxdim.Item1; r++)
-                        foreach (var ch in grid.GetChildsAt(r,c))
+                    for (int r = 0; r < maxdim.Item1; r++)
+                        foreach (var ch in grid.GetChildsAt(r, c))
                         {
                             var aw = GetApproxElementWidth(ch);
                             if (aw > colMax)

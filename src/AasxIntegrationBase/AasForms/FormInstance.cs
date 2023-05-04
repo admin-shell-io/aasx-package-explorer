@@ -7,16 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AdminShellNS;
+using AnyUi;
+using Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using AnyUi;
-using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
 
 /*
  * The Instances are organized in a different schema than the Descriptions!
@@ -1390,7 +1388,7 @@ namespace AasxIntegrationBase.AasForms
             {
                 // some more preferences
                 if (parentDesc.allowedValueTypes != null && parentDesc.allowedValueTypes.Length >= 1)
-                    p.ValueType = Aas.Stringification.DataTypeDefXsdFromString(parentDesc.allowedValueTypes[0]) 
+                    p.ValueType = Aas.Stringification.DataTypeDefXsdFromString(parentDesc.allowedValueTypes[0])
                         ?? Aas.DataTypeDefXsd.String;
 
                 if (parentDesc.presetValue != null && parentDesc.presetValue.Length > 0)
@@ -1665,8 +1663,8 @@ namespace AasxIntegrationBase.AasForms
                         (o) =>
                         {
                             if (mlp.Value == null)
-                                mlp.Value = new List<Aas.LangString>();
-                            mlp.Value.Add(new Aas.LangString("", ""));
+                                mlp.Value = new List<Aas.ILangStringTextType>();
+                            mlp.Value.Add(new Aas.LangStringTextType("", ""));
                             Touch();
                             return NewLambdaUpdateUi(this);
                         });
@@ -1945,7 +1943,7 @@ namespace AasxIntegrationBase.AasForms
             if (reSource != null)
             {
                 // take over
-                if (reSource.Value != null) 
+                if (reSource.Value != null)
                     re.Value = reSource.Value.Copy();
             }
 
@@ -2113,7 +2111,7 @@ namespace AasxIntegrationBase.AasForms
             var reSource = this.sourceSme as Aas.RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                if (re.First != null) 
+                if (re.First != null)
                     reSource.First = re.First.Copy();
                 if (re.Second != null)
                     reSource.Second = re.Second.Copy();

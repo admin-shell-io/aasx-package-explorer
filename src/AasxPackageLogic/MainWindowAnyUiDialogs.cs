@@ -13,29 +13,16 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
-using AasxPredefinedConcepts.Convert;
-using AasxSignature;
+using AdminShellNS;
 using AnyUi;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Extensions;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
-using AdminShellNS;
-using Extensions;
-using System.Windows;
-using Microsoft.VisualBasic.Logging;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -1117,7 +1104,7 @@ namespace AasxPackageLogic
                     LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
                 }
             }
-            
+
             if (cmd == "opcuai4aasimport")
             {
                 // filename
@@ -1570,7 +1557,7 @@ namespace AasxPackageLogic
 
                 // remember in history
                 LocationHistory?.Push(veFound);
-                
+
                 // fake selection
                 MainWindow.RedrawElementView();
                 MainWindow.TakeOverContentEnable(false);

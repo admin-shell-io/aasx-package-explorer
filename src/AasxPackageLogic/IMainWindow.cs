@@ -11,29 +11,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 
-using AasxPackageLogic;
-using AnyUi;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using Org.Webpki.JsonCanonicalizer;
-using System.IO;
-using System.Windows;
 using AasxIntegrationBase;
-using Jose;
-using System.Threading;
+using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using Newtonsoft.Json.Serialization;
-using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
-using Extensions;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -128,15 +110,15 @@ namespace AasxPackageExplorer
         /// <param name="storeFnToLRU">Store this filename into last recently used list</param>
         /// <param name="indexItems">Index loaded contents, e.g. for animate of event sending</param>
         void UiLoadPackageWithNew(
-			PackageCentralItem packItem,
-			AdminShellPackageEnv takeOverEnv = null,
-			string loadLocalFilename = null,
-			string info = null,
-			bool onlyAuxiliary = false,
-			bool doNotNavigateAfterLoaded = false,
-			PackageContainerBase takeOverContainer = null,
-			string storeFnToLRU = null,
-			bool indexItems = false);
+            PackageCentralItem packItem,
+            AdminShellPackageEnv takeOverEnv = null,
+            string loadLocalFilename = null,
+            string info = null,
+            bool onlyAuxiliary = false,
+            bool doNotNavigateAfterLoaded = false,
+            PackageContainerBase takeOverContainer = null,
+            string storeFnToLRU = null,
+            bool indexItems = false);
 
         /// <summary>
         /// Check for menu switch and flush events, if required.

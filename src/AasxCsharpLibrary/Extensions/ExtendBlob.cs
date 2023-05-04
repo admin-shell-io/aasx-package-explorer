@@ -1,9 +1,4 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace Extensions
 {
@@ -43,7 +38,7 @@ namespace Extensions
                     elem.Value = Encoding.Default.GetBytes(srcProp.Value);
             }
 
-            if (source is AasCore.Aas3_0_RC02.Range srcRng)
+            if (source is AasCore.Aas3_0.Range srcRng)
             {
                 if (srcRng.Min != null)
                     elem.Value = Encoding.Default.GetBytes(srcRng.Min);

@@ -10,20 +10,16 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.IO.Packaging;
 using System.Linq;
 using System.Reflection;
-using System.Runtime;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 using AdminShell_V20;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 //namespace AdminShellNS
 //namespace AdminShell_V20

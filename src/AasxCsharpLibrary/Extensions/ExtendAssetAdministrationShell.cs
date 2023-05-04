@@ -1,12 +1,7 @@
-﻿using AasCore.Aas3_0_RC02;
-using AdminShellNS;
+﻿using AdminShellNS;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Extensions
 {
@@ -14,7 +9,7 @@ namespace Extensions
     {
         #region AasxPackageExplorer
 
-        public static Tuple<string, string> ToCaptionInfo(this AssetAdministrationShell assetAdministrationShell)
+        public static Tuple<string, string> ToCaptionInfo(this IAssetAdministrationShell assetAdministrationShell)
         {
             var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", assetAdministrationShell.IdShort, "\"AAS\"");
             if (assetAdministrationShell.Administration != null)
@@ -26,7 +21,7 @@ namespace Extensions
             return Tuple.Create(caption, info);
         }
 
-        public static IEnumerable<LocatedReference> FindAllReferences(this AssetAdministrationShell assetAdministrationShell)
+        public static IEnumerable<LocatedReference> FindAllReferences(this IAssetAdministrationShell assetAdministrationShell)
         {
             // Asset
             //TODO:jtikekar support asset
@@ -42,7 +37,7 @@ namespace Extensions
 
         #endregion
 
-        public static bool HasSubmodelReference(this AssetAdministrationShell assetAdministrationShell, Reference submodelReference)
+        public static bool HasSubmodelReference(this IAssetAdministrationShell assetAdministrationShell, Reference submodelReference)
         {
             if (submodelReference == null)
             {
@@ -60,18 +55,18 @@ namespace Extensions
             return false;
         }
 
-        public static void AddSubmodelReference(this AssetAdministrationShell assetAdministrationShell, Reference newSubmodelReference)
+        public static void AddSubmodelReference(this IAssetAdministrationShell assetAdministrationShell, IReference newSubmodelReference)
         {
             if (assetAdministrationShell.Submodels == null)
             {
-                assetAdministrationShell.Submodels = new List<Reference>();
+                assetAdministrationShell.Submodels = new List<IReference>();
             }
 
             assetAdministrationShell.Submodels.Add(newSubmodelReference);
         }
 
         //TODO:jtikekar: Change the name, currently based on older implementation
-        public static string GetFriendlyName(this AssetAdministrationShell assetAdministrationShell)
+        public static string GetFriendlyName(this IAssetAdministrationShell assetAdministrationShell)
         {
             if (string.IsNullOrEmpty(assetAdministrationShell.IdShort))
             {
@@ -110,14 +105,14 @@ namespace Extensions
             if (sourceAas.derivedFrom != null)
             {
                 var key = new Key(KeyTypes.AssetAdministrationShell, sourceAas.identification.id);
-                assetAdministrationShell.DerivedFrom = new Reference(ReferenceTypes.ModelReference, new List<Key>() { key });
+                assetAdministrationShell.DerivedFrom = new Reference(ReferenceTypes.ModelReference, new List<IKey>() { key });
             }
 
             if (sourceAas.submodelRefs != null || sourceAas.submodelRefs.Count != 0)
             {
                 foreach (var submodelRef in sourceAas.submodelRefs)
                 {
-                    var keyList = new List<Key>();
+                    var keyList = new List<IKey>();
                     foreach (var refKey in submodelRef.Keys)
                     {
                         //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
@@ -133,7 +128,7 @@ namespace Extensions
                     }
                     if (assetAdministrationShell.Submodels == null)
                     {
-                        assetAdministrationShell.Submodels = new List<Reference>();
+                        assetAdministrationShell.Submodels = new List<IReference>();
                     }
                     assetAdministrationShell.Submodels.Add(new Reference(ReferenceTypes.ModelReference, keyList));
                 }
@@ -144,12 +139,12 @@ namespace Extensions
                 //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
                 if (assetAdministrationShell.EmbeddedDataSpecifications == null)
                 {
-                    assetAdministrationShell.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
+                    assetAdministrationShell.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
                 }
                 foreach (var dataSpecification in sourceAas.hasDataSpecification.reference)
                 {
                     assetAdministrationShell.EmbeddedDataSpecifications.Add(new EmbeddedDataSpecification(
-                        ExtensionsUtil.ConvertReferenceFromV10(dataSpecification, ReferenceTypes.GlobalReference),
+                        ExtensionsUtil.ConvertReferenceFromV10(dataSpecification, ReferenceTypes.ExternalReference),
                         null));
                 }
             }
@@ -186,14 +181,14 @@ namespace Extensions
             if (sourceAas.derivedFrom != null)
             {
                 var key = new Key(KeyTypes.AssetAdministrationShell, sourceAas.identification.id);
-                assetAdministrationShell.DerivedFrom = new Reference(ReferenceTypes.ModelReference, new List<Key>() { key });
+                assetAdministrationShell.DerivedFrom = new Reference(ReferenceTypes.ModelReference, new List<IKey>() { key });
             }
 
             if (sourceAas.submodelRefs != null || sourceAas.submodelRefs.Count != 0)
             {
                 foreach (var submodelRef in sourceAas.submodelRefs)
                 {
-                    var keyList = new List<Key>();
+                    var keyList = new List<IKey>();
                     foreach (var refKey in submodelRef.Keys)
                     {
                         //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
@@ -209,18 +204,18 @@ namespace Extensions
                     }
                     if (assetAdministrationShell.Submodels == null)
                     {
-                        assetAdministrationShell.Submodels = new List<Reference>();
+                        assetAdministrationShell.Submodels = new List<IReference>();
                     }
                     assetAdministrationShell.Submodels.Add(new Reference(ReferenceTypes.ModelReference, keyList));
                 }
             }
 
-            if (sourceAas.hasDataSpecification != null)
+            if (sourceAas.hasDataSpecification != null && sourceAas.hasDataSpecification.Count > 0)
             {
                 //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
                 if (assetAdministrationShell.EmbeddedDataSpecifications == null)
                 {
-                    assetAdministrationShell.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
+                    assetAdministrationShell.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
                 }
 
                 //TODO: jtikekar: DataSpecificationContent?? (as per old implementation)
@@ -230,7 +225,7 @@ namespace Extensions
                     {
                         assetAdministrationShell.EmbeddedDataSpecifications.Add(
                             new EmbeddedDataSpecification(
-                                ExtensionsUtil.ConvertReferenceFromV20(sourceDataSpec.dataSpecification, ReferenceTypes.GlobalReference),
+                                ExtensionsUtil.ConvertReferenceFromV20(sourceDataSpec.dataSpecification, ReferenceTypes.ExternalReference),
                                 null));
                     }
                 }

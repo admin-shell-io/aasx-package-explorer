@@ -1,9 +1,4 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Extensions
 {
@@ -11,12 +6,12 @@ namespace Extensions
     {
         #region AasxPackageExplorer
 
-        public static Tuple<string, string> ToCaptionInfo(this AssetInformation assetInformation)
+        public static Tuple<string, string> ToCaptionInfo(this IAssetInformation assetInformation)
         {
             //TODO:jtikekar support KeyType.AssetInformation
             //var caption = Key.AssetInformation;
             var caption = "AssetInformation";
-            var info = "" + assetInformation.GlobalAssetId?.ToStringExtended();
+            var info = "" + assetInformation.GlobalAssetId;
             return Tuple.Create(caption, info);
         }
 
@@ -34,8 +29,7 @@ namespace Extensions
 
 
             //Assign GlobalAssetId
-            var key = new Key(KeyTypes.GlobalReference, sourceAsset.identification.id);
-            assetInformation.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key> { key });
+            assetInformation.GlobalAssetId = sourceAsset.identification.id;
 
             return assetInformation;
         }
@@ -53,8 +47,7 @@ namespace Extensions
 
 
             //Assign GlobalAssetId
-            var key = new Key(KeyTypes.GlobalReference, sourceAsset.identification.id);
-            assetInformation.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key> { key });
+            assetInformation.GlobalAssetId = sourceAsset.identification.id;
 
             return assetInformation;
         }

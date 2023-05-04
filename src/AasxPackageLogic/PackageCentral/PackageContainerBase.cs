@@ -7,19 +7,19 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -411,7 +411,7 @@ namespace AasxPackageLogic.PackageCentral
 
             if (smeToModify is Aas.MultiLanguageProperty mlp)
             {
-                if (vl.Value is List<Aas.LangString> lss)
+                if (vl.Value is List<Aas.ILangStringTextType> lss)
                     mlp.Value = lss;
                 if (vl.ValueId != null)
                     mlp.ValueId = vl.ValueId;
@@ -483,7 +483,7 @@ namespace AasxPackageLogic.PackageCentral
                             else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
                             {
                                 var x = wrappers.FindReferableByReference(
-                                    new Aas.Reference(Aas.ReferenceTypes.GlobalReference, vl.Path), keyIndex: 0);
+                                    new Aas.Reference(Aas.ReferenceTypes.ExternalReference, vl.Path), keyIndex: 0);
                                 if (x is Aas.Property fpp)
                                     smeToModify = fpp;
                             }

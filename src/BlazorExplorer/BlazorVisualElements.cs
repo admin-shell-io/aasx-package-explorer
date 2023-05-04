@@ -54,7 +54,7 @@ namespace BlazorUI
             {
                 if (_selectedItems == null || _selectedItems.Count < 1)
                     return null;
-                
+
                 return _selectedItems[0];
             }
             set
@@ -111,15 +111,15 @@ namespace BlazorUI
         /// Clears only selection.
         /// </summary>
 		public void ClearSelection()
-		{
-			_selectedItems.Clear();
-		}
+        {
+            _selectedItems.Clear();
+        }
 
-		/// <summary>
-		/// Activates the caching of the "expanded" states of the tree, even if the tree is multiple
-		/// times rebuilt via <code>RebuildAasxElements</code>.
-		/// </summary>
-		public void ActivateElementStateCache()
+        /// <summary>
+        /// Activates the caching of the "expanded" states of the tree, even if the tree is multiple
+        /// times rebuilt via <code>RebuildAasxElements</code>.
+        /// </summary>
+        public void ActivateElementStateCache()
         {
             this._treeLineCache = new TreeViewLineCache();
         }
@@ -131,7 +131,7 @@ namespace BlazorUI
         /// <param name="fullFilterElementName">Filter string</param>
         /// <param name="firstLeafFound">If null, we be set to very first leaf</param>
         public bool FilterLeavesOfVisualElements(
-            VisualElementGeneric mem, string fullFilterElementName, 
+            VisualElementGeneric mem, string fullFilterElementName,
             ref VisualElementGeneric firstLeafFound)
         {
             if (fullFilterElementName == null)
@@ -159,9 +159,9 @@ namespace BlazorUI
                     && memei.theItemType == VisualElementEnvironmentItem.ItemType.DummyNode)
                     return false;
 
-				// this member is a leaf!!
-				var isIn = false;
-				var filterName = mem.GetFilterElementInfo()?.Trim().ToLower();
+                // this member is a leaf!!
+                var isIn = false;
+                var filterName = mem.GetFilterElementInfo()?.Trim().ToLower();
                 if (filterName != null)
                     isIn = fullFilterElementName.IndexOf(filterName, StringComparison.Ordinal) >= 0;
 
@@ -399,25 +399,25 @@ namespace BlazorUI
             }
         }
 
-		public void SetExpanded(VisualElementGeneric ve, bool state)
-		{
-			ve.IsExpanded = state;
+        public void SetExpanded(VisualElementGeneric ve, bool state)
+        {
+            ve.IsExpanded = state;
 
-			if (state)
-			{
-				try
-				{
-					TreeItems?.ExecuteLazyLoading(ve, state);
-				}
-				catch (Exception ex)
-				{
-					LogInternally.That.CompletelyIgnoredError(ex);
-				}
-			}
-		}
+            if (state)
+            {
+                try
+                {
+                    TreeItems?.ExecuteLazyLoading(ve, state);
+                }
+                catch (Exception ex)
+                {
+                    LogInternally.That.CompletelyIgnoredError(ex);
+                }
+            }
+        }
 
-		// this is bascially a copy from DiplayVisualAasxElements.xaml.cs
-		public void NotifyTreeSelectionChanged(VisualElementGeneric ve, BlazorInput.KeyboardModifiers modi)
+        // this is bascially a copy from DiplayVisualAasxElements.xaml.cs
+        public void NotifyTreeSelectionChanged(VisualElementGeneric ve, BlazorInput.KeyboardModifiers modi)
         {
             // trivial
             if (ve == null)

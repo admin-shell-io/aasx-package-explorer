@@ -355,7 +355,7 @@ namespace AasxPluginImageMap
                         targetReference = targetRf
                     });
             }
-            
+
             return new AnyUiLambdaActionNone();
         }
 
@@ -688,8 +688,8 @@ namespace AasxPluginImageMap
             public double? EvalAsDouble(bool forceDouble = false)
             {
                 // try to convert to double
-                if ((forceDouble 
-                    || ValueType == Aas.DataTypeDefXsd.Float 
+                if ((forceDouble
+                    || ValueType == Aas.DataTypeDefXsd.Float
                     || ValueType == Aas.DataTypeDefXsd.Double))
                 {
                     if (double.TryParse("" + Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AAS = AasCore.Aas3_0_RC02;
-using AasCore.Aas3_0_RC02;
+﻿using AAS = AasCore.Aas3_0;
 
 namespace Extensions
 {

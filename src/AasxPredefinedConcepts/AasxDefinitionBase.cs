@@ -7,18 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
 {
@@ -170,7 +167,7 @@ namespace AasxPredefinedConcepts
                 }
 #endif
                 // TODO (MIHO, 2022-12-31): for V3.0, another method of deserialization is required!!
-                
+
                 res ??= JsonConvert.DeserializeObject<T>(entry.contents);
             }
             catch (Exception ex)
@@ -189,24 +186,28 @@ namespace AasxPredefinedConcepts
             string idShort,
             string id,
             string definitionHereString,
-            Aas.Reference isCaseOf = null)
+            Aas.IReference isCaseOf = null)
         {
             // access
             if (idShort == null || idType == null || id == null)
                 return null;
 
             // create CD
-            var cd = new Aas.ConceptDescription(id, idShort:idShort);
+            var cd = new Aas.ConceptDescription(id, idShort: idShort);
             var dsiec = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
             var dsc = dsiec.DataSpecificationContent as Aas.DataSpecificationIec61360;
-            dsc.PreferredName = new List<Aas.LangString>();
-            dsc.PreferredName.Add(new Aas.LangString(lang, "" + idShort));
-            dsc.Definition = new List<Aas.LangString>();
-            dsc.Definition.Add(new Aas.LangString(lang, "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString)));
+            dsc.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>
+            {
+                new Aas.LangStringPreferredNameTypeIec61360(lang, "" + idShort)
+            };
+            dsc.Definition = new List<Aas.ILangStringDefinitionTypeIec61360>
+            {
+                new Aas.LangStringDefinitionTypeIec61360(lang, "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString))
+            };
 
             // options
             if (isCaseOf != null)
-                cd.IsCaseOf = new List<Aas.Reference>(new[] { isCaseOf });
+                cd.IsCaseOf = new List<Aas.IReference>(new[] { isCaseOf });
 
             // ok
             return cd;

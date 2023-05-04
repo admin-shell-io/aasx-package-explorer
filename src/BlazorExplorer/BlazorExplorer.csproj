@@ -82,7 +82,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseGdi\AasxIntegrationBaseGdi.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
