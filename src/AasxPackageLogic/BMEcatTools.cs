@@ -158,7 +158,8 @@ namespace AasxPackageExplorer
                                         //var p = Aas.Property.CreateNew(
                                         //    cd.GetDefaultShortName(), "PARAMETER",
                                         //    Key.GetFromRef(cd.GetCdReference()));
-                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
+                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "",
+                                            semanticId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -332,7 +333,8 @@ namespace AasxPackageExplorer
                                                 //var p = Aas.Property.CreateNew(
                                                 //    cd.GetDefaultShortName(), "PARAMETER",
                                                 //    Key.GetFromRef(cd.GetCdReference()));
-                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
+                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER",
+                                                    semanticId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                                 p.Value = FVALUE[k];
 
                                                 if (StackPointer_FID == 0) // am Submodell

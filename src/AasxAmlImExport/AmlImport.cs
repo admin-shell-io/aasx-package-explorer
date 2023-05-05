@@ -1268,7 +1268,8 @@ namespace AasxAmlImExport
                     // reSharper disable once ForCanBeConvertedToForeach
                     foreach (AasSubmodelElements smeEnum in Enum.GetValues(typeof(AasSubmodelElements)))
                     {
-                        if (smeEnum == AasSubmodelElements.SubmodelElement || smeEnum == AasSubmodelElements.SubmodelElementList || smeEnum == AasSubmodelElements.SubmodelElementCollection || smeEnum == AasSubmodelElements.AnnotatedRelationshipElement || smeEnum == AasSubmodelElements.Entity)
+                        if (smeEnum == AasSubmodelElements.SubmodelElement || smeEnum == AasSubmodelElements.SubmodelElementList || smeEnum == AasSubmodelElements.SubmodelElementCollection
+                            || smeEnum == AasSubmodelElements.AnnotatedRelationshipElement || smeEnum == AasSubmodelElements.Entity)
                         {
                             continue;
                         }

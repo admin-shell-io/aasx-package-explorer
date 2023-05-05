@@ -235,7 +235,8 @@ namespace Extensions
 #endif
 
         //TODO:jtikekar to test
-        public static AasCore.Aas3_0_RC02.Environment CreateFromExistingEnvironment(this AasCore.Aas3_0_RC02.Environment environment, AasCore.Aas3_0_RC02.Environment sourceEnvironment, List<AssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<Submodel> filterForSubmodel = null, List<ConceptDescription> filterForConceptDescriptions = null)
+        public static AasCore.Aas3_0_RC02.Environment CreateFromExistingEnvironment(this AasCore.Aas3_0_RC02.Environment environment, AasCore.Aas3_0_RC02.Environment sourceEnvironment,
+            List<AssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<Submodel> filterForSubmodel = null, List<ConceptDescription> filterForConceptDescriptions = null)
         {
             if (filterForAas == null)
             {
@@ -305,7 +306,8 @@ namespace Extensions
 
         }
 
-        public static void CreateFromExistingEnvRecurseForCDs(this AasCore.Aas3_0_RC02.Environment environment, AasCore.Aas3_0_RC02.Environment sourceEnvironment, List<ISubmodelElement> submodelElements, ref List<ConceptDescription> filterForConceptDescription)
+        public static void CreateFromExistingEnvRecurseForCDs(this AasCore.Aas3_0_RC02.Environment environment, AasCore.Aas3_0_RC02.Environment sourceEnvironment,
+            List<ISubmodelElement> submodelElements, ref List<ConceptDescription> filterForConceptDescription)
         {
             if (submodelElements == null || submodelElements.Count == 0 || filterForConceptDescription == null || filterForConceptDescription.Count == 0)
             {

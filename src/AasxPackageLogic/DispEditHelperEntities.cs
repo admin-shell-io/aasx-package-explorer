@@ -419,8 +419,8 @@ namespace AasxPackageLogic
 
                                                 if (destAAS.AssetInformation != null)
                                                 {
-                                                    destAAS.AssetInformation.GlobalAssetId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, AdminShellUtil.GenerateIdAccordingTemplate(
-                                                                Options.Curr.TemplateIdAsset))});
+                                                    destAAS.AssetInformation.GlobalAssetId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference,
+                                                        new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAsset)) });
                                                 }
                                             }
 
