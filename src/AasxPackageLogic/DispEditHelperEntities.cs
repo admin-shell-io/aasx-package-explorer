@@ -2045,7 +2045,7 @@ namespace AasxPackageLogic
                         breakIfTrue: true),
                 });
 
-            //TODO:jtikekar cd.dataspecifications vs embeddedDS
+            //TODO (jtikekar, 0000-00-00): cd.dataspecifications vs embeddedDS
             // use the normal module to edit ALL data specifications
             this.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.EmbeddedDataSpecifications,
                 (ds) => { cd.EmbeddedDataSpecifications = ds; },
@@ -2406,7 +2406,7 @@ namespace AasxPackageLogic
 
                 // although SML is the ideal case for acceleration, the calculation/ display of
                 // the index position prevents us from this
-                // TODO (MIHO, 23-01-17): optimize also this important special case
+                // TODO (MIHO, 2023-01-17): optimize also this important special case
                 if (parentContainer != null && parentContainer is Aas.SubmodelElementList &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
@@ -2507,7 +2507,7 @@ namespace AasxPackageLogic
                             "Creates an ConceptDescription from this element and " +
                             "assigns the SubmodelElement to it.");
 
-                // TODO: MIHO, check again
+                // TODO (MIHO, 0000-00-00): check again
                 if (sme.EnumeratesChildren())
                 {
                     cdmenu.AddAction("create-all", "Create \U0001f844 all",
@@ -2877,7 +2877,7 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0)
                             {
                                 // prepare
-                                //TODO: jtikekar not a good solution to add null SME
+                                //TODO (jtikekar, 0000-00-00): not a good solution to add null SME
                                 ovl ??= new List<Aas.OperationVariable>();
                                 var ov = new Aas.OperationVariable(null);
                                 ovl.Add(ov);
@@ -3013,7 +3013,7 @@ namespace AasxPackageLogic
                     {
                         if (buttonNdx >= 0 && buttonNdx <= 3)
                         {
-                            // TODO MICHA: check elems!!!!
+                            // TODO (MICHA, 0000-00-00): check elems!!!!
                             // which adequate type?
                             var en = Aas.AasSubmodelElements.SubmodelElement;
                             if (buttonNdx == 0)

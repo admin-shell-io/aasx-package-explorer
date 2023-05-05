@@ -189,7 +189,7 @@ namespace AasxPackageLogic.PackageCentral
             Aas.AssetInformation asset = null;
 
             if (frame.ContainsKey("AAS"))
-                //TODO:jtikekar TEST
+                //TODO (jtikekar, 0000-00-00): TEST
                 //aas = AdminShellSerializationHelper.DeserializeFromJSON<AssetAdministrationShell>(frame["AAS"]);
                 aas = Aas.Jsonization.Deserialize.AssetAdministrationShellFrom(jsonNode["AAS"]);
             if (frame.ContainsKey("AssetInformation"))
@@ -307,7 +307,7 @@ namespace AasxPackageLogic.PackageCentral
             // in order to serve goal (2), a wrapper-root is required from the observableReference,
             // that is: requestedElement!
             //var wrappers = ((requestedElement as IEnumerateChildren)?.EnumerateChildren())?.ToList();
-            //TODO: jtikekar test for other than submodel
+            //TODO (jtikekar, 0000-00-00): test for other than submodel
             var wrappers = ((requestedElement as Aas.IReferable)?.EnumerateChildren())?.ToList();
 
             // parse dynamic response object

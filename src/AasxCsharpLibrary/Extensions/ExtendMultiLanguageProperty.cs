@@ -22,7 +22,7 @@ namespace Extensions
 
         public static string ValueAsText(this MultiLanguageProperty multiLanguageProperty, string defaultLang = null)
         {
-            //TODO: need to check/test again
+            //TODO (who?, 0000-00-00): need to check/test again
             //return "" + multiLanguageProperty.Value?.LangStrings.FirstOrDefault().Text;
             return "" + multiLanguageProperty.Value?.GetDefaultString(defaultLang);
         }

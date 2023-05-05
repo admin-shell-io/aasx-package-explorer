@@ -210,7 +210,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         break;
                     }
 
-                    // MICHA TODO : Temporary disabled
+                    // TODO (MIHO, 0000-00-00): Temporary disabled
                     // seems not to work anymore
                     ////if (this.server != null && this.server.IsNotRunningAnymore())
                     ////    break;

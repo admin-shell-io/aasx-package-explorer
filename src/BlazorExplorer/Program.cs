@@ -225,7 +225,7 @@ namespace BlazorExplorer
 
 
         // Copy of PackageExplorer
-        // TODO: Refactor
+        // TODO (who?, 0000-00-00): Refactor
         public static OptionsInformation InferOptions(string exePath, string[] args)
         {
             var optionsInformation = new OptionsInformation();
@@ -274,7 +274,7 @@ namespace BlazorExplorer
         }
 
         // Copy of PackageExplorer
-        // TODO: Refactor
+        // TODO (who?, 0000-00-00): Refactor
         public static Dictionary<string, Plugins.PluginInstance> LoadAndActivatePlugins(
             IReadOnlyList<OptionsInformation.PluginDllInfo> pluginDllInfos)
         {
@@ -291,7 +291,7 @@ namespace BlazorExplorer
         }
 
         // Almost copy of PackageExplorer
-        // TODO: Refactor
+        // TODO (who?, 0000-00-00): Refactor
         public static void Main(string[] args)
         {
 
@@ -326,7 +326,7 @@ namespace BlazorExplorer
 
             Plugins.LoadedPlugins = LoadAndActivatePlugins(Options.Curr.PluginDll);
 
-            // TODO: Prefs required? Because of OSS?
+            // TODO (who?, 0000-00-00): Prefs required? Because of OSS?
 
             // "Start" window
             CreateHostBuilder(args).Build().Run();

@@ -559,7 +559,7 @@ namespace AasxAmlImExport
                                 Stringification.ToString(ent.EntityType), attributeDataType: "xs:string");
 
                             // assetRef
-                            //TODO: jtikekar SpecficAssetId
+                            // TODO (jtikekar, 0000-00-00): SpecficAssetId
                             if (!ent.GlobalAssetId.IsEmpty())
                             {
                                 ExportReferenceWithSme(env, internalLinksToCreate, ie, ent,
@@ -660,7 +660,7 @@ namespace AasxAmlImExport
 
             // set some data
             //SetIdentification(ie.Attribute, asset.identification);
-            //TODO: jtikekar what about specific asset Ids
+            // TODO (jtikekar, 0000-00-00): what about specific asset Ids
             if (!asset.GlobalAssetId.IsEmpty())
             {
                 SetIdentification(ie.Attribute, asset.GlobalAssetId.GetAsIdentifier());

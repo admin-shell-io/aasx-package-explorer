@@ -122,7 +122,7 @@ namespace Extensions
 
         public static string ValueAsText(this ISubmodelElement submodelElement, string defaultLang = null)
         {
-            //TODO:Need to check/test this logic again
+            //TODO (who?, 0000-00-00): Need to check/test this logic again
             if (submodelElement is Property property)
             {
                 return property.ValueAsText();
@@ -384,7 +384,7 @@ namespace Extensions
 
             if (sourceSubmodelElement.hasDataSpecification != null)
             {
-                //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
                 if (submodelElement.EmbeddedDataSpecifications == null)
                 {
                     submodelElement.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
@@ -456,7 +456,8 @@ namespace Extensions
                 {
                     var newObserved = ExtensionsUtil.ConvertReferenceFromV20(sourceBasicEvent.observed, ReferenceTypes.ModelReference);
 
-                    outputSubmodelElement = new BasicEventElement(newObserved, Direction.Input, StateOfEvent.Off); //TODO: jtikekar default values of enums
+                    outputSubmodelElement = new BasicEventElement(newObserved, Direction.Input, StateOfEvent.Off);
+                    //TODO (jtikekar, 0000-00-00): default values of enums
                 }
                 else if (sourceSubmodelElement is AdminShellV20.Entity sourceEntity)
                 {
@@ -577,11 +578,11 @@ namespace Extensions
 
             if (sourceSubmodelElement.hasDataSpecification != null)
             {
-                //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
                 if (submodelElement.EmbeddedDataSpecifications == null)
                     submodelElement.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
 
-                //TODO: jtikekar: DataSpecificationContent?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): DataSpecificationContent?? (as per old implementation)
                 foreach (var sourceDataSpec in sourceSubmodelElement.hasDataSpecification)
                 {
                     submodelElement.EmbeddedDataSpecifications.Add(
@@ -960,7 +961,7 @@ namespace Extensions
             // try to potentially figure out idShort
             var ids = conceptDescription.IdShort;
 
-            //TODO:jtikekar Temporarily removed
+            //TODO (jtikekar, 0000-00-00): Temporarily removed
             if ((ids == null || ids.Trim() == "") && conceptDescription.GetIEC61360() != null)
                 ids = conceptDescription.GetIEC61360().ShortName?
                     .GetDefaultString();

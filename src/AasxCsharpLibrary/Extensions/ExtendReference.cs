@@ -174,7 +174,8 @@ namespace Extensions
 
         public static string GetAsIdentifier(this Reference reference)
         {
-            if (reference.Type == ReferenceTypes.GlobalReference) // Applying only to Global Reference, based on older implementation, TODO:Make it Generic
+            //TODO (who?, 0000-00-00): Make it Generic
+            if (reference.Type == ReferenceTypes.GlobalReference) // Applying only to Global Reference, based on older implementation
             {
                 if (reference.Keys == null || reference.Keys.Count < 1)
                 {

@@ -234,7 +234,7 @@ namespace Extensions
 
 #endif
 
-        //TODO:jtikekar to test
+        //TODO (jtikekar, 0000-00-00): to test
         public static AasCore.Aas3_0_RC02.Environment CreateFromExistingEnvironment(this AasCore.Aas3_0_RC02.Environment environment, AasCore.Aas3_0_RC02.Environment sourceEnvironment,
             List<AssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<Submodel> filterForSubmodel = null, List<ConceptDescription> filterForConceptDescriptions = null)
         {
@@ -594,7 +594,7 @@ namespace Extensions
             }
         }
 
-        //TODO: jtikekar Need to test
+        //TODO (jtikekar, 0000-00-00): Need to test
         public static IReferable FindReferableByReference(
             this AasCore.Aas3_0_RC02.Environment environment,
             Reference reference,
@@ -884,7 +884,7 @@ namespace Extensions
                 return res;
             }
             else
-            //TODO:jtikekar support asset
+            //TODO (jtikekar, 0000-00-00): support asset
             if (typeof(T) == typeof(AssetInformation))
             {
                 // check, if exist or not exist

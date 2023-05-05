@@ -241,7 +241,7 @@ namespace BlazorUI.Data
                 return;
             }
 
-            // REFACTOR: TODO
+            // TODO (who?, 0000-00-00): REFACTOR
             if (cmd == "exportsmd")
             {
                 Logic.LogErrorToTicket(ticket, "ExportSmd not implemented, yet.");
@@ -249,7 +249,7 @@ namespace BlazorUI.Data
                 return;
             }
 
-            // REFACTOR: TODO
+            // TODO (who?, 0000-00-00): REFACTOR
             if (cmd == "printasset")
             {
                 Logic.LogErrorToTicket(ticket, "PrintAsset not implemented, yet.");

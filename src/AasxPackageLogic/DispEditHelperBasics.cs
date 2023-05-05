@@ -1079,7 +1079,7 @@ namespace AasxPackageLogic
                     //if (o is Key k)
                     //    keys.Add(k.Value);
 
-                    //TODO: jtikekar Test
+                    //TODO (jtikekar, 0000-00-00): Test
                     if (o is Aas.IIdentifiable id)
                         keys.Add(id.Id);
                     if (o is Aas.Key k)
@@ -1752,7 +1752,8 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        var k = new Aas.Key(Aas.KeyTypes.GlobalReference, ""); //TODO:jtikekar default key
+                        var k = new Aas.Key(Aas.KeyTypes.GlobalReference, "");
+                        //TODO (jtikekar, 0000-00-00): default key
                         keys.Add(k);
 
                         emitCustomEvent?.Invoke(relatedReferable);

@@ -272,7 +272,8 @@ namespace AasxPackageLogic
                 {
                     if (i == 0)
                     {
-                         //checksum= referable.ComputeHashcode();  //TODO:jtikekar support attributes
+                         //checksum= referable.ComputeHashcode();  
+                         //TODO (jtikekar, 0000-00-00): support attributes
                         this.AddDiaryEntry(referable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }
@@ -597,7 +598,7 @@ namespace AasxPackageLogic
                 // now use the normal mechanism to deal with editMode or not ..
                 if (hasDataSpecification != null && hasDataSpecification.Count > 0)
                 {
-                    //TODO:jtikekar: refactor
+                    //TODO (jtikekar, 0000-00-00): refactor
                     // MIHO: is this at all required?
                     //List<string>[] presetKeys = new List<string>[addPresetKeyLists.Length];
                     //for (int j = 0; j < addPresetKeyLists.Length; j++)

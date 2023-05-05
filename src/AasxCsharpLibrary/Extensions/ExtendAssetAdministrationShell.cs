@@ -29,7 +29,7 @@ namespace Extensions
         public static IEnumerable<LocatedReference> FindAllReferences(this AssetAdministrationShell assetAdministrationShell)
         {
             // Asset
-            //TODO:jtikekar support asset
+            //TODO (jtikekar, 0000-00-00): support asset
             //if (assetAdministrationShell.AssetInformation != null)
             //    yield return new LocatedReference(assetAdministrationShell, assetAdministrationShell.AssetInformation);
 
@@ -70,7 +70,7 @@ namespace Extensions
             assetAdministrationShell.Submodels.Add(newSubmodelReference);
         }
 
-        //TODO:jtikekar: Change the name, currently based on older implementation
+        //TODO (jtikekar, 0000-00-00): Change the name, currently based on older implementation
         public static string GetFriendlyName(this AssetAdministrationShell assetAdministrationShell)
         {
             if (string.IsNullOrEmpty(assetAdministrationShell.IdShort))
@@ -141,7 +141,7 @@ namespace Extensions
 
             if (sourceAas.hasDataSpecification != null)
             {
-                //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
                 if (assetAdministrationShell.EmbeddedDataSpecifications == null)
                 {
                     assetAdministrationShell.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
@@ -217,13 +217,13 @@ namespace Extensions
 
             if (sourceAas.hasDataSpecification != null)
             {
-                //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
                 if (assetAdministrationShell.EmbeddedDataSpecifications == null)
                 {
                     assetAdministrationShell.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
                 }
 
-                //TODO: jtikekar: DataSpecificationContent?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): DataSpecificationContent?? (as per old implementation)
                 foreach (var sourceDataSpec in sourceAas.hasDataSpecification)
                 {
                     if (sourceDataSpec.dataSpecification != null)

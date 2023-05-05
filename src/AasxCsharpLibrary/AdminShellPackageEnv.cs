@@ -326,7 +326,7 @@ namespace AdminShellNS
             {
                 using (var file = System.IO.File.OpenRead(fn))
                 {
-                    //// TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                     //var serializer = new JsonSerializer();
                     //serializer.Converters.Add(
                     //    new AdminShellConverters.JsonAasxConverter(
@@ -605,7 +605,7 @@ namespace AdminShellNS
 
                     try
                     {
-                        //// TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                         //JsonSerializer serializer = new JsonSerializer()
                         //{
                         //    NullValueHandling = NullValueHandling.Ignore,
