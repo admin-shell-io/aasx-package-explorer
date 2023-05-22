@@ -1,5 +1,5 @@
 ﻿@page "/"
-@using Aas = AasCore.Aas3_0_RC02
+@using Aas = AasCore.Aas3_0
 @using AdminShellNS
 @using AasxIntegrationBase
 @*using BlazorUI*@
@@ -1488,7 +1488,7 @@
                     if (found.htmlEventOutputs.Count == 1
                         && found.htmlEventOutputs[0] is Aas.IReferable rf)
                     {
-                        var kl = new List<Aas.Key>();
+                        var kl = new List<Aas.IKey>();
                         rf?.CollectReferencesByParent(kl);
                         pluginInstance?.InvokeAction("event-return",
                            new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity()

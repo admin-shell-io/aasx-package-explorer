@@ -14,10 +14,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
-using AasCore.Aas3_0_RC02;
 
 namespace AasxPluginBomStructure
 {
@@ -27,7 +26,7 @@ namespace AasxPluginBomStructure
     /// </summary>
     public interface IAasReferenceStoreItem
     {
-        Reference GetReference();
+        Aas.IReference GetReference();
     }
 
     public class AasReferenceStore<T>
@@ -52,7 +51,7 @@ namespace AasxPluginBomStructure
         protected MultiValueDictionary<uint, T> dict =
             new MultiValueDictionary<uint, T>();
 
-        protected uint ComputeHashOnReference(Aas.Reference r)
+        protected uint ComputeHashOnReference(Aas.IReference r)
         {
             // access
             if (r == null || r.Keys == null)
@@ -100,7 +99,7 @@ namespace AasxPluginBomStructure
         }
 
         public T FindElementByReference(
-            Aas.Reference r,
+            Aas.IReference r,
             MatchMode matchMode = MatchMode.Strict)
         {
             var hk = ComputeHashOnReference(r);
@@ -123,7 +122,7 @@ namespace AasxPluginBomStructure
 
     public class AasReferableStore : AasReferenceStore<Aas.IReferable>
     {
-        private void RecurseIndexSME(Aas.Reference currRef, Aas.ISubmodelElement sme)
+        private void RecurseIndexSME(Aas.IReference currRef, Aas.ISubmodelElement sme)
         {
             // access
             if (currRef == null || sme == null)
@@ -148,7 +147,7 @@ namespace AasxPluginBomStructure
             currRef.Keys.RemoveAt(currRef.Keys.Count - 1);
         }
 
-        public void Index(Aas.ConceptDescription cd)
+        public void Index(Aas.IConceptDescription cd)
         {
             // access
             if (cd == null)
@@ -159,7 +158,7 @@ namespace AasxPluginBomStructure
             dict.Add(ComputeHashOnReference(currRef), cd);
         }
 
-        public void Index(Aas.Submodel sm)
+        public void Index(Aas.ISubmodel sm)
         {
             // access
             if (sm == null)

@@ -19,7 +19,7 @@ using AasxIntegrationBase.AasForms;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using AnyUi;

@@ -28,7 +28,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using ScottPlot;
@@ -89,8 +89,8 @@ namespace AasxPluginPlotting
             set { _unit = value; OnPropertyChanged("DisplayUnit"); }
         }
 
-        private List<Aas.LangString> _description = new List<Aas.LangString>();
-        public List<Aas.LangString> Description
+        private List<Aas.ILangStringTextType> _description = new List<Aas.ILangStringTextType>();
+        public List<Aas.ILangStringTextType> Description
         {
             get { return _description; }
             set { _description = value; OnPropertyChanged("DisplayDescription"); }
@@ -121,7 +121,7 @@ namespace AasxPluginPlotting
         public PlotItem() { }
 
         public PlotItem(Aas.ISubmodelElement sme, string args,
-            string path, List<Aas.LangString> description, string lang)
+            string path, List<Aas.ILangStringTextType> description, string lang)
         {
             SME = sme;
             ArgsStr = args;

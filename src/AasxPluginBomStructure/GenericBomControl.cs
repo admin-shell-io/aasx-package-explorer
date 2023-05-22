@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AasxIntegrationBase;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using System.Windows;
@@ -273,7 +273,7 @@ namespace AasxPluginBomStructure
                         if (us is Aas.IReferable)
                         {
                             // make event
-                            var refs = new List<Aas.Key>();
+                            var refs = new List<Aas.IKey>();
                             (us as Aas.IReferable).CollectReferencesByParent(refs);
 
                             // ok?

@@ -116,7 +116,7 @@ namespace Extensions
         }
 
         public static IEnumerable<IReferable> FindAllParentsWithSemanticId(
-                this ISubmodelElement submodelElement, Reference semId,
+                this ISubmodelElement submodelElement, IReference semId,
                 bool includeThis = false, bool includeSubmodel = false, bool passOverMiss = false)
         {
             return (FindAllParents(submodelElement,
@@ -1017,7 +1017,7 @@ namespace Extensions
         }
 
         public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements,
-            Reference semId, MatchMode matchMode = MatchMode.Strict)
+            IReference semId, MatchMode matchMode = MatchMode.Strict)
             where T : ISubmodelElement
         {
             return submodelElements.FindAllSemanticIdAs<T>(semId, matchMode).FirstOrDefault<T>();

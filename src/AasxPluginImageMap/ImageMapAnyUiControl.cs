@@ -20,7 +20,7 @@ using AasxIntegrationBase.AasForms;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -346,7 +346,8 @@ namespace AasxPluginImageMap
                 if ((targetRf == null || targetRf.Count() < 1)
                     && ent.EntityType == Aas.EntityType.SelfManagedEntity
                     && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
-                    targetRf = ent.GlobalAssetId;
+                    targetRf = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new Aas.IKey[]
+                    { new Aas.Key(Aas.KeyTypes.GlobalReference, ent.GlobalAssetId) }.ToList());
 
                 // if found, hand over to main program
                 if (targetRf != null && targetRf.Count() > 0)
@@ -822,7 +823,7 @@ namespace AasxPluginImageMap
 
         private DataPointInfo EvalDataPoint(
             List<Aas.ISubmodelElement> smec,
-            Aas.Reference semId)
+            Aas.IReference semId)
         {
             // access
             if (smec == null || semId == null)

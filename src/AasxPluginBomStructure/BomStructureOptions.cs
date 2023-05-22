@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -93,14 +93,14 @@ namespace AasxPluginBomStructure
             NodeStyles.Index();
         }
 
-        public BomArguments FindFirstLinkStyle(Aas.Reference semId)
+        public BomArguments FindFirstLinkStyle(Aas.IReference semId)
         {
             if (semId == null)
                 return null;
             return LinkStyles.Store.FindElementByReference(semId, MatchMode.Relaxed);
         }
 
-        public BomArguments FindFirstNodeStyle(Aas.Reference semId)
+        public BomArguments FindFirstNodeStyle(Aas.IReference semId)
         {
             if (semId == null)
                 return null;
@@ -115,7 +115,7 @@ namespace AasxPluginBomStructure
 
         public BomStructureOptionsRecordList(IEnumerable<BomStructureOptionsRecord> collection) : base(collection) { }
 
-        public BomArguments FindFirstLinkStyle(Aas.Reference semId)
+        public BomArguments FindFirstLinkStyle(Aas.IReference semId)
         {
             foreach (var rec in this)
             {
@@ -126,7 +126,7 @@ namespace AasxPluginBomStructure
             return null;
         }
 
-        public BomArguments FindFirstNodeStyle(Aas.Reference semId)
+        public BomArguments FindFirstNodeStyle(Aas.IReference semId)
         {
             foreach (var rec in this)
             {

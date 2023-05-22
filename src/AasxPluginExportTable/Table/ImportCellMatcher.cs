@@ -14,7 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 
@@ -79,11 +79,11 @@ namespace AasxPluginExportTable.Table
             // CD.CreateDataSpecWithContentIec61360();
             CD.AddEmbeddedDataSpecification(
                 new Aas.EmbeddedDataSpecification(
-                    new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key> {
+                    new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey> {
                         ExtendIDataSpecificationContent.GetKeyForIec61360()
                     }),
-                    new Aas.DataSpecificationIec61360(new List<Aas.LangString>() {
-                        new Aas.LangString("EN?", "")
+                    new Aas.DataSpecificationIec61360(new List<Aas.ILangStringPreferredNameTypeIec61360>() {
+                        new Aas.LangStringPreferredNameTypeIec61360("EN?", "")
                     })));
         }
     }
@@ -236,14 +236,17 @@ namespace AasxPluginExportTable.Table
             if (preset == "category")
                 elem.Category = commit(cell);
 
-            if (preset == "kind")
-                elem.Kind = Aas.Stringification.ModelingKindFromString(commit(cell));
+            // TODO: check remove
+            //if (preset == "kind")
+            //    elem.Kind = Aas.Stringification.ModelingKindFromString(commit(cell));
 
             if (preset == "semanticId")
                 elem.SemanticId = CreateSemanticId(commit(cell));
 
             if (preset == "description")
-                elem.Description = ExtendLangStringSet.Parse(commit(cell));
+                elem.Description = ExtendLangStringSet.Parse<Aas.LangStringTextType>(
+                    commit(cell), (lng,txt) => new Aas.LangStringTextType(lng, txt))
+                    .Cast<Aas.ILangStringTextType>().ToList();
 
             if (preset == "value")
                 valueStr = commit(cell);
@@ -359,13 +362,20 @@ namespace AasxPluginExportTable.Table
             Func<string, string> commit = (s) => { res = true; return s; };
 
             if (preset == "preferredName")
-                cd.GetIEC61360().PreferredName = ExtendLangStringSet.Parse(commit(cell));
+                cd.GetIEC61360().PreferredName = ExtendLangStringSet.Parse<Aas.LangStringPreferredNameTypeIec61360>(
+                    commit(cell), (lng, txt) => new Aas.LangStringPreferredNameTypeIec61360(lng, txt))
+                    .Cast<Aas.ILangStringPreferredNameTypeIec61360>().ToList();
 
             if (preset == "shortName")
-                cd.GetIEC61360().ShortName = ExtendLangStringSet.Parse(commit(cell));
+                cd.GetIEC61360().ShortName = ExtendLangStringSet.Parse<Aas.LangStringShortNameTypeIec61360>(
+                    commit(cell), (lng, txt) => new Aas.LangStringShortNameTypeIec61360(lng, txt))
+                    .Cast<Aas.ILangStringShortNameTypeIec61360>().ToList();
 
             if (preset == "definition")
-                cd.GetIEC61360().Definition = ExtendLangStringSet.Parse(commit(cell));
+                cd.GetIEC61360().Definition = ExtendLangStringSet.Parse<Aas.LangStringDefinitionTypeIec61360>(
+                    commit(cell), (lng, txt) => new Aas.LangStringDefinitionTypeIec61360(lng, txt))
+                    .Cast<Aas.ILangStringDefinitionTypeIec61360>().ToList();
+            
             if (preset == "unit")
                 cd.GetIEC61360().Unit = commit(cell);
 

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using AasxIntegrationBase;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -56,8 +56,8 @@ namespace AasxPluginDocumentShelf
         public string[] DeleteFilesAfterLoading = null;
 
         public enum DocRelationType { DocumentedEntity, RefersTo, BasedOn, Affecting, TranslationOf };
-        public List<Tuple<DocRelationType, Aas.Reference>> Relations =
-            new List<Tuple<DocRelationType, Aas.Reference>>();
+        public List<Tuple<DocRelationType, Aas.IReference>> Relations =
+            new List<Tuple<DocRelationType, Aas.IReference>>();
 
         /// <summary>
         /// The parsing might add a dedicated, version-specific action to add.
@@ -301,7 +301,7 @@ namespace AasxPluginDocumentShelf
         private static void SearchForRelations(
             List<Aas.ISubmodelElement> smwc,
             DocumentEntity.DocRelationType drt,
-            Aas.Reference semId,
+            Aas.IReference semId,
             DocumentEntity intoDoc)
         {
             // access
@@ -320,7 +320,7 @@ namespace AasxPluginDocumentShelf
                     continue;
 
                 // add
-                intoDoc.Relations.Add(new Tuple<DocumentEntity.DocRelationType, Aas.Reference>(
+                intoDoc.Relations.Add(new Tuple<DocumentEntity.DocRelationType, Aas.IReference>(
                     drt, re.Value));
             }
         }
@@ -360,7 +360,7 @@ namespace AasxPluginDocumentShelf
                         //
 
                         // take the 1st title
-                        var title = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
+                        var title = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.IProperty>(
                                 defs11.CD_Title?.GetReference(), MatchMode.Relaxed)?.Value;
 
                         // could be also a multi-language title

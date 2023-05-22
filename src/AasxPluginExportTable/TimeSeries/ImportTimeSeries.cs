@@ -23,7 +23,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using ClosedXML.Excel;
 using Newtonsoft.Json;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using AasxPluginExportTable.Table;
@@ -44,7 +44,7 @@ namespace AasxPluginExportTable.TimeSeries
 
         public static void ImportTimeSeriesFromFile(
             Aas.Environment env,
-            Aas.Submodel submodel,
+            Aas.ISubmodel submodel,
             ImportTimeSeriesRecord options,
             string fn, LogInstance log = null)
         {
@@ -248,7 +248,7 @@ namespace AasxPluginExportTable.TimeSeries
 
         protected bool WriteSeries(
             ImportTimeSeriesRecord options,
-            Aas.Submodel submodel)
+            Aas.ISubmodel submodel)
         {
             // access 
             if (options == null || submodel == null || _rows == null || _columnNames == null)
@@ -342,7 +342,6 @@ namespace AasxPluginExportTable.TimeSeries
                         .Set(Aas.DataTypeDefXsd.Integer, "" + (1 + di));
 
                     var dp = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: "DataPoint");
-                    dp.Kind = Aas.ModelingKind.Template;
                     smcVar.Value.Add(dp);
 
                     var va = smcVar.Value.CreateSMEForCD<Aas.Blob>(defs.CD_ValueArray, addSme: true);

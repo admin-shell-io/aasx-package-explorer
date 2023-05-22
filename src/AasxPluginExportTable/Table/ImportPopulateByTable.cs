@@ -30,7 +30,7 @@ namespace AasxPluginExportTable.Table
 
         protected LogInstance _log;
         protected ImportExportTableRecord _job;
-        protected Aas.Submodel _sm;
+        protected Aas.ISubmodel _sm;
         protected Aas.Environment _env;
         protected ExportTableOptions _options;
 
@@ -40,7 +40,7 @@ namespace AasxPluginExportTable.Table
         public ImportPopulateByTable(
             LogInstance log,
             ImportExportTableRecord job,
-            Aas.Submodel sm,
+            Aas.ISubmodel sm,
             Aas.Environment env,
             ExportTableOptions options)
         {

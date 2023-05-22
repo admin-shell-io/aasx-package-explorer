@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using AasxIntegrationBase;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 
@@ -37,7 +37,7 @@ namespace AasxPluginBomStructure
         /// <summary>
         /// Required by <c>IAasReferenceStoreItem</c>
         /// </summary>
-        public Aas.Reference GetReference() => ExtendReference.CreateFromKey(Match);
+        public Aas.IReference GetReference() => ExtendReference.CreateFromKey(Match);
 
         /// <summary>
         /// Should the drawing of this element skipped?

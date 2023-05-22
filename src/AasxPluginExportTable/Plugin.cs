@@ -19,7 +19,7 @@ using AasxPluginExportTable.TimeSeries;
 using AasxPluginExportTable.Uml;
 using AnyUi;
 using JetBrains.Annotations;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using static AnyUi.AnyUiDialogueDataSaveFile;

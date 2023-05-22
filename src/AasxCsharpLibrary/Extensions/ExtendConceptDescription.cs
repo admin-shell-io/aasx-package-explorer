@@ -9,14 +9,14 @@ namespace Extensions
     {
         #region AasxPackageExplorer
 
-        public static string GetDefaultPreferredName(this ConceptDescription conceptDescription, string defaultLang = null)
+        public static string GetDefaultPreferredName(this IConceptDescription conceptDescription, string defaultLang = null)
         {
             return "" +
                 conceptDescription.GetIEC61360()?
                     .PreferredName?.GetDefaultString(defaultLang);
         }
 
-        public static EmbeddedDataSpecification SetIEC61360Spec(this ConceptDescription conceptDescription,
+        public static EmbeddedDataSpecification SetIEC61360Spec(this IConceptDescription conceptDescription,
                 string[] preferredNames = null,
                 string shortName = "",
                 string unit = "",

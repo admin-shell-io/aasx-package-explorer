@@ -21,7 +21,7 @@ using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using Newtonsoft.Json;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 
@@ -30,7 +30,7 @@ namespace AasxPluginExportTable.Uml
     public interface IBaseWriter
     {
         void StartDoc(ExportUmlRecord options);
-        void ProcessSubmodel(Aas.Submodel submodel);
+        void ProcessSubmodel(Aas.ISubmodel submodel);
         void ProcessPost();
         void SaveDoc(string fn);
     }

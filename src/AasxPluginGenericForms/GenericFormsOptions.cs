@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Newtonsoft.Json;
 using Extensions;
@@ -135,7 +135,7 @@ namespace AasxPluginGenericForms
             return opt;
         }
 
-        public GenericFormsOptionsRecord MatchRecordsForSemanticId(Aas.Reference sem)
+        public GenericFormsOptionsRecord MatchRecordsForSemanticId(Aas.IReference sem)
         {
             // check for a record in options, that matches Submodel
             GenericFormsOptionsRecord res = null;

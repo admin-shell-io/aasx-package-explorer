@@ -770,6 +770,33 @@ namespace AdminShellNS
         }
 
         //
+        // some URL enabled path handling
+        //
+
+        /// <summary>
+        /// Uses <c>System.IO.Path.GetExtension()</c> to determine the extension part
+        /// of a path. If a URL based query is added to the extension, remove this.
+        /// </summary>
+        public static string GetExtensionWoQuery(string fn)
+        {
+            // access
+            if (fn == null)
+                return null;
+
+            // use system function
+            var ext = System.IO.Path.GetExtension(fn).ToLower().Trim();
+
+            // as URLs *might* have an extension, but a loto f query string afterwards,
+            // lets try to cut of it
+            var extMatch = Regex.Match(ext, @"([._A-Za-z0-9]+)");
+            if (extMatch.Success)
+                ext = extMatch.Groups[1].ToString();
+
+            // ok
+            return ext;
+        }
+
+        //
         // Base 64
         //
 

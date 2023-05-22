@@ -13,7 +13,7 @@ using System.IO;
 using System.Reflection;
 using AasxIntegrationBase;
 using AasxIntegrationBaseGdi;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using AnyUi;

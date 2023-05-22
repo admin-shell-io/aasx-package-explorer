@@ -103,7 +103,7 @@ namespace Extensions
             return a;
         }
 
-        public static Reference Add(this Reference a, IKey k)
+        public static IReference Add(this IReference a, IKey k)
         {
             if (k != null)
                 a.Keys?.Add(k);
@@ -244,15 +244,27 @@ namespace Extensions
                 return ReferenceTypes.ExternalReference;
         }
 
-        public static int Count(this Reference rf)
+        public static int Count(this IReference rf)
         {
             return rf.Keys.Count;
         }
 
-        public static IKey Last(this Reference rf)
+        //TODO: check if required
+        //public static int Count(this Reference rf)
+        //{
+        //    return rf.Keys.Count;
+        //}
+
+        public static IKey Last(this IReference rf)
         {
             return rf.Keys.Last();
         }
+
+        //TODO: check if required
+        //public static IKey Last(this Reference rf)
+        //{
+        //    return rf.Keys.Last();
+        //}
 
         public static string ListOfValues(this Reference rf, string delim)
         {

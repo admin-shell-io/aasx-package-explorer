@@ -21,7 +21,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using ScottPlot;
@@ -552,7 +552,7 @@ namespace AasxPluginPlotting
             public string DataSetId = "";
             public TimeSeriesTimeAxis TimeAxis;
             public Aas.Property DataPoint;
-            public Aas.ConceptDescription DataPointCD;
+            public Aas.IConceptDescription DataPointCD;
 
             public PlotArguments Args = null;
 

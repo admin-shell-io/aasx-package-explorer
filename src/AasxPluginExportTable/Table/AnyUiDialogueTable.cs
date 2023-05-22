@@ -620,7 +620,7 @@ namespace AasxPluginExportTable.TimeSeries
             ExportTableOptions options,
             AasxPluginExportTable.ImportExportTableRecord record,
             string fn,
-            Aas.Submodel sm, Aas.Environment env,
+            Aas.ISubmodel sm, Aas.Environment env,
             AasxMenuActionTicket ticket = null,
             LogInstance log = null)
         {
@@ -672,7 +672,7 @@ namespace AasxPluginExportTable.TimeSeries
             ExportTableOptions options,
             AasxPluginExportTable.ImportExportTableRecord record,
             string fn,
-            Aas.Submodel sm, Aas.Environment env,
+            Aas.ISubmodel sm, Aas.Environment env,
             AasxMenuActionTicket ticket = null,
             LogInstance log = null)
         {

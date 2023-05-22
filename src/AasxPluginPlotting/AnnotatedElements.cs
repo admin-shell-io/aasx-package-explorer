@@ -29,7 +29,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -77,7 +77,7 @@ namespace AasxIntegrationBase
         /// which features the Qualifier "Annotation.Args".
         /// </summary>
         [JsonIgnore]
-        public List<Aas.LangString> Description;
+        public List<Aas.ILangStringTextType> Description;
 
         // ReSharper enable UnassignedField.Global
 

@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxPredefinedConcepts;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using WpfMtpControl;
@@ -45,11 +45,11 @@ namespace AasxPluginMtpViewer
 
             var rec1 = new MtpViewerOptionsRecord();
             rec1.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpType;
-            rec1.AllowSubmodelSemanticId = new List<Aas.Key>(defs.SEM_MtpSubmodel.Keys);
+            rec1.AllowSubmodelSemanticId = new List<Aas.IKey>(defs.SEM_MtpSubmodel.Keys);
 
             var rec2 = new MtpViewerOptionsRecord();
             rec2.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpInstance;
-            rec2.AllowSubmodelSemanticId = new List<Aas.Key>(defs.SEM_MtpInstanceSubmodel.Keys);
+            rec2.AllowSubmodelSemanticId = new List<Aas.IKey>(defs.SEM_MtpInstanceSubmodel.Keys);
 
             var opt = new MtpViewerOptions();
             opt.Records.Add(rec1);

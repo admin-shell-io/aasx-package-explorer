@@ -96,7 +96,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultEventNavigateToReference : AasxPluginResultEventBase
     {
-        public Aas.Reference targetReference = null;
+        public Aas.IReference targetReference = null;
     }
 
     public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase

@@ -21,7 +21,7 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -407,7 +407,7 @@ namespace BlazorUI.Data
         }
 
         protected async Task<LoadFromFileRepositoryInfo> LoadFromFileRepository(PackageContainerRepoItem fi,
-            Aas.Reference requireReferable = null)
+            Aas.IReference requireReferable = null)
         {
             // access single file repo
             var fileRepo = PackageCentral.Repositories.FindRepository(fi);
@@ -488,7 +488,7 @@ namespace BlazorUI.Data
         }
 
         public async Task UiHandleNavigateTo(
-            Aas.Reference targetReference,
+            Aas.IReference targetReference,
             bool alsoDereferenceObjects = true)
         {
             // access

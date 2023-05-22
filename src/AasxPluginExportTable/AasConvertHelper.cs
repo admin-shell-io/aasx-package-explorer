@@ -14,7 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 
@@ -22,7 +22,7 @@ namespace AasxPluginExportTable
 {
     public static class AasConvertHelper
     {
-        public static void TakeOverSmeToSm(Aas.ISubmodelElement sme, Aas.Submodel sm)
+        public static void TakeOverSmeToSm(Aas.ISubmodelElement sme, Aas.ISubmodel sm)
         {
             // access
             if (sme == null || sm == null)
@@ -44,7 +44,7 @@ namespace AasxPluginExportTable
             if (sme.Qualifiers != null)
             {
                 if (sm.Qualifiers == null)
-                    sm.Qualifiers = new List<Aas.Qualifier>();
+                    sm.Qualifiers = new List<Aas.IQualifier>();
                 sm.Qualifiers.AddRange(sme.Qualifiers.Copy());
             }
         }

@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AasxPluginDocumentShelf;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using JetBrains.Annotations;

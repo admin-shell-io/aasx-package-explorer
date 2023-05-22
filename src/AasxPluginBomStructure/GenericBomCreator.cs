@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AasxIntegrationBase;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 
@@ -75,7 +75,7 @@ namespace AasxPluginBomStructure
             _refStore.Index(env);
         }
 
-        public Aas.IReferable FindReferableByReference(Aas.Reference r)
+        public Aas.IReferable FindReferableByReference(Aas.IReference r)
         {
             if (_refStore == null)
                 return this._env?.FindReferableByReference(r);
@@ -628,7 +628,7 @@ namespace AasxPluginBomStructure
                             // another node
                             var node2 = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
                             node2.UserData = ent.GlobalAssetId;
-                            node2.LabelText = WrapOnMaxColumn("" + ent.GlobalAssetId.ToStringExtended(), WrapMaxColumn);
+                            node2.LabelText = WrapOnMaxColumn("" + ent.GlobalAssetId, WrapMaxColumn);
                             node2.Label.FontSize = 6;
                             node2.Attr.Color = AssetBorderColor;
                             node2.Attr.FillColor = AssetFillColor;

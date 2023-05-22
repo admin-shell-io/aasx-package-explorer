@@ -18,7 +18,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -176,7 +176,7 @@ namespace AasxPluginMtpViewer
                 return false;
 
             // need to find the type Submodel
-            Aas.Submodel mtpTypeSm = null;
+            Aas.ISubmodel mtpTypeSm = null;
 
             // check, if the user pointed to the instance submodel
             if (this.theSubmodel.SemanticId.Matches(this.defsMtp.SEM_MtpInstanceSubmodel))
@@ -376,7 +376,9 @@ namespace AasxPluginMtpViewer
                         {
                             // try activate
                             var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
-                            ev.targetReference = foundEnt.GlobalAssetId.Copy();
+                            ev.targetReference = new Aas.Reference(Aas.ReferenceTypes.ExternalReference,
+                                new Aas.IKey[] { new Aas.Key(Aas.KeyTypes.GlobalReference, foundEnt.GlobalAssetId) }
+                                .ToList());
                             this.theEventStack?.PushEvent(ev);
                             return;
                         }

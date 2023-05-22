@@ -21,7 +21,7 @@ using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using Newtonsoft.Json;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 
@@ -171,7 +171,7 @@ namespace AasxPluginExportTable.Uml
                 ProcessEntity(rf, c);
         }
 
-        public void ProcessSubmodel(Aas.Submodel submodel)
+        public void ProcessSubmodel(Aas.ISubmodel submodel)
         {
             ProcessEntity(null, submodel);
         }

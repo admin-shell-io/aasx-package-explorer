@@ -33,7 +33,7 @@ using Extensions;
 using Microsoft.JSInterop;
 using System.Linq;
 using AasxIntegrationBase.AdminShellEvents;
-using AasCore.Aas3_0_RC02;
+using AasCore.Aas3_0;
 
 namespace BlazorUI.Data
 {

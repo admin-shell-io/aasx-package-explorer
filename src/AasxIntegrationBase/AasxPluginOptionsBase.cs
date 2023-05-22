@@ -266,7 +266,7 @@ namespace AasxIntegrationBase
         /// This keyword is used by the plugin options to code allowed semantic ids for
         /// a Submodel sensitive plugin
         /// </summary>
-        public List<AAS.Key> AllowSubmodelSemanticId = new List<AAS.Key>();
+        public List<AAS.IKey> AllowSubmodelSemanticId = new List<AAS.IKey>();
 
         // Constructors
 
@@ -304,7 +304,7 @@ namespace AasxIntegrationBase
 #endif
 
 
-        private string GenerateIndexKey(Aas.Key key)
+        private string GenerateIndexKey(Aas.IKey key)
         {
             if (key == null)
                 return null;
@@ -313,7 +313,7 @@ namespace AasxIntegrationBase
             return ndx;
         }
 
-        public void IndexRecord(Aas.Key key, AasxPluginOptionsRecordBase rec)
+        public void IndexRecord(Aas.IKey key, AasxPluginOptionsRecordBase rec)
         {
             if (_recordLookup == null)
                 _recordLookup = new MultiValueDictionary<string, AasxPluginOptionsRecordBase>();

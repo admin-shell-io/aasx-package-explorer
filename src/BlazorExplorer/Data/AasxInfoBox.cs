@@ -20,7 +20,7 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using Aas = AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -50,7 +50,7 @@ namespace BlazorUI.Data
         /// </summary>
         public string HtmlImageData { get; set; }
 
-        public void SetInfos(Aas.AssetAdministrationShell aas, AdminShellPackageEnv env)
+        public void SetInfos(Aas.IAssetAdministrationShell aas, AdminShellPackageEnv env)
         {
             // access
             AasId = "<id missing!>";
@@ -62,7 +62,7 @@ namespace BlazorUI.Data
                 AasId = aas.Id;
             AssetId = "<id missing!>";
             if (aas.AssetInformation?.GlobalAssetId != null)
-                AssetId = aas.AssetInformation.GlobalAssetId.ToStringExtended(2);
+                AssetId = aas.AssetInformation.GlobalAssetId;
 
             // image data?
             try

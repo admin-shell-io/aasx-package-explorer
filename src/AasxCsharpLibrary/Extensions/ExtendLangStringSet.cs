@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Extensions
 {
@@ -120,6 +121,41 @@ namespace Extensions
             return langStringSet;
         }
 
+        public static List<T> Parse<T>(string cell,
+            Func<string, string, T> createLs) where T : class
+        {
+            // access
+            if (cell == null  || createLs == null)
+                return null;
 
+            // iterative approach
+            var res = new List<T>();
+            while (true)
+            {
+                // trivial case and finite end
+                if (!cell.Contains("@"))
+                {
+                    if (cell.Trim() != "")
+                    {
+                        res.Add(createLs(ExtendLangString.LANG_DEFAULT, cell));                        
+                    }
+                    break;
+                }
+
+                // OK, pick the next couple
+                var m = Regex.Match(cell, @"(.*?)@(\w+)", RegexOptions.Singleline);
+                if (!m.Success)
+                {
+                    // take emergency exit?
+                    res.Add(createLs("??", cell));
+                }
+
+                // use the match and shorten cell ..
+                res.Add(createLs(m.Groups[2].ToString(), m.Groups[1].ToString().Trim()));
+                cell = cell.Substring(m.Index + m.Length);
+            }
+
+            return res;
+        }
     }
 }
