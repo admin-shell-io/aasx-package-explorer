@@ -45,11 +45,11 @@ namespace AasxPluginMtpViewer
 
             var rec1 = new MtpViewerOptionsRecord();
             rec1.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpType;
-            rec1.AllowSubmodelSemanticId = new List<Aas.IKey>(defs.SEM_MtpSubmodel.Keys);
+            rec1.AllowSubmodelSemanticId = defs.SEM_MtpSubmodel.Keys.ToKeyList();
 
             var rec2 = new MtpViewerOptionsRecord();
             rec2.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpInstance;
-            rec2.AllowSubmodelSemanticId = new List<Aas.IKey>(defs.SEM_MtpInstanceSubmodel.Keys);
+            rec2.AllowSubmodelSemanticId = defs.SEM_MtpInstanceSubmodel.Keys.ToKeyList();
 
             var opt = new MtpViewerOptions();
             opt.Records.Add(rec1);

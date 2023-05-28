@@ -266,7 +266,7 @@ namespace AasxIntegrationBase
         /// This keyword is used by the plugin options to code allowed semantic ids for
         /// a Submodel sensitive plugin
         /// </summary>
-        public List<AAS.IKey> AllowSubmodelSemanticId = new List<AAS.IKey>();
+        public List<AAS.Key> AllowSubmodelSemanticId = new List<AAS.Key>();
 
         // Constructors
 

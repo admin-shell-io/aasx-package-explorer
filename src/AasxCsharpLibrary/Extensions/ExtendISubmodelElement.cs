@@ -48,6 +48,11 @@ namespace Extensions
             }
             else
                 return childSubmodelElement;
+        }        
+
+        public static List<ISubmodelElement> GetChildsAsList (this ISubmodelElement sme)
+        {
+            return sme.DescendOnce().Where((x) => x is ISubmodelElement).Cast<ISubmodelElement>().ToList();
         }
 
         public static Tuple<string, string> ToCaptionInfo(this ISubmodelElement submodelElement)
@@ -1337,6 +1342,9 @@ namespace Extensions
             return null;
         }
 
+        /// <summary>
+        /// Returns false, if there is another element with same idShort in the list
+        /// </summary>
         public static bool CheckIdShortIsUnique(this List<ISubmodelElement> submodelElements, string idShort)
         {
             idShort = idShort?.Trim();

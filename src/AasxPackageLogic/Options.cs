@@ -384,6 +384,10 @@ namespace AasxPackageLogic
             Cmd = "-extpreset", Arg = "<path>")]
         public string ExtensionsPresetFile = null;
 
+        [OptionDescription(Description = "Path to JSON file defining data specification presets.",
+            Cmd = "-dataspecpreset", Arg = "<path>")]
+        public string DataSpecPresetFile = null;
+
         [OptionDescription(Description = "Path to a JSON, defining a set of AasxPackage-Files, which serve as " +
             "repository",
             Cmd = "-aasxrepo", Arg = "<path>")]

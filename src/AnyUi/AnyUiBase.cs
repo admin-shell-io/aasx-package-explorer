@@ -268,8 +268,8 @@ namespace AnyUi
         public static AnyUiBrush Default { get { return new AnyUiBrush(0xff000000u); } }
         public static AnyUiBrush Transparent { get { return new AnyUiBrush(0x00000000u); } }
         public static AnyUiBrush Black { get { return new AnyUiBrush(0xff000000u); } }
-        public static AnyUiBrush DarkBlue { get { return new AnyUiBrush(0xff00008bu); } }
-        public static AnyUiBrush LightBlue { get { return new AnyUiBrush(0xffadd8e6u); } }
+        public static AnyUiBrush DarkBlue { get { return new AnyUiBrush(0xff0128CB); } }
+        public static AnyUiBrush LightBlue { get { return new AnyUiBrush(0xffC0CCFF); } }
         public static AnyUiBrush Yellow { get { return new AnyUiBrush(0xffffcc00); } }
         public static AnyUiBrush Red { get { return new AnyUiBrush(0xffe53d02); } }
         public static AnyUiBrush White { get { return new AnyUiBrush(0xffffffffu); } }

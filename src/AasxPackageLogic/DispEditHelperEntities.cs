@@ -17,7 +17,9 @@ using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
+using System.Windows.Documents;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
@@ -79,12 +81,120 @@ namespace AasxPackageLogic
             {
                 //TODO:jtikekar check with Micha
                 this.AddKeyValueExRef(stack, "globalAssetId", asset, asset.GlobalAssetId, null, repo,
-                    v =>
+                    setValue: v =>
                     {
                         asset.GlobalAssetId = v as string;
                         this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
+                    },
+                    auxButtonTitles: new[] { "Generate", "Input", "Rename", "Add existing", "Delete" },
+                    auxButtonToolTips: new[] {
+                        "Generate an id based on the customizable template option for asset ids.",
+                        "Input the id, may be by the aid of barcode scanner",
+                        "Rename the id and all occurences of the id in the AAS"
+                    },
+                    auxButtonLambda: (i) =>
+                    {
+                        if (i == 0)
+                        {
+                            asset.GlobalAssetId = "" + AdminShellUtil.GenerateIdAccordingTemplate(
+                                Options.Curr.TemplateIdAsset);
+                            this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: preferredNextFocus);
+                        }
+
+                        if (i == 1)
+                        {
+                            var uc = new AnyUiDialogueDataTextBox(
+                                "Global Asset ID:",
+                                maxWidth: 1400,
+                                symbol: AnyUiMessageBoxImage.Question,
+                                options: AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys,
+                                text: "" + asset.GlobalAssetId);
+                            if (this.context.StartFlyoverModal(uc))
+                            {
+                                asset.GlobalAssetId = "" + uc.Text;
+                                this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
+                            }
+                        }
+
+                        if (i == 2 && env != null)
+                        {
+                            var uc = new AnyUiDialogueDataTextBox(
+                                "New Global Asset ID:",
+                                symbol: AnyUiMessageBoxImage.Question,
+                                maxWidth: 1400,
+                                text: "" + asset.GlobalAssetId);
+                            if (this.context.StartFlyoverModal(uc))
+                            {
+                                var res = false;
+
+                                try
+                                {
+                                    // rename
+                                    var lrf = env.RenameIdentifiable<Aas.AssetInformation>(
+                                        asset.GlobalAssetId,
+                                        uc.Text);
+
+                                    // use this information to emit events
+                                    if (lrf != null)
+                                    {
+                                        res = true;
+                                        foreach (var rf in lrf)
+                                        {
+                                            var rfi = rf.FindParentFirstIdentifiable();
+                                            if (rfi != null)
+                                                this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
+
+                                if (!res)
+                                    this.context.MessageBoxFlyoutShow(
+                                        "The renaming of the Submodel or some referring elements " +
+                                        "has not performed successfully! Please review your inputs and " +
+                                        "the AAS structure for any inconsistencies.",
+                                        "Warning",
+                                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+
+                                return new AnyUiLambdaActionRedrawAllElements(asset);
+                            }
+                        }
+
+                        if (i == 3)
+                        {
+                            var k2 = SmartSelectAasEntityKeys(packages, 
+                                PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "All");
+
+                            if (k2 != null && k2.Count >= 1)
+                            {
+                                asset.GlobalAssetId = "" + k2[0].Value;
+                                this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                            }
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
+                        }
+
+                        if (i == 4)
+                        {
+                            if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                               "Delete globalAssetId?",
+                               "AssetInformation",
+                               AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                            {
+                                asset.GlobalAssetId = null;
+                                this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                            }
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
+                        }
+
+                        return new AnyUiLambdaActionNone();
                     });
+
                 //this.AddKeyReference(
                 //    stack, "globalAssetId", asset.GlobalAssetId, repo,
                 //    packages, PackageCentral.PackageCentral.Selector.MainAux,
@@ -1627,11 +1737,13 @@ namespace AasxPackageLogic
                                         rve.theEnv, mdo as Aas.ISubmodelElement,
                                         copyCD: true, shallowCopy: buttonNdx == 0);
 
-                                    this.MakeNewReferableUnique(clone);
-
                                     if (submodel.SubmodelElements == null)
                                         submodel.SubmodelElements =
                                             new List<Aas.ISubmodelElement>();
+
+                                    // make unqiue?
+                                    if (!submodel.SubmodelElements.CheckIdShortIsUnique(clone.IdShort))
+                                        this.MakeNewReferableUnique(clone);
 
                                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                                     submodel.SubmodelElements.Add(clone);
@@ -1707,42 +1819,13 @@ namespace AasxPackageLogic
                     repo: repo, superMenu: superMenu,
                     firstColumnWidth: FirstColumnWidth.Large,
                     ticketMenu: new AasxMenu()
-                        .AddAction("convert-template", "Turn to kind Template",
-                            "Sets all kind attributes in element and children to kind Template.")
-                        .AddAction("convert-instance", "Turn to kind Instance",
-                            "Sets all kind attributes in element and children to kind Instance.")
                         .AddAction("remove-qualifiers", "Remove qualifiers",
-                            "Removes all qualifiers for selected element."),
+                            "Removes all qualifiers for selected element.")
+                        .AddAction("remove-extensions", "Remove extensions",
+                            "Removes all extensions for selected element."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
-                        if (buttonNdx == 0 || buttonNdx == 1)
-                        {
-                            if (ticket?.ScriptMode != true
-                                && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
-                                    "This operation will affect all Kind attributes of " +
-                                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
-                                    "Setting Kind",
-                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
-                                return new AnyUiLambdaActionNone();
-
-                            submodel.Kind = (buttonNdx == 0)
-                                ? Aas.ModellingKind.Template
-                                : Aas.ModellingKind.Instance;
-
-                            //TODO:jtikekar may be remove?
-                            submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
-                            {
-                                // recurse
-                                return true;
-                            });
-
-                            // emit event for Submodel and children
-                            this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
-
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
-                        }
-
-                        if (buttonNdx == 2)
+                        if (buttonNdx == 0)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -1760,6 +1843,34 @@ namespace AasxPackageLogic
                                 // clear
                                 if (sme.Qualifiers != null)
                                     sme.Qualifiers.Clear();
+                                // recurse
+                                return true;
+                            });
+
+                            // emit event for Submodel and children
+                            this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
+
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                        }
+
+                        if (buttonNdx == 1)
+                        {
+                            if (ticket?.ScriptMode != true
+                                && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                                    "This operation will affect all Extensions of " +
+                                    "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "Remove extensions",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                return new AnyUiLambdaActionNone();
+
+                            if (submodel.Extensions != null)
+                                submodel.Extensions.Clear();
+
+                            submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                            {
+                                // clear
+                                if (sme.Extensions != null)
+                                    sme.Extensions.Clear();
                                 // recurse
                                 return true;
                             });
@@ -2082,10 +2193,10 @@ namespace AasxPackageLogic
             DisplayOrEditEntityHasEmbeddedSpecification(
                 env, stack, cd.EmbeddedDataSpecifications,
                 (v) => { cd.EmbeddedDataSpecifications = v; },
-                addPresetNames: new[] { "IEC61360", "Physical Unit" },
+                addPresetNames: new[] { "IEC61360" /* , "Physical Unit" */ },
                 addPresetKeyLists: new[] {
-                    new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() },
-                    new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() }
+                    new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() /* ,
+                    new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() */ }
                 },
                 relatedReferable: cd, superMenu: superMenu);
 
@@ -2755,7 +2866,7 @@ namespace AasxPackageLogic
                 });
                 this.AddActionPanel(
                     stack, "Copy existing SMEs:",
-                    firstColumnWidth: FirstColumnWidth.Large,
+                    repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("copy-single", "Copy single",
                             "Copy single selected entity from another AAS, caring for ConceptDescriptions.")
@@ -2778,10 +2889,10 @@ namespace AasxPackageLogic
                                         rve.theEnv, mdo as Aas.ISubmodelElement, copyCD: true,
                                         shallowCopy: buttonNdx == 0);
 
-                                    if (sme is Aas.SubmodelElementCollection smesmc)
-                                        smesmc.Value.Add(clone);
-                                    if (sme is Aas.Entity smeent)
-                                        smeent.Statements.Add(clone);
+                                    // make unqiue and add
+                                    if (sme.GetChildsAsList()?.CheckIdShortIsUnique(clone.IdShort) == false)
+                                        this.MakeNewReferableUnique(clone);
+                                    sme.AddChild(clone);
 
                                     // emit event
                                     this.AddDiaryEntry(sme, new DiaryEntryStructChange());
@@ -3323,7 +3434,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
 
-                    this.AddKeyListLangStr<Aas.ILangStringTextType>(stack, "value", mlp.Value.ConvertAll(x => (IAbstractLangString)x), repo);
+                    this.AddKeyListLangStr<Aas.ILangStringTextType>(stack, "value", mlp.Value, repo);
 
                 // ValueId
 

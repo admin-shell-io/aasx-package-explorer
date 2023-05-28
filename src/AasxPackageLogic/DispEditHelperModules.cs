@@ -11,8 +11,10 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using Aas = AasCore.Aas3_0;
@@ -182,7 +184,7 @@ namespace AasxPackageLogic
                 return new AnyUiLambdaActionRedrawEntity();
             }))
             {
-                this.AddKeyListLangStr<ILangStringNameType>(stack, "displayName", referable.DisplayName.ConvertAll(x => (IAbstractLangString)x),
+                this.AddKeyListLangStr<ILangStringNameType>(stack, "displayName", referable.DisplayName,
                     repo, relatedReferable: referable);
             }
 
@@ -235,8 +237,9 @@ namespace AasxPackageLogic
                             || referable.Description.Count < 1;
                         },
                         "Please add some descriptions in your main languages here to help consumers " +
-                            "of your Administration shell to understand your intentions."));
-                this.AddKeyListLangStr<ILangStringTextType>(stack, "description", referable.Description.ConvertAll(x => (IAbstractLangString)x),
+                            "of your Administration shell to understand your intentions.",
+                        severityLevel: HintCheck.Severity.Notice));
+                this.AddKeyListLangStr<ILangStringTextType>(stack, "description", referable.Description,
                     repo, relatedReferable: referable);
             }
 
@@ -412,6 +415,20 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
+                // Allow administrative information to be deleted again
+                this.AddGroup(stack, "administration:", levelColors.SubSection,
+                auxContextHeader: new[] { "\u2702", "Delete" },
+                auxContextLambda: (o) =>
+                {
+                    if (o is int i && i == 0)
+                    {
+                        identifiable.Administration = null;
+                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
+
                 AddKeyValueExRef(
                     stack, "version", identifiable.Administration, identifiable.Administration.Version,
                     null, repo,
@@ -431,9 +448,51 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
+
+                if (this.SafeguardAccess(
+                    stack, repo, identifiable.Administration.Creator, "creator:", "Create data element!",
+                    v =>
+                    {
+                        identifiable.Administration.Creator = 
+                            new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
+                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+                {
+                    this.AddKeyReference(
+                        stack, "creator", identifiable.Administration.Creator, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                        addExistingEntities: "All", // no restriction
+                        relatedReferable: identifiable,
+                        showRefSemId: false,
+                        auxContextHeader: new[] { "\u2702", "Delete" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                identifiable.Administration.Creator = null;
+                                this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            };
+                            return new AnyUiLambdaActionNone();
+                        },
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
+                }
+
+                AddKeyValueExRef(
+                    stack, "templateId", identifiable.Administration, identifiable.Administration.TemplateId,
+                    null, repo,
+                    v =>
+                    {
+                        identifiable.Administration.TemplateId = v as string;
+                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
             }
         }
 
+        // MIHO: TODO remove
+#if OLD_not_needed
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
             List<Aas.IEmbeddedDataSpecification> references,
             Action<List<Aas.IEmbeddedDataSpecification>> setOutput,
@@ -514,7 +573,7 @@ namespace AasxPackageLogic
                 }
             }
         }
-
+#endif
         //Added this method only to support embeddedDS from ConceptDescriptions
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
             List<Aas.IEmbeddedDataSpecification>? hasDataSpecification,
@@ -563,6 +622,8 @@ namespace AasxPackageLogic
                         ticketMenu: new AasxMenu()
                             .AddAction("add-reference", "Add Reference",
                                 "Adds a reference to a data specification.")
+                            .AddAction("add-preset", "Add Preset",
+                                "Adds a reference to a data specification given by preset file.")
                             .AddAction("delete-reference", "Delete last reference",
                                 "Deletes the last reference in the list."),
                         ticketAction: (buttonNdx, ticket) =>
@@ -574,6 +635,48 @@ namespace AasxPackageLogic
                                         null));
 
                             if (buttonNdx == 1)
+                            {
+                                var pfn = Options.Curr.DataSpecPresetFile;
+                                if (pfn == null || !System.IO.File.Exists(pfn))
+                                {
+                                    Log.Singleton.Error(
+                                        $"JSON file for data specifcation presets not defined nor existing ({pfn}).");
+                                    return new AnyUiLambdaActionNone();
+                                }
+                                try
+                                {
+                                    // read file contents
+                                    var init = System.IO.File.ReadAllText(pfn);
+                                    var presets = JsonConvert.DeserializeObject<List<DataSpecPreset>>(init);
+
+                                    // define dialogue and map presets into dialogue items
+                                    var uc = new AnyUiDialogueDataSelectFromList();
+                                    uc.ListOfItems = presets.Select((pr)
+                                            => new AnyUiDialogueListItem() { Text = pr.name, Tag = pr }).ToList();
+
+                                    // perform dialogue
+                                    this.context.StartFlyoverModal(uc);
+                                    if (uc.Result && uc.ResultItem?.Tag is DataSpecPreset preset
+                                        && preset.value != null)
+                                    {
+                                        hasDataSpecification.Add(
+                                            new Aas.EmbeddedDataSpecification(
+                                                new Aas.Reference(
+                                                    Aas.ReferenceTypes.ExternalReference, 
+                                                    new Aas.IKey[] { 
+                                                        new Aas.Key(KeyTypes.GlobalReference, preset.value) }
+                                                    .ToList()),
+                                            null));
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(
+                                        ex, $"While show Qualifier presets ({pfn})");
+                                }
+                            }
+
+                            if (buttonNdx == 2)
                             {
                                 if (hasDataSpecification.Count > 0)
                                     hasDataSpecification.RemoveAt(hasDataSpecification.Count - 1);
@@ -920,11 +1023,6 @@ namespace AasxPackageLogic
             this.AddGroup(stack, "Kind (of AssetInformation):", levelColors.SubSection);
 
             this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck(
-                    () => true,
-                    "In IEC63278, 'not applicable' is a further choice. This will be part of " +
-                    "a new release.",
-                    severityLevel: HintCheck.Severity.Notice ),
                 new HintCheck(
                     () => { return kind != Aas.AssetKind.Instance; },
                     "Check for kind setting. 'Instance' is the usual choice.",
@@ -1331,7 +1429,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                AddKeyListLangStr<ILangStringPreferredNameTypeIec61360>(stack, "preferredName", dsiec.PreferredName.ConvertAll(x => (IAbstractLangString)x),
+                AddKeyListLangStr<ILangStringPreferredNameTypeIec61360>(stack, "preferredName", dsiec.PreferredName,
                     repo, relatedReferable: relatedReferable);
 
             // ShortName
@@ -1364,7 +1462,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                AddKeyListLangStr<ILangStringShortNameTypeIec61360>(stack, "shortName", dsiec.ShortName.ConvertAll(x => (IAbstractLangString)x),
+                AddKeyListLangStr<ILangStringShortNameTypeIec61360>(stack, "shortName", dsiec.ShortName,
                     repo, relatedReferable: relatedReferable);
 
             // Unit
@@ -1517,7 +1615,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr<ILangStringDefinitionTypeIec61360>(stack, "definition", dsiec.Definition.ConvertAll(x => (IAbstractLangString)x),
+                this.AddKeyListLangStr<ILangStringDefinitionTypeIec61360>(stack, "definition", dsiec.Definition,
                     repo, relatedReferable: relatedReferable);
 
             // ValueFormat

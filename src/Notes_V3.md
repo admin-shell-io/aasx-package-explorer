@@ -20,7 +20,30 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * Jui and Michael to discuss with Birgit if the HasDataSpecification dialogues
   are acceptable or need to be changed
 
-## Todo
+## Todo (recently V3.0)
+
+* AAS / data spec / "Add known" ?? by preset list?? -- done
+
+* AAS / gobalAssetId: remove "create data element", as being pointless -- no, is ""string?"
+* AAS / globalAssetId: "Generate", "Enter" missing -- done
+* Suppl. file / source file to add/ drop box: wrong color -- done
+* SM (SMC) / "Copy recursively" will make ID unique, even if not required -- done
+* right hand panel / "Title" is in cyan (wrong color) -- done (already, by AnyUI colors)
+* SM / remove "Turn to kind Tempatle/Inst" -- done
+* SM / add "Remove extensions" -- done
+* for all: new "Administrative information" -> creator, template-id
+* SME Refactor does not work? (example: SMC -> event element)
+* SME / Qualifiers / "Add preset": error while loading presets (Ifx serialize)
+* SME / Qualifiers / value / multi line / title string wrong
+* CDs / Add CD / does not focus new CD!! (but has a unique id...)
+* new CD / IEC61360 / "EN?" language makes no sense (either "", "en")
+  casing!!!
+
+## Notes (influencing todos)
+
+* : valueType with "xs:..." headers
+
+## Todo (old RC02)
 
 * redesign logo file
 * web browser not working
@@ -82,6 +105,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   THIS IS VERY DISAPPOINTING!!!
   => Remedy: Do an asset-id-match with every GlobalReference .. We're doing modeling and
      DO NOT CARE ABOUT OUTSIDE WORLD!!
+
+* Difficult to handle mixed (de-) serializations. CLARIFY WITH AAS CORE teal.
+  Currently, AdaptiveAasIClassConverter is being used.
 
 ## Feature Requests to AAS core
 

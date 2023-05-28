@@ -47,7 +47,7 @@ namespace AasxPluginKnownSubmodels
                     "information, which can effectively accelerate the preperation for asset maintenance.",
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_ZveiContactInformation10.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
-                AllowSubmodelSemanticId = (new Aas.IKey[] {
+                AllowSubmodelSemanticId = (new Aas.Key[] {
                     AasxPredefinedConcepts.ZveiContactInformationV10.Static.SM_ContactInformation.GetSemanticKey()
                 }.ToList())
             });
@@ -61,7 +61,7 @@ namespace AasxPluginKnownSubmodels
                     "enables the interoperability of digital nameplates from different manufacturers.",
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_ZveiDigitalNameplate10.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
-                AllowSubmodelSemanticId = (new Aas.IKey[] {
+                AllowSubmodelSemanticId = (new Aas.Key[] {
                     AasxPredefinedConcepts.ZveiNameplateV10.Static.SM_Nameplate.GetSemanticKey()
                 }.ToList())
             });
@@ -75,7 +75,7 @@ namespace AasxPluginKnownSubmodels
                     "system integrators and producing enterprises (industrial end users). ",
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaArticleOfTradeInformation.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
-                AllowSubmodelSemanticId = (new Aas.IKey[] {
+                AllowSubmodelSemanticId = (new Aas.Key[] {
                     new Aas.Key(Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/vdma/article-information/0/8")
                 }.ToList())
             });
@@ -90,7 +90,7 @@ namespace AasxPluginKnownSubmodels
                     "on electrical and fluidic engineering.",
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaHandoverEngSystems.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
-                AllowSubmodelSemanticId = (new Aas.IKey[] {
+                AllowSubmodelSemanticId = (new Aas.Key[] {
                     new Aas.Key(Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/")
                 }.ToList())
             });
@@ -105,7 +105,7 @@ namespace AasxPluginKnownSubmodels
                     "container for specific parameter information, which comes in varying structure and format.",
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaParameterInformation.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
-                AllowSubmodelSemanticId = (new Aas.IKey[] {
+                AllowSubmodelSemanticId = (new Aas.Key[] {
                     new Aas.Key(Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/vdma/parameter-information/0/8")
                 }.ToList())
             });
@@ -122,7 +122,7 @@ namespace AasxPluginKnownSubmodels
                 "system integrators or operators of industrial equipment. ",
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaProductChangeNotification.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
-                AllowSubmodelSemanticId = (new Aas.IKey[] {
+                AllowSubmodelSemanticId = (new Aas.Key[] {
                     new Aas.Key(Aas.KeyTypes.Submodel, "0173-10029#01-XFB001#001")
                 }.ToList())
             });

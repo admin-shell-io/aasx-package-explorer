@@ -172,5 +172,13 @@ namespace Extensions
             }
             return res;
         }
+
+        public static List<Key> ToKeyList(this List<IKey> keyList)
+        {
+            var res = new List<Key>();
+            foreach (var ki in keyList)
+                res.Add(new Key(ki.Type, ki.Value));
+            return res;
+        }
     }
 }

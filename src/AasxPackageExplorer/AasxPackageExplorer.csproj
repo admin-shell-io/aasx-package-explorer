@@ -80,6 +80,9 @@
 
   <ItemGroup>
     <Folder Include="FlyoutsForPlugins\" />
+    <None Update="data-spec-presets.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="local-identifier-presets.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

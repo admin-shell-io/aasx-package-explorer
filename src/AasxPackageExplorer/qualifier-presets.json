@@ -138,11 +138,10 @@
     "name": "Life cycle | as BUILT",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF575"
           }
         ]
@@ -150,11 +149,10 @@
       "type": "life cycle qual",
       "value": "BUILT",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF573"
           }
         ]
@@ -165,11 +163,10 @@
     "name": "Life cycle | as INQUIRED",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF575"
           }
         ]
@@ -177,11 +174,10 @@
       "type": "life cycle qual",
       "value": "INQ",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF576"
           }
         ]
@@ -192,11 +188,10 @@
     "name": "Life cycle | as OFFERED",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF575"
           }
         ]
@@ -204,11 +199,10 @@
       "type": "life cycle qual",
       "value": "OFF",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF577"
           }
         ]
@@ -219,11 +213,10 @@
     "name": "Life cycle | as OPERATED",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF575"
           }
         ]
@@ -231,11 +224,10 @@
       "type": "life cycle qual",
       "value": "OP",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF578"
           }
         ]
@@ -246,11 +238,10 @@
     "name": "Life cycle | as SPECIFIED",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF575"
           }
         ]
@@ -258,11 +249,10 @@
       "type": "life cycle qual",
       "value": "SPEC",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF579"
           }
         ]
@@ -273,11 +263,10 @@
     "name": "Life cycle | as SUPPLIED",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF575"
           }
         ]
@@ -285,11 +274,10 @@
       "type": "life cycle qual",
       "value": "SUP",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF580"
           }
         ]
@@ -300,11 +288,10 @@
     "name": "Life cycle | as DECOMMISSIONED",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF575"
           }
         ]
@@ -312,11 +299,10 @@
       "type": "life cycle qual",
       "value": "DECOM",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF582"
           }
         ]
@@ -327,11 +313,10 @@
     "name": "Value processing | arithmetic mean",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF583"
           }
         ]
@@ -339,11 +324,10 @@
       "type": "value proc qual",
       "value": "AM",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF591"
           }
         ]
@@ -354,11 +338,10 @@
     "name": "Value processing | geometric mean",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF583"
           }
         ]
@@ -366,11 +349,10 @@
       "type": "value proc qual",
       "value": "GM",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF592"
           }
         ]
@@ -381,11 +363,10 @@
     "name": "Value processing | median",
     "qualifier": {
       "semanticId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF583"
           }
         ]
@@ -393,11 +374,10 @@
       "type": "value proc qual",
       "value": "MED",
       "valueId": {
+        "type": "ExternalReference",
         "keys": [
           {
             "type": "GlobalReference",
-            "local": false,
-            "idType": "IRDI",
             "value": "0112/2///61360_4#AAF594"
           }
         ]

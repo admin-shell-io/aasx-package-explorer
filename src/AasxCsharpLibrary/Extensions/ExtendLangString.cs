@@ -25,5 +25,31 @@
         //    // found?
         //    return res;
         //}
+
+        public static IAbstractLangString Create<T>(string language, string text) where T : IAbstractLangString
+        {
+            if (typeof(T).IsAssignableFrom(typeof(ILangStringTextType)))
+            {
+                return new LangStringTextType(language, text);
+            }
+            else if (typeof(T).IsAssignableFrom(typeof(ILangStringNameType)))
+            {
+                return new LangStringNameType(language, text);
+            }
+            else if (typeof(T).IsAssignableFrom(typeof(ILangStringPreferredNameTypeIec61360)))
+            {
+                return new LangStringPreferredNameTypeIec61360(language, text);
+            }
+            else if (typeof(T).IsAssignableFrom(typeof(ILangStringShortNameTypeIec61360)))
+            {
+                return new LangStringShortNameTypeIec61360(language, text);
+            }
+            else if (typeof(T).IsAssignableFrom(typeof(ILangStringDefinitionTypeIec61360)))
+            {
+                return new LangStringDefinitionTypeIec61360(language, text);
+            }
+            else
+                return null;
+        }
     }
 }

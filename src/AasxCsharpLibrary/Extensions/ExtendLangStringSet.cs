@@ -157,5 +157,34 @@ namespace Extensions
 
             return res;
         }
+
+        public static void Add<T>(this List<T> list, string language, string text) where T : IAbstractLangString
+        {
+            if (typeof(T).IsAssignableFrom(typeof(ILangStringTextType)))
+            {
+                (list as List<ILangStringTextType>)
+                    .Add(new LangStringTextType(language, text));
+            }
+            else if (typeof(T).IsAssignableFrom(typeof(ILangStringNameType)))
+            {
+                (list as List<ILangStringNameType>)
+                    .Add(new LangStringNameType(language, text));
+            }
+            else if (typeof(T).IsAssignableFrom(typeof(ILangStringPreferredNameTypeIec61360)))
+            {
+                (list as List<ILangStringPreferredNameTypeIec61360>)
+                    .Add(new LangStringPreferredNameTypeIec61360(language, text));
+            }
+            else if (typeof(T).IsAssignableFrom(typeof(ILangStringShortNameTypeIec61360)))
+            {
+                (list as List<ILangStringShortNameTypeIec61360>)
+                    .Add(new LangStringShortNameTypeIec61360(language, text));
+            }
+            else if (typeof(T).IsAssignableFrom(typeof(ILangStringDefinitionTypeIec61360)))
+            {
+                (list as List<ILangStringDefinitionTypeIec61360>)
+                    .Add(new LangStringDefinitionTypeIec61360(language, text));
+            }
+        }
     }
 }

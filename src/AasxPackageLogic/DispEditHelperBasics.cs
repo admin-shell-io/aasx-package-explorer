@@ -499,7 +499,8 @@ namespace AasxPackageLogic
             var g = new AnyUiGrid();
             g.Margin = new AnyUiThickness(0, 1, 0, 1);
             var gc1 = new AnyUiColumnDefinition();
-            gc1.Width = new AnyUiGridLength(this.GetWidth(FirstColumnWidth.Standard));
+            gc1.Width = new AnyUiGridLength(
+                this.GetWidth(FirstColumnWidth.Standard), AnyUiGridUnitType.Pixel);
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new AnyUiColumnDefinition();
             gc2.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
@@ -517,7 +518,7 @@ namespace AasxPackageLogic
             else
             {
                 // interactive
-                var brd = AddSmallDropBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
+                var brd = AddSmallDropBoxTo(g, 0, 1, margin: new AnyUiThickness(4, 2, 2, 2),
                     borderThickness: new AnyUiThickness(1), text: "" + value, minHeight: minHeight);
                 AnyUiUIElement.RegisterControl(brd,
                     setValue);
@@ -750,7 +751,7 @@ namespace AasxPackageLogic
         }
 
         public void AddKeyListLangStr<T>(
-        AnyUiStackPanel view, string key, List<IAbstractLangString> langStr, ModifyRepo repo = null,
+        AnyUiStackPanel view, string key, List<T> langStr, ModifyRepo repo = null,
         Aas.IReferable relatedReferable = null) where T : IAbstractLangString
         {
             // sometimes needless to show
@@ -812,31 +813,35 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-
                         //TODO:jtikekar need to test
-                        if (typeof(T) is ILangStringTextType)
-                        {
-                            langStr?.Add(new LangStringTextType("", ""));
-                        }
-                        else if (typeof(T) is ILangStringNameType)
-                        {
-                            langStr?.Add(new LangStringNameType("", ""));
-                        }
-                        else if (typeof(T) is ILangStringPreferredNameTypeIec61360)
-                        {
-                            langStr?.Add(new LangStringPreferredNameTypeIec61360("", ""));
-                        }
-                        else if (typeof(T) is ILangStringShortNameTypeIec61360)
-                        {
-                            langStr?.Add(new LangStringShortNameTypeIec61360("", ""));
-                        }
-                        else if (typeof(T) is ILangStringDefinitionTypeIec61360)
-                        {
-                            langStr?.Add(new LangStringDefinitionTypeIec61360("", ""));
-                        }
+                        //TODO:MIHO refectored to extension method
+                        //if (typeof(T) is ILangStringTextType)
+                        //{
+                        //    langStr?.Add(new LangStringTextType("", ""));
+                        //}
+                        //else if (typeof(T) is ILangStringNameType)
+                        //{
+                        //    langStr?.Add(new LangStringNameType("", ""));
+                        //}
+                        //else if (typeof(T) is ILangStringPreferredNameTypeIec61360)
+                        //{
+                        //    langStr?.Add(new LangStringPreferredNameTypeIec61360("", ""));
+                        //}
+                        //else if (typeof(T) is ILangStringShortNameTypeIec61360)
+                        //{
+                        //    langStr?.Add(new LangStringShortNameTypeIec61360("", ""));
+                        //}
+                        //else if (typeof(T) is ILangStringDefinitionTypeIec61360)
+                        //{
+                        //    langStr?.Add(new LangStringDefinitionTypeIec61360("", ""));
+                        //}
                         //langStr?.Add(new T { Language = "", Text = "" });
+                        // langStr.Add(ls);
+
+                        langStr.Add<T>("", "");
 
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+
                         return new AnyUiLambdaActionRedrawEntity();
                     });
             }
@@ -1854,7 +1859,7 @@ namespace AasxPackageLogic
 
                 //
                 // Top Row Context Menue
-                // (those functions lfess frequent use)
+                // (those functions less frequent use)
                 //
 
                 if (topContextMenu)

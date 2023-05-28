@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -180,6 +181,84 @@ namespace AdminShellNS
                     property.ShouldSerialize = instance => { return false; };
 
                 return property;
+            }
+        }
+
+        public class AdaptiveAasIClassConverter : JsonConverter
+        {
+            public enum ConversionMode { 
+                /// <summary>
+                /// For (known) nodes of the AAS meta model, the converison of Newtonsoft.Json
+                /// is used. This is done by invoking creation of the real data type for the
+                /// desired interface types.
+                /// Assumption: fast, sloppy, fault-tolerant
+                /// </summary>
+
+                Typecast,
+                /// <summary>
+                /// For (known) nodes of the AAS meta model, the sub-node content is converted
+                /// to string representation and subsequently converted by the AAS core deserialization.
+                /// Assumption: slow, precise but provide maximum compatibility.
+                /// </summary>
+                AasCore
+            };
+
+            public ConversionMode Mode = ConversionMode.Typecast;
+
+            public AdaptiveAasIClassConverter(ConversionMode mode) : base()
+            {
+                Mode = mode;
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                if (typeof(IReference).IsAssignableFrom(objectType)
+                    || typeof(IKey).IsAssignableFrom(objectType))
+                    return true;
+                return false;
+            }
+
+            public override bool CanWrite
+            {
+                get { return false; }
+            }
+
+            public override object ReadJson(JsonReader reader,
+                                            Type objectType,
+                                             object existingValue,
+                                             JsonSerializer serializer)
+            {
+                // check
+                if (reader.TokenType == JsonToken.Null)
+                    return null;
+
+                // spooky?
+                if (Mode == ConversionMode.AasCore)
+                {
+                    var json = JRaw.Create(reader).ToString();
+                    var node = System.Text.Json.Nodes.JsonNode.Parse(json);
+                    return ExtendIClass.IClassFrom(objectType, node);
+                }
+
+                // Load JObject from stream
+                JObject jObject = JObject.Load(reader);
+
+                // Create target object based on JObject
+                object target = null;
+                if (typeof(IReference).IsAssignableFrom(objectType))
+                    target = new Reference(ReferenceTypes.ExternalReference, null);
+                if (typeof(IKey).IsAssignableFrom(objectType))
+                    target = new Key(KeyTypes.GlobalReference, "");
+
+                // Populate the object properties
+                serializer.Populate(jObject.CreateReader(), target);
+
+                return target;
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
             }
         }
 

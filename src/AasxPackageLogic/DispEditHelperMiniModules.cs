@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxCompatibilityModels;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
@@ -14,6 +15,7 @@ using Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Aas = AasCore.Aas3_0;
 
@@ -110,7 +112,13 @@ namespace AasxPackageLogic
                             {
                                 // read file contents
                                 var init = System.IO.File.ReadAllText(pfn);
-                                var presets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
+                                // var presets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
+
+                                JsonTextReader reader = new JsonTextReader(new StringReader(init));
+                                JsonSerializer serializer = new JsonSerializer();
+                                serializer.Converters.Add(new AdminShellConverters.AdaptiveAasIClassConverter(
+                                    AdminShellConverters.AdaptiveAasIClassConverter.ConversionMode.AasCore));
+                                var presets = serializer.Deserialize<List<QualifierPreset>>(reader);
 
                                 // define dialogue and map presets into dialogue items
                                 var uc = new AnyUiDialogueDataSelectFromList();
@@ -727,6 +735,13 @@ namespace AasxPackageLogic
         {
             public string name = "";
             public Aas.Extension extension = new Aas.Extension("");
+        }
+
+        // ReSharper Disable once ClassNeverInstantiated.Global
+        public class DataSpecPreset
+        {
+            public string name = "";
+            public string value = "";
         }
 
         public void ExtensionHelper(
