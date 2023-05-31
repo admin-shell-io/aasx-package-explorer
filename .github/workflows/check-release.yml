@@ -12,6 +12,7 @@ on:
     branches:
       - master
       - MIHO/JoinMMV3RC02andDynMen_FQ1_Q1
+      - jtikekar/masterV3.0
 
 jobs:
   Check-release:
