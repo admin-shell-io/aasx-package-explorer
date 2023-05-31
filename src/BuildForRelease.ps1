@@ -39,7 +39,7 @@ function Main
         $projects = @(
         "AasxPackageExplorer"
         "AasxPluginAdvancedTextEditor",
-        "AasxPluginBomStructure",
+        #"AasxPluginBomStructure",
         "AasxPluginDocumentShelf",
         "AasxPluginExportTable",
         "AasxPluginGenericForms",
