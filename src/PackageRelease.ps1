@@ -31,7 +31,7 @@ function PackageRelease($outputDir)
     ##
     
     $smallPlugins = $(
-    "AasxPluginAdvancedTextEditor",
+    "AasxPluginAdvancedTextEditor"
     #"AasxPluginBomStructure",
     #"AasxPluginDocumentShelf",
     #"AasxPluginExportTable",
