@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - MIHO/JoinMMV3RC02andDynMen_FQ1_Q1
-      - jtikekar/*V3.0
+      - jtikekar/masterV3.0
     types: [opened, synchronize, reopened, edited]
 
   push:
