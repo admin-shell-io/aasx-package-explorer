@@ -51,7 +51,7 @@ function Main
         #"AasxPluginUaNetClient",
         #"AasxPluginUaNetServer",
         "AasxPluginWebBrowser",
-        "BlazorExplorer"
+        #"BlazorExplorer"
         #"BlazorUI"
         )
 
