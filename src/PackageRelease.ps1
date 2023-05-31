@@ -33,14 +33,14 @@ function PackageRelease($outputDir)
     $smallPlugins = $(
     "AasxPluginAdvancedTextEditor",
     #"AasxPluginBomStructure",
-    "AasxPluginDocumentShelf",
-    "AasxPluginExportTable",
-    "AasxPluginGenericForms",
-    "AasxPluginImageMap",
-    "AasxPluginMtpViewer",
-    "AasxPluginPlotting",
+    #"AasxPluginDocumentShelf",
+    #"AasxPluginExportTable",
+    #"AasxPluginGenericForms",
+    #"AasxPluginImageMap",
+    #"AasxPluginMtpViewer",
+    #"AasxPluginPlotting",
     #"AasxPluginSmdExporter",
-    "AasxPluginTechnicalData"
+    #"AasxPluginTechnicalData"
     #"AasxPluginUaNetClient",
     #"AasxPluginUaNetServer"
     )
