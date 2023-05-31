@@ -45,8 +45,12 @@ function PackageRelease($outputDir)
     #"AasxPluginUaNetServer"
     )
 
-    $allPlugins = $smallPlugins.Clone()
-    $allPlugins += "AasxPluginWebBrowser"
+    #$allPlugins = $smallPlugins.Clone()
+    #$allPlugins += "AasxPluginWebBrowser"
+    $allPlugins = $(
+        "AasxPluginAdvancedTextEditor",
+        "AasxPluginWebBrowser"
+    )
 
     #function MakePackage($identifier)
     function MakePackage($identifier, $plugins)
