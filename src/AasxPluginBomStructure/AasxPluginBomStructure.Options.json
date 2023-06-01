@@ -118,6 +118,73 @@
           "Dotted": false
         }
       ]
+    },
+    {
+      "AllowSubmodelSemanticId": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "https://admin-shell.io/idta/HierarchicalStructures/1/0/Submodel",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ],
+      "Layout": 3,
+      "Compact": true,
+      "LinkStyles": [
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/IsPartOf/1/0",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Direction": "Forward",
+          "Color": "DarkGreen",
+          "Width": 1.0,
+          "Text": "isPartOf"
+        },
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/HasPart/1/0",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Direction": "Forward",
+          "Color": "DarkBlue",
+          "Width": 1.0,
+          "Text": "hasPart"
+        },
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/SameAs/1/0",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Direction": "Both",
+          "Color": "LightGray",
+          "Width": 1.0,
+          "Text": "sameAs"
+        }
+      ],
+      "NodeStyles": [
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/EntryNode/1/0",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Skip": false,
+          "Background": "LightGreen"
+        }
+      ]
     }
   ]
 }
