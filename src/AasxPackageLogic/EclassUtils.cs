@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AdminShellNS;
 using Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -556,7 +557,7 @@ namespace AasxPackageLogic
                     {
                         ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
                         {
-                            new Aas.LangStringShortNameTypeIec61360("EN?", ls.Text)
+                            new Aas.LangStringShortNameTypeIec61360(AdminShellUtil.GetDefaultLngIso639(), ls.Text)
                         };
                         res.IdShort = ls.Text;
                     });
@@ -649,7 +650,7 @@ namespace AasxPackageLogic
                             // set it
                             ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
                             {
-                                new Aas.LangStringShortNameTypeIec61360("EN?", sn)
+                                new Aas.LangStringShortNameTypeIec61360(AdminShellUtil.GetDefaultLngIso639(), sn)
                             };
                         }
                     }

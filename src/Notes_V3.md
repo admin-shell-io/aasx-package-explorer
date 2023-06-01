@@ -23,21 +23,22 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 ## Todo (recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done
-
-* AAS / gobalAssetId: remove "create data element", as being pointless -- no, is ""string?"
+* AAS / gobalAssetId: remove "create data element", as being pointless -- no, is "string?"
 * AAS / globalAssetId: "Generate", "Enter" missing -- done
 * Suppl. file / source file to add/ drop box: wrong color -- done
 * SM (SMC) / "Copy recursively" will make ID unique, even if not required -- done
 * right hand panel / "Title" is in cyan (wrong color) -- done (already, by AnyUI colors)
 * SM / remove "Turn to kind Tempatle/Inst" -- done
 * SM / add "Remove extensions" -- done
-* for all: new "Administrative information" -> creator, template-id
-* SME Refactor does not work? (example: SMC -> event element)
-* SME / Qualifiers / "Add preset": error while loading presets (Ifx serialize)
-* SME / Qualifiers / value / multi line / title string wrong
-* CDs / Add CD / does not focus new CD!! (but has a unique id...)
+* for all: new "Administrative information" -> creator, template-id -- done
+* SME Refactor does not work? (example: SMC -> event element) -- done
+* SME / Qualifiers / "Add preset": error while loading presets (Ifx serialize) -- done
+* SME / Qualifiers / value / multi line / title string wrong -- done
+* SMC / Add Prop / does not focus new Prop -- open, frustrated :-(
+* CDs / Add CD / does not focus new CD!! (but has a unique id...) -- same issue :-(
 * new CD / IEC61360 / "EN?" language makes no sense (either "", "en")
-  casing!!!
+  casing!!! -- changed to be configurable via "DefaultLang"
+* Entity / add specificAssetId .. does not work
 
 ## Notes (influencing todos)
 

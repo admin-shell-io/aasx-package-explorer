@@ -9,11 +9,13 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasxCompatibilityModels;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -365,10 +367,11 @@ namespace AasxPackageLogic
                     {
                         if (buttonNdx == 0)
                         {
+                            var qInfo = (qual.Type.HasContent() ? qual.Type : "<no type given>");
                             var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit Extension '{"" + qual.Type}'",
-                                                mimeType: Aas.Stringification.ToString(qual.ValueType),
-                                                text: qual.Value);
+                                caption: $"Edit Extension '{qInfo}'",
+                                mimeType: Aas.Stringification.ToString(qual.ValueType),
+                                text: qual.Value);
                             if (this.context.StartFlyoverModal(uc))
                             {
                                 qual.Value = uc.Text;
@@ -1323,15 +1326,22 @@ namespace AasxPackageLogic
                                 var eds = new Aas.EmbeddedDataSpecification(
                                     ExtendIDataSpecificationContent.GetReferencForIec61360(),
                                     new Aas.DataSpecificationIec61360(
-                                        preferredName: ExtendILangStringPreferredNameTypeIec61360.CreateLangStringPreferredNameType("EN?", "" + valuePairs[i].Value),
-                                        shortName: ExtendILangStringShortNameTypeIec61360.CreateLangStringShortNameType("EN?", "" + valuePairs[i].Value),
-                                        definition: ExtendILangStringDefinitionTypeIec61360.CreateLangStringDefinitionType("EN?", "" + valuePairs[i].Value),
+                                        preferredName: ExtendILangStringPreferredNameTypeIec61360
+                                            .CreateLangStringPreferredNameType(
+                                                AdminShellUtil.GetDefaultLngIso639(), "" + valuePairs[i].Value),
+                                        shortName: ExtendILangStringShortNameTypeIec61360
+                                            .CreateLangStringShortNameType(
+                                                AdminShellUtil.GetDefaultLngIso639(), "" + valuePairs[i].Value),
+                                        definition: ExtendILangStringDefinitionTypeIec61360
+                                            .CreateLangStringDefinitionType(
+                                                AdminShellUtil.GetDefaultLngIso639(), "" + valuePairs[i].Value),
                                         dataType: Aas.DataTypeIec61360.StringTranslatable));
 
                                 var cd = new Aas.ConceptDescription(
                                     id: valuePairs[i].ValueId?.GetAsIdentifier(),
                                     idShort: "" + valuePairs[i].Value,
-                                    displayName: ExtendLangStringSet.CreateLangStringNameType("EN?", "" + valuePairs[i].Value),
+                                    displayName: ExtendLangStringSet.CreateLangStringNameType(
+                                        AdminShellUtil.GetDefaultLngIso639(), "" + valuePairs[i].Value),
                                     embeddedDataSpecifications: new List<Aas.IEmbeddedDataSpecification> { eds });
 
                                 env?.Add(cd);
@@ -1453,9 +1463,126 @@ namespace AasxPackageLogic
                         addFromKnown: true, showRefSemId: false,
                         relatedReferable: relatedReferable);
                 }
-
             }
+        }
 
+        /// <summary>
+        /// Provides a menu to add a new SubmodelElement to a list of these.
+        /// </summary>
+        public void DispSmeListAddNewHelper<T>(
+            Aas.Environment env,
+            AnyUiStackPanel stack, ModifyRepo repo, string key,
+            List<T> smeList,
+            Action<List<T>> setValueLambda = null,
+            AasxMenu superMenu = null) where T : ISubmodelElement
+        {
+            // access
+            if (smeList == null || stack == null)
+                return;
+
+            // hint
+            this.AddHintBubble(stack, hintMode, new[] {
+                    new HintCheck(
+                        () => { return smeList == null || smeList.Count < 1; },
+                        "This element currently has no SubmodelElements, yet. " +
+                            "These are the actual carriers of information. " +
+                            "You could create them by clicking the 'Add ..' buttons below. " +
+                            "Subsequently, when having a SubmodelElement established, " +
+                            "you could add meaning by relating it to a ConceptDefinition.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+
+            // menu
+            var isDataElem = typeof(IDataElement).IsAssignableFrom(typeof(T));
+            var menu = new AasxMenu()
+                    .AddAction("add-prop", "Add Property",
+                        "Adds a new Property to the containing collection.")
+                    .AddAction("add-mlp", "Add MultiLang.Prop.",
+                        "Adds a new MultiLanguageProperty to the containing collection.");
+
+            if (!isDataElem)
+                menu.AddAction("add-smc", "Add Collection",
+                   "Adds a new SubmodelElementCollection to the containing collection.");
+            else
+                menu.AddAction("add-range", "Add Range",
+                   "Adds a new Range to the containing collection.");
+
+            menu.AddAction("add-named", "Add other ..",
+                        "Adds a selected kind of SubmodelElement to the containing collection.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement."));
+
+            this.AddActionPanel(
+                stack, key,
+                repo: repo, superMenu: superMenu,
+                ticketMenu: menu,
+                ticketAction: (buttonNdx, ticket) =>
+                {
+                    if (buttonNdx >= 0 && buttonNdx <= 3)
+                    {
+                        // which adequate type?
+                        var en = Aas.AasSubmodelElements.SubmodelElement;
+                        if (buttonNdx == 0)
+                            en = Aas.AasSubmodelElements.Property;
+                        if (buttonNdx == 1)
+                            en = Aas.AasSubmodelElements.MultiLanguageProperty;
+                        if (buttonNdx == 2 && !isDataElem)
+                            en = Aas.AasSubmodelElements.SubmodelElementCollection;
+                        if (buttonNdx == 2 && isDataElem)
+                            en = Aas.AasSubmodelElements.Range;
+                        if (buttonNdx == 3)
+                        {
+                            Aas.AasSubmodelElements[] includes = null;
+                            if (isDataElem) includes = new Aas.AasSubmodelElements[] {
+                                        Aas.AasSubmodelElements.SubmodelElementCollection,
+                                        Aas.AasSubmodelElements.RelationshipElement,
+                                        Aas.AasSubmodelElements.AnnotatedRelationshipElement,
+                                        Aas.AasSubmodelElements.Capability,
+                                        Aas.AasSubmodelElements.Operation,
+                                        Aas.AasSubmodelElements.BasicEventElement,
+                                        Aas.AasSubmodelElements.Entity};
+
+                            en = this.SelectAdequateEnum("Select SubmodelElement to create ..", ticket: ticket,
+                                includeValues: includes);
+                        }
+
+                        // ok?
+                        if (en != Aas.AasSubmodelElements.SubmodelElement)
+                        {
+                            T sme2 = (T)
+                                AdminShellUtil.CreateSubmodelElementFromEnum(en);
+
+                            // add
+                            T smw = sme2;
+                            if (smeList == null)
+                            {
+                                smeList = new List<T>();
+                                setValueLambda?.Invoke(smeList);
+                            }
+                            smeList.Add(smw);
+
+                            // make some more adjustments
+                            if (sme2 is IMultiLanguageProperty mlp)
+                            {
+                                // create
+                                mlp.Value = new List<ILangStringTextType>();
+
+                                // add defaults?
+                                if (Options.Curr.DefaultLang.HasContent())
+                                    foreach (var lng in Options.Curr.DefaultLang.Split(',', 
+                                        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                                        mlp.Value.Add(new LangStringTextType("" + lng, ""));
+                            }
+
+                            // emit event
+                            this.AddDiaryEntry(sme2, new DiaryEntryStructChange(StructuralChangeReason.Create));
+
+                            // redraw
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2, isExpanded: true);
+                        }
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
         }
 
     }

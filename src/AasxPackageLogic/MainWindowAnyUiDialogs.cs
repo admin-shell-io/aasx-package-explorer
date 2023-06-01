@@ -30,7 +30,7 @@ namespace AasxPackageLogic
 {
     /// <summary>
     /// This class uses abstract dialogs provided by <c>AnyUiContextPlusDialogs</c> to
-    /// provide menu functions involving user interactions, but or not technology specific.
+    /// provide menu functions involving user interactions, but not technology specific.
     /// </summary>
     public class MainWindowAnyUiDialogs : MainWindowHeadless
     {
@@ -509,6 +509,23 @@ namespace AasxPackageLogic
 
                 // further to logic
                 await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+            }
+
+            if (cmd == "assesssmt")
+            {
+                // start
+                ticket.StartExec();
+
+                //do
+                try
+                {
+                    var val = new MenuFuncValidateSmt();
+                    await val.PerformDialogue(cmd, menuItem, ticket, DisplayContext);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "when assessing Submodel template");
+                }
             }
 
             if (cmd == "closeaux" && PackageCentral.AuxAvailable)

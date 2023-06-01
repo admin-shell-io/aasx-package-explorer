@@ -1642,66 +1642,11 @@ namespace AasxPackageLogic
             // normal edit of the submodel
             if (editMode && submodel != null)
             {
-                this.AddHintBubble(stack, hintMode, new[] {
-                    new HintCheck(
-                        () => { return submodel.SubmodelElements == null || submodel.SubmodelElements.Count < 1; },
-                        "This Submodel currently has no SubmodelElements, yet. " +
-                            "These are the actual carriers of information. " +
-                            "You could create them by clicking the 'Add ..' buttons below. " +
-                            "Subsequently, when having a SubmodelElement established, " +
-                            "you could add meaning by relating it to a ConceptDefinition.",
-                        severityLevel: HintCheck.Severity.Notice)
-                });
-                this.AddActionPanel(
-                    stack, "SubmodelElement:",
-                    repo: repo, superMenu: superMenu,
-                    ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Property",
-                            "Adds a new Property to the containing collection.")
-                        .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new MultiLanguageProperty to the containing collection.")
-                        .AddAction("add-smc", "Add Collection",
-                            "Adds a new SubmodelElementCollection to the containing collection.")
-                        .AddAction("add-named", "Add other ..",
-                            "Adds a selected kind of SubmodelElement to the containing collection.",
-                            args: new AasxMenuListOfArgDefs()
-                                .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement.")),
-                    ticketAction: (buttonNdx, ticket) =>
-                    {
-                        if (buttonNdx >= 0 && buttonNdx <= 3)
-                        {
-                            // which adequate type?
-                            var en = Aas.AasSubmodelElements.SubmodelElement;
-                            if (buttonNdx == 0)
-                                en = Aas.AasSubmodelElements.Property;
-                            if (buttonNdx == 1)
-                                en = Aas.AasSubmodelElements.MultiLanguageProperty;
-                            if (buttonNdx == 2)
-                                en = Aas.AasSubmodelElements.SubmodelElementCollection;
-                            if (buttonNdx == 3)
-                                en = this.SelectAdequateEnum("Select SubmodelElement to create ..", ticket: ticket);
-
-                            // ok?
-                            if (en != Aas.AasSubmodelElements.SubmodelElement)
-                            {
-                                Aas.ISubmodelElement sme2 =
-                                    AdminShellUtil.CreateSubmodelElementFromEnum(en);
-
-                                // add
-                                Aas.ISubmodelElement smw = sme2;
-                                if (submodel.SubmodelElements == null)
-                                    submodel.SubmodelElements = new List<Aas.ISubmodelElement>();
-                                submodel.SubmodelElements.Add(smw);
-
-                                // emit event
-                                this.AddDiaryEntry(sme2, new DiaryEntryStructChange(StructuralChangeReason.Create));
-
-                                // redraw
-                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2, isExpanded: true);
-                            }
-                        }
-                        return new AnyUiLambdaActionNone();
-                    });
+                DispSmeListAddNewHelper<ISubmodelElement>(env, stack, repo,
+                    key: "SubmodelElement:",
+                    submodel.SubmodelElements,
+                    setValueLambda: (sml) => submodel.SubmodelElements = sml,
+                    superMenu: superMenu);
 
                 this.AddHintBubble(stack, hintMode, new[] {
                     new HintCheck(
@@ -2052,7 +1997,8 @@ namespace AasxPackageLogic
                         {
                             ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
                             {
-                                new Aas.LangStringShortNameTypeIec61360("EN?", cd.IdShort)
+                                new Aas.LangStringShortNameTypeIec61360(
+                                    AdminShellUtil.GetDefaultLngIso639(), cd.IdShort)
                             };
                             this.AddDiaryEntry(cd, new DiaryEntryStructChange());
                             la = new AnyUiLambdaActionRedrawEntity();
@@ -2795,66 +2741,18 @@ namespace AasxPackageLogic
                 if (sme is Aas.Entity)
                     listOfSME = (sme as Aas.Entity).Statements;
 
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => { return listOfSME == null || listOfSME.Count < 1; },
-                            "This element currently has no SubmodelElements, yet. " +
-                                "These are the actual carriers of information. " +
-                                "You could create them by clicking the 'Add ..' buttons below. " +
-                                "Subsequently, when having a SubmodelElement established, " +
-                                "you could add meaning by relating it to a ConceptDefinition.",
-                            severityLevel: HintCheck.Severity.Notice)
-                    });
-                this.AddActionPanel(
-                    stack, "SubmodelElement:",
-                    repo: repo, superMenu: superMenu,
-                    ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Property",
-                            "Adds a new Property to the containing collection.")
-                        .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new MultiLanguageProperty to the containing collection.")
-                        .AddAction("add-smc", "Add Collection",
-                            "Adds a new SubmodelElementCollection to the containing collection.")
-                        .AddAction("add-named", "Add other ..",
-                            "Adds a selected kind of SubmodelElement to the containing collection.",
-                            args: new AasxMenuListOfArgDefs()
-                                .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement.")),
-                    ticketAction: (buttonNdx, ticket) =>
-                    {
-                        if (buttonNdx >= 0 && buttonNdx <= 3)
-                        {
-                            // which adequate type?
-                            var en = Aas.AasSubmodelElements.SubmodelElement;
-                            if (buttonNdx == 0)
-                                en = Aas.AasSubmodelElements.Property;
-                            if (buttonNdx == 1)
-                                en = Aas.AasSubmodelElements.MultiLanguageProperty;
-                            if (buttonNdx == 2)
-                                en = Aas.AasSubmodelElements.SubmodelElementCollection;
-                            if (buttonNdx == 3)
-                                en = this.SelectAdequateEnum("Select SubmodelElement to create ..", ticket: ticket);
-
-                            // ok?
-                            if (en != Aas.AasSubmodelElements.SubmodelElement)
-                            {
-                                // create
-                                Aas.ISubmodelElement sme2 =
-                                    AdminShellUtil.CreateSubmodelElementFromEnum(en);
-
-                                // add
-                                sme.Add(sme2);
-
-                                // notify event
-                                this.AddDiaryEntry(sme2, new DiaryEntryStructChange(StructuralChangeReason.Create));
-
-                                // redraw
-                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2);
-                            }
-                        }
-                        return new AnyUiLambdaActionNone();
-                    });
+                DispSmeListAddNewHelper(env, stack, repo,
+                    key: "SubmodelElement:",
+                    listOfSME,
+                    setValueLambda: (sml) => {
+                        if (sme is Aas.SubmodelElementCollection)
+                            (sme as Aas.SubmodelElementCollection).Value = sml;
+                        if (sme is Aas.SubmodelElementList)
+                            (sme as Aas.SubmodelElementList).Value = sml;
+                        if (sme is Aas.Entity)
+                            (sme as Aas.Entity).Statements = sml;
+                    },
+                    superMenu: superMenu);
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -3077,76 +2975,11 @@ namespace AasxPackageLogic
 
                 var substack = this.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
-                this.AddHintBubble(
-                    substack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => { return are.Annotations == null || are.Annotations.Count < 1; },
-                            "The annotations collection currently has no elements, yet. " +
-                                "Consider add DataElements or refactor to ordinary RelationshipElement.",
-                            severityLevel: HintCheck.Severity.Notice)
-                        });
-                AddActionPanel(
-                    stack, "annotation:",
-                    repo: repo, superMenu: superMenu,
-                    ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Property",
-                            "Adds a new Property to the containing collection.")
-                        .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new MultiLanguageProperty to the containing collection.")
-                        .AddAction("add-smc", "Add Collection",
-                            "Adds a new SubmodelElementCollection to the containing collection.")
-                        .AddAction("add-named", "Add other ..",
-                            "Adds a selected kind of SubmodelElement to the containing collection.",
-                            args: new AasxMenuListOfArgDefs()
-                                .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement.")),
-                    ticketAction: (buttonNdx, ticket) =>
-                    {
-                        if (buttonNdx >= 0 && buttonNdx <= 3)
-                        {
-                            // TODO MICHA: check elems!!!!
-                            // which adequate type?
-                            var en = Aas.AasSubmodelElements.SubmodelElement;
-                            if (buttonNdx == 0)
-                                en = Aas.AasSubmodelElements.Property;
-                            if (buttonNdx == 1)
-                                en = Aas.AasSubmodelElements.MultiLanguageProperty;
-                            if (buttonNdx == 2)
-                                en = Aas.AasSubmodelElements.Range;
-                            if (buttonNdx == 3)
-                                en = this.SelectAdequateEnum(
-                                    "Select SubmodelElement to create ..",
-                                    includeValues: new Aas.AasSubmodelElements[] {
-                                        Aas.AasSubmodelElements.SubmodelElementCollection,
-                                        Aas.AasSubmodelElements.RelationshipElement,
-                                        Aas.AasSubmodelElements.AnnotatedRelationshipElement,
-                                        Aas.AasSubmodelElements.Capability,
-                                        Aas.AasSubmodelElements.Operation,
-                                        Aas.AasSubmodelElements.BasicEventElement,
-                                        Aas.AasSubmodelElements.Entity},
-                                    ticket: ticket);
-
-                            // ok?
-                            if (en != Aas.AasSubmodelElements.SubmodelElement)
-                            {
-                                // create, add
-                                Aas.ISubmodelElement sme2 =
-                                    AdminShellUtil.CreateSubmodelElementFromEnum(en);
-
-                                if (are.Annotations == null)
-                                    are.Annotations = new List<Aas.IDataElement>();
-
-                                are.Annotations.Add((Aas.IDataElement)sme2);
-
-                                // emit event
-                                this.AddDiaryEntry(are, new DiaryEntryStructChange(), allChildrenAffected: true);
-
-                                // redraw
-                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2);
-                            }
-                        }
-                        return new AnyUiLambdaActionNone();
-                    });
+                DispSmeListAddNewHelper<IDataElement>(env, stack, repo,
+                    key: "annotation:",
+                    are.Annotations,
+                    setValueLambda: (sml) => are.Annotations = sml,
+                    superMenu: superMenu);
 
                 this.AddHintBubble(
                     substack, hintMode,
@@ -3225,7 +3058,8 @@ namespace AasxPackageLogic
                                     {
                                         ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
                                         {
-                                            new Aas.LangStringShortNameTypeIec61360("EN?", sme.IdShort)
+                                            new Aas.LangStringShortNameTypeIec61360(
+                                                AdminShellUtil.GetDefaultLngIso639(), sme.IdShort)
                                         };
                                     }
 

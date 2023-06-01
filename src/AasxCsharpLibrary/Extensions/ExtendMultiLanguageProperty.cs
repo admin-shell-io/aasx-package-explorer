@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdminShellNS;
+using System;
 using System.Collections.Generic;
 
 namespace Extensions
@@ -69,7 +70,8 @@ namespace Extensions
 
             if (source is Property srcProp)
             {
-                elem.Value = new List<ILangStringTextType> { new LangStringTextType("EN?", srcProp.Value) };
+                elem.Value = new List<ILangStringTextType> { 
+                    new LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), srcProp.Value) };
                 if (srcProp.ValueId != null)
                     elem.ValueId = srcProp.ValueId.Copy();
             }
@@ -85,12 +87,14 @@ namespace Extensions
             if (source is AasCore.Aas3_0.Range srcRng)
             {
                 if (srcRng.Min != null)
-                    elem.Value = new List<ILangStringTextType> { new LangStringTextType("EN?", srcRng.Min) };
+                    elem.Value = new List<ILangStringTextType> { 
+                        new LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), srcRng.Min) };
             }
 
             if (source is File srcFile)
             {
-                elem.Value = new List<ILangStringTextType> { new LangStringTextType("EN?", srcFile.Value) };
+                elem.Value = new List<ILangStringTextType> { 
+                    new LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), srcFile.Value) };
             }
 
             return elem;

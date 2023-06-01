@@ -55,7 +55,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Manufacturer Name"
             }
           ],
@@ -111,7 +111,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "ManufacturerTypName"
             }
           ],
@@ -167,7 +167,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "PhysicalAddress"
             }
           ],
@@ -226,7 +226,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Country code"
             }
           ],
@@ -282,7 +282,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Street"
             }
           ],
@@ -338,7 +338,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "PostalCode"
             }
           ],
@@ -394,7 +394,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "City/town"
             }
           ],
@@ -450,7 +450,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "StateCounty"
             }
           ],
@@ -506,7 +506,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "TypClass"
             }
           ],
@@ -562,7 +562,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "InstanceId"
             }
           ],
@@ -618,7 +618,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "ChargeId"
             }
           ],
@@ -674,7 +674,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "CountryOfOrigin"
             }
           ],
@@ -730,7 +730,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "YearOfConstruction"
             }
           ],
@@ -786,7 +786,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "ProductMarking"
             }
           ],
@@ -842,7 +842,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "CEMarkingPresent"
             }
           ],
@@ -898,7 +898,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "File"
             }
           ],
@@ -962,7 +962,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "CRUUSLabelingPresent"
             }
           ],
@@ -1048,7 +1048,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "GLN of manufacturer"
             }
           ],
@@ -1104,7 +1104,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Supplier of the identifier"
             }
           ],
@@ -1160,7 +1160,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "MAN_PROD_NUM"
             }
           ],
@@ -1221,7 +1221,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Manufacturer product description"
             }
           ],
@@ -1280,7 +1280,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "name of supplier"
             }
           ],
@@ -1336,7 +1336,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "GLN of supplier"
             }
           ],
@@ -1392,7 +1392,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "SupplierIdProvider"
             }
           ],
@@ -1448,7 +1448,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "product article number of supplier"
             }
           ],
@@ -1504,7 +1504,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "SupplierTypName"
             }
           ],
@@ -1560,7 +1560,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Supplier product description"
             }
           ],
@@ -1616,7 +1616,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "ClassificationSystem"
             }
           ],
@@ -1672,7 +1672,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "SecondaryKeyTyp"
             }
           ],
@@ -1728,7 +1728,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "TypThumbnail"
             }
           ],
@@ -1784,7 +1784,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "AssetId"
             }
           ],
@@ -1840,7 +1840,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "SecondaryKeyInstance"
             }
           ],
@@ -1896,7 +1896,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Date of manufacture"
             }
           ],
@@ -1952,7 +1952,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DeviceRevision"
             }
           ],
@@ -2008,7 +2008,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "SoftwareRevision"
             }
           ],
@@ -2064,7 +2064,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "HardwareRevision"
             }
           ],
@@ -2120,7 +2120,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "QrCode"
             }
           ],
@@ -2176,7 +2176,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "OrganisationContactInfo"
             }
           ],
@@ -2232,7 +2232,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Role"
             }
           ],
@@ -2288,7 +2288,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Email"
             }
           ],
@@ -2344,7 +2344,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "URL"
             }
           ],
@@ -2400,7 +2400,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Phone"
             }
           ],
@@ -2456,7 +2456,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Fax"
             }
           ],
@@ -2524,7 +2524,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "CompanyLogo"
             }
           ],
@@ -2610,7 +2610,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DocumentationItem"
             }
           ],
@@ -2666,7 +2666,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DocumentType"
             }
           ],
@@ -2722,7 +2722,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DomainId"
             }
           ],
@@ -2778,7 +2778,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "IdType"
             }
           ],
@@ -2834,7 +2834,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DocumentId"
             }
           ],
@@ -2890,7 +2890,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DocumentDomainId"
             }
           ],
@@ -2946,7 +2946,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Role"
             }
           ],
@@ -3002,7 +3002,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "OrganisationId"
             }
           ],
@@ -3058,7 +3058,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "OrganisationName"
             }
           ],
@@ -3114,7 +3114,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "OrganisationOfficialName"
             }
           ],
@@ -3170,7 +3170,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Description"
             }
           ],
@@ -3226,7 +3226,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DocumentPartId"
             }
           ],
@@ -3282,7 +3282,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DocCategory"
             }
           ],
@@ -3338,7 +3338,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "ClassName"
             }
           ],
@@ -3394,7 +3394,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "ClassificationSystem"
             }
           ],
@@ -3450,7 +3450,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "DocumentVersionId"
             }
           ],
@@ -3506,7 +3506,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "LanguageCode"
             }
           ],
@@ -3562,7 +3562,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "VDI2770_Title"
             }
           ],
@@ -3618,7 +3618,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Summary"
             }
           ],
@@ -3674,7 +3674,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Keywords"
             }
           ],
@@ -3730,7 +3730,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "StatusValue"
             }
           ],
@@ -3786,7 +3786,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "SetDate"
             }
           ],
@@ -3842,7 +3842,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Purpose"
             }
           ],
@@ -3898,7 +3898,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "BasedOnProcedure"
             }
           ],
@@ -3954,7 +3954,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Comments"
             }
           ],
@@ -4010,7 +4010,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Type"
             }
           ],
@@ -4066,7 +4066,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "RefType"
             }
           ],
@@ -4122,7 +4122,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "ObjectId"
             }
           ],
@@ -4178,7 +4178,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "FileId"
             }
           ],
@@ -4234,7 +4234,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "FileName"
             }
           ],
@@ -4290,7 +4290,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "FileFormat"
             }
           ],
@@ -4346,7 +4346,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "File"
             }
           ],

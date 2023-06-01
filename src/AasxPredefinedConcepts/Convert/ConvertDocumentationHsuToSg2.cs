@@ -226,7 +226,8 @@ namespace AasxPredefinedConcepts.Convert
                                 cdSrc[i].GetSingleKey());
                         if (asProp != null)
                         {
-                            target.Value = new List<Aas.ILangStringTextType>() { new Aas.LangStringTextType("en?", "" + asProp.Value) };
+                            target.Value = new List<Aas.ILangStringTextType>() { new Aas.LangStringTextType(
+                                AdminShellUtil.GetDefaultLngIso639(), "" + asProp.Value) };
                         }
 
                         var asMLP = smcSource.Value.FindFirstSemanticIdAs<Aas.MultiLanguageProperty>(

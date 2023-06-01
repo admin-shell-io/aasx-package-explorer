@@ -79,6 +79,14 @@ namespace AasxPackageExplorer
                             .Add("Source", "Source package (.aasx2) file.")
                             .Add("Certificate", "Certificate (.pfx) file.")
                             .Add("Target", "Target package (.aasx) file.")))
+                .AddMenu(header: "Reports …", childs: (new AasxMenu())
+                    .AddWpfBlazor(name: "AssessSmt", header: "_Assess Submodel template …",
+                        help: "Checks for a set of defined features for a Submodel template " +
+                            "and reports the results. If no source package is given, the active " +
+                            "main package will be used.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("Source", "Source package (.aasx) file.")
+                            .Add("Target", "Target report file (.txt).")))
                 .AddSeparator()
                 .AddWpfBlazor(name: "OpenAux", header: "Open Au_xiliary AAS …", inputGesture: "Ctrl+X",
                     help: "Open existing AASX package to the auxiliary buffer (non visible in the tree).",

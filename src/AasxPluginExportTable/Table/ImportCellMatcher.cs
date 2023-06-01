@@ -83,7 +83,7 @@ namespace AasxPluginExportTable.Table
                         ExtendIDataSpecificationContent.GetKeyForIec61360()
                     }),
                     new Aas.DataSpecificationIec61360(new List<Aas.ILangStringPreferredNameTypeIec61360>() {
-                        new Aas.LangStringPreferredNameTypeIec61360("EN?", "")
+                        new Aas.LangStringPreferredNameTypeIec61360(AdminShellUtil.GetDefaultLngIso639(), "")
                     })));
         }
     }

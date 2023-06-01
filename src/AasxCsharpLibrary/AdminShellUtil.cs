@@ -351,7 +351,7 @@ namespace AdminShellNS
                     }
                 case AasSubmodelElements.Capability:
                     {
-                        return new Capability();
+                        return new Capability().UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.SubmodelElementCollection:
                     {
@@ -367,11 +367,11 @@ namespace AdminShellNS
                     }
                 case AasSubmodelElements.BasicEventElement:
                     {
-                        return new BasicEventElement(null, Direction.Input, StateOfEvent.Off);
+                        return new BasicEventElement(null, Direction.Input, StateOfEvent.Off).UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.Entity:
                     {
-                        return new Entity(EntityType.SelfManagedEntity);
+                        return new Entity(EntityType.SelfManagedEntity).UpdateFrom(sourceSme);
                     }
                 default:
                     {
@@ -899,6 +899,16 @@ namespace AdminShellNS
             return input;
         }
 
+        //
+        // language handling
+        // (used by some function on this basic level)
+        //
 
+        public static string DefaultLngIso639 = "en?";
+
+        public static string GetDefaultLngIso639()
+        {
+            return DefaultLngIso639;
+        }
     }
 }

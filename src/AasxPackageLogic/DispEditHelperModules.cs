@@ -491,89 +491,6 @@ namespace AasxPackageLogic
             }
         }
 
-        // MIHO: TODO remove
-#if OLD_not_needed
-        public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
-            List<Aas.IEmbeddedDataSpecification> references,
-            Action<List<Aas.IEmbeddedDataSpecification>> setOutput,
-            string[] addPresetNames = null, List<Aas.Key>[] addPresetKeyLists = null,
-            bool dataSpecRefsAreUsual = false,
-            Aas.IReferable relatedReferable = null)
-        {
-            // access
-            if (stack == null)
-                return;
-
-            // members
-            this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors.SubSection);
-
-            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck(
-                    () => { return !dataSpecRefsAreUsual && references != null
-                        && references.Count > 0; },
-                    "Check if a data specification is appropriate here. " +
-                    "This is only required in a minority of cases.",
-                    breakIfTrue: true,
-                    severityLevel: HintCheck.Severity.Notice) });
-            if (this.SafeguardAccess(
-                    stack, this.repo, references, "DataSpecification:", "Create data element!",
-                    v =>
-                    {
-                        setOutput?.Invoke(new List<Aas.IEmbeddedDataSpecification>());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    }))
-            {
-                if (editMode)
-                {
-                    // let the user control the number of references
-                    this.AddActionPanel(
-                        stack, "Specifications:",
-                        new[] { "Add Reference", "Delete last reference" }, repo,
-                        (buttonNdx) =>
-                        {
-                            if (buttonNdx == 0)
-                                //references.Add(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>()));
-                                references.Add(new EmbeddedDataSpecification(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>()), null));
-
-                            if (buttonNdx == 1)
-                            {
-                                if (references.Count > 0)
-                                    references.RemoveAt(references.Count - 1);
-                                else
-                                    setOutput?.Invoke(null);
-                            }
-
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        });
-                }
-
-                // now use the normal mechanism to deal with editMode or not ..
-                if (references != null && references.Count > 0)
-                {
-                    for (int i = 0; i < references.Count; i++)
-                    {
-                        this.AddHintBubble(stack, hintMode, new[] {
-                            new HintCheck(
-                                () => references[i].DataSpecification?.IsValid() != true,
-                                "A Reference without Keys makes no sense.")});
-
-                        this.AddKeyReference(
-                            stack, String.Format("dataSpec.[{0}]", i), references[i].DataSpecification, repo,
-                            packages, PackageCentral.PackageCentral.Selector.MainAux,
-                            "All",
-                            addEclassIrdi: true,
-                            relatedReferable: relatedReferable,
-                            showRefSemId: false);
-
-                        if (i < references.Count - 1)
-                            AddVerticalSpace(stack);
-                    }
-                }
-            }
-        }
-#endif
         //Added this method only to support embeddedDS from ConceptDescriptions
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
             List<Aas.IEmbeddedDataSpecification>? hasDataSpecification,
@@ -811,7 +728,8 @@ namespace AasxPackageLogic
                                             ExtendIDataSpecificationContent.GetKeyForIec61360()
                                         }),
                                         new Aas.DataSpecificationIec61360(new List<Aas.ILangStringPreferredNameTypeIec61360>() {
-                                            new Aas.LangStringPreferredNameTypeIec61360("EN?", "")
+                                            new Aas.LangStringPreferredNameTypeIec61360(
+                                                AdminShellUtil.GetDefaultLngIso639(), "")
                                         })));
 
                             if (buttonNdx == 2)

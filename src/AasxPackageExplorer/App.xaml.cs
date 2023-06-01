@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using AasxIntegrationBase;
 using AasxPackageLogic;
+using AdminShellNS;
 using AnyUi;
 
 // [assembly: System.Windows.Media.DisableDpiAwareness]
@@ -102,10 +104,11 @@ namespace AasxPackageExplorer
 
             // Build up of options
             Log.Singleton.Info("Application startup.");
-
             var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
-
             Options.ReplaceCurr(InferOptions(exePath, e.Args));
+
+            // commit some options to other global locations
+            AdminShellUtil.DefaultLngIso639 = AasxLanguageHelper.GetFirstLangCode(Options.Curr.DefaultLang) ?? "en?";
 
             // search for plugins?
             if (Options.Curr.PluginDir != null)

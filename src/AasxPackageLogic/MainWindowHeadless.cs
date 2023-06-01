@@ -33,7 +33,7 @@ namespace AasxPackageLogic
 {
     /// <summary>
     /// This class takes menu action tickets with fully provided arguments and dispatches these
-    /// to the functionality pieces provide by the "logic" class.
+    /// to the functionality pieces provided by the "logic" class.
     /// It would be an entry point to headless, commandline only applications.
     /// </summary>
     public class MainWindowHeadless : MainWindowTools

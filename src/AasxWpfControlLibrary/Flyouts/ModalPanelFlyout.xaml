@@ -41,7 +41,8 @@
                        
         <Grid x:Name="GridContentAndButtons" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Center">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <!-- MIHO-TEMP -->
+                <RowDefinition Height="300"/>
                 <RowDefinition Height="20"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>

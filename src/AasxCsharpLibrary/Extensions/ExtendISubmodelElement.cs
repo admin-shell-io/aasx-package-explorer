@@ -846,7 +846,8 @@ namespace Extensions
                 var res = submodelElements.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
                 if (res is MultiLanguageProperty mlp)
                 {
-                    mlp.Value = new List<ILangStringTextType>() { new LangStringTextType("EN?", srcProp.Value) };
+                    mlp.Value = new List<ILangStringTextType>() { 
+                        new LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), srcProp.Value) };
                     mlp.ValueId = srcProp.ValueId;
                     return res;
                 }

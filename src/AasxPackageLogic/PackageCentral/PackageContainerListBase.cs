@@ -271,7 +271,7 @@ namespace AasxPackageLogic.PackageCentral
                             assetInformation: new Aas.AssetInformation(Aas.AssetKind.Instance),
                             idShort: $"AAS{num++:00}_{fi.Tag}",
                             description: new List<Aas.ILangStringTextType>() {
-                                new Aas.LangStringTextType("en?", "" + fi.Description)
+                                new Aas.LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), "" + fi.Description)
                             });
                         pkg.AasEnv?.AssetAdministrationShells.Add(aas);
 

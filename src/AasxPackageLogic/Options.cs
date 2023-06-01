@@ -457,6 +457,12 @@ namespace AasxPackageLogic
             Cmd = "-allow-local-files")]
         public bool AllowLocalFiles = true;
 
+        [OptionDescription(Description =
+            "Designates the default language code in ISO639-1. This will be used for new language strings " +
+            "of uncertain language",
+            Cmd = "-default-lang")]
+        public string DefaultLang = "en?";
+
         /// <summary>
         /// Enumeration of generic accent color names
         /// </summary>

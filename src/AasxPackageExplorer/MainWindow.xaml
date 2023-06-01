@@ -628,6 +628,10 @@
 
 
         <Grid x:Name="GridFlyover" Grid.Row="0" Grid.Column="0" Visibility="Hidden" Background="#c0000977">
+            <!-- MIHO-TEMP -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="500"/>
+            </Grid.RowDefinitions>
         </Grid>
 
     </Grid>

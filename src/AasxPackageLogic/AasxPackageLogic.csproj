@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿  <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
@@ -14,7 +14,7 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 	<ItemGroup>
-		<Using Include="AasCore.Aas3_0"/>
+		<Using Include="AasCore.Aas3_0" />
 	</ItemGroup>
   <ItemGroup>
     <None Remove="LICENSE.txt" />

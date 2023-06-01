@@ -141,6 +141,7 @@ namespace Extensions
             else
                 return null;
         }
+
         public static void Validate(this IReferable referable, AasValidationRecordList results)
         {
             referable.BaseValidation(results);
@@ -155,7 +156,7 @@ namespace Extensions
             }
             else if (referable is ISubmodelElement submodelElement)
             {
-                submodelElement.Validate(results);
+                // No further validation for SME
             }
         }
 

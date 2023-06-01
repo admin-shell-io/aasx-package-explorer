@@ -62,5 +62,13 @@ namespace AasxIntegrationBase
             for (int i = 1; i < LangEnumToISO639String.Length; i++)
                 yield return LangEnumToISO639String[i];
         }
+
+        public static string GetFirstLangCode(string codes)
+        {
+            if (codes == null)
+                return null;
+            var lst = codes.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return lst.FirstOrDefault();
+        }
     }
 }
