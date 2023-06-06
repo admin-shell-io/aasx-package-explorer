@@ -16,7 +16,8 @@
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx", */
-  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_V3new_spiel1.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_V3new_spiel1.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02003-1-2_Template_TechnicalData.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\00_FestoDemoBox-Module-2-Kopie2.aasx",
   "WindowLeft": 200,
   "WindowTop": -1,
@@ -29,7 +30,7 @@
   "TemplateIdSubmodelTemplate": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
   "TemplateIdConceptDescription": "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
   "EclassDir": ".\\eclass\\",
-  "DefaultLang":  "en,de",
+  "DefaultLang": "en,de",
   /* "LogoFile": "SpecPI40_t.png", */
   "LogoFile": "PI40_and_IDTA.png",
   "QualifiersFile": "qualifier-presets.json",

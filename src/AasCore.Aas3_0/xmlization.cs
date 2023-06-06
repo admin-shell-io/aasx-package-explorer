@@ -24913,6 +24913,7 @@ namespace AasCore.Aas3_0
                     writer);
 
                 writer.WriteEndElement();
+
             }  // private void EmbeddedDataSpecificationToSequence
 
             public override void VisitEmbeddedDataSpecification(

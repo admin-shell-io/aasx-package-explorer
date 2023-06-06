@@ -1,4 +1,248 @@
 [
+  // "name" is being displayed in the UI dialogues
+  // "upgradeFrom" denotes an old Qualifier type, which is upgraded by
+  // "Upgrade Qualifiers" function.
+  {
+    "name": "Submodel templates | Cardinality",
+    "upgradeFrom": [ "Cardinality", "Multiplicity" ],
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+          }
+        ]
+      },
+      "type": "SMT/Cardinality",
+      "value": "ZeroToOne",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | Cardinality = ZeroToOne",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+          }
+        ]
+      },
+      "type": "SMT/Cardinality",
+      "value": "ZeroToOne",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | Cardinality = One",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+          }
+        ]
+      },
+      "type": "SMT/Cardinality",
+      "value": "One",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | Cardinality = OneToMany",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+          }
+        ]
+      },
+      "type": "SMT/Cardinality",
+      "value": "OneToMany",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | Cardinality = ZeroToMany",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+          }
+        ]
+      },
+      "type": "SMT/Cardinality",
+      "value": "ZeroToMany",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | EitherOr",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+          }
+        ]
+      },
+      "type": "SMT/EitherOr",
+      "value": "",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | InitialValue",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/InitialValue/1/0"
+          }
+        ]
+      },
+      "type": "SMT/InitialValue",
+      "value": "",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | DefaultValue",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/DefaultValue/1/0"
+          }
+        ]
+      },
+      "type": "SMT/DefaultValue",
+      "value": "",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | ExampleValue",
+    "upgradeFrom": [ "ExampleValue" ],
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0"
+          }
+        ]
+      },
+      "type": "SMT/ExampleValue",
+      "value": "",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | AllowedRange",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/AllowedRange/1/0"
+          }
+        ]
+      },
+      "type": "SMT/AllowedRange",
+      "value": "",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | AllowedIdShort",
+    "upgradeFrom": [ "AllowedIdShort" ],
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/AllowedIdShort/1/0"
+          }
+        ]
+      },
+      "type": "SMT/AllowedIdShort",
+      "value": "",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | AllowedValue",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/AllowedValue/1/0"
+          }
+        ]
+      },
+      "type": "SMT/AllowedValue",
+      "value": "",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | RequiredLang",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/RequiredLang/1/0"
+          }
+        ]
+      },
+      "type": "SMT/RequiredLang",
+      "value": "",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Submodel templates | AccessMode",
+    "qualifier": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/AccessMode/1/0"
+          }
+        ]
+      },
+      "type": "SMT/AccessMode",
+      "value": "",
+      "valueId": null
+    }
+  },
   {
     "name": "Expression semantic | Requirement",
     "qualifier": {
@@ -421,42 +665,6 @@
     }
   },
   {
-    "name": "GenericForms plugin | Multiplicity = ZeroToOne",
-    "qualifier": {
-      "semanticId": null,
-      "type": "Multiplicity",
-      "value": "ZeroToOne",
-      "valueId": null
-    }
-  },
-  {
-    "name": "GenericForms plugin | Multiplicity = One",
-    "qualifier": {
-      "semanticId": null,
-      "type": "Multiplicity",
-      "value": "One",
-      "valueId": null
-    }
-  },
-  {
-    "name": "GenericForms plugin | Multiplicity = OneToMany",
-    "qualifier": {
-      "semanticId": null,
-      "type": "Multiplicity",
-      "value": "OneToMany",
-      "valueId": null
-    }
-  },
-  {
-    "name": "GenericForms plugin | Multiplicity = ZeroToMany",
-    "qualifier": {
-      "semanticId": null,
-      "type": "Multiplicity",
-      "value": "ZeroToMany",
-      "valueId": null
-    }
-  },
-  {
     "name": "GenericForms plugin | FormIgnore = True",
     "qualifier": {
       "semanticId": null,
@@ -489,15 +697,6 @@
       "semanticId": null,
       "type": "FormChoices",
       "value": "To be filled; multiple choices separated by semicolon ';'.",
-      "valueId": null
-    }
-  },
-  {
-    "name": "GenericForms plugin | PresetValue",
-    "qualifier": {
-      "semanticId": null,
-      "type": "PresetValue",
-      "value": "To be filled; The default value for the property.",
       "valueId": null
     }
   }

@@ -39,10 +39,22 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * new CD / IEC61360 / "EN?" language makes no sense (either "", "en")
   casing!!! -- changed to be configurable via "DefaultLang"
 * Entity / add specificAssetId .. does not work
+* when Find/ Replace: before invoke "Replace all", "Start" needs to be invoked!
+* when auto-load, "Save as .." will not point the the intended directory -- fixed (?)
+* AssetInformation could be NULL -> trouble for serialization -- introduced "SilentFix30",
+  already warnings existed
+* convert V2.0/Cardinality to SMT/Cardinality
+* SMT assessment: check if embedded data spec (e.g. IEC61360) is present
 
 ## Notes (influencing todos)
 
 * : valueType with "xs:..." headers
+* introduced "SilentFix30" for fixing flaws in the serialization
+  THIS IS REALLY ANNOYING!!!
+  - AAS core crashes without AssetInformation
+  - AAS core crashes without EmbeddedDataSpecification.DataSpecificationContent
+  - AAS core crashes without EmbeddedDataSpecification.DataSpecificationContent.PreferredName
+
 
 ## Todo (old RC02)
 

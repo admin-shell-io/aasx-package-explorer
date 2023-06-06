@@ -89,6 +89,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 useAsync: true));
             res.Add(new AasxPluginActionDescriptionBase(
                 "import-time-series", "Import time series data from a table file."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "interop-export", "Provides service to export a interop table into specific formats."));
             return res.ToArray();
         }
 
@@ -224,6 +226,21 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 {
                     MenuItems = res
                 };
+            }
+
+            if (action == "interop-export")
+            {
+                if (args != null && args.Length >= 3
+                    && args[0] is string fmt
+                    && args[1] is string fn
+                    && args[2] is AasxPluginExportTableInterop.InteropTable table)
+                {
+                    if (fmt == "excel")
+                    {
+                        var res = InteropUtils.ExportExcel(fn, table);
+                        return new AasxPluginResultBaseObject(res.ToString(), res);
+                    }
+                }
             }
 
             // default

@@ -570,6 +570,10 @@ namespace AdminShellNS
         public bool SaveAs(string fn, bool writeFreshly = false, SerializationFormat prefFmt = SerializationFormat.None,
                 MemoryStream useMemoryStream = null, bool saveOnlyCopy = false)
         {
+            // silently fix flaws
+            _aasEnv?.SilentFix30();
+
+            // ok, which format?
             if (fn.ToLower().EndsWith(".xml"))
             {
                 // save only XML

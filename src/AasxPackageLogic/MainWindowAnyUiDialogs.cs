@@ -220,7 +220,7 @@ namespace AasxPackageLogic
                 var ucsf = await DisplayContextPlus.MenuSelectSaveFilenameAsync(
                     ticket, "File",
                     "Save AASX package",
-                    PackageCentral.Main.Filename,
+                    PackageCentral.MainItem.Filename,
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
                         (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
                         "All files (*.*)|*.*",
@@ -520,7 +520,8 @@ namespace AasxPackageLogic
                 try
                 {
                     var val = new MenuFuncValidateSmt();
-                    await val.PerformDialogue(cmd, menuItem, ticket, DisplayContext);
+                    val.PerformValidation(package: PackageCentral.Main, fn: PackageCentral.MainItem.Filename);
+                    await val.PerformDialogue(ticket, DisplayContext);
                 }
                 catch (Exception ex)
                 {

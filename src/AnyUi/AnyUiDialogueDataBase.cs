@@ -34,7 +34,12 @@ namespace AnyUi
         OK = 1,
         Cancel = 2,
         Yes = 6,
-        No = 7
+        No = 7,
+        // Extra buttons to be specified by the user
+        Extra0 = 0x100,
+        Extra1 = 0x101,
+        Extra2 = 0x102,
+        Extra3 = 0x103
     }
 
     public enum AnyUiMessageBoxButton
@@ -42,7 +47,8 @@ namespace AnyUi
         OK = 0,
         OKCancel = 1,
         YesNoCancel = 3,
-        YesNo = 4
+        YesNo = 4,
+        Nothing = 5,
     }
 
     /// <summary>
@@ -513,10 +519,10 @@ namespace AnyUi
     /// </summary>
     public class AnyUiDialogueDataModalPanel : AnyUiDialogueDataMessageBox
     {
-        public AnyUiStackPanel Panel;
+        public AnyUiPanel Panel;
 
-        protected Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> _renderPanel;
-        public Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> RenderPanel
+        protected Func<AnyUiDialogueDataModalPanel, AnyUiPanel> _renderPanel;
+        public Func<AnyUiDialogueDataModalPanel, AnyUiPanel> RenderPanel
         {
             get => _renderPanel;
         }
@@ -524,15 +530,42 @@ namespace AnyUi
         public object Data;
 
         /// <summary>
+        /// By default, the contents of the modal dialogue are rendered in a 
+        /// scrollable fashion. Therefore, some minimal heights for resizable
+        /// elements should be provided.
+        /// However, in order to provide some resize-to-overall-height behaviour,
+        /// the scroll area can be disabled.
+        /// </summary>
+        public bool DisableScrollArea = false;
+
+        /// <summary>
+        /// Buttons to be provided for the modal dialogue
+        /// </summary>
+        public AnyUiMessageBoxButton DialogButtons = AnyUiMessageBoxButton.OKCancel;
+
+        /// <summary>
+        /// Extra buttons additinally to the <c>DialogButtons</c>.
+        /// </summary>
+        public string[] ExtraButtons = null;
+
+        /// <summary>
         /// Will execute the renderPanel lambda based on provided data object.
         /// Will store the result as <c>Panel</c> and the initial <c>Data</c>.
         /// </summary>
         public void ActivateRenderPanel(
             object data,
-            Func<AnyUiDialogueDataModalPanel, AnyUiStackPanel> renderPanel)
+            Func<AnyUiDialogueDataModalPanel, AnyUiPanel> renderPanel,
+            bool? disableScrollArea = null,
+            AnyUiMessageBoxButton? dialogButtons = null,
+            string[] extraButtons = null)
         {
             Data = data;
             _renderPanel = renderPanel;
+            if (disableScrollArea.HasValue)
+                DisableScrollArea = disableScrollArea.Value;
+            if (dialogButtons.HasValue)
+                DialogButtons = dialogButtons.Value;
+            ExtraButtons = extraButtons;
             Panel = _renderPanel?.Invoke(this);
         }
 

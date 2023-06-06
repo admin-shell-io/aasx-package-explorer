@@ -66,54 +66,104 @@ namespace AasxIntegrationBase
                     new Uri(
                         "/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 
-            // buttons
-            List<string> buttonDefs = new List<string>();
-            List<AnyUiMessageBoxResult> buttonResults = new List<AnyUiMessageBoxResult>();
-            if (buttons == AnyUiMessageBoxButton.OK)
+            var layout = LayoutButtons(buttons);
+            RenderButtonLayout(
+                this, this.StackPanelButtons, layout, 
+                StackPanelButton_Click, out buttonToResult);
+        }
+
+        public class MessageButtonLayout
+        {
+            /// <summary>
+            /// Title of the buttons to display
+            /// </summary>
+            public List<string> buttonDefs = new List<string>();
+
+            /// <summary>
+            /// Result this very button shall trigger
+            /// </summary>
+            public List<AnyUiMessageBoxResult> buttonResults = new List<AnyUiMessageBoxResult>();
+        }
+
+        public static MessageButtonLayout LayoutButtons(
+            AnyUiMessageBoxButton dialogButtons,
+            string[] extraButtons = null)
+        {
+            var res = new MessageButtonLayout();
+            if (dialogButtons == AnyUiMessageBoxButton.OK)
             {
-                buttonDefs.Add("OK");
-                buttonResults.Add(AnyUiMessageBoxResult.OK);
+                res.buttonDefs.Add("OK");
+                res.buttonResults.Add(AnyUiMessageBoxResult.OK);
             }
-            if (buttons == AnyUiMessageBoxButton.OKCancel)
+            if (dialogButtons == AnyUiMessageBoxButton.OKCancel)
             {
-                buttonDefs.Add("OK");
-                buttonResults.Add(AnyUiMessageBoxResult.OK);
-                buttonDefs.Add("Cancel");
-                buttonResults.Add(AnyUiMessageBoxResult.Cancel);
+                res.buttonDefs.Add("OK");
+                res.buttonResults.Add(AnyUiMessageBoxResult.OK);
+                res.buttonDefs.Add("Cancel");
+                res.buttonResults.Add(AnyUiMessageBoxResult.Cancel);
             }
-            if (buttons == AnyUiMessageBoxButton.YesNo)
+            if (dialogButtons == AnyUiMessageBoxButton.YesNo)
             {
-                buttonDefs.Add("Yes");
-                buttonResults.Add(AnyUiMessageBoxResult.Yes);
-                buttonDefs.Add("No");
-                buttonResults.Add(AnyUiMessageBoxResult.No);
+                res.buttonDefs.Add("Yes");
+                res.buttonResults.Add(AnyUiMessageBoxResult.Yes);
+                res.buttonDefs.Add("No");
+                res.buttonResults.Add(AnyUiMessageBoxResult.No);
             }
-            if (buttons == AnyUiMessageBoxButton.YesNoCancel)
+            if (dialogButtons == AnyUiMessageBoxButton.YesNoCancel)
             {
-                buttonDefs.Add("Yes");
-                buttonResults.Add(AnyUiMessageBoxResult.Yes);
-                buttonDefs.Add("No");
-                buttonResults.Add(AnyUiMessageBoxResult.No);
-                buttonDefs.Add("Cancel");
-                buttonResults.Add(AnyUiMessageBoxResult.Cancel);
+                res.buttonDefs.Add("Yes");
+                res.buttonResults.Add(AnyUiMessageBoxResult.Yes);
+                res.buttonDefs.Add("No");
+                res.buttonResults.Add(AnyUiMessageBoxResult.No);
+                res.buttonDefs.Add("Cancel");
+                res.buttonResults.Add(AnyUiMessageBoxResult.Cancel);
             }
-            this.StackPanelButtons.Children.Clear();
+            if (extraButtons != null)
+                for (int i=0; i<extraButtons.Length; i++)
+                {
+                    res.buttonDefs.Add(extraButtons[i]);
+                    res.buttonResults.Add(AnyUiMessageBoxResult.Extra0 + i);
+                }
+            return res;
+        }
+
+        public static void RenderButtonLayout(
+            UserControl control,
+            StackPanel stack,
+            MessageButtonLayout layout,
+            RoutedEventHandler click,
+            out Dictionary<Button, AnyUiMessageBoxResult> buttonToResult,
+            double fontSize = 14,
+            double buttonWidth = 40,
+            double buttonHeight = 40)
+        {
+            // access
             buttonToResult = new Dictionary<Button, AnyUiMessageBoxResult>();
-            foreach (var bd in buttonDefs)
+            if (control == null || stack == null || layout == null)
+                return;
+
+            // clear state
+            stack.Children.Clear();
+            stack.Visibility = (layout.buttonDefs.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+
+            // render
+            foreach (var bd in layout.buttonDefs)
             {
                 var b = new Button();
-                b.Style = (Style)FindResource("TranspRoundCorner");
+                b.Style = (Style) control.FindResource("TranspRoundCorner");
                 b.Content = "" + bd;
-                b.Height = 40;
-                b.Width = 40;
+                b.Height = buttonHeight;
+                b.MinWidth = buttonWidth;
+                b.Padding = new Thickness(8, 0, 8, 10);
+                b.FontSize = fontSize;
                 b.Margin = new Thickness(5, 0, 5, 0);
                 b.Foreground = Brushes.White;
-                b.Click += StackPanelButton_Click;
-                this.StackPanelButtons.Children.Add(b);
-                if (buttonResults.Count > 0)
+                b.Click += click;
+                stack.Children.Add(b);
+                if (layout.buttonResults.Count > 0)
                 {
-                    buttonToResult[b] = buttonResults[0];
-                    buttonResults.RemoveAt(0);
+                    buttonToResult[b] = layout.buttonResults[0];
+                    layout.buttonResults.RemoveAt(0);
                 }
             }
         }

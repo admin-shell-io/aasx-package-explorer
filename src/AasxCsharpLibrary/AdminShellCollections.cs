@@ -59,4 +59,19 @@ namespace AdminShellNS
 
         public void Clear() { _forward.Clear(); _backward.Clear(); }
     }
+
+    public class IntValueDictionary<K> : Dictionary<K, int>
+    {
+        public void IncKey(K key)
+        {
+            if (!this.ContainsKey(key))
+                this.Add(key, 0);
+            else
+            {
+                var i = this[key];
+                this.Remove(key);
+                this.Add(key, i + 1);
+            }
+        }
+    }
 }

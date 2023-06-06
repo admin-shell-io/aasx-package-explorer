@@ -14,6 +14,8 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AdminShellNS;
@@ -75,6 +77,16 @@ namespace AasxIntegrationBaseWpf
                 _timer2.Start();
                 return _timer2;
             }
+        }
+
+        public static void TakeOverGridPosition(
+            System.Windows.UIElement uieDst,
+            System.Windows.UIElement uieSrc)
+        {
+            Grid.SetRow(uieDst, Grid.GetRow(uieSrc));
+            Grid.SetRowSpan(uieDst, Grid.GetRowSpan(uieSrc));
+            Grid.SetColumn(uieDst, Grid.GetColumn(uieSrc));
+            Grid.SetColumnSpan(uieDst, Grid.GetColumnSpan(uieSrc));
         }
     }
 }

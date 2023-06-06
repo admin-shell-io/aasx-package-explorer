@@ -22,8 +22,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="30"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
@@ -36,15 +35,14 @@
         </Viewbox>
 
         <TextBlock x:Name="TextBlockCaption" Grid.Row="0" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Caption .."/></TextBlock>
-
-        <Grid x:Name="GridOuter" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"></Grid>
                        
-        <Grid x:Name="GridContentAndButtons" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Center">
+        <Grid x:Name="GridContentAndButtons" Grid.Row="1" Grid.RowSpan="1" Grid.Column="1">
             <Grid.RowDefinitions>
                 <!-- MIHO-TEMP -->
-                <RowDefinition Height="300"/>
-                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="5"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -55,12 +53,20 @@
                           VerticalScrollBarVisibility="Auto">
             </ScrollViewer>
 
-            <Button x:Name="ButtonCancel" IsDefault="True" Grid.Row="2" Grid.Column="0" 
+            <!-- <Button x:Name="ButtonCancel" IsDefault="True" Grid.Row="2" Grid.Column="0" 
                     Content="Cancel" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" 
                     Padding="6" Margin="0,8,5,10" Click="Button_Click"/>
             <Button x:Name="ButtonOk" IsDefault="True" Grid.Row="2" Grid.Column="1" 
                     Content="Ok" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" 
-                    Padding="6" Margin="5,8,0,10" Click="Button_Click"/>
+                    Padding="6" Margin="5,8,0,10" Click="Button_Click"/> -->
+
+            <StackPanel x:Name="StackPanelButtons"  Orientation="Horizontal"
+                        Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                        HorizontalAlignment="Center">
+                <Button Style="{DynamicResource TranspRoundCorner}" Height="28" MinWidth="80" Foreground="White" Margin="5, 8, 0, 10" Padding="6" FontSize="18">Cancel</Button>
+                <Button Style="{DynamicResource TranspRoundCorner}" Height="28" MinWidth="80" Foreground="White" Margin="5, 8, 0, 10" Padding="6" FontSize="18">OK</Button>
+            </StackPanel>
+        
         </Grid>
 
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>

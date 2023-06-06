@@ -76,7 +76,8 @@ namespace Extensions
         public static EmbeddedDataSpecification CreateIec61360WithContent(DataSpecificationIec61360 content = null)
         {
             if (content == null)
-                content = new DataSpecificationIec61360(null);
+                content = new DataSpecificationIec61360(
+                    new List<ILangStringPreferredNameTypeIec61360>());
 
             var res = new EmbeddedDataSpecification(
                 new Reference(ReferenceTypes.ExternalReference,

@@ -380,6 +380,9 @@ namespace AnyUi
                            wpf.HorizontalContentAlignment =
                             (HorizontalAlignment)((int) cntl.HorizontalContentAlignment.Value);
 
+                       if (cntl.FontMono)
+                            wpf.FontFamily = new FontFamily("Consolas");
+
                        if (rd?.FontSizeRel != null)
                             wpf.FontSize = SystemFonts.MessageFontSize * rd.FontSizeRel.Value;
                        if (cntl.FontSize.HasValue)
@@ -898,6 +901,8 @@ namespace AnyUi
                                 wpf.Padding = GetWpfTickness(cntl.Padding);
                             if (cntl.TextWrapping.HasValue)
                                 wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
+                            if (cntl.IsReadOnly)
+                                wpf.IsReadOnly = cntl.IsReadOnly;
 
                             wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)
                                 ((int) cntl.VerticalScrollBarVisibility);

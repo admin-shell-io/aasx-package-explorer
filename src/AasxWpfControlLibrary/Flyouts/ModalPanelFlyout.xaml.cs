@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxIntegrationBaseWpf;
 using AnyUi;
 using Newtonsoft.Json;
 
@@ -36,6 +37,11 @@ namespace AasxPackageExplorer
         public AnyUiDialogueDataModalPanel DiaData = new AnyUiDialogueDataModalPanel();
 
         public AnyUiDisplayContextWpf DisplayContext = null;
+
+        protected UIElement RenderedContentContainer = null;
+
+        private Dictionary<Button, AnyUiMessageBoxResult> buttonToResult =
+            new Dictionary<Button, AnyUiMessageBoxResult>();
 
         //
         // Start
@@ -54,6 +60,14 @@ namespace AasxPackageExplorer
             // outer window
             TextBlockCaption.Text = "" + DiaData?.Caption;
 
+            // buttons
+            var layout = MessageBoxFlyout.LayoutButtons(DiaData.DialogButtons, DiaData.ExtraButtons);
+            MessageBoxFlyout.RenderButtonLayout(
+                this, this.StackPanelButtons, layout,
+                Button_Click, out buttonToResult,
+                fontSize: 18,
+                buttonHeight: 28, buttonWidth: 80);
+
             // create the panel contents
             CreateWpfPanel();
         }
@@ -68,15 +82,10 @@ namespace AasxPackageExplorer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (sender == ButtonOk)
+            if (sender is Button && buttonToResult.ContainsKey(sender as Button))
             {
-                DiaData.Result = true;
-                ControlClosed?.Invoke();
-            }
-
-            if (sender == ButtonCancel)
-            {
-                DiaData.Result = false;
+                var res = buttonToResult[sender as Button];
+                DiaData.Result = res == AnyUiMessageBoxResult.OK || res == AnyUiMessageBoxResult.Yes;
                 ControlClosed?.Invoke();
             }
         }
@@ -99,12 +108,37 @@ namespace AasxPackageExplorer
                 ForegroundControl = null // leave untouched                
             };
 
-            // fill the scroll viewer
+            // direct or scrollable?
             var panelCnt = DisplayContext.GetOrCreateWpfElement(DiaData.Panel, renderDefaults: rd);
-            ScrollViewContent.Content = null;
-            ScrollViewContent.Content = panelCnt;
-            panelCnt.UpdateLayout();
-            this.UpdateLayout();
+            if (!DiaData.DisableScrollArea)
+            {
+                // use the existing the scroll viewer
+                ScrollViewContent.Content = null;
+                ScrollViewContent.Content = panelCnt;
+                RenderedContentContainer = panelCnt;
+                panelCnt.UpdateLayout();
+                this.UpdateLayout();
+            } 
+            else
+            {
+                // delete the inital scroll viewer or rendered container, add directly
+                if (RenderedContentContainer == null)
+                {
+                    AnyUiHelper.TakeOverGridPosition(panelCnt, ScrollViewContent);
+                    GridContentAndButtons.Children.Remove(ScrollViewContent);
+                }
+                else
+                {
+                    AnyUiHelper.TakeOverGridPosition(panelCnt, RenderedContentContainer);
+                    GridContentAndButtons.Children.Remove(RenderedContentContainer);
+                }
+
+                GridContentAndButtons.Children.Add(panelCnt);
+                RenderedContentContainer = panelCnt;
+
+                panelCnt.UpdateLayout();
+                this.UpdateLayout();
+            }
         }
 
         public void LambdaActionAvailable(AnyUiLambdaActionBase la)

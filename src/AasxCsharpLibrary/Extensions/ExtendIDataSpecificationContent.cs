@@ -36,7 +36,8 @@ namespace Extensions
         public static IDataSpecificationContent ContentFactoryFor(ContentTypes ct)
         {
             if (ct == ContentTypes.Iec61360)
-                return new DataSpecificationIec61360(null);
+                return new DataSpecificationIec61360(
+                    new List<ILangStringPreferredNameTypeIec61360>());
             //TODO:jtikekar DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
             if (ct == ContentTypes.PhysicalUnit)

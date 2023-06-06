@@ -1725,6 +1725,7 @@ namespace AasxPackageLogic
                             "Consider creating ConceptDescriptions from ECLASS or from existing SubmodelElements.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
+
                 this.AddActionPanel(
                     stack, "ConceptDescriptions (missing):",
                     repo: repo, superMenu: superMenu,
@@ -1732,7 +1733,7 @@ namespace AasxPackageLogic
                     ticketMenu: new AasxMenu()
                         .AddAction("create-eclass", "Create \U0001f844 ECLASS",
                             "Create missing CDs searching from ECLASS.")
-                        .AddAction("create-smes", "Create \U0001f844 SMEs",
+                        .AddAction("create-smes", "Create \U0001f844 SMEs (all)",
                             "Create missing CDs from semanticId of used SMEs."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
@@ -1764,6 +1765,8 @@ namespace AasxPackageLogic
                     repo: repo, superMenu: superMenu,
                     firstColumnWidth: FirstColumnWidth.Large,
                     ticketMenu: new AasxMenu()
+                        .AddAction("upgrade-qualifiers", "Upgrade qualifiers",
+                            "Upgrades particular qualifiers from V2.0 to V3.0 for selected element.")
                         .AddAction("remove-qualifiers", "Remove qualifiers",
                             "Removes all qualifiers for selected element.")
                         .AddAction("remove-extensions", "Remove extensions",
@@ -1771,6 +1774,54 @@ namespace AasxPackageLogic
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
+                        {
+                            // confirm
+                            if (ticket?.ScriptMode != true
+                                && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                                    "This operation will affect all Qualifers of " +
+                                    "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "Upgrade qualifiers",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                return new AnyUiLambdaActionNone();
+
+                            // action
+                            var pfn = Options.Curr.QualifiersFile;
+                            try
+                            {
+                                // read
+                                var presets = ReadQualiferPresets(pfn);
+                                if (presets == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"JSON file for Quialifer presets not defined nor existing ({pfn}).");
+                                    return new AnyUiLambdaActionNone();
+                                }
+
+                                QualiferUpgradeReferable(presets, submodel);
+
+                                submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                                {
+                                    // upgrade
+                                    QualiferUpgradeReferable(presets, sme);
+
+                                    // recurse
+                                    return true;
+                                });
+
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"While upgrade Qualifiers by accessing ({pfn})");
+                            }
+
+                            // emit event for Submodel and children
+                            this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
+
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                        }
+
+                        if (buttonNdx == 1)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -1798,7 +1849,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                         }
 
-                        if (buttonNdx == 1)
+                        if (buttonNdx == 2)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -2555,7 +2606,6 @@ namespace AasxPackageLogic
                             "Creates an ConceptDescription from this element and " +
                             "assigns the SubmodelElement to it.");
 
-                // TODO: MIHO, check again
                 if (sme.EnumeratesChildren())
                 {
                     cdmenu.AddAction("create-all", "Create \U0001f844 all",
@@ -2692,7 +2742,6 @@ namespace AasxPackageLogic
                                 $"while {res.Item1} invalid semanticIds were present and " +
                                 $"{res.Item2} CDs were already existing.");
                         }
-
 
                         return new AnyUiLambdaActionNone();
                     });

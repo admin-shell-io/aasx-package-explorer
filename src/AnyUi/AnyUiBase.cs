@@ -997,6 +997,7 @@ namespace AnyUi
         public AnyUiHorizontalAlignment? HorizontalContentAlignment;
         public double? FontSize;
         public AnyUiFontWeight? FontWeight;
+        public bool FontMono = false;
 
         public AnyUiBrush GetBackground() => Background;
     }
@@ -1270,6 +1271,7 @@ namespace AnyUi
         public bool AcceptsReturn;
         public bool MultiLine;
         public Nullable<int> MaxLines;
+        public bool IsReadOnly = false;
 
         public string Text = null;
     }

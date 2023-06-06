@@ -68,7 +68,126 @@ namespace AasxPackageLogic
         public class QualifierPreset
         {
             public string name = "";
+            public List<string> upgradeFrom;
             public Aas.Qualifier qualifier = new Aas.Qualifier("", Aas.DataTypeDefXsd.String);
+        }
+
+        public List<QualifierPreset> ReadQualiferPresets(string pfn)
+        {
+            // access options
+            if (pfn == null || !System.IO.File.Exists(pfn))
+                return null;
+
+            // read file contents
+            var init = System.IO.File.ReadAllText(pfn);
+
+            // special read
+            JsonTextReader reader = new JsonTextReader(new StringReader(init));
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.Converters.Add(new AdminShellConverters.AdaptiveAasIClassConverter(
+                AdminShellConverters.AdaptiveAasIClassConverter.ConversionMode.AasCore));
+            var presets = serializer.Deserialize<List<QualifierPreset>>(reader);
+
+            // give back
+            return presets;
+        }
+
+        public QualifierPreset FindQualiferInPresets(List<QualifierPreset> presets, string name)
+        {
+            // access
+            if (presets == null || name == null)
+                return null;
+
+            // iterate
+            foreach (var qp in presets)
+                if (true == qp.qualifier?.Type?.Trim().Equals(
+                    name.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                    return qp;
+
+            // no :-(
+            return null;
+        }
+
+        //public void QualiferUpgradeSingle(
+        //    List<QualifierPreset> presets, 
+        //    List<IQualifier> qualifiers, 
+        //    string oldName, string newName)
+        //{
+        //    // access
+        //    if (presets == null || qualifiers == null || oldName == null || newName == null)
+        //        return;
+
+        //    var newQP = FindQualiferInPresets(presets, newName);
+        //    if (newQP?.qualifier == null)
+        //        return;
+
+        //    // go thru, in place substitution
+        //    int qi = 0;
+        //    while (qi < qualifiers.Count)
+        //    {
+        //        // next?
+        //        if (true != qualifiers[qi].Type?.Trim()?.Equals(
+        //                oldName.Trim(), StringComparison.InvariantCultureIgnoreCase))
+        //        {
+        //            qi++;
+        //            continue;
+        //        }
+
+        //        // found oldName, replace
+        //        qualifiers.RemoveAt(qi);
+        //        qualifiers.Add(newQP.qualifier);
+        //    }
+        //}
+
+        //public void QualiferUpgradeReferableOLD(List<QualifierPreset> presets, IReferable rf)
+        //{
+        //    // access
+        //    if (presets == null || rf == null)
+        //        return;
+
+        //    // try upgrade qualifiers
+        //    if (rf is IQualifiable qlf && qlf.Qualifiers != null)
+        //    {
+        //        QualiferUpgradeSingle(presets, qlf.Qualifiers, "Multiplicity", "SMT/Cardinality");
+        //        QualiferUpgradeSingle(presets, qlf.Qualifiers, "Cardinality", "SMT/Cardinality");
+        //        QualiferUpgradeSingle(presets, qlf.Qualifiers, "ExampleValue", "SMT/ExampleValue");
+        //        QualiferUpgradeSingle(presets, qlf.Qualifiers, "AllowedIdShort", "SMT/AllowedIdShort");
+        //    }
+        //}
+
+        public void QualiferUpgradeReferable(List<QualifierPreset> presets, IReferable rf)
+        {
+            // access
+            if (presets == null || rf == null)
+                return;
+            if (!(rf is IQualifiable qlf && qlf.Qualifiers != null))
+                return;
+
+            // over presets
+            foreach (var prs in presets)
+            {
+                // find old updgrade type in list of Qualifiers of Referable
+                if (prs.upgradeFrom == null)
+                    continue;
+
+                // cross match
+                List<IQualifier> toReplace = new List<IQualifier>();
+                foreach (var uf in prs.upgradeFrom)
+                    foreach (var q in qlf.Qualifiers)
+                        if (uf != null && uf.Trim().Equals(
+                            q?.Type?.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                            toReplace.Add(q);
+
+                // execute replace
+                foreach (var tr in toReplace)
+                {
+                    qlf.Qualifiers.Remove(tr);
+                    var nq = prs.qualifier.Copy();
+                    nq.Value = tr.Value;
+                    nq.ValueId = tr.ValueId;
+                    qlf.Qualifiers.Add(nq);
+                }
+            }
         }
 
         public void QualifierHelper(
@@ -104,23 +223,16 @@ namespace AasxPackageLogic
                         if (buttonNdx == 1)
                         {
                             var pfn = Options.Curr.QualifiersFile;
-                            if (pfn == null || !System.IO.File.Exists(pfn))
-                            {
-                                Log.Singleton.Error(
-                                    $"JSON file for Quialifer presets not defined nor existing ({pfn}).");
-                                return new AnyUiLambdaActionNone();
-                            }
                             try
                             {
-                                // read file contents
-                                var init = System.IO.File.ReadAllText(pfn);
-                                // var presets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
-
-                                JsonTextReader reader = new JsonTextReader(new StringReader(init));
-                                JsonSerializer serializer = new JsonSerializer();
-                                serializer.Converters.Add(new AdminShellConverters.AdaptiveAasIClassConverter(
-                                    AdminShellConverters.AdaptiveAasIClassConverter.ConversionMode.AasCore));
-                                var presets = serializer.Deserialize<List<QualifierPreset>>(reader);
+                                // read
+                                var presets = ReadQualiferPresets(pfn);
+                                if (presets == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"JSON file for Quialifer presets not defined nor existing ({pfn}).");
+                                    return new AnyUiLambdaActionNone();
+                                }
 
                                 // define dialogue and map presets into dialogue items
                                 var uc = new AnyUiDialogueDataSelectFromList();

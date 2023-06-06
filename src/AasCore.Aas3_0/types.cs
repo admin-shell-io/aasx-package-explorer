@@ -12210,10 +12210,12 @@ namespace AasCore.Aas3_0
             yield return DataSpecificationContent;
 
             // Recurse
-            foreach (var anItem in DataSpecificationContent.Descend())
-            {
-                yield return anItem;
-            }
+            // TODO (MIHO, 2023-06-05): give to AAS core
+            if (DataSpecificationContent != null)
+                foreach (var anItem in DataSpecificationContent.Descend())
+                {
+                    yield return anItem;
+                }
         }
 
         /// <summary>

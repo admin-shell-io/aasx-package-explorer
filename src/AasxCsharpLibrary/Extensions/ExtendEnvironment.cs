@@ -24,6 +24,9 @@ namespace Extensions
 
         #endregion
 
+        /// <summary>
+        /// Deprecated? Not compatible with AAS core?
+        /// </summary>
         public static AasValidationRecordList ValidateAll(this AasCore.Aas3_0.Environment environment)
         {
             // collect results
@@ -37,6 +40,9 @@ namespace Extensions
             return results;
         }
 
+        /// <summary>
+        /// Deprecated? Not compatible with AAS core?
+        /// </summary>
         public static int AutoFix(this AasCore.Aas3_0.Environment environment, IEnumerable<AasValidationRecord> records)
         {
             // access
@@ -71,6 +77,44 @@ namespace Extensions
             }
 
             // return number of applied fixes
+            return res;
+        }
+
+        /// <summary>
+        /// This function tries to silently fix some issues preventing the environment
+        /// are parts of it to be properly serilaized.
+        /// </summary>
+        /// <returns>Number of fixes taken</returns>
+        public static int SilentFix30(this AasCore.Aas3_0.Environment env)
+        {
+            // access
+            int res = 0;
+            if (env == null)
+                return res;
+
+            // AAS core crashes without AssetInformation
+            if (env.AssetAdministrationShells != null)
+                foreach (var aas in env.AssetAdministrationShells)
+                    if (aas.AssetInformation == null)
+                    {
+                        aas.AssetInformation = new AssetInformation(assetKind: AssetKind.NotApplicable);
+                        res++;
+                    }
+
+            // AAS core crashes without EmbeddedDataSpecification.DataSpecificationContent
+            // AAS core crashes without EmbeddedDataSpecification.DataSpecificationContent.PreferredName
+            foreach (var rf in env.FindAllReferable())
+                if (rf is IHasDataSpecification hds)
+                    if (hds.EmbeddedDataSpecifications != null)
+                        foreach (var eds in hds.EmbeddedDataSpecifications)
+                        {
+                            if (eds.DataSpecificationContent == null)
+                                eds.DataSpecificationContent = 
+                                    new DataSpecificationIec61360(
+                                        new List<ILangStringPreferredNameTypeIec61360>());
+                        }
+
+            // ok
             return res;
         }
 
@@ -445,7 +489,7 @@ namespace Extensions
         }
         public static ISubmodel FindSubmodel(this AasCore.Aas3_0.Environment environment, IReference submodelReference)
         {
-            if (submodelReference == null)
+            if (environment == null || submodelReference == null)
             {
                 return null;
             }
