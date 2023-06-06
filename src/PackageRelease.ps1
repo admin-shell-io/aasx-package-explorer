@@ -30,26 +30,26 @@ function PackageRelease($outputDir)
     # Define plugins
     ##
     
-    #$smallPlugins = $(
-    #"AasxPluginAdvancedTextEditor",
-    #"AasxPluginBomStructure",
-    #"AasxPluginDocumentShelf",
-    #"AasxPluginExportTable",
-    #"AasxPluginGenericForms",
-    #"AasxPluginImageMap",
-    #"AasxPluginMtpViewer",
-    #"AasxPluginPlotting",
+    $smallPlugins = $(
+    "AasxPluginAdvancedTextEditor",
+    "AasxPluginBomStructure",
+    "AasxPluginDocumentShelf",
+    "AasxPluginExportTable",
+    "AasxPluginGenericForms",
+    "AasxPluginImageMap",
+    "AasxPluginMtpViewer",
+    "AasxPluginPlotting",
     #"AasxPluginSmdExporter",
-    #"AasxPluginTechnicalData",
+    "AasxPluginTechnicalData"
     #"AasxPluginUaNetClient",
     #"AasxPluginUaNetServer"
-    #)
+    )
 
-    #$allPlugins = $smallPlugins.Clone()
-    #$allPlugins += "AasxPluginWebBrowser"
+    $allPlugins = $smallPlugins.Clone()
+    $allPlugins += "AasxPluginWebBrowser"
 
-    #function MakePackage($identifier, $plugins)
-    function MakePackage($identifier)
+    #function MakePackage($identifier)
+    function MakePackage($identifier, $plugins)
     {
         $destinationDir = Join-Path $outputDir $identifier
 
@@ -87,7 +87,7 @@ function PackageRelease($outputDir)
         # Plug-ins
         ##
 
-        <#$pluginsDir = Join-Path $aasxPEDir "plugins"
+        $pluginsDir = Join-Path $aasxPEDir "plugins"
         New-Item -ItemType Directory -Force -Path $pluginsDir|Out-Null
 
         foreach ($plugin in $plugins)
@@ -97,7 +97,7 @@ function PackageRelease($outputDir)
                 -Path (Join-Path $buildDir $plugin) `
                 -Recurse `
                 -Destination $pluginsDir
-        }#>
+        }
 
         ##
         # Compress
@@ -124,9 +124,20 @@ function PackageRelease($outputDir)
         # BlazorUI
         ##
 
-        Write-Host "* Copying BlazorUI to: $destinationDir"
+        <#Write-Host "* Copying BlazorUI to: $destinationDir"
         Copy-Item `
             -Path (Join-Path $buildDir "BlazorUI") `
+            -Recurse `
+            -Destination $destinationDir
+        #>
+
+        ##
+        # BlazorExplorer
+        ##
+
+        Write-Host "* Copying BlazorExlorer to: $destinationDir"
+        Copy-Item `
+            -Path (Join-Path $buildDir "BlazorExplorer") `
             -Recurse `
             -Destination $destinationDir
 
@@ -137,7 +148,7 @@ function PackageRelease($outputDir)
         $archPath = Join-Path $outputDir "$identifier.zip"
         Write-Host "* Compressing: $archPath"
         Compress-Archive `
-            -Path (Join-Path $destinationDir "BlazorUI") `
+            -Path (Join-Path $destinationDir "BlazorExplorer") `
             -DestinationPath $archPath
     }
 
@@ -145,7 +156,7 @@ function PackageRelease($outputDir)
     # Make packages
     ##
 
-    #MakePackage -identifier "aasx-package-explorer" -plugins $allPlugins
+    MakePackage -identifier "aasx-package-explorer" -plugins $allPlugins
 
     MakePackage -identifier "aasx-package-explorer-small" #-plugins $smallPlugins
 

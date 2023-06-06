@@ -38,20 +38,21 @@ function Main
         # This list projects that are to be build for the release
         $projects = @(
         "AasxPackageExplorer"
-        #"AasxPluginAdvancedTextEditor",
-        #"AasxPluginBomStructure",
-        #"AasxPluginDocumentShelf",
-        #"AasxPluginExportTable",
-        #"AasxPluginGenericForms",
-        #"AasxPluginImageMap",
-        #"AasxPluginMtpViewer",
-        #"AasxPluginPlotting",
+        "AasxPluginAdvancedTextEditor",
+        "AasxPluginBomStructure",
+        "AasxPluginDocumentShelf",
+        "AasxPluginExportTable",
+        "AasxPluginGenericForms",
+        "AasxPluginImageMap",
+        "AasxPluginMtpViewer",
+        "AasxPluginPlotting",
         #"AasxPluginSmdExporter",
-        #"AasxPluginTechnicalData",
+        "AasxPluginTechnicalData",
         #"AasxPluginUaNetClient",
         #"AasxPluginUaNetServer",
-        #"AasxPluginWebBrowser",
-        "BlazorUI"
+        "AasxPluginWebBrowser",
+        "BlazorExplorer"
+        #"BlazorUI"
         )
 
         foreach ($project in $projects)
@@ -61,7 +62,8 @@ function Main
 
             Write-Host "Building $project to: $projectOutputPath"
 
-            if ($project -ne "BlazorUI")
+            #if ($project -ne "BlazorUI")
+            if ($project -ne "BlazorExplorer")
             {
                 & dotnet.exe publish `
                 --output $projectOutputPath `
