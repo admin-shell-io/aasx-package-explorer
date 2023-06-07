@@ -1,0 +1,7 @@
+How to exclude/include Plugins/Projects from Release
+    1. PackageRelease.ps1 (this file contains the plugins that are added to the zip)
+        -> starting at line 33, the plugins that are being used for the release zip are stated
+        -> simply add or remove them from the list
+    2. BuildForRelease.ps1 (this file contains the projects that will be built)
+        -> starting at line 39, the projects that are being built during the release pipeline are stated
+        -> simply add or remove them from the list 

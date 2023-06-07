@@ -4,13 +4,13 @@ on:
   pull_request:
     branches:
       - master
-      - MIHO/JoinMMV3RC02andDynMen_FQ1_Q1
+      - MIHO/*V3*
     types: [opened, synchronize, reopened, edited]
 
   push:
     branches:
       - master
-      - MIHO/JoinMMV3RC02andDynMen_FQ1_Q1
+      - MIHO/*V3*
 
 jobs:
   Check-release:
@@ -60,5 +60,5 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
-          name: aasx-package-explorer-blazorui.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
-          path: artefacts/release/LATEST.alpha/aasx-package-explorer-blazorui.zip
+          name: aasx-package-explorer-blazorexplorer.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/aasx-package-explorer-blazorexplorer.zip
