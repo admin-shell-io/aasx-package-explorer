@@ -72,65 +72,83 @@ namespace AasxIntegrationBase
                 StackPanelButton_Click, out buttonToResult);
         }
 
-        public class MessageButtonLayout
+        /// <summary>
+        /// Single description of a button in a modal dialogue
+        /// </summary>
+        public class ModalFooterButton
         {
             /// <summary>
-            /// Title of the buttons to display
+            /// Title of the button to display
             /// </summary>
-            public List<string> buttonDefs = new List<string>();
+            public string Title = "";
+
+            /// <summary>
+            /// Indicate the "hero" button
+            /// </summary>
+            public bool Primary = false;
 
             /// <summary>
             /// Result this very button shall trigger
             /// </summary>
-            public List<AnyUiMessageBoxResult> buttonResults = new List<AnyUiMessageBoxResult>();
+            public AnyUiMessageBoxResult FinalResult = new AnyUiMessageBoxResult();
+
+            public ModalFooterButton() { }
+
+            public ModalFooterButton(string title, AnyUiMessageBoxResult result, bool primary = false)
+            {
+                Title = title;
+                FinalResult = result;
+                Primary = primary;
+            }
         }
 
-        public static MessageButtonLayout LayoutButtons(
+        /// <summary>
+        /// Layout of all buttons in a modal dialogue
+        /// </summary>
+        public class ModalFooterButtonLayout : List<ModalFooterButton>
+        {
+        }
+
+        public static ModalFooterButtonLayout LayoutButtons(
             AnyUiMessageBoxButton dialogButtons,
             string[] extraButtons = null)
         {
-            var res = new MessageButtonLayout();
-            if (dialogButtons == AnyUiMessageBoxButton.OK)
+            var res = new ModalFooterButtonLayout();
+
+			// build up from left to right!
+
+			if (extraButtons != null)
+				for (int i = 0; i < extraButtons.Length; i++)
+					res.Add(new ModalFooterButton(extraButtons[i], AnyUiMessageBoxResult.Extra0 + i));
+
+			if (dialogButtons == AnyUiMessageBoxButton.OK)
             {
-                res.buttonDefs.Add("OK");
-                res.buttonResults.Add(AnyUiMessageBoxResult.OK);
+                res.Add(new ModalFooterButton("OK", AnyUiMessageBoxResult.OK, primary: true));
             }
             if (dialogButtons == AnyUiMessageBoxButton.OKCancel)
             {
-                res.buttonDefs.Add("OK");
-                res.buttonResults.Add(AnyUiMessageBoxResult.OK);
-                res.buttonDefs.Add("Cancel");
-                res.buttonResults.Add(AnyUiMessageBoxResult.Cancel);
+				res.Add(new ModalFooterButton("Cancel", AnyUiMessageBoxResult.Cancel));
+				res.Add(new ModalFooterButton("OK", AnyUiMessageBoxResult.OK, primary: true));
             }
             if (dialogButtons == AnyUiMessageBoxButton.YesNo)
             {
-                res.buttonDefs.Add("Yes");
-                res.buttonResults.Add(AnyUiMessageBoxResult.Yes);
-                res.buttonDefs.Add("No");
-                res.buttonResults.Add(AnyUiMessageBoxResult.No);
+                res.Add(new ModalFooterButton("No", AnyUiMessageBoxResult.No));
+                res.Add(new ModalFooterButton("Yes", AnyUiMessageBoxResult.Yes, primary: true));
             }
             if (dialogButtons == AnyUiMessageBoxButton.YesNoCancel)
             {
-                res.buttonDefs.Add("Yes");
-                res.buttonResults.Add(AnyUiMessageBoxResult.Yes);
-                res.buttonDefs.Add("No");
-                res.buttonResults.Add(AnyUiMessageBoxResult.No);
-                res.buttonDefs.Add("Cancel");
-                res.buttonResults.Add(AnyUiMessageBoxResult.Cancel);
+                res.Add(new ModalFooterButton("Cancel", AnyUiMessageBoxResult.Cancel));
+                res.Add(new ModalFooterButton("No", AnyUiMessageBoxResult.No));
+                res.Add(new ModalFooterButton("Yes", AnyUiMessageBoxResult.Yes, primary: true));
             }
-            if (extraButtons != null)
-                for (int i=0; i<extraButtons.Length; i++)
-                {
-                    res.buttonDefs.Add(extraButtons[i]);
-                    res.buttonResults.Add(AnyUiMessageBoxResult.Extra0 + i);
-                }
+
             return res;
         }
 
         public static void RenderButtonLayout(
             UserControl control,
             StackPanel stack,
-            MessageButtonLayout layout,
+            ModalFooterButtonLayout layout,
             RoutedEventHandler click,
             out Dictionary<Button, AnyUiMessageBoxResult> buttonToResult,
             double fontSize = 14,
@@ -144,14 +162,14 @@ namespace AasxIntegrationBase
 
             // clear state
             stack.Children.Clear();
-            stack.Visibility = (layout.buttonDefs.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+            stack.Visibility = (layout.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
 
             // render
-            foreach (var bd in layout.buttonDefs)
+            foreach (var btn in layout)
             {
                 var b = new Button();
                 b.Style = (Style) control.FindResource("TranspRoundCorner");
-                b.Content = "" + bd;
+                b.Content = "" + btn.Title;
                 b.Height = buttonHeight;
                 b.MinWidth = buttonWidth;
                 b.Padding = new Thickness(8, 0, 8, 10);
@@ -160,11 +178,7 @@ namespace AasxIntegrationBase
                 b.Foreground = Brushes.White;
                 b.Click += click;
                 stack.Children.Add(b);
-                if (layout.buttonResults.Count > 0)
-                {
-                    buttonToResult[b] = layout.buttonResults[0];
-                    layout.buttonResults.RemoveAt(0);
-                }
+                buttonToResult[b] = btn.FinalResult;
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿@page "/AnyUiFlyoutModalPanel"
 @using AnyUi
+@using AasxIntegrationBase
 @using BlazorUI.Data
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.BlazorSession Session
@@ -29,31 +30,20 @@
 
 	</div>
 	<div class="modal-footer">
-
-		@if (ddmp.Buttons == AnyUiMessageBoxButton.OK)
-		{
-			<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(AnyUiMessageBoxResult.OK)">OK</button>
+		@{
+			var layout = MessageBoxFlyout.LayoutButtons(ddmp.DialogButtons, ddmp.ExtraButtons);
+			foreach (var btn in layout)
+			{
+				@if (btn.Primary)
+				{
+					<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(btn.FinalResult)">@btn.Title</button>
+				}
+				else
+				{
+					<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(btn.FinalResult)">@btn.Title</button>
+				}
+			}
 		}
-
-		@if (ddmp.Buttons == AnyUiMessageBoxButton.OKCancel)
-		{
-			<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(AnyUiMessageBoxResult.Cancel)">Cancel</button>
-			<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(AnyUiMessageBoxResult.OK)">OK</button>
-		}
-
-		@if (ddmp.Buttons == AnyUiMessageBoxButton.YesNo)
-		{
-			<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(AnyUiMessageBoxResult.No)">No</button>
-			<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(AnyUiMessageBoxResult.Yes)">Yes</button>
-		}
-
-		@if (ddmp.Buttons == AnyUiMessageBoxButton.YesNoCancel)
-		{
-			<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(AnyUiMessageBoxResult.Cancel)">Cancel</button>
-			<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(AnyUiMessageBoxResult.No)">No</button>
-			<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(AnyUiMessageBoxResult.Yes)">Yes</button>
-		}
-
 	</div>
 }
 

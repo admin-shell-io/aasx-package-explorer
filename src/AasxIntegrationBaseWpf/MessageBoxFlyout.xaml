@@ -64,25 +64,7 @@
         </Grid>
 
         <Viewbox Grid.Column="1" Grid.Row="3">
-            <StackPanel x:Name="StackPanelButtons"  Orientation="Horizontal">
-                <!--
-                <Border CornerRadius="3" BorderBrush="White" BorderThickness="1" Margin="1">
-                    <Label Width="40" Height="40" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" Foreground="White">PE</Label>
-                </Border>
-                <Border CornerRadius="3" BorderBrush="White" BorderThickness="1" Margin="1">
-                    <Border.Background>
-                        <SolidColorBrush Color="#8888ff" Opacity="0.50"/>
-                    </Border.Background>
-                    <Label Width="40" Height="40" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" Foreground="White">A</Label>
-                </Border>
-                <Border CornerRadius="3" BorderBrush="White" BorderThickness="1" Margin="1">
-                    <Border.Background>
-                        <SolidColorBrush Color="#8888ff" Opacity="0.20"/>
-                    </Border.Background>
-                    <Label Width="40" Height="40" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" Foreground="White">XX</Label>
-                </Border>
-                -->
-
+            <StackPanel x:Name="StackPanelButtons" Orientation="Horizontal">
                 <Button Style="{DynamicResource TranspRoundCorner}" Height="40" Width="40" Foreground="White" Margin="5,0,5,0">A</Button>
                 <Button Style="{DynamicResource TranspRoundCorner}" Height="40" Width="40" Foreground="White" Margin="5,0,5,0">BB</Button>
                 <Button Style="{DynamicResource TranspRoundCorner}" Height="40" Width="40" Foreground="White" Margin="5,0,5,0">CC</Button>

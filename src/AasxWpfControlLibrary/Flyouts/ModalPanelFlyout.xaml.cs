@@ -85,7 +85,11 @@ namespace AasxPackageExplorer
             if (sender is Button && buttonToResult.ContainsKey(sender as Button))
             {
                 var res = buttonToResult[sender as Button];
-                DiaData.Result = res == AnyUiMessageBoxResult.OK || res == AnyUiMessageBoxResult.Yes;
+                DiaData.ResultButton = res;
+                DiaData.Result = 
+                    res == AnyUiMessageBoxResult.OK 
+                    || res == AnyUiMessageBoxResult.Yes
+                    || res >= AnyUiMessageBoxResult.Extra0;
                 ControlClosed?.Invoke();
             }
         }

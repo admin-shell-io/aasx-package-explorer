@@ -234,47 +234,54 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    // establish target filename
-                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
+                    if (SaveFilenameReworkTargetFilename(ucsf, ref targetFn))
                     {
-                        targetFn = PackageContainerUserFile.BuildUserFilePath(ucsf.TargetFileName);
+                        // not local
                         targetFnForLRU = null;
                     }
 
-                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
-                    {
-                        // produce a .tmp file
-                        targetFn = System.IO.Path.GetTempFileName();
-                        targetFnForLRU = null;
+                    //// establish target filename
+                    //if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
+                    //{
+                    //    targetFn = PackageContainerUserFile.BuildUserFilePath(ucsf.TargetFileName);
+                    //    targetFnForLRU = null;
+                    //}
 
-                        // rename better
-                        var _filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ucsf.Filter);
-                        targetFn = AnyUiDialogueDataOpenFile.ApplyFilterItem(
-                            fi: _filterItems[ucsf.FilterIndex],
-                            fn: targetFn,
-                            final: 2);
-                    }
+                    //if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
+                    //{
+                    //    // produce a .tmp file
+                    //    targetFn = System.IO.Path.GetTempFileName();
+                    //    targetFnForLRU = null;
 
-                    // if not local, do a bit of voodoo ..
-                    if (!isLocalFile && !isUserFile && PackageCentral.MainItem.Container != null)
-                    {
-                        // establish local
-                        if (!await PackageCentral.MainItem.Container.SaveLocalCopyAsync(
-                            targetFn,
-                            runtimeOptions: PackageCentral.CentralRuntimeOptions))
-                        {
-                            // Abort
-                            LogErrorToTicket(ticket,
-                                "Not able to copy current AASX file to local file. Aborting!");
-                            return;
-                        }
+                    //    // rename better
+                    //    var _filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ucsf.Filter);
+                    //    targetFn = AnyUiDialogueDataOpenFile.ApplyFilterItem(
+                    //        fi: _filterItems[ucsf.FilterIndex],
+                    //        fn: targetFn,
+                    //        userFn: ucsf.TargetFileName,
+                    //        final: 3);
+                    //}
 
-                        // re-load
-                        MainWindow.UiLoadPackageWithNew(
-                            PackageCentral.MainItem, null, targetFn, onlyAuxiliary: false,
-                            storeFnToLRU: targetFnForLRU);
-                        return;
-                    }
+                    //// if not local, do a bit of voodoo ..
+                    //if (!isLocalFile && !isUserFile && PackageCentral.MainItem.Container != null)
+                    //{
+                    //    // establish local
+                    //    if (!await PackageCentral.MainItem.Container.SaveLocalCopyAsync(
+                    //        targetFn,
+                    //        runtimeOptions: PackageCentral.CentralRuntimeOptions))
+                    //    {
+                    //        // Abort
+                    //        LogErrorToTicket(ticket,
+                    //            "Not able to copy current AASX file to local file. Aborting!");
+                    //        return;
+                    //    }
+
+                    //    // re-load
+                    //    MainWindow.UiLoadPackageWithNew(
+                    //        PackageCentral.MainItem, null, targetFn, onlyAuxiliary: false,
+                    //        storeFnToLRU: targetFnForLRU);
+                    //    return;
+                    //}
 
                     //
                     // ELSE .. already local
@@ -1587,6 +1594,40 @@ namespace AasxPackageLogic
 
             // nothing found
             return false;
+        }
+
+        public static bool SaveFilenameReworkTargetFilename(
+            AnyUiDialogueDataSaveFile ucsf,
+            ref string targetFn)
+        {
+            // access
+            if (ucsf == null)
+                return false;
+            var notLocal = false;
+
+            // establish target filename
+            if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
+            {
+                targetFn = PackageContainerUserFile.BuildUserFilePath(ucsf.TargetFileName);
+                notLocal = true;
+            }
+
+            if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
+            {
+                // produce a .tmp file
+                targetFn = System.IO.Path.GetTempFileName();
+                notLocal = true;
+
+                // rename better
+                var _filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ucsf.Filter);
+                targetFn = AnyUiDialogueDataOpenFile.ApplyFilterItem(
+                    fi: _filterItems[ucsf.FilterIndex],
+                    fn: targetFn,
+                    userFn: ucsf.TargetFileName,
+                    final: 3);
+            }
+
+            return notLocal;
         }
     }
 }

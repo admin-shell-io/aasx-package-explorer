@@ -426,9 +426,6 @@ namespace AasxPackageExplorer
 
             Recs.AddComment($"{cdsWithoutDataSpec} ConceptDescriptions without DataSpecificationContent found.");
 
-            if (cdsWithoutDataSpec > 0)
-                
-
             Recs.AddComment("");
             Recs.AddComment("Summary of assessments over all SMTs in this AASX package");
             Recs.AddComment("=========================================================");
@@ -462,6 +459,75 @@ namespace AasxPackageExplorer
         // Outer UI
         //
 
+        protected bool WriteTargetFile(int fmt, string targetFn)
+        {
+            if (fmt == 0)
+            {
+                // try call export
+                try
+                {
+                    // pretty easy
+                    System.IO.File.WriteAllText(targetFn,
+                        Recs.ToText());
+
+                    // state success
+                    Log.Singleton.Info("Result file written to: " + targetFn);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "Generate SMT assessment Text report to: " + targetFn);
+                    return false;
+                }
+
+                // ok
+                return true;
+            }
+
+            if (fmt == 1)
+            {
+                // try call export
+                try
+                {
+                    // find table export plug-in
+                    var pi = Plugins.FindPluginInstance("AasxPluginExportTable");
+                    if (pi == null || !pi.HasAction("interop-export"))
+                    {
+                        Log.Singleton.Error(
+                            "No plug-in 'AasxPluginExportTable' with appropriate " +
+                            "action 'interop-export()' found.");
+                        return false;
+                    }
+
+                    // create client
+                    // ReSharper disable ConditionIsAlwaysTrueOrFalse
+                    var resClient =
+                        pi.InvokeAction(
+                            "interop-export", "excel", targetFn, Recs.ToTable())
+                        as AasxPluginResultBaseObject;
+                    // ReSharper enable ConditionIsAlwaysTrueOrFalse
+                    if (resClient == null || ((bool)resClient.obj) != true)
+                    {
+                        Log.Singleton.Error(
+                            "Plug-in 'AasxPluginExportTable' cannot export!");
+                        return false;
+                    }
+
+                    // state success
+                    Log.Singleton.Info("Result file written to: " + targetFn);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "Generate SMT assessment Excel report to: " + targetFn);
+                    return false;
+                }
+
+                // ok
+                return true;
+            }
+
+            return false;
+        }
+
         public async Task PerformDialogue(
             AasxMenuActionTicket ticket,
             AnyUiContextBase displayContext)
@@ -473,8 +539,8 @@ namespace AasxPackageExplorer
             var uc = new AnyUiDialogueDataModalPanel("Assess Submodel template ..");
             uc.ActivateRenderPanel(this,
                 disableScrollArea: true,
-                dialogButtons: AnyUiMessageBoxButton.Nothing,
-                extraButtons: new[] { "Export Excel" },
+                dialogButtons: AnyUiMessageBoxButton.OK,
+                extraButtons: new[] { "Save as text report ..", "Save as Excel report .." },
                 renderPanel: (uci) =>
                 {
                     // create grid (no panel!!)
@@ -497,6 +563,13 @@ namespace AasxPackageExplorer
                     tb.IsReadOnly = true;
                     tb.FontSize = 0.8f;
 
+                    if (displayContext is AnyUiContextPlusDialogs dcpd 
+                        && dcpd.HasCapability(AnyUiContextCapability.Blazor))
+                    {
+                        // web browser needs a scrollable element
+                        tb.MinHeight = 400;
+                    }
+
                     // put report into it
                     tb.Text = Recs.ToText();
 
@@ -515,77 +588,6 @@ namespace AasxPackageExplorer
                             return new AnyUiLambdaActionModalPanelReRender(uc);
                         });
 
-                    AnyUiUIElement.RegisterControl(
-                        helper.AddSmallButtonTo(utilsGrid, 0, 1, content: "Export Excel ..",
-                            padding: new AnyUiThickness(5, 0, 5, 0), margin: new AnyUiThickness(5, 2, 5, 2)),
-                        setValueAsync: async (o) =>
-                        {
-                            // ask for filename
-                            if (!(displayContext is AnyUiContextPlusDialogs dcpd))
-                                return new AnyUiLambdaActionNone();
-                            
-                            var ucsf = await dcpd.MenuSelectSaveFilenameAsync(
-                                ticket: null, argName: null,
-                                caption: "Select Excel file to save ..",
-                                proposeFn: "new.xlsx",
-                                filter: "Excel file (*.xlsx)|*.xlsx|All files (*.*)|*.*",
-                                msg: "Not found");
-                            if (ucsf?.Result != true)
-                                return new AnyUiLambdaActionNone();
-
-                            // try call export
-                            try
-                            {
-                                // find table export plug-in
-                                var pi = Plugins.FindPluginInstance("AasxPluginExportTable");
-                                if (pi == null || !pi.HasAction("interop-export"))
-                                {
-                                    Log.Singleton.Error(
-                                        "No plug-in 'AasxPluginExportTable' with appropriate " +
-                                        "action 'interop-export()' found.");
-                                    return new AnyUiLambdaActionNone();
-                                }
-
-                                // create client
-                                // ReSharper disable ConditionIsAlwaysTrueOrFalse
-                                var resClient =
-                                    pi.InvokeAction(
-                                        "interop-export", "excel", ucsf.TargetFileName, Recs.ToTable()) 
-                                    as AasxPluginResultBaseObject;
-                                // ReSharper enable ConditionIsAlwaysTrueOrFalse
-                                if (resClient == null || ((bool) resClient.obj) != true)
-                                {
-                                    Log.Singleton.Error(
-                                        "Plug-in 'AasxPluginExportTable' cannot export!");
-                                    return new AnyUiLambdaActionNone();
-                                }
-
-                                // if it is a download, provide link
-                                if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download
-                                    && dcpd.WebBrowserServicesAllowed())
-                                {
-                                    try
-                                    {
-                                        await dcpd.WebBrowserDisplayOrDownloadFile(
-                                            ucsf.TargetFileName, "application/octet-stream");
-                                        Log.Singleton.Info("Download initiated.");
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Log.Singleton.Error(
-                                            ex, $"When downloading saved file");
-                                        return new AnyUiLambdaActionNone();
-                                    }
-                                }
-                            } catch (Exception ex)
-                            {
-                                Log.Singleton.Error(ex, "Calling AasxPluginExportTable:interop-export for Excel");
-                                return new AnyUiLambdaActionNone();
-                            }
-
-                            return new AnyUiLambdaActionNone();
-                        });
-
                     // give back
                     return g;
                 });
@@ -593,6 +595,76 @@ namespace AasxPackageExplorer
             if (!(await displayContext.StartFlyoverModalAsync(uc)))
                 return;
 
+            //
+            // Generation of reports outside of the dialogue because
+            // of web interface
+            //
+
+            if (displayContext is AnyUiContextPlusDialogs dcpd)
+            {
+                // for later use
+                AnyUiDialogueDataSaveFile ucsf = null;
+                int exportFmt = -1;
+
+                // text?
+                if (uc.ResultButton == AnyUiMessageBoxResult.Extra0)
+                {
+                    // ask for filename
+                    ucsf = await dcpd.MenuSelectSaveFilenameAsync(
+                        ticket: null, argName: null,
+                        caption: "Select Text file to save ..",
+                        proposeFn: "new.txt",
+                        filter: "Text file (*.txt)|*.txt|All files (*.*)|*.*",
+                        msg: "Not found");
+                    exportFmt = 0;
+                }
+
+                // excel
+                if (uc.ResultButton == AnyUiMessageBoxResult.Extra1)
+                {
+                    // ask for filename
+                    ucsf = await dcpd.MenuSelectSaveFilenameAsync(
+                        ticket: null, argName: null,
+                        caption: "Select Excel file to save ..",
+                        proposeFn: "new.xlsx",
+                        filter: "Excel file (*.xlsx)|*.xlsx|All files (*.*)|*.*",
+                        msg: "Not found");
+                    exportFmt = 1;
+                }
+
+                if (ucsf != null && exportFmt >= 0)
+                {
+                    if (ucsf?.Result != true)
+                        return;
+
+                    var targetFn = ucsf.TargetFileName;
+                    MainWindowAnyUiDialogs.SaveFilenameReworkTargetFilename(ucsf, ref targetFn);
+
+                    WriteTargetFile(exportFmt, targetFn);
+
+                    string fileWritten = null;
+                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download
+                        && dcpd.WebBrowserServicesAllowed())
+                        fileWritten = targetFn;
+
+                    // if it is a download, provide link
+                    if (fileWritten != null)
+                    {
+                        try
+                        {
+                            await dcpd.WebBrowserDisplayOrDownloadFile(
+                                fileWritten, "application/octet-stream");
+                            Log.Singleton.Info("Download initiated.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(
+                                ex, $"When downloading written file");
+                            return;
+                        }
+                    }
+                }
+            }
         }
     }
 }

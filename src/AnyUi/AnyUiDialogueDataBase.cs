@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0;
@@ -210,9 +211,13 @@ namespace AnyUi
         /// </summary>
         /// <param name="fi">Decomposed filter item</param>
         /// <param name="fn">Ingoing filename</param>
+        /// <param name="userFn">User provided wish for filename</param>
         /// <param name="final">If 1, will set extension, if no extension is provided. 
-        /// If 2, will enfoce that result filename has correct extension</param>
-        public static string ApplyFilterItem(FilterItem fi, string fn, int final = 0)
+        /// If 2, will enfoce that result filename has correct extension.
+        /// If 3, will take path of <c>fn</c>, filename of <c>userFn</c> and correct extension.</param>
+        public static string ApplyFilterItem(
+            FilterItem fi, string fn, int final = 0,
+            string userFn = null)
         {
             // access
             if (fi == null || fn == null)
@@ -240,6 +245,12 @@ namespace AnyUi
                 // add if empty
                 if (fnExt == "" && fiExt != "" && fiExt != "*")
                     fn += fiExt;
+            }
+            else
+            if (final == 3 && userFn != null)
+            {
+                fn = Path.Combine(Path.GetDirectoryName(fn),
+                    Path.GetFileNameWithoutExtension(userFn) + fiExt);
             }
             else
             {

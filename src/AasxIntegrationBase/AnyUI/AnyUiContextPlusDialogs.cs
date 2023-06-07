@@ -174,7 +174,7 @@ namespace AnyUi
         {
             await Task.Yield();
             return null;
-        }
+        }        
 
         /// <summary>
         /// If ticket does not contain the filename named by <c>argName</c>,
@@ -192,7 +192,7 @@ namespace AnyUi
         {
             await Task.Yield();
             return false;
-        }
+        }        
 
         /// <summary>
         /// Selects a text either from user or from ticket.

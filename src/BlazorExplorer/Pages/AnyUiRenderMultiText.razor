@@ -4,6 +4,7 @@
 @using Extensions
 @using AnyUi
 @using BlazorUI.Data
+@using System.Text;
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.BlazorSession bi
 
@@ -42,6 +43,9 @@
     public AnyUiUIElement Parent { get; set; }
 
     [Parameter]
+    public int TextWrapColumn { get; set; }
+
+    [Parameter]
     public AnyUiUIElement Element
     {
         get { return _element; }
@@ -70,10 +74,48 @@
     //
     // Business
     //
-    
+
     protected AnyUiUIElement _element = null;
 
     string[] lines;
+
+    protected string WrapLinesByColumn(string input, int col)
+    {
+        if (input == null)
+            return null;
+        if (col <= 0)
+            return input;
+        var sb = new StringBuilder();
+        int len = 0;
+        bool danglingNL = false;
+        for (int i=0; i<input.Length; i++)
+        {
+            if (input[i] == '\r')
+                continue;
+            if (input[i] == '\n')
+            {
+                if (!danglingNL)
+                    sb.Append('\n');
+                danglingNL = false;
+                len = 0;
+                continue;
+            }
+            // wrap?
+            if (len >= col && " -+/.:;".IndexOf(input[i]) >= 0)
+            {
+                sb.Append(input[i]);
+                sb.Append('\n');
+                len = 0;
+                danglingNL = true;
+            }
+            else
+            {
+                sb.Append(input[i]);
+                len++;
+            }
+        }
+        return sb.ToString();
+    }
 
     protected override void OnParametersSet()
     {
@@ -88,6 +130,9 @@
         if (Element is AnyUiLabel lb)
             toShow = lb.Content;
 
-        lines = toShow?.Split('\n');
+        if (Element is AnyUiTextBox txb)
+            toShow = txb.Text;
+
+        lines = WrapLinesByColumn(toShow, TextWrapColumn)?.Split('\n');
     }
 }

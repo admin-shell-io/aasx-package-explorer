@@ -110,12 +110,11 @@ dialog header {
     float: none !important;
 }
 
-/* light content portions if a modal dialog */
+/* light content portions of a modal dialog */
 .modal-content-light {
     color: #303030;
     background-color: #edeeff;
 }
-
 
 /* every nav-link?? */
 /* .nav-link {

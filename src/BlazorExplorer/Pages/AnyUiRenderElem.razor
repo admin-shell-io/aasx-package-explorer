@@ -339,11 +339,29 @@
         }
         else
         {
+            style.SetMinMaxWidthHeight(Element, setWidth: false, setHeight: true);
 
-            <textarea class="form-control" style="@style; resize:none; overflow:hidden " value="@chtb.Text"
-                @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), false))"
-                @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
-
+            if (!chtb.IsReadOnly)
+            {
+                <textarea class="form-control" style="@style; resize:none; overflow:hidden " value="@chtb.Text"
+                    @oninput="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), false))"
+                    @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString(), true))" />
+            }
+            else
+            {
+                var wrapCol = (chtb.TextWrapping.HasValue 
+                    && chtb.TextWrapping != AnyUiTextWrapping.NoWrap) ? 80 : 0;
+                <div class="modal-content-light" style="padding:3px; border-radius:4px;">
+                    <span class="selectable-text" style="@style">
+                        <AnyUiRenderMultiText DisplayData="@DisplayData"
+                              Session="@Session"
+                              Parent="@Parent"
+                              Element="@Element"
+                              TextWrapColumn="@wrapCol"/>
+                    </span>
+                </div>
+                //<div>@chtb.Text</div>
+            }
         }
 
         @code {

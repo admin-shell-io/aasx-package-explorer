@@ -62,7 +62,7 @@
 
             <StackPanel x:Name="StackPanelButtons"  Orientation="Horizontal"
                         Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                        HorizontalAlignment="Center">
+                        HorizontalAlignment="Right">
                 <Button Style="{DynamicResource TranspRoundCorner}" Height="28" MinWidth="80" Foreground="White" Margin="5, 8, 0, 10" Padding="6" FontSize="18">Cancel</Button>
                 <Button Style="{DynamicResource TranspRoundCorner}" Height="28" MinWidth="80" Foreground="White" Margin="5, 8, 0, 10" Padding="6" FontSize="18">OK</Button>
             </StackPanel>

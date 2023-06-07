@@ -325,14 +325,14 @@ namespace BlazorUI
                 if (fe.MinHeight.HasValue)
                 {
                     var mwpx = (elem.DisplayData as AnyUiDisplayDataHtml)?
-                        .ScaleToPixel(fe.MinWidth.Value) ?? fe.MinWidth.Value;
+                        .ScaleToPixel(fe.MinHeight.Value) ?? fe.MinHeight.Value;
                     Set("min-height", FormattableString.Invariant($"{mwpx}px"), add: true);
                     Set("object-fit", "scale-down", add: true);
                 }
                 if (fe.MaxHeight.HasValue)
                 {
                     var mwpx = (elem.DisplayData as AnyUiDisplayDataHtml)?
-                        .ScaleToPixel(fe.MaxWidth.Value) ?? fe.MaxWidth.Value;
+                        .ScaleToPixel(fe.MaxHeight.Value) ?? fe.MaxHeight.Value;
                     Set("max-height", FormattableString.Invariant($"{mwpx}px"), add: true);
                     Set("object-fit", "scale-down", add: true);
                 }
