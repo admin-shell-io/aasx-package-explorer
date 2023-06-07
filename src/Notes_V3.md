@@ -192,7 +192,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 ## Projects, currently unloaded
 
-These projects are not migrated or integrated, yet.
+These projects are not migrated or integrated, yet:
 
 * AasxCsharpLibrary.Tests
 * AasxDictionaryImport.Tests
