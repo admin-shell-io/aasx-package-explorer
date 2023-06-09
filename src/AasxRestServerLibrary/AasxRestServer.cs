@@ -201,7 +201,7 @@ namespace AasxRestServerLibrary
 
             [RestRoute(
                 HttpMethod = HttpMethod.GET,
-                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?" +
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/((?!fragments)[^/]+)){1,99}?" +
                     "(|/core|/complete|/deep|/file|/blob|/events|/property)(/|)$")]
             public IHttpContext GetSubmodelElementsContents(IHttpContext context)
             {
@@ -310,6 +310,41 @@ namespace AasxRestServerLibrary
                         elemids.Add(m.Groups[5].Captures[i].ToString());
 
                     helper.EvalDeleteSubmodelElementContents(context, aasid, smid, elemids.ToArray());
+                }
+                return context;
+            }
+
+            // fragment reference
+
+            [RestRoute(
+                HttpMethod = HttpMethod.GET,
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?(/fragments/([a-zA-Z0-9]+)/(.*))$")]
+            public IHttpContext GetSubmodelElementFragmentsContents(IHttpContext context)
+            {
+                var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
+                if (m.Success && m.Groups.Count >= 7 && m.Groups[5].Captures.Count >= 1)
+                {
+                    var aasid = m.Groups[1].ToString();
+                    var smid = m.Groups[3].ToString();
+                    var elemids = new List<string>();
+
+                    for (int i = 0; i < m.Groups[5].Captures.Count; i++)
+                        elemids.Add(m.Groups[5].Captures[i].ToString());
+
+                    // a string describing potentially nested fragments, i.e. "/fragments/<type1>/<fragment1>/fragments/<type2>/<fragment2>/..."
+                    var fragmentString = m.Groups[6].ToString();
+
+                    var nestedFragmentStrings = fragmentString.Split(new[] { "/fragments/" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    List<(string fragmentType, string fragment)> nestedFragments = new List<(string, string)>();
+
+                    foreach (var fragment in nestedFragmentStrings)
+                    {
+                        var parts = fragment.Split(new[] { '/' }, 2);
+                        nestedFragments.Add((parts[0], parts[1].TrimEnd('/')));
+                    }
+
+                    helper.EvalGetSubmodelElementFragment(context, aasid, smid, elemids.ToArray(), nestedFragments);
                 }
                 return context;
             }
