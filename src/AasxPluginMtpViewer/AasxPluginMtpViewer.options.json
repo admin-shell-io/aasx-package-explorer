@@ -6,7 +6,7 @@
         {
           "type": "Submodel",
           "local": false,
-          "value": "http://www.admin-shell.io/mtp/v1/submodel",
+          "value": "https://admin-shell.io/vdi/2658/1/0/MTPSubmodel",
           "index": 0,
           "idType": "IRI"
         }
@@ -18,7 +18,7 @@
         {
           "type": "Submodel",
           "local": false,
-          "value": "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel",
+          "value": "https://admin-shell.io/vdi/2658/1/0/PEASubmodel",
           "index": 0,
           "idType": "IRI"
         }

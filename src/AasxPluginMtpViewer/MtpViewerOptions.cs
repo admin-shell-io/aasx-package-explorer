@@ -39,15 +39,15 @@ namespace AasxPluginMtpViewer
         /// </summary>
         public static MtpViewerOptions CreateDefault()
         {
-            var defs = new DefinitionsMTP.ModuleTypePackage();
+            var defs = MTPV10.Static;
 
             var rec1 = new MtpViewerOptionsRecord();
             rec1.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpType;
-            rec1.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpSubmodel.Keys);
+            rec1.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SM_ModuleTypePackage.GetSemanticId().Keys);
 
             var rec2 = new MtpViewerOptionsRecord();
             rec2.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpInstance;
-            rec2.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpInstanceSubmodel.Keys);
+            rec2.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SM_ProcessEquipmentAssembly.GetSemanticId().Keys);
 
             var opt = new MtpViewerOptions();
             opt.Records.Add(rec1);

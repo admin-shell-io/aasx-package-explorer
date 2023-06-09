@@ -27,6 +27,7 @@
     <EmbeddedResource Include="Resources\ZveiTimeSeriesDataV10.json" />
     <EmbeddedResource Include="Resources\ZveiTechnicalDataV11.json" />
     <EmbeddedResource Include="Resources\VDI2770.json" />
+    <EmbeddedResource Include="Resources\MTPV10.json" />
     <Content Include="README\Old_JSON_ConceptDescriptions.txt" />
   </ItemGroup>
   <ItemGroup>
