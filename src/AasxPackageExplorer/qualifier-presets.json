@@ -6,6 +6,7 @@
     "name": "Submodel templates | Cardinality",
     "upgradeFrom": [ "Cardinality", "Multiplicity" ],
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -23,6 +24,7 @@
   {
     "name": "Submodel templates | Cardinality = ZeroToOne",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -40,6 +42,7 @@
   {
     "name": "Submodel templates | Cardinality = One",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -57,6 +60,7 @@
   {
     "name": "Submodel templates | Cardinality = OneToMany",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -74,6 +78,7 @@
   {
     "name": "Submodel templates | Cardinality = ZeroToMany",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -91,6 +96,7 @@
   {
     "name": "Submodel templates | EitherOr",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -108,6 +114,7 @@
   {
     "name": "Submodel templates | InitialValue",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -125,6 +132,7 @@
   {
     "name": "Submodel templates | DefaultValue",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -143,6 +151,7 @@
     "name": "Submodel templates | ExampleValue",
     "upgradeFrom": [ "ExampleValue" ],
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -160,6 +169,7 @@
   {
     "name": "Submodel templates | AllowedRange",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -178,6 +188,7 @@
     "name": "Submodel templates | AllowedIdShort",
     "upgradeFrom": [ "AllowedIdShort" ],
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -195,6 +206,7 @@
   {
     "name": "Submodel templates | AllowedValue",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -212,6 +224,7 @@
   {
     "name": "Submodel templates | RequiredLang",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -229,6 +242,7 @@
   {
     "name": "Submodel templates | AccessMode",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -246,6 +260,7 @@
   {
     "name": "Expression semantic | Requirement",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "ExpressionSemantic",
       "value": "REQUIREMENT_0",
@@ -255,6 +270,7 @@
   {
     "name": "Expression semantic | Assurance",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "ExpressionSemantic",
       "value": "ASSURANCE_1",
@@ -264,6 +280,7 @@
   {
     "name": "Expression semantic | Offer",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "ExpressionSemantic",
       "value": "OFFER_2",
@@ -273,6 +290,7 @@
   {
     "name": "Predicate relation | Greater than ( > )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "GREATER_THAN_0",
@@ -282,6 +300,7 @@
   {
     "name": "Predicate relation | Greater equal ( >= )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "GREATER_EQUAL_1",
@@ -291,6 +310,7 @@
   {
     "name": "Predicate relation | Equal ( = )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "EQUAL_2",
@@ -300,6 +320,7 @@
   {
     "name": "Predicate relation | Not equal ( != )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "NOT_EQUAL_3",
@@ -309,6 +330,7 @@
   {
     "name": "Predicate relation | Less equal ( <= )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "LESS_EQUAL_4",
@@ -318,6 +340,7 @@
   {
     "name": "Predicate relation | Less than",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "LESS_THAN_5",
@@ -327,6 +350,7 @@
   {
     "name": "Predicate relation | Requirement",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "GREATER_THAN_0",
@@ -336,6 +360,7 @@
   {
     "name": "Predicate relation | In range in bounds ( [] )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "IN_RANGE_IB_6",
@@ -345,6 +370,7 @@
   {
     "name": "Predicate relation | In range ex bounds ( [/] )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "IN_RANGE_EB_7",
@@ -354,6 +380,7 @@
   {
     "name": "Predicate relation | Out of range in bounds ( ][ )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "OUT_OF_RANGE_IB_8",
@@ -363,6 +390,7 @@
   {
     "name": "Predicate relation | Out of range ex bounds ( ]/[ )",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "PredicateRelation",
       "value": "OUT_OF_RANGE_EB_9",
@@ -372,6 +400,7 @@
   {
     "name": "Expression semantic | Actual value",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": null,
       "type": "ExpressionSemantic",
       "value": "ACTUAL_VALUE_2",
@@ -381,6 +410,7 @@
   {
     "name": "Life cycle | as BUILT",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -406,6 +436,7 @@
   {
     "name": "Life cycle | as INQUIRED",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -431,6 +462,7 @@
   {
     "name": "Life cycle | as OFFERED",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -456,6 +488,7 @@
   {
     "name": "Life cycle | as OPERATED",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -481,6 +514,7 @@
   {
     "name": "Life cycle | as SPECIFIED",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -506,6 +540,7 @@
   {
     "name": "Life cycle | as SUPPLIED",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -531,6 +566,7 @@
   {
     "name": "Life cycle | as DECOMMISSIONED",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -556,6 +592,7 @@
   {
     "name": "Value processing | arithmetic mean",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -581,6 +618,7 @@
   {
     "name": "Value processing | geometric mean",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -606,6 +644,7 @@
   {
     "name": "Value processing | median",
     "qualifier": {
+      "kind": "ConceptQualifier",
       "semanticId": {
         "type": "ExternalReference",
         "keys": [
@@ -631,6 +670,7 @@
   {
     "name": "GenericForms plugin | FormTitle",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": null,
       "type": "FormTitle",
       "value": "To be filled",
@@ -640,6 +680,7 @@
   {
     "name": "GenericForms plugin | FormInfo",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": null,
       "type": "FormInfo",
       "value": "To be filled; longer explanation",
@@ -649,6 +690,7 @@
   {
     "name": "GenericForms plugin | FormUrl",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": null,
       "type": "FormUrl",
       "value": "To be filled; URL of possible explanation topic",
@@ -658,6 +700,7 @@
   {
     "name": "GenericForms plugin | PresetIdShort",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": null,
       "type": "PresetIdShort",
       "value": "To be filled; normally same as idShort, might be with {00}",
@@ -667,6 +710,7 @@
   {
     "name": "GenericForms plugin | FormIgnore = True",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": null,
       "type": "FormIgnore",
       "value": "True",
@@ -676,6 +720,7 @@
   {
     "name": "GenericForms plugin | EditIdShort = True",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": null,
       "type": "EditIdShort",
       "value": "True",
@@ -685,6 +730,7 @@
   {
     "name": "GenericForms plugin | EditDescription = True",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": null,
       "type": "EditDescription",
       "value": "True",
@@ -694,6 +740,7 @@
   {
     "name": "GenericForms plugin | FormChoices",
     "qualifier": {
+      "kind": "TemplateQualifier",
       "semanticId": null,
       "type": "FormChoices",
       "value": "To be filled; multiple choices separated by semicolon ';'.",

@@ -12,6 +12,7 @@ using AnyUi;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
 using System.Web;
@@ -299,9 +300,14 @@ namespace AasxPackageLogic
     public class OptionsInformation
     {
 
-        [OptionDescription(Description = "This file shall be loaded at start of application")]
+        [OptionDescription(Description = "This file shall be loaded as main package at start of application",
+            Cmd = "-aasx-to-load", Arg = "<path>")]
         [SettableOption]
         public string AasxToLoad = null;
+
+        [OptionDescription(Description = "This file shall be loaded as aux package at start of application",
+            Cmd = "-aux-to-load", Arg = "<path>")]
+        public string AuxToLoad = null;
 
         [OptionDescription(Description = "if not -1, the left of window",
             Cmd = "-left", Arg = "<pixel>")]
@@ -463,6 +469,11 @@ namespace AasxPackageLogic
             Cmd = "-default-lang")]
         public string DefaultLang = "en?";
 
+        [OptionDescription(Description =
+            "Path to file to capture all log messages. Will be (re-) created at application startup.",
+            Cmd = "-log-file")]
+        public string LogFile = null;
+
         /// <summary>
         /// Enumeration of generic accent color names
         /// </summary>
@@ -565,7 +576,9 @@ namespace AasxPackageLogic
             Cmd = "-script")]
         public string ScriptFn = "";
 
-        [OptionDescription(Description = "Script command(s) to directly execute.",
+        [OptionDescription(Description = "Rest of command line will by treated as script. " +
+            "Double quotes to be escaped by backslash. In PowerShell, overall command itself to be " +
+            "escaped by single ticks.",
             Cmd = "-cmd")]
         public string ScriptCmd = "";
 
@@ -895,9 +908,35 @@ namespace AasxPackageLogic
                     index++;
                     continue;
                 }
+                if (arg == "-aasx-to-load" && morearg > 0)
+                {
+                    optionsInformation.AasxToLoad = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-aux-to-load" && morearg > 0)
+                {
+                    optionsInformation.AuxToLoad = args[index + 1];
+                    index++;
+                    continue;
+                }
                 if (arg == "-cmd" && morearg > 0)
                 {
-                    optionsInformation.ScriptCmd = args[index + 1];
+                    // consume all args starting with "-cmd" into one command line
+                    // Note: the reason for this implementation is, that it seems unreasonably 
+                    // difficult to pass a C# like script with double quoted inner strings via
+                    // the command line.
+                    /// An example would be: 
+                    for (int i=index+1; i<args.Length; i++)
+                        optionsInformation.ScriptCmd += args[i] + " ";
+
+                    // virtuall stop the parsing
+                    index = args.Length;
+                    break; ;
+                }
+                if (arg == "-log-file" && morearg > 0)
+                {
+                    optionsInformation.LogFile = args[index + 1];
                     index++;
                     continue;
                 }

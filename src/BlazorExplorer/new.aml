@@ -1,0 +1,2663 @@
+﻿<CAEXFile FileName="" SchemaVersion="2.15" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <AdditionalInformation AutomationMLVersion="2.0" />
+  <InstanceHierarchy Name="AssetAdministrationShellInstanceHierarchy">
+    <Version>0</Version>
+    <InternalElement Name="SubmodelTemplate" ID="a6234807-1a52-45d7-809f-d89aab4ecb2d">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://mnestix.com/aas/F11BF9F696A3454EBA0AA4503783F141</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>SubmodelTemplate</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="derivedFrom">
+        <Value>(AssetAdministrationShell)(https://mnestix.com/aas/F11BF9F696A3454EBA0AA4503783F141)</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:AssetAdministrationShell/derivedFrom" />
+      </Attribute>
+      <InternalElement Name="AssetInformation d8862f1d-28c6-47b6-951d-ed73affa63a5" ID="7d336e43-abe9-4ea9-87be-991f75c14b14">
+        <Attribute Name="kind">
+          <Value>NotApplicable</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AssetInformation/kind" />
+        </Attribute>
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/AssetInformation" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/AssetAdministrationShell" />
+    </InternalElement>
+  </InstanceHierarchy>
+  <InstanceHierarchy Name="AssetAdministrationShellConceptDescriptions">
+    <Version>0</Version>
+    <InternalElement Name="GeneralInformation_https_admin-shell_io_ZVEI_TechnicalData_GeneralInformation_1_2" ID="0c8b42b1-f8d4-420b-905e-cd9e6f8f1dfa">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/GeneralInformation/1/2</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>GeneralInformation</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>General information, for example ordering and manufacturer information.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>General information, for example ordering and manufacturer information.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="d399df25-8f6a-4abf-bfa3-a846f058cae7" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ManufacturerName_0173-1_02-AAO677_002" ID="801c6989-7944-4d7c-883b-bc374ddec75d">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>0173-1#02-AAO677#002</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ManufacturerName</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Legally valid designation of the natural or judicial body which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into the market.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Legally valid designation of the natural or judicial body which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into the market.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="c3f9f736-aba7-4fe8-a5a8-050d17068e41" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ManufacturerLogo_https_admin-shell_io_ZVEI_TechnicalData_ManufacturerLogo_1_1" ID="840f940b-fa03-4ae2-8849-618ecdb928fc">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/ManufacturerLogo/1/1</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ManufacturerLogo</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Imagefile for logo of manufacturer provided in common format (.png, .jpg).</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Imagefile for logo of manufacturer provided in common format (.png, .jpg).</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="2aad6e08-c25e-4cc1-9c7a-ecbae6f1a1eb" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ManufacturerProductDesignation_0173-1_02-AAW338_001_" ID="d5f08ed0-d41a-4878-9799-186aefccfd9b">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>0173-1#02-AAW338#001 </Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ManufacturerProductDesignation</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Product designation as given by the mnaufacturer. Short description of the product, product group or function (short text) in common language.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Product designation as given by the mnaufacturer. Short description of the product, product group or function (short text) in common language.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="8efba403-b18c-4c3f-a013-4ef00ad3a7d4" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ManufacturerArticleNumber_0173-1_02-AAO676_003" ID="74f08c2f-6458-4463-a1bb-753697945d6b">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>0173-1#02-AAO676#003</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ManufacturerArticleNumber</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>unique product identifier of the manufacturer </Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>unique product identifier of the manufacturer </Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="3a9e8e3e-9d68-492f-bad0-a56ce283a95a" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ManufacturerOrderCode_0173-1_02-AAO227_002" ID="f22c165f-1961-4cbe-ad43-dae4864077d5">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>0173-1#02-AAO227#002</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ManufacturerOrderCode</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>By manufactures issued unique combination of numbers and letters used to identify the device for ordering</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>By manufactures issued unique combination of numbers and letters used to identify the device for ordering</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="4b8b6cff-4b16-4c61-a3fb-4c16abfae1de" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ProductImage_https_admin-shell_io_ZVEI_TechnicalData_ProductImage_1_1" ID="35f0edc7-7244-401f-a69a-ef1057c4e623">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/ProductImage/1/1</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ProductImage</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Image file for associated product provided in common format (.png, .jpg).</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Image file for associated product provided in common format (.png, .jpg).</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="247da450-3166-4c97-9b47-4f44b6ff022f" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ProductClassifications_https_admin-shell_io_ZVEI_TechnicalData_ProductClassifications_1_2" ID="a68de9e5-9907-4aaf-a81d-fa9f5214875c">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/ProductClassifications/1/2</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ProductClassifications</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Product classifications by association of product classes with common classification systems.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Product classifications by association of product classes with common classification systems.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="21ca246d-ba13-4532-8df5-0b77f0d720d6" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ProductClassificationItem_https_admin-shell_io_ZVEI_TechnicalData_ProductClassificationItem_1_2" ID="c90d7980-a819-48c3-94ad-b5e2631c52b4">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/ProductClassificationItem/1/2</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ProductClassificationItem</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Single product classification item by association with product class in a particular classification system or property dictionary.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Single product classification item by association with product class in a particular classification system or property dictionary.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="1d6f3624-1a83-4c28-810e-c409accd51f1" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ProductClassificationSystem_https_admin-shell_io_ZVEI_TechnicalData_ProductClassificationSystem_1_1" ID="92676623-1f23-43b3-a0a8-3fb910dfa052">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/ProductClassificationSystem/1/1</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ProductClassificationSystem</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Common name of the classification system.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Common name of the classification system.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="6070003c-cd4a-456d-af49-5d1a17f9c6c7" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ClassificationSystemVersion_https_admin-shell_io_ZVEI_TechnicalData_ClassificationSystemVersion_1_1" ID="4ac17879-112c-4729-8327-a0c39dfdd70f">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/ClassificationSystemVersion/1/1</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ClassificationSystemVersion</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Common version identifier of the used classification system, in order to distinguish different version of the property dictionary.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Common version identifier of the used classification system, in order to distinguish different version of the property dictionary.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="0dbd82af-aaa1-480a-8eb8-eff6ff2367b2" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ProductClassId_https_admin-shell_io_ZVEI_TechnicalData_ProductClassId_1_1" ID="1256d717-5e51-4fa1-8394-2c0b2768d717">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/ProductClassId/1/1</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ProductClassId</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Class of the associated product or industrial equipment in the classification system. According to the notation of the system.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Class of the associated product or industrial equipment in the classification system. According to the notation of the system.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="17d1aeee-7e40-4989-b9e9-6b9046089532" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="TechnicalProperties_https_admin-shell_io_ZVEI_TechnicalData_TechnicalProperties_1_2" ID="e79584f9-5cba-4833-bcda-63a262890da6">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/TechnicalProperties/1/2</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>TechnicalProperties</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Individual characteristics that describe the product and its technical properties.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Individual characteristics that describe the product and its technical properties.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="e5a39a60-883e-4f71-8bfd-056f2fb7d4ee" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="MainSection_https_admin-shell_io_ZVEI_TechnicalData_MainSection_1_2" ID="7d500681-8f7a-4b33-b3af-bc65325e849d">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/MainSection/1/2</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>MainSection</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Main subdivision possibility for properties.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Main subdivision possibility for properties.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="767cb239-a315-4ba8-b31a-ac1d96452ff9" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="SubSection_https_admin-shell_io_ZVEI_TechnicalData_SubSection_1_2" ID="d2670133-04f9-4901-a172-d9d7fffc37e6">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/SubSection/1/2</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>SubSection</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Subordinate subdivision possibility for properties.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Subordinate subdivision possibility for properties.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="00f7589f-ace7-44f9-9010-2c8c21138786" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="FurtherInformation_https_admin-shell_io_ZVEI_TechnicalData_FurtherInformation_1_2" ID="b8c0ee6d-e5e7-49f4-8ecc-ec46a7b7e660">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/FurtherInformation/1/2</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>FurtherInformation</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Further information on the product, the validity of the information provided and this data record.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Further information on the product, the validity of the information provided and this data record.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="e2851655-497c-4c17-b45c-d13225824936" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="TextStatement_https_admin-shell_io_ZVEI_TechnicalData_TextStatement_1_1" ID="deb88092-52d8-480f-bd08-e74b46ccc107">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/TextStatement/1/1</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>TextStatement</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Statement by the manufacturer in text form, e.g. scope of validity of the statements, scopes of application, conditions of operation.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Statement by the manufacturer in text form, e.g. scope of validity of the statements, scopes of application, conditions of operation.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="951a506b-f510-486f-be17-f591bf0a1823" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+    <InternalElement Name="ValidDate_https_admin-shell_io_ZVEI_TechnicalData_ManufacturerOrderCode_1_1" ID="217eba5e-0aa6-4354-9aa1-061335d4e344">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://admin-shell.io/ZVEI/TechnicalData/ManufacturerOrderCode/1/1</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>ValidDate</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <Attribute Name="description">
+        <Value>Denotes a date on which the data specified in the Submodel was valid from for the associated asset.</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+        <Attribute Name="aml-lang=en">
+          <Value>Denotes a date on which the data specified in the Submodel was valid from for the associated asset.</Value>
+        </Attribute>
+      </Attribute>
+      <InternalElement Name="EmbeddedDataSpecification" ID="0cdc2a13-270f-4e1f-89a3-07e8c33c368f" RefBaseSystemUnitPath="AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360">
+        <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </InternalElement>
+      <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/ConceptDescription" />
+    </InternalElement>
+  </InstanceHierarchy>
+  <InterfaceClassLib Name="AssetAdministrationShellInterfaceClassLib">
+    <Description>Interface Class Library according to Details of the AssetInformation Administration Shell V2.0.</Description>
+    <Version>1.0.0</Version>
+    <InterfaceClass Name="FileDataReference" RefBaseClassPath="AutomationMLBPRInterfaceClassLib/ExternalDataReference">
+      <Description>A FileDataReference represents the address to a File. FileDataReference is derived from the AutomationML Interface Class ExternalDataReference that is defined in AutomationML BPR_005E_ExternalDataReference_v1.0.0_2:The interface class “ExternalDataReference” shall be used in order to reference external documents out of the scope of AutomationML.</Description>
+    </InterfaceClass>
+    <InterfaceClass Name="ReferableReference" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface">
+      <Description>Reference to any other referable element of the same of any other AAS or a reference to an external object or entity. For local references inside the same AssetInformation Administration Shell an InternalLink between two objects with this interface "ReferableReference" shall be set. In this case the attribute value has to be empty. For references between different AssetInformation Administration Shells or external objects or entities the attribute value shall be used and no InternalLink shall be set.</Description>
+      <Attribute Name="value" AttributeDataType="xs:string">
+        <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable element of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:ReferenceElement/value" />
+      </Attribute>
+    </InterfaceClass>
+  </InterfaceClassLib>
+  <InterfaceClassLib Name="AutomationMLBPRInterfaceClassLib">
+    <Version>1.0.0</Version>
+    <InterfaceClass Name="ExternalDataReference" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector" ID="{320f7f3a-6df8-4ccd-af35-a4367b37eb7a}">
+      <Attribute Name="MIMEType" AttributeDataType="xs:string">
+        <Description>Mime type of the content of the File.</Description>
+      </Attribute>
+    </InterfaceClass>
+  </InterfaceClassLib>
+  <InterfaceClassLib Name="AutomationMLInterfaceClassLib">
+    <Description>Standard Automation Markup Language Interface Class Library - Part 1 Content extended with Part 3 and Part 4 Content</Description>
+    <Version>2.2.2</Version>
+    <InterfaceClass Name="AutomationMLBaseInterface">
+      <InterfaceClass Name="Order" RefBaseClassPath="AutomationMLBaseInterface">
+        <Attribute Name="Direction" AttributeDataType="xs:string" />
+      </InterfaceClass>
+      <InterfaceClass Name="PortConnector" RefBaseClassPath="AutomationMLBaseInterface" />
+      <InterfaceClass Name="InterlockingConnector" RefBaseClassPath="AutomationMLBaseInterface" />
+      <InterfaceClass Name="PPRConnector" RefBaseClassPath="AutomationMLBaseInterface" />
+      <InterfaceClass Name="ExternalDataConnector" RefBaseClassPath="AutomationMLBaseInterface">
+        <Attribute Name="refURI" AttributeDataType="xs:anyURI">
+          <Description>The attribute refURI is an URI that can represent an absolute or relative path to an L document. An added fragment (with #) references inside the document</Description>
+        </Attribute>
+        <InterfaceClass Name="COLLADAInterface" RefBaseClassPath="ExternalDataConnector">
+          <Attribute Name="refType" AttributeDataType="xs:string" />
+          <Attribute Name="target" AttributeDataType="xs:token" />
+        </InterfaceClass>
+        <InterfaceClass Name="PLCopenXMLInterface" RefBaseClassPath="ExternalDataConnector">
+          <InterfaceClass Name="LogicInterface" RefBaseClassPath="PLCopenXMLInterface">
+            <InterfaceClass Name="SequencingLogicInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/LogicInterface" />
+            <InterfaceClass Name="BehaviourLogicInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/LogicInterface" />
+            <InterfaceClass Name="SequencingBehaviourLogicInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/LogicInterface" />
+            <InterfaceClass Name="InterlockingLogicInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/LogicInterface" />
+          </InterfaceClass>
+          <InterfaceClass Name="LogicElementInterface" RefBaseClassPath="PLCopenXMLInterface" />
+          <InterfaceClass Name="VariableInterface" RefBaseClassPath="PLCopenXMLInterface">
+            <InterfaceClass Name="InterlockingVariableInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/VariableInterface">
+              <Attribute Name="SafeConditionEquals" AttributeDataType="xs:boolean">
+                <DefaultValue>true</DefaultValue>
+              </Attribute>
+            </InterfaceClass>
+          </InterfaceClass>
+        </InterfaceClass>
+      </InterfaceClass>
+      <InterfaceClass Name="Communication" RefBaseClassPath="AutomationMLBaseInterface">
+        <InterfaceClass Name="SignalInterface" RefBaseClassPath="Communication" />
+      </InterfaceClass>
+      <InterfaceClass Name="AttachmentInterface" RefBaseClassPath="AutomationMLBaseInterface" />
+    </InterfaceClass>
+  </InterfaceClassLib>
+  <RoleClassLib Name="AssetAdministrationShellRoleClassLib">
+    <Description>Role Class Library according to Details of the AssetInformation Administration Shell V2.0.</Description>
+    <Version>1.0.0</Version>
+    <RoleClass Name="AssetAdministrationShell" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>An AssetInformation Administration Shell.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="derivedFrom" AttributeDataType="xs:string">
+        <Description>The derivedFrom attribute is used to establish a relationship between two AssetInformation Administration Shells that are derived from each other. </Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:AssetAdministrationShell/derivedFrom" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="AssetInformation" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>An AssetInformation describes meta data of an asset that is represented by an AAS. The asset may either represent an asset type or an asset instance. The asset has a globally unique identifier plus – if needed – additional domain specific (proprietary) identifiers.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either type or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:AssetInformation/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Submodel" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A Submodel defines a specific aspect of the asset represented by the AAS. A submodel is used to structure the virtual representation and technical functionality of an Administration Shell into distinguishable parts. Each submodel refers to a well-defined domain or subject matter. Submodels can become standardized and thus become submodels types. Submodels can have different life-cycles.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="SubmodelElementCollection" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A submodel element collection is a set or list of submodel elements. </Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="allowDuplicates" AttributeDataType="xs:boolean">
+        <Description>If allowDuplicates=true, then it is allowed that the collection contains the same element several times.</Description>
+        <DefaultValue>false</DefaultValue>
+        <RefSemantic CorrespondingAttributePath="AAS:SubmodulElementCollection/allowDuplicates" />
+      </Attribute>
+      <Attribute Name="ordered" AttributeDataType="xs:boolean">
+        <Description>If ordered=false, then the elements in the property collection are not ordered. If ordered=true then the elements in the collection are ordered. Default = false. Note: An ordered submodel element collection is typically implemented as an indexed array.</Description>
+        <DefaultValue>false</DefaultValue>
+        <RefSemantic CorrespondingAttributePath="AAS:SubmodulElementCollection/ordered" />
+      </Attribute>
+      <Attribute Name="value" AttributeDataType="xs:string">
+        <Description>Submodel element contained in the collection.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:SubmodulElementCollection/value" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Blob" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A BLOB is a data element that represents a file that is contained with its source code in the value attribute.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="mimeType" AttributeDataType="xs:string">
+        <Description>Mime type of the content of the BLOB. The mime type states which file extension the file has. Valid values are e.g. “application/json”, “application/xls”, ”image/jpg”. The allowed values are defined as in RFC2046.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Blob/mimeType" />
+      </Attribute>
+      <Attribute Name="value" AttributeDataType="xs:string">
+        <Description>The value of the BLOB instance of a blob data element. Note: In contrast to the file property the file content is stored directly as value in the Blob data element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Blob/value" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Capability" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A capability is the implementation-independent description of the potential of an asset to achieve a certain effect in the physical or virtual world.  </Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="File" RefBaseClassPath="AutomationMLBPRRoleClassLib/ExternalData">
+      <Description>A role class for a File that a data element that represents an address to a file. It is derived from the AutomationML role class ExternalData that is an role type for a document type and the base class for all document type roles. It describes different document types. ExternalData is defined in AutomationML BPR_005E_ExternalDataReference_v1.0.0_2.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <ExternalInterface Name="FileDataReference" ID="c7a2932e-7f90-46d3-be64-0408a927c89d" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/FileDataReference">
+        <Attribute Name="refURI" AttributeDataType="xs:anyURI">
+          <Description>The attribute refURI is an URI that can represent an absolute or relative path to an L document. An added fragment (with #) references inside the document</Description>
+        </Attribute>
+        <Attribute Name="MIMEType" AttributeDataType="xs:string">
+          <Description>Mime type of the content of the File.</Description>
+        </Attribute>
+      </ExternalInterface>
+    </RoleClass>
+    <RoleClass Name="Property" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A property is a data element that has a single value.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="value" AttributeDataType="xs:string">
+        <Description>The value of the property instance. </Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+      </Attribute>
+      <Attribute Name="valueId" AttributeDataType="xs:string">
+        <Description>Reference to the global unique id if a coded value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Property/valueId" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="ReferenceElement" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A reference element is a data element that defines a logical reference to another element within the same or another AAS or a reference to an external object or entity.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <ExternalInterface Name="ReferableReference" ID="cedd4784-8dd9-4b0d-bb16-59a82ab845da" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/ReferableReference">
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable elment of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
+          <RefSemantic CorrespondingAttributePath="AAS:ReferenceElement/value" />
+        </Attribute>
+      </ExternalInterface>
+    </RoleClass>
+    <RoleClass Name="RelationshipElement" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A relationship element is used to define a relationship between two referable elements.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <ExternalInterface Name="first" ID="6382c562-f165-488c-94c6-52fe0b27bb6a" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/ReferableReference">
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable elment of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
+        </Attribute>
+      </ExternalInterface>
+      <ExternalInterface Name="second" ID="f05eccaf-f1f7-4c0c-8502-ba5372640814" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/ReferableReference">
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable elment of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
+        </Attribute>
+      </ExternalInterface>
+    </RoleClass>
+    <RoleClass Name="AnnotatedRelationshipElement" RefBaseClassPath="AssetAdministrationShellRoleClassLib/RelationshipElement">
+      <Description>An annotated relationship element is an relationship element that can be annotated with additional data elements.</Description>
+      <Attribute Name="annotation" AttributeDataType="xs:string">
+        <Description>Annotations that hold for the relationships between the two elements.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:AnnotatedRelationshipElement/annotation" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Operation" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>An operation is a submodel element with input and output variables.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="OperationInputVariables" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>The list of AAS OperationVariableIn entities. In AML, the corresponding InternalElement with this role is a child of the InternalElement with the Operation role.</Description>
+    </RoleClass>
+    <RoleClass Name="OperationOutputVariables" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>The list of AAS OperationVariableOut entities. In AML, the corresponding InternalElement with this role is a child of the InternalElement with the Operation role.</Description>
+    </RoleClass>
+    <RoleClass Name="OperationInoutputVariables" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>The list of AAS OperationVariableOut entities. In AML, the corresponding InternalElement with this role is a child of the InternalElement with the Operation role.</Description>
+    </RoleClass>
+    <RoleClass Name="View" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Group">
+      <Description>A view is a collection of referable elements w.r.t. to a specific viewpoint of one or more stakeholders.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="ConceptDictionary" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A dictionary contains elements that can be reused.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="ConceptDescription" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>Explanation: The semantics of a property or other elements that may have a semantic description is defined by a concept description. The description of the concept should follow a standardized schema (realized as data specification template).</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string" />
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string" />
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="isCaseOf" AttributeDataType="xs:string">
+        <Description>Global reference to an external definition the concept is compatible to or was derived from.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:ConceptDescription/isCaseOf" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="DataSpecification" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>Description Role class of an element that has a data specification template. A template defines the additional attributes an element may or shall have.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="DataSpecificationContent" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>Content of the data specification template.</Description>
+    </RoleClass>
+  </RoleClassLib>
+  <RoleClassLib Name="AutomationMLBPRRoleClassLib">
+    <Version>1.0.0</Version>
+    <RoleClass Name="ExternalData" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole" />
+  </RoleClassLib>
+  <RoleClassLib Name="AutomationMLBaseRoleClassLib">
+    <Description>Automation Markup Language Base Role Class Library - Part 1 Content extended with Part 3 and Part 4 Content</Description>
+    <Version>2.2.2</Version>
+    <RoleClass Name="AutomationMLBaseRole">
+      <RoleClass Name="Group" RefBaseClassPath="AutomationMLBaseRole">
+        <Attribute Name="AssociatedFacet" AttributeDataType="xs:string" />
+        <RoleClass Name="InterlockingSourceGroup" RefBaseClassPath="Group" />
+        <RoleClass Name="InterlockingTargetGroup" RefBaseClassPath="Group" />
+      </RoleClass>
+      <RoleClass Name="Facet" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Port" RefBaseClassPath="AutomationMLBaseRole">
+        <Attribute Name="Direction" AttributeDataType="xs:string" />
+        <Attribute Name="Cardinality">
+          <Attribute Name="MinOccur" AttributeDataType="xs:unsignedInt" />
+          <Attribute Name="MaxOccur" AttributeDataType="xs:unsignedInt" />
+        </Attribute>
+        <Attribute Name="Category" AttributeDataType="xs:string" />
+        <ExternalInterface Name="ConnectionPoint" ID="9942bd9c-c19d-44e4-a197-11b9edf264e7" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/PortConnector" />
+      </RoleClass>
+      <RoleClass Name="Resource" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Product" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Process" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Structure" RefBaseClassPath="AutomationMLBaseRole">
+        <RoleClass Name="ProductStructure" RefBaseClassPath="Structure" />
+        <RoleClass Name="ProcessStructure" RefBaseClassPath="Structure" />
+        <RoleClass Name="ResourceStructure" RefBaseClassPath="Structure" />
+      </RoleClass>
+      <RoleClass Name="PropertySet" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Frame" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="LogicObject" RefBaseClassPath="AutomationMLBaseRole" />
+    </RoleClass>
+  </RoleClassLib>
+  <SystemUnitClassLib Name="AssetAdministrationShellDataSpecificationTemplates">
+    <Version>0</Version>
+    <SystemUnitClass Name="DataSpecificationIEC61360Template" ID="572c0568-4019-40ec-bfc4-a3a82dc6eed4">
+      <Description>An AAS Data Specification template for IEC61369. A template consists of the DataSpecificationContent containing the additional attributes to be added to the element instance that references the data specification template and meta information about the template itself (this is why DataSpecification inherits from Identifiable). In UML these are two separated classes. </Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value>http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value>URI</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <SupportedRoleClass RefRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecification" />
+      <SystemUnitClass Name="DataSpecificationIEC61360" ID="8c019d8e-7ddd-4283-aa63-1747021c3d1b">
+        <Description>The content of an AAS Data Specification template for IEC61360.</Description>
+        <Attribute Name="preferredName" AttributeDataType="xs:string">
+          <Description>Identifies the attribute hierarchy for preferredName in above attribute hierachy. Subordinate attributes are designated by the country code information (see aml-lang literal).</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/preferredName" />
+        </Attribute>
+        <Attribute Name="shortName" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for shortName in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/shortName" />
+        </Attribute>
+        <Attribute Name="unit" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for unit in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/unit" />
+        </Attribute>
+        <Attribute Name="unitId" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for unitId in above attribute hierarchy in its string serialization.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/unitId" />
+        </Attribute>
+        <Attribute Name="sourceOfDefinition" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for sourceOfDefinition in above attribute hierachy. Subordinate attributes are designated by the country code information (see aml-lang literal).</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/sourceOfDefinition" />
+        </Attribute>
+        <Attribute Name="symbol" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for symbol in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/symbol" />
+        </Attribute>
+        <Attribute Name="dataType" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for dataType in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/dataType" />
+        </Attribute>
+        <Attribute Name="definition" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for definition in above attribute hierachy. Subordinate attributes are designated by the country code information (see aml-lang literal).</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/definition" />
+        </Attribute>
+        <Attribute Name="valueFormat" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for valueFormat in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/valueFormat" />
+        </Attribute>
+        <Attribute Name="valueList" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for valueList in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/valueList" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The attribute value.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>The id for the value.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/valueId" />
+        </Attribute>
+        <SupportedRoleClass RefRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </SystemUnitClass>
+    </SystemUnitClass>
+  </SystemUnitClassLib>
+  <SystemUnitClassLib Name="AssetAdministrationShellSystemUnitClasses">
+    <Version>0</Version>
+    <SystemUnitClass Name="SubmodelTemplate" ID="4a250ca8-3252-407b-93b4-761797590fd2">
+      <Attribute Name="identification">
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id">
+          <Value>https://mnestix.com/aas/F11BF9F696A3454EBA0AA4503783F141</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="idShort">
+        <Value>SubmodelTemplate</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+      </Attribute>
+      <SupportedRoleClass RefRoleClassPath="AssetAdministrationShellRoleClassLib/AssetAdministrationShell" />
+      <SystemUnitClass Name="TechnicalData" ID="2bf0453d-1140-4414-aae6-c53a3ef59e01">
+        <Attribute Name="identification">
+          <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+          <Attribute Name="id">
+            <Value>https://admin-shell.io/ZVEI/TechnicalData/Submodel/1/2</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+          </Attribute>
+        </Attribute>
+        <Attribute Name="administration">
+          <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+          <Attribute Name="version">
+            <Value>1</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+          </Attribute>
+          <Attribute Name="revision">
+            <Value>2</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+          </Attribute>
+        </Attribute>
+        <Attribute Name="idShort">
+          <Value>TechnicalData</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+        </Attribute>
+        <Attribute Name="description">
+          <Value>Submodel containing techical data of the asset and associated product classificatons.</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+          <Attribute Name="aml-lang=en">
+            <Value>Submodel containing techical data of the asset and associated product classificatons.</Value>
+          </Attribute>
+          <Attribute Name="aml-lang=de">
+            <Value>Teilmodell, das die technischen Daten der Anlage und die zugehörigen Produktklassifizierungen enthält.</Value>
+          </Attribute>
+        </Attribute>
+        <Attribute Name="kind">
+          <Value>Template</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        </Attribute>
+        <Attribute Name="semanticId">
+          <Value>(Submodel)(https://admin-shell.io/ZVEI/TechnicalData/Submodel/1/2)</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+        </Attribute>
+        <InternalElement Name="GeneralInformation" ID="db0f686d-0fb4-49d9-96e0-13bc3a7c8e57">
+          <Attribute Name="idShort">
+            <Value>GeneralInformation</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+          </Attribute>
+          <Attribute Name="description">
+            <Value>General information, for example ordering and manufacturer information.</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+            <Attribute Name="aml-lang=en">
+              <Value>General information, for example ordering and manufacturer information.</Value>
+            </Attribute>
+          </Attribute>
+          <Attribute Name="semanticId">
+            <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/GeneralInformation/1/2)</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+          </Attribute>
+          <Attribute Name="qualifier:SMT/Cardinality=One">
+            <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+            <Attribute Name="semanticId">
+              <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="type">
+              <Value>SMT/Cardinality</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+            </Attribute>
+            <Attribute Name="value">
+              <Value>One</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+            </Attribute>
+          </Attribute>
+          <InternalElement Name="ManufacturerName" ID="cf2fb512-9d85-448d-af7a-a0500a7f51fc">
+            <Attribute Name="idShort">
+              <Value>ManufacturerName</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="category">
+              <Value>PARAMETER</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Legally valid designation of the natural or judicial body which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into the market.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Legally valid designation of the natural or judicial body which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into the market.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(0173-1#02-AAO677#002)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="value" AttributeDataType="xs:xs:string">
+              <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=One">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>One</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:ExampleValue=Example Company">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>ExampleValue</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>Example Company</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/Property" />
+          </InternalElement>
+          <InternalElement Name="ManufacturerLogo" ID="d256e226-cd1c-4b63-b751-46d70a6b85df">
+            <Attribute Name="idShort">
+              <Value>ManufacturerLogo</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Imagefile for logo of manufacturer provided in common format (.png, .jpg).</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Imagefile for logo of manufacturer provided in common format (.png, .jpg).</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/ManufacturerLogo/1/1)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=ZeroToOne">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ZeroToOne</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <ExternalInterface Name="FileDataReference" ID="bd0223fd-36ac-4dd5-9547-d39c8f610b15" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/FileDataReference">
+              <Attribute Name="MIMEType" AttributeDataType="xs:string">
+                <Value>image/png</Value>
+              </Attribute>
+              <Attribute Name="refURI" AttributeDataType="xs:anyURI" />
+            </ExternalInterface>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/File" />
+          </InternalElement>
+          <InternalElement Name="ManufacturerProductDesignation" ID="ae524569-743a-4612-9e80-d611ea321969">
+            <Attribute Name="idShort">
+              <Value>ManufacturerProductDesignation</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="category">
+              <Value>PARAMETER</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Product designation as given by the mnaufacturer. Short description of the product, product group or function (short text) in common language.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Product designation as given by the mnaufacturer. Short description of the product, product group or function (short text) in common language.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(0173-1#02-AAW338#001 )</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=One">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>One</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:ExampleValue=Electrical energy accelerator@en">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>ExampleValue</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>Electrical energy accelerator@en</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/MultiLanguageProperty" />
+          </InternalElement>
+          <InternalElement Name="ManufacturerArticleNumber" ID="5df7b8de-1472-43eb-8a1e-8283b7ece3a7">
+            <Attribute Name="idShort">
+              <Value>ManufacturerArticleNumber</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="category">
+              <Value>PARAMETER</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>unique product identifier of the manufacturer </Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>unique product identifier of the manufacturer </Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(0173-1#02-AAO676#003)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="value" AttributeDataType="xs:xs:string">
+              <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=One">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>One</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:ExampleValue=A123-456">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>ExampleValue</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>A123-456</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/Property" />
+          </InternalElement>
+          <InternalElement Name="ManufacturerOrderCode" ID="a727cba6-ca27-450f-963b-b38cf7a4a13b">
+            <Attribute Name="idShort">
+              <Value>ManufacturerOrderCode</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="category">
+              <Value>PARAMETER</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>By manufactures issued unique combination of numbers and letters used to identify the device for ordering</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>By manufactures issued unique combination of numbers and letters used to identify the device for ordering</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(0173-1#02-AAO227#002)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="value" AttributeDataType="xs:xs:string">
+              <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=One">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>One</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:ExampleValue=EEA-EX-200-S/47-Q3">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>ExampleValue</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>EEA-EX-200-S/47-Q3</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/Property" />
+          </InternalElement>
+          <InternalElement Name="ProductImage" ID="b9ef57e7-b8f1-42ae-85d6-0e0f613c5ba4">
+            <Attribute Name="idShort">
+              <Value>ProductImage</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Image file for associated product provided in common format (.png, .jpg).</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Image file for associated product provided in common format (.png, .jpg).</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/ProductImage/1/1)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=ZeroToMany">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ZeroToMany</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <ExternalInterface Name="FileDataReference" ID="5c26edc8-2c60-4a24-9d24-86996406c538" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/FileDataReference">
+              <Attribute Name="MIMEType" AttributeDataType="xs:string">
+                <Value>image/png</Value>
+              </Attribute>
+              <Attribute Name="refURI" AttributeDataType="xs:anyURI" />
+            </ExternalInterface>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/File" />
+          </InternalElement>
+          <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/SubmodelElementCollection" />
+        </InternalElement>
+        <InternalElement Name="ProductClassifications" ID="d39eb229-b6be-45c7-9d40-ae2c81ab023c">
+          <Attribute Name="idShort">
+            <Value>ProductClassifications</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+          </Attribute>
+          <Attribute Name="description">
+            <Value>Product classifications by association of product classes with common classification systems.</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+            <Attribute Name="aml-lang=en">
+              <Value>Product classifications by association of product classes with common classification systems.</Value>
+            </Attribute>
+          </Attribute>
+          <Attribute Name="semanticId">
+            <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/ProductClassifications/1/2)</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+          </Attribute>
+          <Attribute Name="qualifier:SMT/Cardinality=ZeroToOne">
+            <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+            <Attribute Name="semanticId">
+              <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="type">
+              <Value>SMT/Cardinality</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+            </Attribute>
+            <Attribute Name="value">
+              <Value>ZeroToOne</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+            </Attribute>
+          </Attribute>
+          <InternalElement Name="ProductClassificationItem" ID="8ff75171-b5c9-46ff-a104-7ad88e012135">
+            <Attribute Name="idShort">
+              <Value>ProductClassificationItem</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Single product classification item by association with product class in a particular classification system or property dictionary.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Single product classification item by association with product class in a particular classification system or property dictionary.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/ProductClassificationItem/1/2)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=ZeroToMany">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ZeroToMany</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:AllowedIdShort=ProductClassificationItem[\d{2,3}]">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/AllowedIdShort/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>AllowedIdShort</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ProductClassificationItem[\d{2,3}]</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <InternalElement Name="ProductClassificationSystem" ID="60a03572-6335-4b2c-b427-ca249d93406a">
+              <Attribute Name="idShort">
+                <Value>ProductClassificationSystem</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+              </Attribute>
+              <Attribute Name="category">
+                <Value>PARAMETER</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+              </Attribute>
+              <Attribute Name="description">
+                <Value>Common name of the classification system.</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+                <Attribute Name="aml-lang=en">
+                  <Value>Common name of the classification system.</Value>
+                </Attribute>
+              </Attribute>
+              <Attribute Name="semanticId">
+                <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/ProductClassificationSystem/1/1)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="value" AttributeDataType="xs:xs:string">
+                <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+              </Attribute>
+              <Attribute Name="qualifier:SMT/Cardinality=One">
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+                <Attribute Name="semanticId">
+                  <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+                </Attribute>
+                <Attribute Name="type">
+                  <Value>SMT/Cardinality</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+                </Attribute>
+                <Attribute Name="value">
+                  <Value>One</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+                </Attribute>
+              </Attribute>
+              <Attribute Name="qualifier:ExampleValue=ECLASS">
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+                <Attribute Name="semanticId">
+                  <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+                </Attribute>
+                <Attribute Name="type">
+                  <Value>ExampleValue</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+                </Attribute>
+                <Attribute Name="value">
+                  <Value>ECLASS</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+                </Attribute>
+              </Attribute>
+              <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/Property" />
+            </InternalElement>
+            <InternalElement Name="ClassificationSystemVersion" ID="05173728-5359-4ab2-9126-bc6cc1203181">
+              <Attribute Name="idShort">
+                <Value>ClassificationSystemVersion</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+              </Attribute>
+              <Attribute Name="category">
+                <Value>PARAMETER</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+              </Attribute>
+              <Attribute Name="description">
+                <Value>Common version identifier of the used classification system, in order to distinguish different version of the property dictionary.</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+                <Attribute Name="aml-lang=en">
+                  <Value>Common version identifier of the used classification system, in order to distinguish different version of the property dictionary.</Value>
+                </Attribute>
+              </Attribute>
+              <Attribute Name="semanticId">
+                <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/ClassificationSystemVersion/1/1)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="value" AttributeDataType="xs:xs:string">
+                <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+              </Attribute>
+              <Attribute Name="qualifier:SMT/Cardinality=ZeroToOne">
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+                <Attribute Name="semanticId">
+                  <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+                </Attribute>
+                <Attribute Name="type">
+                  <Value>SMT/Cardinality</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+                </Attribute>
+                <Attribute Name="value">
+                  <Value>ZeroToOne</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+                </Attribute>
+              </Attribute>
+              <Attribute Name="qualifier:ExampleValue=9.0 (BASIC)">
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+                <Attribute Name="semanticId">
+                  <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+                </Attribute>
+                <Attribute Name="type">
+                  <Value>ExampleValue</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+                </Attribute>
+                <Attribute Name="value">
+                  <Value>9.0 (BASIC)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+                </Attribute>
+              </Attribute>
+              <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/Property" />
+            </InternalElement>
+            <InternalElement Name="ProductClassId" ID="f8fa9b63-3ffe-4975-bea4-70cd93553723">
+              <Attribute Name="idShort">
+                <Value>ProductClassId</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+              </Attribute>
+              <Attribute Name="category">
+                <Value>PARAMETER</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+              </Attribute>
+              <Attribute Name="description">
+                <Value>Class of the associated product or industrial equipment in the classification system. According to the notation of the system.</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+                <Attribute Name="aml-lang=en">
+                  <Value>Class of the associated product or industrial equipment in the classification system. According to the notation of the system.</Value>
+                </Attribute>
+              </Attribute>
+              <Attribute Name="semanticId">
+                <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/ProductClassId/1/1)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="value" AttributeDataType="xs:xs:string">
+                <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+              </Attribute>
+              <Attribute Name="qualifier:SMT/Cardinality=One">
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+                <Attribute Name="semanticId">
+                  <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+                </Attribute>
+                <Attribute Name="type">
+                  <Value>SMT/Cardinality</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+                </Attribute>
+                <Attribute Name="value">
+                  <Value>One</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+                </Attribute>
+              </Attribute>
+              <Attribute Name="qualifier:ExampleValue=27-01-88-77 | 0112/2///61987#ABA827#003">
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+                <Attribute Name="semanticId">
+                  <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+                </Attribute>
+                <Attribute Name="type">
+                  <Value>ExampleValue</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+                </Attribute>
+                <Attribute Name="value">
+                  <Value>27-01-88-77 | 0112/2///61987#ABA827#003</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+                </Attribute>
+              </Attribute>
+              <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/Property" />
+            </InternalElement>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/SubmodelElementCollection" />
+          </InternalElement>
+          <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/SubmodelElementCollection" />
+        </InternalElement>
+        <InternalElement Name="TechnicalProperties" ID="e62b8359-00b5-4b68-9c49-9b89db3d4315">
+          <Attribute Name="idShort">
+            <Value>TechnicalProperties</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+          </Attribute>
+          <Attribute Name="description">
+            <Value>Individual characteristics that describe the product and its technical properties.</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+            <Attribute Name="aml-lang=en">
+              <Value>Individual characteristics that describe the product and its technical properties.</Value>
+            </Attribute>
+          </Attribute>
+          <Attribute Name="semanticId">
+            <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/TechnicalProperties/1/2)</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+          </Attribute>
+          <Attribute Name="qualifier:SMT/Cardinality=One">
+            <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+            <Attribute Name="semanticId">
+              <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="type">
+              <Value>SMT/Cardinality</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+            </Attribute>
+            <Attribute Name="value">
+              <Value>One</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+            </Attribute>
+          </Attribute>
+          <InternalElement Name="{arbitrary}" ID="5d03cdeb-b87f-4d90-ae34-e421ce2c151d">
+            <Attribute Name="idShort">
+              <Value>{arbitrary}</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="category">
+              <Value>PARAMETER</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Arbitrary SubmodelElement with semanticId possibly referring to a ConceptDescription can be used within the Technical Properties.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Arbitrary SubmodelElement with semanticId possibly referring to a ConceptDescription can be used within the Technical Properties.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)()</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=ZeroToMany">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ZeroToMany</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:ExampleValue=Width@en= 32 [mm]">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>ExampleValue</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>Width@en= 32 [mm]</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/MultiLanguageProperty" />
+          </InternalElement>
+          <InternalElement Name="{arbitrary}" ID="83b054ea-a0e4-4443-b58f-b6c0c4a4e8eb">
+            <Attribute Name="idShort">
+              <Value>{arbitrary}</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="category">
+              <Value>PARAMETER</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Represents a SubmodelElement that is not described using a common classification system, a consortium specification, an open community standard, a published manufacturer specification or such.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Represents a SubmodelElement that is not described using a common classification system, a consortium specification, an open community standard, a published manufacturer specification or such.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(https://admin-shell.io/SemanticIdNotAvailable/1/1)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="value" AttributeDataType="xs:xs:string">
+              <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=ZeroToMany">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ZeroToMany</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:ExampleValue=Length">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>ExampleValue</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>Length</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/Property" />
+          </InternalElement>
+          <InternalElement Name="MainSection" ID="03ecc410-4566-4def-afab-871cabe25a0f">
+            <Attribute Name="idShort">
+              <Value>MainSection</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Main subdivision possibility for properties.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Main subdivision possibility for properties.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/MainSection/1/2)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=ZeroToMany">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ZeroToMany</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:AllowedIdShort=MainSection[\d{2,3}]">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/AllowedIdShort/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>AllowedIdShort</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>MainSection[\d{2,3}]</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <InternalElement Name="SubSection" ID="4fbbd2a2-0bc2-437e-a277-ee721b88a10f">
+              <Attribute Name="idShort">
+                <Value>SubSection</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+              </Attribute>
+              <Attribute Name="description">
+                <Value>Subordinate subdivision possibility for properties.</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+                <Attribute Name="aml-lang=en">
+                  <Value>Subordinate subdivision possibility for properties.</Value>
+                </Attribute>
+              </Attribute>
+              <Attribute Name="semanticId">
+                <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/SubSection/1/2)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="qualifier:SMT/Cardinality=ZeroToMany">
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+                <Attribute Name="semanticId">
+                  <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+                </Attribute>
+                <Attribute Name="type">
+                  <Value>SMT/Cardinality</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+                </Attribute>
+                <Attribute Name="value">
+                  <Value>ZeroToMany</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+                </Attribute>
+              </Attribute>
+              <Attribute Name="qualifier:AllowedIdShort=SubSection[\d{2,3}]">
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+                <Attribute Name="semanticId">
+                  <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/AllowedIdShort/1/0)</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+                </Attribute>
+                <Attribute Name="type">
+                  <Value>AllowedIdShort</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+                </Attribute>
+                <Attribute Name="value">
+                  <Value>SubSection[\d{2,3}]</Value>
+                  <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+                </Attribute>
+              </Attribute>
+              <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/SubmodelElementCollection" />
+            </InternalElement>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/SubmodelElementCollection" />
+          </InternalElement>
+          <InternalElement Name="SubSection" ID="d2b70d5d-dad7-471a-8c8c-59b45a4fd801">
+            <Attribute Name="idShort">
+              <Value>SubSection</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Subordinate subdivision possibility for properties.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Subordinate subdivision possibility for properties.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/SubSection/1/2)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=ZeroToMany">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ZeroToMany</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:AllowedIdShort=SubSection[\d{2,3}]">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/AllowedIdShort/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>AllowedIdShort</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>SubSection[\d{2,3}]</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/SubmodelElementCollection" />
+          </InternalElement>
+          <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/SubmodelElementCollection" />
+        </InternalElement>
+        <InternalElement Name="FurtherInformation" ID="f06e6c60-d46b-4df3-90d4-6835673acb58">
+          <Attribute Name="idShort">
+            <Value>FurtherInformation</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+          </Attribute>
+          <Attribute Name="description">
+            <Value>Further information on the product, the validity of the information provided and this data record.</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+            <Attribute Name="aml-lang=en">
+              <Value>Further information on the product, the validity of the information provided and this data record.</Value>
+            </Attribute>
+          </Attribute>
+          <Attribute Name="semanticId">
+            <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/FurtherInformation/1/2)</Value>
+            <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+          </Attribute>
+          <Attribute Name="qualifier:SMT/Cardinality=ZeroToOne">
+            <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+            <Attribute Name="semanticId">
+              <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="type">
+              <Value>SMT/Cardinality</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+            </Attribute>
+            <Attribute Name="value">
+              <Value>ZeroToOne</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+            </Attribute>
+          </Attribute>
+          <InternalElement Name="TextStatement" ID="e24153f2-5354-48f6-87a6-3d78978cb257">
+            <Attribute Name="idShort">
+              <Value>TextStatement</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="category">
+              <Value>PARAMETER</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Statement by the manufacturer in text form, e.g. scope of validity of the statements, scopes of application, conditions of operation.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Statement by the manufacturer in text form, e.g. scope of validity of the statements, scopes of application, conditions of operation.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/TextStatement/1/1)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=ZeroToMany">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>ZeroToMany</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:ExampleValue=Restricted use@en">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>ExampleValue</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>Restricted use@en</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:AllowedIdShort=TextStatement[\d{2,3}]">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/AllowedIdShort/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>AllowedIdShort</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>TextStatement[\d{2,3}]</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/MultiLanguageProperty" />
+          </InternalElement>
+          <InternalElement Name="ValidDate" ID="f4257225-5654-455e-89db-6147252032fe">
+            <Attribute Name="idShort">
+              <Value>ValidDate</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/idShort" />
+            </Attribute>
+            <Attribute Name="category">
+              <Value>PARAMETER</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/category" />
+            </Attribute>
+            <Attribute Name="description">
+              <Value>Denotes a date on which the data specified in the Submodel was valid from for the associated asset.</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:IReferable/description" />
+              <Attribute Name="aml-lang=en">
+                <Value>Denotes a date on which the data specified in the Submodel was valid from for the associated asset.</Value>
+              </Attribute>
+            </Attribute>
+            <Attribute Name="semanticId">
+              <Value>(ConceptDescription)(https://admin-shell.io/ZVEI/TechnicalData/ManufacturerOrderCode/1/1)</Value>
+              <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+            </Attribute>
+            <Attribute Name="value" AttributeDataType="xs:xs:date">
+              <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+            </Attribute>
+            <Attribute Name="qualifier:SMT/Cardinality=One">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/Cardinality/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>SMT/Cardinality</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>One</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <Attribute Name="qualifier:ExampleValue=5/28/2021">
+              <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+              <Attribute Name="semanticId">
+                <Value>(GlobalReference)(https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0)</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+              </Attribute>
+              <Attribute Name="type">
+                <Value>ExampleValue</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+              </Attribute>
+              <Attribute Name="value">
+                <Value>5/28/2021</Value>
+                <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+              </Attribute>
+            </Attribute>
+            <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/Property" />
+          </InternalElement>
+          <RoleRequirements RefBaseRoleClassPath="AssetAdministrationShellRoleClassLib/SubmodelElementCollection" />
+        </InternalElement>
+        <SupportedRoleClass RefRoleClassPath="AssetAdministrationShellRoleClassLib/Submodel" />
+      </SystemUnitClass>
+    </SystemUnitClass>
+  </SystemUnitClassLib>
+</CAEXFile>

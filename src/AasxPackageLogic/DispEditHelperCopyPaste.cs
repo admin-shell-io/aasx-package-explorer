@@ -744,6 +744,7 @@ namespace AasxPackageLogic
             Aas.ISubmodel sm,
             string label = "Buffer:",
             Func<T, T, bool> checkEquality = null,
+            Action<T, bool> modifyAfterClone = null,
             Action<CopyPasteItemBase> extraAction = null,
             AasxMenu superMenu = null) /*where T : new()*/ //TODO:jtikekar Test
         {
@@ -845,7 +846,7 @@ namespace AasxPackageLogic
 
                             // determine, what to clone
                             object src = item.sm;
-                            if (typeof(T) == typeof(Aas.Reference))
+                            if (typeof(T).IsAssignableFrom(typeof(Aas.IReference)))
                                 src = item.smref;
 
                             if (src == null)
@@ -860,8 +861,9 @@ namespace AasxPackageLogic
                                 foreach (var p in parentContainer)
                                     if (checkEquality(p, x))
                                         foundEqual = true;
-                            if (foundEqual)
+                            if (foundEqual && modifyAfterClone == null)
                             {
+                                // if modifyAfterClone cannot change, abort!
                                 Log.Singleton.Error("When pasting AAS elements, an element was found to be " +
                                     "already existing.");
                                 continue;
@@ -870,6 +872,9 @@ namespace AasxPackageLogic
                             // apply
                             object entity2 = cloneEntity((T)src);
                             nextBusObj = entity2;
+
+                            // modify
+                            modifyAfterClone?.Invoke((T)entity2, foundEqual);
 
                             // emit event
                             this.AddDiaryEntry(entity2 as Aas.IReferable,

@@ -91,6 +91,11 @@ namespace AasxPackageExplorer
             RedrawElementView();
         }
 
+        /// <summary>
+        /// Set to <c>true</c>, if the application shall be shut down via script
+        /// </summary>
+        public bool ScriptModeShutdown = false;
+
         private async Task CommandBinding_GeneralDispatch(
             string cmd,
             AasxMenuItemBase menuItem,
@@ -118,6 +123,7 @@ namespace AasxPackageExplorer
                 ticket.StartExec();
 
                 // do
+                ScriptModeShutdown = true;
                 System.Windows.Application.Current.Shutdown();
             }
 

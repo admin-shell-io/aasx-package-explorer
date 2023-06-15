@@ -18,14 +18,12 @@ class "TechnicalData" as ID00000001 <<Submodel>> {
 }
 
 class "GeneralInformation" as ID00000002 <<SubmodelElementCollection>> {
-  +ManufacturerName : xs:string = "Festo SE & C..."
+  +ManufacturerName : xs:string
   +ManufacturerLogo : File
-  +ManufacturerProductDesignation : xs:string = "Demonstratio..."
-  +ManufacturerPartNumber : xs:string = "123456"
-  +ManufacturerOrderCode : xs:string = "SA-012-2344-23"
-  +ProductImage01 : File
-  +ProductImage02 : File
-  +ProductImage03 : File
+  +ManufacturerProductDesignation : MultiLanguageProperty
+  +ManufacturerArticleNumber : xs:string
+  +ManufacturerOrderCode : xs:string
+  +ProductImage : File
 }
 
 class "ManufacturerName" as ID00000003 <<xs:string>> {
@@ -34,93 +32,90 @@ class "ManufacturerName" as ID00000003 <<xs:string>> {
 class "ManufacturerLogo" as ID00000004 <<File>> {
 }
 
-class "ManufacturerProductDesignation" as ID00000005 <<xs:string>> {
+class "ManufacturerProductDesignation" as ID00000005 <<MultiLanguageProperty>> {
 }
 
-class "ManufacturerPartNumber" as ID00000006 <<xs:string>> {
+class "ManufacturerArticleNumber" as ID00000006 <<xs:string>> {
 }
 
 class "ManufacturerOrderCode" as ID00000007 <<xs:string>> {
 }
 
-class "ProductImage01" as ID00000008 <<File>> {
+class "ProductImage" as ID00000008 <<File>> {
 }
 
-class "ProductImage02" as ID00000009 <<File>> {
+class "ProductClassifications" as ID00000009 <<SubmodelElementCollection>> {
+  +ProductClassificationItem : SubmodelElementCollection
 }
 
-class "ProductImage03" as ID0000000A <<File>> {
-}
-
-class "ProductClassifications" as ID0000000B <<SubmodelElementCollection>> {
-  +ProductClassificationItem101 : SubmodelElementCollection
-}
-
-class "ProductClassificationItem101" as ID0000000C <<SubmodelElementCollection>> {
+class "ProductClassificationItem" as ID0000000A <<SubmodelElementCollection>> {
   +ProductClassificationSystem : xs:string
   +ClassificationSystemVersion : xs:string
   +ProductClassId : xs:string
 }
 
-class "ProductClassificationSystem" as ID0000000D <<xs:string>> {
+class "ProductClassificationSystem" as ID0000000B <<xs:string>> {
 }
 
-class "ClassificationSystemVersion" as ID0000000E <<xs:string>> {
+class "ClassificationSystemVersion" as ID0000000C <<xs:string>> {
 }
 
-class "ProductClassId" as ID0000000F <<xs:string>> {
+class "ProductClassId" as ID0000000D <<xs:string>> {
 }
 
-class "TechnicalProperties" as ID00000010 <<SubmodelElementCollection>> {
-  +Width : xs:string = "400 mm"
-  +Height : xs:string = "250 mm"
-  +Depth : xs:string = "300 mm"
-  +Weight : xs:string = "4 kg"
+class "TechnicalProperties" as ID0000000E <<SubmodelElementCollection>> {
+  +{arbitrary} : MultiLanguageProperty
+  +{arbitrary} : xs:string
+  +MainSection : SubmodelElementCollection
+  +SubSection : SubmodelElementCollection
 }
 
-class "Width" as ID00000011 <<xs:string>> {
+class "{arbitrary}" as ID0000000F <<MultiLanguageProperty>> {
 }
 
-class "Height" as ID00000012 <<xs:string>> {
+class "{arbitrary}" as ID00000010 <<xs:string>> {
 }
 
-class "Depth" as ID00000013 <<xs:string>> {
+class "MainSection" as ID00000011 <<SubmodelElementCollection>> {
+  +SubSection : SubmodelElementCollection
 }
 
-class "Weight" as ID00000014 <<xs:string>> {
+class "SubSection" as ID00000012 <<SubmodelElementCollection>> {
 }
 
-class "FurtherInformation" as ID00000015 <<SubmodelElementCollection>> {
-  +TextStatement01 : xs:string = "This is a de..."
-  +ValidDate : xs:string = "16 NOV 2020"
+class "SubSection" as ID00000013 <<SubmodelElementCollection>> {
 }
 
-class "TextStatement01" as ID00000016 <<xs:string>> {
+class "FurtherInformation" as ID00000014 <<SubmodelElementCollection>> {
+  +TextStatement : MultiLanguageProperty
+  +ValidDate : xs:date
 }
 
-class "ValidDate" as ID00000017 <<xs:string>> {
+class "TextStatement" as ID00000015 <<MultiLanguageProperty>> {
+}
+
+class "ValidDate" as ID00000016 <<xs:date>> {
 }
 
 ID00000002 *--  ID00000003 : "ManufacturerName"
 ID00000002 *--  ID00000004 : "ManufacturerLogo"
 ID00000002 *--  ID00000005 : "ManufacturerProductDesignation"
-ID00000002 *--  ID00000006 : "ManufacturerPartNumber"
+ID00000002 *--  ID00000006 : "ManufacturerArticleNumber"
 ID00000002 *--  ID00000007 : "ManufacturerOrderCode"
-ID00000002 *--  ID00000008 : "ProductImage01"
-ID00000002 *--  ID00000009 : "ProductImage02"
-ID00000002 *--  ID0000000A : "ProductImage03"
+ID00000002 *--  ID00000008 : "ProductImage"
 ID00000001 *--  ID00000002 : "GeneralInformation"
-ID0000000C *--  ID0000000D : "ProductClassificationSystem"
-ID0000000C *--  ID0000000E : "ClassificationSystemVersion"
-ID0000000C *--  ID0000000F : "ProductClassId"
-ID0000000B *--  ID0000000C : "ProductClassificationItem101"
-ID00000001 *--  ID0000000B : "ProductClassifications"
-ID00000010 *--  ID00000011 : "Width"
-ID00000010 *--  ID00000012 : "Height"
-ID00000010 *--  ID00000013 : "Depth"
-ID00000010 *--  ID00000014 : "Weight"
-ID00000001 *--  ID00000010 : "TechnicalProperties"
-ID00000015 *--  ID00000016 : "TextStatement01"
-ID00000015 *--  ID00000017 : "ValidDate"
-ID00000001 *--  ID00000015 : "FurtherInformation"
+ID0000000A *--  ID0000000B : "ProductClassificationSystem"
+ID0000000A *--  ID0000000C : "ClassificationSystemVersion"
+ID0000000A *--  ID0000000D : "ProductClassId"
+ID00000009 *--  ID0000000A : "ProductClassificationItem"
+ID00000001 *--  ID00000009 : "ProductClassifications"
+ID0000000E *--  ID0000000F : "{arbitrary}"
+ID0000000E *--  ID00000010 : "{arbitrary}"
+ID00000011 *--  ID00000012 : "SubSection"
+ID0000000E *--  ID00000011 : "MainSection"
+ID0000000E *--  ID00000013 : "SubSection"
+ID00000001 *--  ID0000000E : "TechnicalProperties"
+ID00000014 *--  ID00000015 : "TextStatement"
+ID00000014 *--  ID00000016 : "ValidDate"
+ID00000001 *--  ID00000014 : "FurtherInformation"
 @enduml

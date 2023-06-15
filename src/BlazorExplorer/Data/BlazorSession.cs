@@ -297,7 +297,7 @@ namespace BlazorUI.Data
                 var location = Options.Curr.AasxToLoad;
                 try
                 {
-                    Log.Singleton.Info($"Auto-load file at application start " +
+                    Log.Singleton.Info($"Auto-load main package at application start " +
                         $"from {location} into container");
 
                     var container = PackageContainerFactory.GuessAndCreateFor(
@@ -313,6 +313,36 @@ namespace BlazorUI.Data
                     else
                         UiLoadPackageWithNew(PackageCentral.MainItem,
                             takeOverContainer: container, onlyAuxiliary: false, indexItems: true);
+
+                    Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"When auto-loading {location}");
+                }
+            }
+
+            if (Options.Curr.AuxToLoad != null)
+            {
+                var location = Options.Curr.AuxToLoad;
+                try
+                {
+                    Log.Singleton.Info($"Auto-load auxiliary package at application start " +
+                        $"from {location} into container");
+
+                    var container = PackageContainerFactory.GuessAndCreateFor(
+                        PackageCentral,
+                        location,
+                        location,
+                        overrideLoadResident: true,
+                        containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr),
+                        runtimeOptions: PackageCentral.CentralRuntimeOptions);
+
+                    if (container == null)
+                        Log.Singleton.Error($"Failed to auto-load AASX from {location}");
+                    else
+                        UiLoadPackageWithNew(PackageCentral.AuxItem,
+                            takeOverContainer: container, onlyAuxiliary: true, indexItems: false);
 
                     Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
                 }

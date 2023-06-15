@@ -759,6 +759,17 @@ namespace AasxPackageExplorer
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // create a log file?
+            if (Options.Curr.LogFile?.HasContent() == true)
+                try
+                {
+                    _logWriter = new StreamWriter(Options.Curr.LogFile);
+                    Log.Singleton.Info("Starting writing log information to {0} ..", Options.Curr.LogFile);
+                } catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "creating log file: " + Options.Curr.LogFile);
+                }
+
             // basic AnyUI handling
             DisplayContext = new AnyUiDisplayContextWpf(this, PackageCentral);
             Logic.DisplayContext = DisplayContext;
@@ -1038,7 +1049,7 @@ namespace AasxPackageExplorer
                 var location = Options.Curr.AasxToLoad;
                 try
                 {
-                    Log.Singleton.Info($"Auto-load file at application start " +
+                    Log.Singleton.Info($"Auto-load main package at application start " +
                         $"from {location} into container");
 
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
@@ -1059,7 +1070,37 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    Log.Singleton.Error(ex, $"When auto-loading main from: {location}");
+                }
+            }
+
+            if (Options.Curr.AuxToLoad != null)
+            {
+                var location = Options.Curr.AuxToLoad;
+                try
+                {
+                    Log.Singleton.Info($"Auto-load auxiliary package at application start " +
+                        $"from {location} into container");
+
+                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                        PackageCentral,
+                        location,
+                        location,
+                        overrideLoadResident: true,
+                        containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr),
+                        runtimeOptions: PackageCentral.CentralRuntimeOptions);
+
+                    if (container == null)
+                        Log.Singleton.Error($"Failed to auto-load AASX from {location}");
+                    else
+                        UiLoadPackageWithNew(PackageCentral.AuxItem,
+                            takeOverContainer: container, onlyAuxiliary: true, indexItems: false);
+
+                    Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"When auto-loading aux from: {location}");
                 }
             }
 
@@ -1171,6 +1212,17 @@ namespace AasxPackageExplorer
 
                 // message window
                 _messageReportWindow?.AddStoredPrint(sp);
+
+                // log?
+                if (_logWriter != null)
+                    try
+                    {
+                        _logWriter.WriteLine(sp.ToString());
+                        _logWriter.Flush();
+                    } catch (Exception ex)
+                    {
+                        LogInternally.That.SilentlyIgnoredError(ex);
+                    }
             }
 
             // always tell the errors
@@ -2523,6 +2575,8 @@ namespace AasxPackageExplorer
             _messageReportWindow.Show();
         }
 
+        protected TextWriter _logWriter = null;
+
         protected MessageReportWindow _messageReportWindow = null;
 
         private void ButtonReport_Click(object sender, RoutedEventArgs e)
@@ -2600,12 +2654,12 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            var positiveQuestion =
-                Options.Curr.UseFlyovers &&
+            var positiveQuestion = ScriptModeShutdown || 
+                (Options.Curr.UseFlyovers &&
                 AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
                     "Do you want to proceed closing the application? Make sure, that you have saved your data before.",
                     "Exit application?",
-                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question);
+                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question));
 
             if (!positiveQuestion)
             {
@@ -2613,16 +2667,22 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            Log.Singleton.Info("Closing main package ..");
+            // ok
+            Log.Singleton.Info("Application closing ..");
+
+            // package
+            Log.Singleton.Info("Closing main and aux package ..");
             try
             {
                 PackageCentral?.MainItem?.Close();
+                PackageCentral?.AuxItem?.Close();
             }
             catch (Exception ex)
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
 
+            // LRU
             try
             {
                 // save LRU
@@ -2643,6 +2703,19 @@ namespace AasxPackageExplorer
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
 
+            // Log
+            if (_logWriter != null)
+                try
+                {
+                    _logWriter.Close();
+                    _logWriter = null;
+                }
+                catch (Exception ex)
+                {
+                    LogInternally.That.SilentlyIgnoredError(ex);
+                }
+
+            // done
             e.Cancel = false;
         }
 

@@ -91,9 +91,11 @@ namespace AasxPackageLogic.PackageCentral
         {
         }
 
-        private void SetNewLocation(string sourceFn)
+        private void SetNewLocation(string sourceFn, bool doNotRememberLocation = false)
         {
-            _location = sourceFn;
+            if (!doNotRememberLocation)
+                _location = sourceFn;
+            // these flag do only depend on the extension and should therefore fit
             IsFormat = EvalFormat(_location);
             IndirectLoadSave = Options.Curr.IndirectLoadSave && IsFormat == Format.AASX;
         }
@@ -153,13 +155,15 @@ namespace AasxPackageLogic.PackageCentral
             await Task.Yield();
         }
 
-        public override async Task SaveToSourceAsync(string saveAsNewFileName = null,
+        public override async Task SaveToSourceAsync(
+            string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackCntRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null,
+            bool doNotRememberLocation = false)
         {
             // apply possible new source name directly
             if (saveAsNewFileName != null)
-                SetNewLocation(saveAsNewFileName);
+                SetNewLocation(saveAsNewFileName, doNotRememberLocation: doNotRememberLocation);
 
             // check extension
             if (IsFormat == Format.Unknown)

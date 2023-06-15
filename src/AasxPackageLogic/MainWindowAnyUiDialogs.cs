@@ -224,22 +224,14 @@ namespace AasxPackageLogic
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
                         (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
                         "All files (*.*)|*.*",
-                    "Save AASX: No valid filename.");
+                    "Save AASX: No valid filename.", 
+                    reworkSpecialFn: true);
                 if (ucsf?.Result != true)
                     return;
 
                 // do
-                var targetFn = ucsf.TargetFileName;
-                var targetFnForLRU = targetFn;
-
                 try
                 {
-                    if (SaveFilenameReworkTargetFilename(ucsf, ref targetFn))
-                    {
-                        // not local
-                        targetFnForLRU = null;
-                    }
-
                     //// establish target filename
                     //if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
                     //{
@@ -295,8 +287,9 @@ namespace AasxPackageLogic
                         prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
 
                     // save 
-                    DisplayContextPlus.RememberForInitialDirectory(targetFn);
-                    await PackageCentral.MainItem.SaveAsAsync(targetFn, prefFmt: prefFmt);
+                    DisplayContextPlus.RememberForInitialDirectory(ucsf.TargetFileName);
+                    await PackageCentral.MainItem.SaveAsAsync(ucsf.TargetFileName, prefFmt: prefFmt,
+                        doNotRememberLocation: ucsf.Location != AnyUiDialogueDataSaveFile.LocationKind.Local);
 
                     // backup (only for AASX)
                     if (ucsf.FilterIndex == 0)
@@ -314,8 +307,9 @@ namespace AasxPackageLogic
                     try
                     {
                         var lru = PackageCentral?.Repositories?.FindLRU();
-                        if (lru != null && targetFnForLRU != null)
-                            lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, targetFnForLRU);
+                        if (lru != null && ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Local)
+                            lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, 
+                                ucsf.TargetFileName);
                     }
                     catch (Exception ex)
                     {
@@ -330,7 +324,8 @@ namespace AasxPackageLogic
                     {
                         try
                         {
-                            await DisplayContextPlus.WebBrowserDisplayOrDownloadFile(targetFn, "application/octet-stream");
+                            await DisplayContextPlus.WebBrowserDisplayOrDownloadFile(
+                                ucsf.TargetFileName, "application/octet-stream");
                             Log.Singleton.Info("Download initiated.");
                         }
                         catch (Exception ex)
@@ -346,7 +341,7 @@ namespace AasxPackageLogic
                     LogErrorToTicket(ticket, ex, "when saving AASX");
                     return;
                 }
-                Log.Singleton.Info("AASX saved successfully as: {0}", targetFn);
+                Log.Singleton.Info("AASX saved successfully as: {0}", ucsf.TargetFileName);
             }
 
             if (cmd == "close" && PackageCentral?.Main != null)
@@ -528,7 +523,38 @@ namespace AasxPackageLogic
                 {
                     var val = new MenuFuncValidateSmt();
                     val.PerformValidation(package: PackageCentral.Main, fn: PackageCentral.MainItem.Filename);
-                    await val.PerformDialogue(ticket, DisplayContext);
+                    await val.PerformDialogue(ticket, DisplayContext,
+                        "Assess Submodel template ..");
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "when assessing Submodel template");
+                }
+            }
+
+            if (cmd == "comparesmt")
+            {
+                // start
+                ticket.StartExec();
+
+                // extra check
+                if (PackageCentral.Main?.AasEnv == null
+                    || PackageCentral.Aux?.AasEnv == null)
+                {
+                    Log.Singleton.Error("Compare SMT: Two Submodel templates need to be given in main and " +
+                        "auxiliary packages. Aborting!");
+                    return;
+                }
+
+                //do
+                try
+                {
+                    var val = new MenuFuncCompareSmt();
+                    val.PerformCompare(
+                        firstEnv: PackageCentral.Aux?.AasEnv, firstFn: PackageCentral.AuxItem.Filename,
+                        secondEnv: PackageCentral.Main?.AasEnv, secondFn: PackageCentral.MainItem.Filename);
+                    await val.PerformDialogue(ticket, DisplayContext,
+                        "Compare Submodel template ..");
                 }
                 catch (Exception ex)
                 {
@@ -1597,8 +1623,7 @@ namespace AasxPackageLogic
         }
 
         public static bool SaveFilenameReworkTargetFilename(
-            AnyUiDialogueDataSaveFile ucsf,
-            ref string targetFn)
+            AnyUiDialogueDataSaveFile ucsf)
         {
             // access
             if (ucsf == null)
@@ -1608,19 +1633,20 @@ namespace AasxPackageLogic
             // establish target filename
             if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
             {
-                targetFn = PackageContainerUserFile.BuildUserFilePath(ucsf.TargetFileName);
+                ucsf.TargetFileName = PackageContainerUserFile
+                    .BuildUserFilePath(ucsf.TargetFileName);
                 notLocal = true;
             }
 
             if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)
             {
                 // produce a .tmp file
-                targetFn = System.IO.Path.GetTempFileName();
+                var targetFn = System.IO.Path.GetTempFileName();
                 notLocal = true;
 
-                // rename better
+                // rename better?
                 var _filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ucsf.Filter);
-                targetFn = AnyUiDialogueDataOpenFile.ApplyFilterItem(
+                ucsf.TargetFileName = AnyUiDialogueDataOpenFile.ApplyFilterItem(
                     fi: _filterItems[ucsf.FilterIndex],
                     fn: targetFn,
                     userFn: ucsf.TargetFileName,

@@ -1936,7 +1936,8 @@ namespace AnyUi
             string proposeFn,
             string filter,
             string msg,
-            bool requireNoFlyout = false)
+            bool requireNoFlyout = false,
+            bool reworkSpecialFn = false)
         {
             // filename
             var targetFn = ticket?[argName] as string;
@@ -1959,19 +1960,26 @@ namespace AnyUi
                 PerformSpecialOps(modal: true, dialogueData: uc);
                 if (!uc.Result)
                     return null;
-                return
-                    uc;
+
+                // maybe rework?
+                if (reworkSpecialFn)
+                    MainWindowAnyUiDialogs.SaveFilenameReworkTargetFilename(uc);
+
+                // ok
+                return uc;
             }
 
             // no, via modal dialog?
             if (targetFn?.HasContent() != true)
             {
-
-
                 if (await StartFlyoverModalAsync(uc))
                 {
                     // house keeping
                     RememberForInitialDirectory(uc.TargetFileName);
+
+                    // maybe rework?
+                    if (reworkSpecialFn)
+                        MainWindowAnyUiDialogs.SaveFilenameReworkTargetFilename(uc);
 
                     // ok
                     return uc;
@@ -2002,9 +2010,12 @@ namespace AnyUi
             string filter,
             string msg,
             string argFilterIndex = null,
-            string argLocation = null)
+            string argLocation = null,
+            bool reworkSpecialFn = false)
         {
-            var uc = await MenuSelectSaveFilenameAsync(ticket, argName, caption, proposeFn, filter, msg);
+            var uc = await MenuSelectSaveFilenameAsync(
+                ticket, argName, caption, proposeFn, filter, msg, 
+                reworkSpecialFn: reworkSpecialFn);
 
             if (uc.Result && uc.TargetFileName.HasContent())
             {

@@ -108,53 +108,6 @@ namespace AasxPackageLogic
             return null;
         }
 
-        //public void QualiferUpgradeSingle(
-        //    List<QualifierPreset> presets, 
-        //    List<IQualifier> qualifiers, 
-        //    string oldName, string newName)
-        //{
-        //    // access
-        //    if (presets == null || qualifiers == null || oldName == null || newName == null)
-        //        return;
-
-        //    var newQP = FindQualiferInPresets(presets, newName);
-        //    if (newQP?.qualifier == null)
-        //        return;
-
-        //    // go thru, in place substitution
-        //    int qi = 0;
-        //    while (qi < qualifiers.Count)
-        //    {
-        //        // next?
-        //        if (true != qualifiers[qi].Type?.Trim()?.Equals(
-        //                oldName.Trim(), StringComparison.InvariantCultureIgnoreCase))
-        //        {
-        //            qi++;
-        //            continue;
-        //        }
-
-        //        // found oldName, replace
-        //        qualifiers.RemoveAt(qi);
-        //        qualifiers.Add(newQP.qualifier);
-        //    }
-        //}
-
-        //public void QualiferUpgradeReferableOLD(List<QualifierPreset> presets, IReferable rf)
-        //{
-        //    // access
-        //    if (presets == null || rf == null)
-        //        return;
-
-        //    // try upgrade qualifiers
-        //    if (rf is IQualifiable qlf && qlf.Qualifiers != null)
-        //    {
-        //        QualiferUpgradeSingle(presets, qlf.Qualifiers, "Multiplicity", "SMT/Cardinality");
-        //        QualiferUpgradeSingle(presets, qlf.Qualifiers, "Cardinality", "SMT/Cardinality");
-        //        QualiferUpgradeSingle(presets, qlf.Qualifiers, "ExampleValue", "SMT/ExampleValue");
-        //        QualiferUpgradeSingle(presets, qlf.Qualifiers, "AllowedIdShort", "SMT/AllowedIdShort");
-        //    }
-        //}
-
         public void QualiferUpgradeReferable(List<QualifierPreset> presets, IReferable rf)
         {
             // access
@@ -1589,7 +1542,7 @@ namespace AasxPackageLogic
             AasxMenu superMenu = null) where T : ISubmodelElement
         {
             // access
-            if (smeList == null || stack == null)
+            if (stack == null)
                 return;
 
             // hint

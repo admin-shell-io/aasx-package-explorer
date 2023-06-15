@@ -598,8 +598,6 @@ namespace AnyUi
         {
             var g = AddSmallGrid(1, 4, new[] { "*", "#", "#", "#" }, margin: new AnyUiThickness(0, 13, 0, 0));
 
-            var auxButton = requestAuxButton && auxButtonTitle != null && auxButtonLambda != null;
-
             // manually add label (legacy?)
             var l = new AnyUiLabel();
             l.Margin = new AnyUiThickness(0, 0, 0, 0);
@@ -614,7 +612,7 @@ namespace AnyUi
             view.Children.Add(g);
 
             // auxButton
-            if (auxButton)
+            if (requestAuxButton && auxButtonTitle != null && auxButtonLambda != null)
             {
                 AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
@@ -626,7 +624,7 @@ namespace AnyUi
             }
 
             // context menu
-            if (auxContextHeader != null && auxContextLambda != null)
+            if (requestAuxButton && auxContextHeader != null && auxContextLambda != null)
             {
                 AddSmallContextMenuItemTo(
                         g, 0, 2,

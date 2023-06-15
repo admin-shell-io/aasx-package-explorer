@@ -160,11 +160,13 @@ namespace AasxPackageLogic.PackageCentral
 
         public async Task<bool> SaveAsAsync(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackCntRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null,
+            bool doNotRememberLocation = false)
         {
             try
             {
-                await Container.SaveToSourceAsync(saveAsNewFileName, prefFmt, runtimeOptions);
+                await Container.SaveToSourceAsync(saveAsNewFileName, prefFmt, runtimeOptions, 
+                    doNotRememberLocation: doNotRememberLocation);
                 return true;
             }
             catch (Exception ex)

@@ -170,7 +170,8 @@ namespace AnyUi
             string proposeFn,
             string filter,
             string msg,
-            bool requireNoFlyout = false)
+            bool requireNoFlyout = false,
+            bool reworkSpecialFn = false)
         {
             await Task.Yield();
             return null;
@@ -188,12 +189,13 @@ namespace AnyUi
             string filter,
             string msg,
             string argFilterIndex = null,
-            string argLocation = null)
+            string argLocation = null,
+            bool reworkSpecialFn = false)
         {
             await Task.Yield();
             return false;
-        }        
-
+        }
+       
         /// <summary>
         /// Selects a text either from user or from ticket.
         /// </summary>

@@ -12,23 +12,25 @@ namespace Extensions
 
         public static string GetDefaultString(this List<ILangStringPreferredNameTypeIec61360> langStringSet, string defaultLang = null)
         {
-            // start
-            if (defaultLang == null)
-                defaultLang = "en"; //Default Lang in old implementation is en
+            return ExtendLangString.GetDefaultStringGen(langStringSet, defaultLang);
+            //// start
+            //if (defaultLang == null)
+            //    defaultLang = "en"; //Default Lang in old implementation is en
 
-            string res = null;
+            //string res = null;
 
-            // search
-            foreach (var langString in langStringSet)
-                if (langString.Language.Equals(defaultLang, StringComparison.OrdinalIgnoreCase))
-                    res = langString.Text;
+            //// search
+            //foreach (var langString in langStringSet)
+            //    if (langString.Language.Equals(defaultLang, StringComparison.OrdinalIgnoreCase))
+            //        res = langString.Text;
 
-            if (res == null && langStringSet.Count > 0)
-                res = langStringSet[0].Text;
+            //if (res == null && langStringSet.Count > 0)
+            //    res = langStringSet[0].Text;
 
-            // found?
-            return res;
+            //// found?
+            //return res;
         }
+        
         public static List<ILangStringPreferredNameTypeIec61360> ConvertFromV20(
             this List<ILangStringPreferredNameTypeIec61360> lss,
             AasxCompatibilityModels.AdminShellV20.LangStringSetIEC61360 src)

@@ -365,11 +365,12 @@ namespace AasxPluginExportTable.TimeSeries
                         for (int tc = 0; tc < totalCols; tc++)
                         {
                             // first columns label
-                            var txtRowHead = (tc == 0) ? "Table" : $"Column {tc}";
+                            var txtRowHead = (tc == 0) ? "Table" 
+                                    : ((tc == 1) ? "Column\u00bbHead" : $"Column {tc-1}");
 
                             helper.Set(
                                 helper.AddSmallLabelTo(g2, 0, tc,
-                                    content: (tc == 0) ? "Table" : $"Column {tc}",
+                                    content: txtRowHead,
                                     verticalAlignment: AnyUiVerticalAlignment.Bottom,
                                     verticalContentAlignment: AnyUiVerticalAlignment.Bottom),
                                 horizontalAlignment: AnyUiHorizontalAlignment.Left,
@@ -498,7 +499,8 @@ namespace AasxPluginExportTable.TimeSeries
                             dlgFileName,
                             dlgFilter,
                             "Export table: No valid filename.",
-                            argLocation: "Location")))
+                            argLocation: "Location", 
+                            reworkSpecialFn: true)))
                     return;
             }
             else

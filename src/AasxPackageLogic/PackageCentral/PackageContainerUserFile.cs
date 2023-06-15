@@ -257,7 +257,8 @@ namespace AasxPackageLogic.PackageCentral
 
         public override async Task SaveToSourceAsync(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackCntRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null,
+            bool doNotRememberLocation = false)
         {
             // apply possible new source name directly
             if (saveAsNewFileName != null)

@@ -82,11 +82,13 @@ namespace AasxPackageExplorer
                 .AddMenu(header: "Reports …", childs: (new AasxMenu())
                     .AddWpfBlazor(name: "AssessSmt", header: "_Assess Submodel template …",
                         help: "Checks for a set of defined features for a Submodel template " +
-                            "and reports the results. If no source package is given, the active " +
-                            "main package will be used.",
+                            "and reports the results. ",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("Source", "Source package (.aasx) file.")
-                            .Add("Target", "Target report file (.txt).")))
+                            .Add("Target", "Target report file (*.txt, *.xlsx)."))
+                    .AddWpfBlazor(name: "CompareSmt", header: "_Compare Submodel template in main and auxiliary …",
+                        help: "Compares Submodel templates given in main and auxiliary packages.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("Target", "Target report file (*.txt, *.xlsx).")))
                 .AddSeparator()
                 .AddWpfBlazor(name: "OpenAux", header: "Open Au_xiliary AAS …", inputGesture: "Ctrl+X",
                     help: "Open existing AASX package to the auxiliary buffer (non visible in the tree).",

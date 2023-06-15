@@ -1636,7 +1636,18 @@ namespace AasxPackageLogic
                 this.DispSubmodelCutCopyPasteHelper<Aas.ISubmodel>(stack, repo, this.theCopyPaste,
                     env.Submodels, submodel, (sm) => { return sm.Copy(); },
                     null, submodel, superMenu: superMenu,
-                    label: "Buffer:");
+                    label: "Buffer:",
+                    checkEquality: (s1, s2) =>
+                    {
+                        if (s1?.Id != null && s2?.Id != null)
+                            return (s1.Id.Equals(s2.Id, StringComparison.InvariantCultureIgnoreCase));
+                        return false;
+                    },
+                    modifyAfterClone: (cloneSm, duplicate) =>
+                    {
+                        if (cloneSm != null && duplicate)
+                            MakeNewIdentifiableUnique(cloneSm);
+                    });
             }
 
             // normal edit of the submodel

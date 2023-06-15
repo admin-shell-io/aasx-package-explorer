@@ -15,12 +15,21 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   return "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0";
   Answer Birgit: Nope, shall be /3/0 or /3 !!
 
-* AssetKind.NotApplicable is curently not in the AAS core, but in the DotAAS
+## Todo (w.r.t. recently V3.0)
 
-* Jui and Michael to discuss with Birgit if the HasDataSpecification dialogues
-  are acceptable or need to be changed
+* SMC / Add Prop / does not focus new Prop -- open, frustrated :-(
+* CDs / Add CD / does not focus new CD!! (but has a unique id...) -- same issue :-(
+* Entity / add specificAssetId .. does not work
+* when Find/ Replace: before invoke "Replace all", "Start" needs to be invoked!
+* serialization of plugin options does not work with Stringify(): "Type" is 20 instead of "GlobalReference"
+* Ctrl-V does not work in modal dialogues ..
+* Copy "single/ recursive" for Submodels is not great
 
-## Todo (recently V3.0)
+* Entity is realized like a Collection, a List or a Submodel , however the attribute 
+  is called “statement” in contrast to “value”. This is a little bit confusing. 
+  Should we add at least some note “add statement as” .. ???????
+
+## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done
 * AAS / gobalAssetId: remove "create data element", as being pointless -- no, is "string?"
@@ -34,17 +43,19 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * SME Refactor does not work? (example: SMC -> event element) -- done
 * SME / Qualifiers / "Add preset": error while loading presets (Ifx serialize) -- done
 * SME / Qualifiers / value / multi line / title string wrong -- done
-* SMC / Add Prop / does not focus new Prop -- open, frustrated :-(
-* CDs / Add CD / does not focus new CD!! (but has a unique id...) -- same issue :-(
 * new CD / IEC61360 / "EN?" language makes no sense (either "", "en")
-  casing!!! -- changed to be configurable via "DefaultLang"
-* Entity / add specificAssetId .. does not work
-* when Find/ Replace: before invoke "Replace all", "Start" needs to be invoked!
+  casing!!! -- done, changed to be configurable via "DefaultLang"
 * when auto-load, "Save as .." will not point the the intended directory -- fixed (?)
 * AssetInformation could be NULL -> trouble for serialization -- introduced "SilentFix30",
-  already warnings existed
-* convert V2.0/Cardinality to SMT/Cardinality
-* SMT assessment: check if embedded data spec (e.g. IEC61360) is present
+  already warnings existed -- somehow done
+* convert V2.0/Cardinality to SMT/Cardinality -- done
+* SMT assessment: check if embedded data spec (e.g. IEC61360) is present -- done
+* "Qualifiers (all) / Migrate to extension"" can be activated w/o edit mode -- done
+* When adding a predefined qualifier it would be great to also set the (new attribute) 
+  qualifierKind automatically. -- Done, was just a matter of configuring qualifier-presets.json
+* Copy/paste does not work for submodels (neither Buffer, nor copy recursively)
+  -- buffer works, copy recursively is fishy
+
 
 ## Notes (influencing todos)
 
@@ -303,3 +314,11 @@ These projects are not migrated or integrated, yet:
 * polished tree views for CDs (wishes from Birgit)
 * in BOM plugin, unify arguments handing
 * BlazorUI compiles & runs
+
+# Notes w.r.t. to scripting
+
+```
+.\AasxPackageExplorer.exe -read-json options-debug.MIHO.json -aasx-to-load "C:\HOMI\Develop\Aasx\repo\IDTA 02003-1-2_Template_TechnicalData.aasx" -log-file out.log -cmd 'Tool(\"AssessSmt\", \"Target\", \"test.xlsx\"); Tool(\"Exit\");'
+```
+
+

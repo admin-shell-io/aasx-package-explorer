@@ -29,25 +29,27 @@ namespace Extensions
 
             return false;
         }
-        public static string GetDefaultString(this List<ILangStringTextType> langStringSet, string defaultLang = null)
-        {
-            // start
-            if (defaultLang == null)
-                defaultLang = "en"; //Default Lang in old implementation is en
 
-            string res = null;
+        //public static string GetDefaultString(this List<ILangStringTextType> langStringSet, string defaultLang = null)
+        //{
+        //    return ExtendLangString.GetDefaultStringGen(langStringSet, defaultLang);
+            //// start
+            //if (defaultLang == null)
+            //    defaultLang = "en"; //Default Lang in old implementation is en
 
-            // search
-            foreach (var langString in langStringSet)
-                if (langString.Language.Equals(defaultLang, StringComparison.OrdinalIgnoreCase))
-                    res = langString.Text;
+            //string res = null;
 
-            if (res == null && langStringSet.Count > 0)
-                res = langStringSet[0].Text;
+            //// search
+            //foreach (var langString in langStringSet)
+            //    if (langString.Language.Equals(defaultLang, StringComparison.OrdinalIgnoreCase))
+            //        res = langString.Text;
 
-            // found?
-            return res;
-        }
+            //if (res == null && langStringSet.Count > 0)
+            //    res = langStringSet[0].Text;
+
+            //// found?
+            //return res;
+        //}
 
         public static List<T> Create<T>(string language, string text) where T : IAbstractLangString, new()
         {

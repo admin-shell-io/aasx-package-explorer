@@ -417,17 +417,18 @@ namespace AasxPackageLogic
             {
                 // Allow administrative information to be deleted again
                 this.AddGroup(stack, "administration:", levelColors.SubSection,
-                auxContextHeader: new[] { "\u2702", "Delete" },
-                auxContextLambda: (o) =>
-                {
-                    if (o is int i && i == 0)
+                    requestAuxButton: repo != null,
+                    auxContextHeader: new[] { "\u2702", "Delete" },
+                    auxContextLambda: (o) =>
                     {
-                        identifiable.Administration = null;
-                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    }
-                    return new AnyUiLambdaActionNone();
-                });
+                        if (o is int i && i == 0)
+                        {
+                            identifiable.Administration = null;
+                            this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        return new AnyUiLambdaActionNone();
+                    });
 
                 AddKeyValueExRef(
                     stack, "version", identifiable.Administration, identifiable.Administration.Version,
@@ -1196,6 +1197,7 @@ namespace AasxPackageLogic
 
             // members
             this.AddGroup(stack, "Qualifiable:", levelColors.SubSection,
+                requestAuxButton: repo != null,
                 auxContextHeader: new[] { "\u27f4", "Migrate to Extensions" },
                 auxContextLambda: (o) =>
                 {
@@ -1283,7 +1285,8 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, $"{key}:", levelColors.SubSection, requestAuxButton: repo != null,
+            this.AddGroup(stack, $"{key}:", levelColors.SubSection, 
+                requestAuxButton: repo != null,
                 auxContextHeader: auxContextHeader, auxContextLambda: auxContextLambda);
 
             if (this.SafeguardAccess(

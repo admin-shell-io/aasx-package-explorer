@@ -20,6 +20,9 @@
     <Resource Include="LICENSE.TXT" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="AasxPluginKnownSubmodels.media\SMT_Generic.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AasxPluginKnownSubmodels.media\SMT_VdmaArticleOfTradeInformation.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -51,13 +51,8 @@ namespace AasxPackageExplorer
     /// <summary>
     /// Tools to valdiate a Submodel template (incl. UI menu function)
     /// </summary>
-    public class MenuFuncValidateSmt
+    public class MenuFuncValidateSmt : LogicValidationMenuFuncBase
     {
-        /// <summary>
-        /// Generated report
-        /// </summary>
-        public LogicValidationRecordList Recs = new LogicValidationRecordList();
-
         /// <summary>
         /// Used AAS ENV for performing the validation.
         /// </summary>
@@ -335,10 +330,26 @@ namespace AasxPackageExplorer
                     // idShort
                     if (!CheckForIdShort(sm.IdShort))
                         Recs.AddStatement("AX05", "Fail", true, "Submodel does not have a valid idShort.");
+                    else
+                        Recs.AddStatement("DAT01", "DATA", false, "" + sm.IdShort);
 
                     // kind = Template
                     if (sm.Kind == null || sm.Kind != ModellingKind.Template)
                         Recs.AddStatement("AX04", "Fail", true, "Submodel does not have kind = Template.");
+
+                    // semanticId
+                    if (sm.SemanticId?.Keys == null || sm.SemanticId.Count() < 1)
+                        Recs.AddStatement("AX16", "Fail", true, "Submodel does not have valid semanticId.");
+                    else
+                    {
+                        var smid = sm.SemanticId.Keys[0].Value;
+                        Recs.AddStatement("DAT03", "DATA", false, "" + smid);
+                    }
+
+                    // description
+                    var desc = sm.Description?.GetDefaultString();
+                    if (desc != null)
+                        Recs.AddStatement("DAT04", "DATA", false, "" + desc);
 
                     // administrative info
                     if (sm.Administration == null)
@@ -358,6 +369,7 @@ namespace AasxPackageExplorer
                             rev = sm.Administration.Revision;
                         }
                         Recs.AddComment($"From now, take version=\"{ver}\" and revision=\"{rev}\" ..");
+                        Recs.AddStatement("DAT02", "DATA", false, $"{ver}/{rev}");
                     }
 
                     // Submodel is a (structural) element
@@ -453,218 +465,6 @@ namespace AasxPackageExplorer
                 "(no spaces, …)?");
             Recs.AddAnyFailStatement("AX15", "For all ConceptDescription, is an DataSpecification with " +
                 "content defined?");
-        }
-
-        //
-        // Outer UI
-        //
-
-        protected bool WriteTargetFile(int fmt, string targetFn)
-        {
-            if (fmt == 0)
-            {
-                // try call export
-                try
-                {
-                    // pretty easy
-                    System.IO.File.WriteAllText(targetFn,
-                        Recs.ToText());
-
-                    // state success
-                    Log.Singleton.Info("Result file written to: " + targetFn);
-                }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, "Generate SMT assessment Text report to: " + targetFn);
-                    return false;
-                }
-
-                // ok
-                return true;
-            }
-
-            if (fmt == 1)
-            {
-                // try call export
-                try
-                {
-                    // find table export plug-in
-                    var pi = Plugins.FindPluginInstance("AasxPluginExportTable");
-                    if (pi == null || !pi.HasAction("interop-export"))
-                    {
-                        Log.Singleton.Error(
-                            "No plug-in 'AasxPluginExportTable' with appropriate " +
-                            "action 'interop-export()' found.");
-                        return false;
-                    }
-
-                    // create client
-                    // ReSharper disable ConditionIsAlwaysTrueOrFalse
-                    var resClient =
-                        pi.InvokeAction(
-                            "interop-export", "excel", targetFn, Recs.ToTable())
-                        as AasxPluginResultBaseObject;
-                    // ReSharper enable ConditionIsAlwaysTrueOrFalse
-                    if (resClient == null || ((bool)resClient.obj) != true)
-                    {
-                        Log.Singleton.Error(
-                            "Plug-in 'AasxPluginExportTable' cannot export!");
-                        return false;
-                    }
-
-                    // state success
-                    Log.Singleton.Info("Result file written to: " + targetFn);
-                }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, "Generate SMT assessment Excel report to: " + targetFn);
-                    return false;
-                }
-
-                // ok
-                return true;
-            }
-
-            return false;
-        }
-
-        public async Task PerformDialogue(
-            AasxMenuActionTicket ticket,
-            AnyUiContextBase displayContext)
-        {
-            // reserve some states for the inner viewing routine
-            bool wrap = false;
-
-            // ok, go on ..
-            var uc = new AnyUiDialogueDataModalPanel("Assess Submodel template ..");
-            uc.ActivateRenderPanel(this,
-                disableScrollArea: true,
-                dialogButtons: AnyUiMessageBoxButton.OK,
-                extraButtons: new[] { "Save as text report ..", "Save as Excel report .." },
-                renderPanel: (uci) =>
-                {
-                    // create grid (no panel!!)
-                    var helper = new AnyUiSmallWidgetToolkit();
-                    var g = helper.AddSmallGrid(4, 2, new[] { "100:", "*" },
-                                padding: new AnyUiThickness(0, 5, 0, 5));
-                    g.RowDefinitions[0].Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
-
-                    // Row 0 : report itself
-                    helper.AddSmallLabelTo(g, 0, 0, content: "Report:",
-                        verticalAlignment: AnyUiVerticalAlignment.Top,
-                        verticalContentAlignment: AnyUiVerticalAlignment.Top);
-
-                    // Output view
-                    var tb = helper.AddSmallTextBoxTo(g, 0, 1);
-                    tb.MultiLine = true;
-                    tb.MaxLines = null;
-                    tb.FontMono = true;
-                    tb.TextWrapping = wrap ? AnyUiTextWrapping.Wrap : AnyUiTextWrapping.NoWrap;
-                    tb.IsReadOnly = true;
-                    tb.FontSize = 0.8f;
-
-                    if (displayContext is AnyUiContextPlusDialogs dcpd 
-                        && dcpd.HasCapability(AnyUiContextCapability.Blazor))
-                    {
-                        // web browser needs a scrollable element
-                        tb.MinHeight = 400;
-                    }
-
-                    // put report into it
-                    tb.Text = Recs.ToText();
-
-                    // Row 1 : some viewing options
-                    helper.AddSmallLabelTo(g, 1, 0, content: "Utils:");
-
-                    var utilsGrid = helper.AddSmallGridTo(g, 1, 1, 1, 4, new[] { "#", "#", "#", "#" });
-
-                    AnyUiUIElement.RegisterControl(
-                        helper.AddSmallCheckBoxTo(utilsGrid, 0, 0, content: "Wrap", isChecked: wrap,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center),
-                        setValue: (o) =>
-                        {
-                            wrap = !wrap;
-                            tb.TextWrapping = wrap ? AnyUiTextWrapping.Wrap : AnyUiTextWrapping.NoWrap;
-                            return new AnyUiLambdaActionModalPanelReRender(uc);
-                        });
-
-                    // give back
-                    return g;
-                });
-
-            if (!(await displayContext.StartFlyoverModalAsync(uc)))
-                return;
-
-            //
-            // Generation of reports outside of the dialogue because
-            // of web interface
-            //
-
-            if (displayContext is AnyUiContextPlusDialogs dcpd)
-            {
-                // for later use
-                AnyUiDialogueDataSaveFile ucsf = null;
-                int exportFmt = -1;
-
-                // text?
-                if (uc.ResultButton == AnyUiMessageBoxResult.Extra0)
-                {
-                    // ask for filename
-                    ucsf = await dcpd.MenuSelectSaveFilenameAsync(
-                        ticket: null, argName: null,
-                        caption: "Select Text file to save ..",
-                        proposeFn: "new.txt",
-                        filter: "Text file (*.txt)|*.txt|All files (*.*)|*.*",
-                        msg: "Not found");
-                    exportFmt = 0;
-                }
-
-                // excel
-                if (uc.ResultButton == AnyUiMessageBoxResult.Extra1)
-                {
-                    // ask for filename
-                    ucsf = await dcpd.MenuSelectSaveFilenameAsync(
-                        ticket: null, argName: null,
-                        caption: "Select Excel file to save ..",
-                        proposeFn: "new.xlsx",
-                        filter: "Excel file (*.xlsx)|*.xlsx|All files (*.*)|*.*",
-                        msg: "Not found");
-                    exportFmt = 1;
-                }
-
-                if (ucsf != null && exportFmt >= 0)
-                {
-                    if (ucsf?.Result != true)
-                        return;
-
-                    var targetFn = ucsf.TargetFileName;
-                    MainWindowAnyUiDialogs.SaveFilenameReworkTargetFilename(ucsf, ref targetFn);
-
-                    WriteTargetFile(exportFmt, targetFn);
-
-                    string fileWritten = null;
-                    if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download
-                        && dcpd.WebBrowserServicesAllowed())
-                        fileWritten = targetFn;
-
-                    // if it is a download, provide link
-                    if (fileWritten != null)
-                    {
-                        try
-                        {
-                            await dcpd.WebBrowserDisplayOrDownloadFile(
-                                fileWritten, "application/octet-stream");
-                            Log.Singleton.Info("Download initiated.");
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Singleton.Error(
-                                ex, $"When downloading written file");
-                            return;
-                        }
-                    }
-                }
-            }
-        }
+        }        
     }
 }
