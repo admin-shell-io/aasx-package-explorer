@@ -16,6 +16,7 @@ using AnyUi;
 using Extensions;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
@@ -3336,13 +3337,26 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
-                    this.AddKeyListKeys(
-                        stack, "valueId", p.ValueId.Keys, repo,
+                    this.AddGroup(stack, "ValueId:", this.levelColors.SubSection);
+
+                    this.AddKeyReference(
+                        stack, "valueId", p.ValueId, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference),
+                        addExistingEntities: "All", // no restriction
                         relatedReferable: p,
-                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
+                        showRefSemId: false, // not necessary, I think
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); },
+                        auxContextHeader: new[] { "\u2573", "Delete valueId" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                p.ValueId = null;
+                                this.AddDiaryEntry(p, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                            return new AnyUiLambdaActionNone();
+                        });
                 }
             }
             else if (sme is Aas.MultiLanguageProperty)
