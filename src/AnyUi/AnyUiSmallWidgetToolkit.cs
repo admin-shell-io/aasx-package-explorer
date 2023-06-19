@@ -758,7 +758,9 @@ namespace AnyUi
         }
 
         public AnyUiGrid AddSubGrid(AnyUiStackPanel view, string caption,
-            int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null,
+            int rows, int cols, string[] colWidths = null, 
+            AnyUiThickness marginGrid = null,
+            AnyUiThickness paddingCaption = null,
             int minWidthFirstCol = -1)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
@@ -766,8 +768,8 @@ namespace AnyUi
             if (minWidthFirstCol > -1)
                 g.ColumnDefinitions[0].MinWidth = minWidthFirstCol;
 
-            AddSmallLabelTo(g, 0, 0, content: caption);
-            var inner = AddSmallGridTo(g, 0, 1, rows, cols, colWidths, margin: margin);
+            AddSmallLabelTo(g, 0, 0, content: caption, padding: paddingCaption);
+            var inner = AddSmallGridTo(g, 0, 1, rows, cols, colWidths, margin: marginGrid);
 
             // in total
             view.Children.Add(g);

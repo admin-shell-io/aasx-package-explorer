@@ -1613,8 +1613,11 @@ namespace AasxPackageLogic
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => true,
-                            "There seems to be a bug in AAS core / LevelType.",
+                            () => dsiec.LevelType == null || 
+                                !(dsiec.LevelType.Min || dsiec.LevelType.Max
+                                  || dsiec.LevelType.Nom || dsiec.LevelType.Typ),
+                            "Consider specifying a IEC61360 level type attribute for the " +
+                            "intended values.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
             if (SafeguardAccess(
@@ -1628,27 +1631,29 @@ namespace AasxPackageLogic
             {
                 var subg = AddSubGrid(stack, "levelType:",
                 1, 4, new[] { "#", "#", "#", "#" },
+                paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+                marginGrid: new AnyUiThickness(4, 0, 0, 0),
                 minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
+                
+                Action<int, string, bool, Action<bool>> lambda = (col, name, value, setValue) =>
+                {
+                    AnyUiUIElement.RegisterControl(
+                        AddSmallCheckBoxTo(subg, 0, col,
+                            content: name,
+                            isChecked: value,
+                            margin: new AnyUiThickness(0, 0, 15, 0)),
+                        (v) =>
+                        {
+                            setValue?.Invoke(!value);
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        });
+                };
 
-                int col = 0;
-                //TODO:jtikekar uncomment and support based on response from Marko/Igor/Sebastian
-                //foreach (var lt in AdminShellUtil.GetEnumValues<Aas.LevelType>())
-                //{
-                //    var currentLT = lt;
-                //    AnyUiUIElement.RegisterControl(
-                //        AddSmallCheckBoxTo(subg, 0, col++,
-                //            content: Aas.Stringification.ToString(lt),
-                //            isChecked: (dsiec.LevelType.Value & lt) > 0,
-                //            margin: new AnyUiThickness(0, 0, 15, 0)),
-                //        (v) =>
-                //        {
-                //            dsiec.LevelType = (dsiec.LevelType & ~currentLT);
-                //            if (v is bool vb && vb)
-                //                dsiec.LevelType = dsiec.LevelType | currentLT;
-                //            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                //            return new AnyUiLambdaActionRedrawEntity();
-                //        });
-                //}
+                lambda(0, "min", dsiec.LevelType.Min, (sv) => { dsiec.LevelType.Min = sv; });
+                lambda(1, "max", dsiec.LevelType.Max, (sv) => { dsiec.LevelType.Max = sv; });
+                lambda(2, "nom", dsiec.LevelType.Nom, (sv) => { dsiec.LevelType.Nom = sv; });
+                lambda(3, "typ", dsiec.LevelType.Typ, (sv) => { dsiec.LevelType.Typ = sv; });
             }
         }
 

@@ -526,7 +526,8 @@ namespace AasxIntegrationBase
             string inputGesture = null,
             AasxMenuArgReqInfo reqs = AasxMenuArgReqInfo.None,
             AasxMenuListOfArgDefs args = null,
-            bool? isChecked = null)
+            bool? isChecked = null,
+            bool conditional = true)
         {
             var mi = new AasxMenuItem()
             {
@@ -543,7 +544,8 @@ namespace AasxIntegrationBase
             };
             if (isChecked.HasValue)
                 mi.IsChecked = isChecked.Value;
-            this.Add(mi);
+            if (conditional)
+                this.Add(mi);
             return this;
         }
 

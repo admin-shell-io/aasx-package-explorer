@@ -91,7 +91,9 @@ namespace AasxPackageLogic
                     auxButtonToolTips: new[] {
                         "Generate an id based on the customizable template option for asset ids.",
                         "Input the id, may be by the aid of barcode scanner",
-                        "Rename the id and all occurences of the id in the AAS"
+                        "Rename the id and all occurences of the id in the AAS",
+                        "Add id from existing element in main/ aux packages",
+                        "Delete this entity"
                     },
                     auxButtonLambda: (i) =>
                     {
@@ -317,6 +319,29 @@ namespace AasxPackageLogic
                 });
             }
 
+            // Asset Type
+
+            this.AddGroup(stack, "assetType:", this.levelColors.SubSection);
+
+            if (this.SafeguardAccess(
+                    stack, repo, asset.AssetType, "assetType:", "Create data element!",
+                    v =>
+                    {
+                        asset.AssetType = "";
+                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                //TODO:jtikekar check with Micha
+                this.AddKeyValueExRef(stack, "assetType", asset, asset.AssetType, null, repo,
+                    setValue: v =>
+                    {
+                        asset.AssetType = v as string;
+                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
+            }
+
             // Specific Asset IDs
             // list of multiple key value pairs
             this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, asset.SpecificAssetIds,
@@ -437,7 +462,13 @@ namespace AasxPackageLogic
                         .AddAction("add-aas", "Add AAS",
                             "Adds an AAS with blank information.")
                         .AddAction("add-cd", "Add AasConceptDescription",
-                            "Adds an ConceptDescription with blank information."),
+                            "Adds an ConceptDescription with blank information.")
+                        .AddAction("add-sm-inst", "Add Submodel instance",
+                            "Adds an Submodel instance without direct reference in AAS.",
+                            conditional: ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels)
+                        .AddAction("add-sm-temp", "Add Submodel template",
+                            "Adds an Submodel template without direct reference in AAS.",
+                            conditional: ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
@@ -448,7 +479,7 @@ namespace AasxPackageLogic
                                 submodels: new List<Aas.IReference>());
                             aas.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdAas);
-                            env.AssetAdministrationShells.Add(aas);
+                            env.Add(aas);
                             this.AddDiaryEntry(aas, new DiaryEntryStructChange(
                                 StructuralChangeReason.Create));
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: aas);
@@ -459,10 +490,22 @@ namespace AasxPackageLogic
                             var cd = new Aas.ConceptDescription("");
                             cd.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription);
-                            env.ConceptDescriptions.Add(cd);
+                            env.Add(cd);
                             this.AddDiaryEntry(cd, new DiaryEntryStructChange(
                                 StructuralChangeReason.Create));
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: cd);
+                        }
+
+                        if (buttonNdx == 2 || buttonNdx == 3)
+                        {
+                            var sm = new Aas.Submodel("");
+                            sm.Id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                (buttonNdx == 2) ? Options.Curr.TemplateIdSubmodelInstance
+                                    : Options.Curr.TemplateIdSubmodelTemplate);
+                            env.Add(sm);
+                            this.AddDiaryEntry(sm, new DiaryEntryStructChange(
+                                StructuralChangeReason.Create));
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: sm);
                         }
 
                         return new AnyUiLambdaActionNone();
@@ -804,6 +847,7 @@ namespace AasxPackageLogic
                     this.AddGroup(stack, "Dynamic rendering of ConceptDescriptions", this.levelColors.MainSection);
 
                     var g1 = this.AddSubGrid(stack, "Dynamic order:", 1, 2, new[] { "#", "#" },
+                        paddingCaption: new AnyUiThickness(5, 0, 0, 0),
                         minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
                     AnyUiComboBox cb1 = null;
                     cb1 = AnyUiUIElement.RegisterControl(
@@ -851,6 +895,7 @@ namespace AasxPackageLogic
                     });
 
                     var g2 = this.AddSubGrid(stack, "Entities:", 1, 1, new[] { "#" },
+                        paddingCaption: new AnyUiThickness(5, 0, 0, 0),
                         minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
                     AnyUiUIElement.RegisterControl(
                         this.AddSmallButtonTo(g2, 0, 0, content: "Sort according above order",

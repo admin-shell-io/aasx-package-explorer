@@ -29,6 +29,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   is called “statement” in contrast to “value”. This is a little bit confusing. 
   Should we add at least some note “add statement as” .. ???????
 
+
+
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done
@@ -55,7 +58,18 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   qualifierKind automatically. -- Done, was just a matter of configuring qualifier-presets.json
 * Copy/paste does not work for submodels (neither Buffer, nor copy recursively)
   -- buffer works, copy recursively is fishy
-
+* could not add Statements to Entities -- works
+* Bugfix: New attribute „typeAsset“ of type “Identifier” is missing -- done
+* Etwas „seltsam“, dass man zwar auf „All Submodels“ klicken kann, aber 
+  rechts kein „Add Submodel“ erhält -- done
+* Man könnte Text ergänzen, dass category „deprecated“ ist
+  -- There is a already hint, if the category is used. Elsewise, its a waste of screenspace
+* Major ist der bug, dass ich keine Elemente hinzufügen kann für SM, Collection usw., 
+  nur wenn ich von existierenden SMT mit einer enthaltenen Entity ausgegangen bin, die ich 
+  dann ändern kann (solange ich keine weitere Collection etc. hinzufügen 
+  möchte…wirklich nur ändern) -- done
+* Level type funktioniert nicht (mehr): war früher enum und ist jetzt ein Struct.
+  -- Yes, data structure of AAS core was completely changed for this entity. Reworked. Done.
 
 ## Notes (influencing todos)
 
