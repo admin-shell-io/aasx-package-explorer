@@ -29,7 +29,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   is called “statement” in contrast to “value”. This is a little bit confusing. 
   Should we add at least some note “add statement as” .. ???????
 
-* Property/valueId is still KeyList instead of Reference
+
 
 
 ## Done (w.r.t. recently V3.0)
@@ -70,6 +70,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   möchte…wirklich nur ändern) -- done
 * Level type funktioniert nicht (mehr): war früher enum und ist jetzt ein Struct.
   -- Yes, data structure of AAS core was completely changed for this entity. Reworked. Done.
+* Property/valueId is still KeyList instead of Reference -- done
 
 ## Notes (influencing todos)
 

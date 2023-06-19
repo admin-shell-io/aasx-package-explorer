@@ -3940,23 +3940,28 @@ namespace AasxPackageLogic
                     //    });
                 }
 
-                // 0..1 ?? of specificAssetId ??
-                this.DisplayOrEditEntitySingleIdentifierKeyValuePair(
-                    stack, ent.SpecificAssetIds,
-                    (v) => { ent.SpecificAssetIds = v; },
-                    key: "specificAssetId",
-                    relatedReferable: ent,
-                    auxContextHeader: new[] { "\u2573", "Delete SpecificAssetId" },
-                    auxContextLambda: (o) =>
-                    {
-                        if (o is int i && i == 0)
-                        {
-                            ent.SpecificAssetIds = null;
-                            this.AddDiaryEntry(ent, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }
-                        return new AnyUiLambdaActionNone();
-                    });
+                // in V3.0RC01 this was falsely [0..1]
+                //this.DisplayOrEditEntitySingleIdentifierKeyValuePair(
+                //    stack, ent.SpecificAssetIds,
+                //    (v) => { ent.SpecificAssetIds = v; },
+                //    key: "specificAssetId",
+                //    relatedReferable: ent,
+                //    auxContextHeader: new[] { "\u2573", "Delete SpecificAssetId" },
+                //    auxContextLambda: (o) =>
+                //    {
+                //        if (o is int i && i == 0)
+                //        {
+                //            ent.SpecificAssetIds = null;
+                //            this.AddDiaryEntry(ent, new DiaryEntryStructChange());
+                //            return new AnyUiLambdaActionRedrawEntity();
+                //        }
+                //        return new AnyUiLambdaActionNone();
+                //    });
+
+                this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, ent.SpecificAssetIds,
+                                (ico) => { ent.SpecificAssetIds = ico; },
+                                key: "specificAssetId",
+                                relatedReferable: ent);
             }
             else if (sme is Aas.BasicEventElement bev)
             {

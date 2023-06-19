@@ -1258,7 +1258,7 @@ namespace AasxPackageLogic
             this.AddGroup(stack, $"{key}:", levelColors.SubSection);
 
             if (this.SafeguardAccess(
-                stack, repo, pairs, $"{key}:", "Create empty list of IdentifierKeyValuePairs!",
+                stack, repo, pairs, $"{key}:", "Create data element!",
                 v =>
                 {
                     setOutput?.Invoke(new List<Aas.ISpecificAssetId>());
