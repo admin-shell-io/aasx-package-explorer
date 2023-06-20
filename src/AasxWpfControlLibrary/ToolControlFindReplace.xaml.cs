@@ -370,7 +370,8 @@ namespace AasxPackageExplorer
             }
 
             if (sender == ButtonToolsFindBackward || sender == ButtonToolsFindForward
-                || sender == ButtonToolsReplaceStay || sender == ButtonToolsReplaceForward)
+                || sender == ButtonToolsReplaceStay || sender == ButtonToolsReplaceForward
+                || sender == ButtonToolsReplaceAll)
             {
                 // 1st check .. renew search?
                 if (ComboBoxToolsFindText.Text != TheSearchOptions.FindText)
@@ -386,7 +387,9 @@ namespace AasxPackageExplorer
                         Log.Singleton.Info(StoredPrint.Color.Blue,
                             "New search of results initiated. Select replace operation again!");
 
-                    return;
+                    // nearly all cases require visual change
+                    if (sender != ButtonToolsReplaceAll)
+                        return;
                 }
             }
 

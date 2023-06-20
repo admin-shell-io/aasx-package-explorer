@@ -1244,7 +1244,7 @@ namespace AasxPackageLogic
         // List of SpecificAssetId
         //
 
-        public void DisplayOrEditEntityListOfIdentifierKeyValuePair(AnyUiStackPanel stack,
+        public void DisplayOrEditEntityListOfSpecificAssetIds(AnyUiStackPanel stack,
             List<Aas.ISpecificAssetId> pairs,
             Action<List<Aas.ISpecificAssetId>> setOutput,
             string key = "IdentifierKeyValuePairs",
@@ -1266,47 +1266,48 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                this.IdentifierKeyValuePairHelper(stack, repo, pairs,
+                this.SpecificAssetIdHelper(stack, repo, pairs,
                     key: key,
                     relatedReferable: relatedReferable);
             }
 
         }
 
-        public void DisplayOrEditEntitySingleIdentifierKeyValuePair(AnyUiStackPanel stack,
-            List<Aas.ISpecificAssetId> pair,
-            Action<List<Aas.ISpecificAssetId>> setOutput,
-            string key = "IdentifierKeyValuePair",
-            Aas.IReferable relatedReferable = null,
-            string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
-        {
-            // access
-            if (stack == null)
-                return;
+        //not anymore required?!
+        //public void DisplayOrEditEntitySingleIdentifierKeyValuePair(AnyUiStackPanel stack,
+        //    List<Aas.ISpecificAssetId> pair,
+        //    Action<List<Aas.ISpecificAssetId>> setOutput,
+        //    string key = "IdentifierKeyValuePair",
+        //    Aas.IReferable relatedReferable = null,
+        //    string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
+        //{
+        //    // access
+        //    if (stack == null)
+        //        return;
 
-            // members
-            this.AddGroup(stack, $"{key}:", levelColors.SubSection, 
-                requestAuxButton: repo != null,
-                auxContextHeader: auxContextHeader, auxContextLambda: auxContextLambda);
+        //    // members
+        //    this.AddGroup(stack, $"{key}:", levelColors.SubSection, 
+        //        requestAuxButton: repo != null,
+        //        auxContextHeader: auxContextHeader, auxContextLambda: auxContextLambda);
 
-            if (this.SafeguardAccess(
-                stack, repo, pair, $"{key}:", "Create IdentifierKeyValuePair!",
-                v =>
-                {
-                    setOutput?.Invoke(new List<ISpecificAssetId>());
-                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionRedrawEntity();
-                }))
-            {
-                //TODO:jtikekar need to test
-                foreach (var specificAssetId in pair)
-                {
-                    this.IdentifierKeyValueSinglePairHelper(
-                                stack, repo, specificAssetId,
-                                relatedReferable: relatedReferable);
-                }
-            }
-        }
+        //    if (this.SafeguardAccess(
+        //        stack, repo, pair, $"{key}:", "Create data element!",
+        //        v =>
+        //        {
+        //            setOutput?.Invoke(new List<ISpecificAssetId>());
+        //            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+        //            return new AnyUiLambdaActionRedrawEntity();
+        //        }))
+        //    {
+        //        //TODO:jtikekar need to test
+        //        foreach (var specificAssetId in pair)
+        //        {
+        //            this.IdentifierKeyValueSinglePairHelper(
+        //                        stack, repo, specificAssetId,
+        //                        relatedReferable: relatedReferable);
+        //        }
+        //    }
+        //}
 
         //
         // DataSpecificationIEC61360

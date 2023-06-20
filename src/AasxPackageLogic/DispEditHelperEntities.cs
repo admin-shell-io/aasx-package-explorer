@@ -345,7 +345,7 @@ namespace AasxPackageLogic
 
             // Specific Asset IDs
             // list of multiple key value pairs
-            this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, asset.SpecificAssetIds,
+            this.DisplayOrEditEntityListOfSpecificAssetIds(stack, asset.SpecificAssetIds,
                 (ico) => { asset.SpecificAssetIds = ico; },
                 key: "specificAssetId",
                 relatedReferable: aas);
@@ -3958,7 +3958,7 @@ namespace AasxPackageLogic
                 //        return new AnyUiLambdaActionNone();
                 //    });
 
-                this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, ent.SpecificAssetIds,
+                this.DisplayOrEditEntityListOfSpecificAssetIds(stack, ent.SpecificAssetIds,
                                 (ico) => { ent.SpecificAssetIds = ico; },
                                 key: "specificAssetId",
                                 relatedReferable: ent);

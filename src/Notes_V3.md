@@ -19,17 +19,14 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * SMC / Add Prop / does not focus new Prop -- open, frustrated :-(
 * CDs / Add CD / does not focus new CD!! (but has a unique id...) -- same issue :-(
-* Entity / add specificAssetId .. does not work
-* when Find/ Replace: before invoke "Replace all", "Start" needs to be invoked!
 * serialization of plugin options does not work with Stringify(): "Type" is 20 instead of "GlobalReference"
-* Ctrl-V does not work in modal dialogues ..
+* Ctrl-V does not work in modal dialogues .. (Blazor only?)
+  -> not sop easy to provoke .. test again ..
 * Copy "single/ recursive" for Submodels is not great
 
 * Entity is realized like a Collection, a List or a Submodel , however the attribute 
   is called “statement” in contrast to “value”. This is a little bit confusing. 
   Should we add at least some note “add statement as” .. ???????
-
-
 
 
 ## Done (w.r.t. recently V3.0)
@@ -71,6 +68,12 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * Level type funktioniert nicht (mehr): war früher enum und ist jetzt ein Struct.
   -- Yes, data structure of AAS core was completely changed for this entity. Reworked. Done.
 * Property/valueId is still KeyList instead of Reference -- done
+* specificAssetId: name/value not key/value!! Wording "IdentifierKeyValue" not 
+  longer existing. -- Done
+* Entity / add specificAssetId .. does not work -- Done
+* specificAssetId: name/value not key/value!! Wording "IdentifierKeyValue" not 
+  longer existing. -- Done
+* when Find/ Replace: before invoke "Replace all", "Start" needs to be invoked! -- Done
 
 ## Notes (influencing todos)
 

@@ -514,7 +514,7 @@ namespace AasxPackageLogic
             public Aas.SpecificAssetId pair = new("", "", null);
         }
 
-        public void IdentifierKeyValueSinglePairHelper(
+        public void SpecificAssetIdSingleItemHelper(
             AnyUiStackPanel substack, ModifyRepo repo,
             Aas.ISpecificAssetId pair,
             Aas.IReferable relatedReferable = null)
@@ -560,7 +560,7 @@ namespace AasxPackageLogic
                             "A key string specification shall be given!")
                 });
             AddKeyValueExRef(
-                substack, "key", pair, pair.Name, null, repo,
+                substack, "name", pair, pair.Name, null, repo,
                 v =>
                 {
                     pair.Name = v as string;
@@ -596,7 +596,7 @@ namespace AasxPackageLogic
 
         }
 
-        public void IdentifierKeyValuePairHelper(
+        public void SpecificAssetIdHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
             List<Aas.ISpecificAssetId> pairs,
             string key = "IdentifierKeyValuePairs",
@@ -693,7 +693,7 @@ namespace AasxPackageLogic
 
                 int storedI = i;
                 AddGroup(
-                    substack, $"Pair {1 + i}: {AdminShellUtil.ShortenWithEllipses(pairs[storedI].Name, 30)}",
+                    substack, $"Element {1 + i}: {AdminShellUtil.ShortenWithEllipses(pairs[storedI].Name, 30)}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, requestContextMenu: repo != null,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
@@ -768,8 +768,7 @@ namespace AasxPackageLogic
                     padding: new AnyUiThickness(5, 0, 5, 0));
 
                 // extra function for single pair, because of special cases (sigh!)
-
-                IdentifierKeyValueSinglePairHelper(substack, repo, pair, relatedReferable);
+                SpecificAssetIdSingleItemHelper(substack, repo, pair, relatedReferable);
             }
 
         }
