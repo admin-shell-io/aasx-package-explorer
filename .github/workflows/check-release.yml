@@ -2,13 +2,13 @@ name: Check-release-workflow
 
 on:
   pull_request:
-    branches:
-      - master
+    branches-ignore:
+      - '**V3**'
     types: [opened, synchronize, reopened, edited]
 
   push:
-    branches:
-      - master
+    branches-ignore:
+      - '**V3**'
 
 jobs:
   Check-release:
@@ -27,7 +27,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
-          
+
       - name: Install .NET core 6.0
         uses: actions/setup-dotnet@v1
         with:
