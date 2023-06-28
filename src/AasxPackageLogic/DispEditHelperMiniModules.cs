@@ -1089,13 +1089,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                // refersTo are MULTIPLE ModelReference<IReferable>. That is: multiple x multiple keys!
-                this.AddHintBubble(substack, hintMode, new[] {
-                new HintCheck(
-                    () => extension.RefersTo?.IsValid() == true,
-                    "Currently, AAS core allows only for 0..1 refersTo references.",
-                    breakIfTrue: true,
-                    severityLevel: HintCheck.Severity.Notice) });
+                // refersTo are MULTIPLE ModelReference<IReferable>. That is: multiple x multiple keys!                
                 if (this.SafeguardAccess(
                         substack, this.repo, extension.RefersTo, "refersTo:", "Create data element!",
                         v =>
@@ -1113,11 +1107,20 @@ namespace AasxPackageLogic
                             new[] { "Add Reference", "Delete last reference" }, repo,
                             (buttonNdx) =>
                             {
-                                if (buttonNdx == 0 && extension.RefersTo?.IsValid() != true)
-                                    extension.RefersTo = new List<IReference>() { new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>()) };
+                                if (buttonNdx == 0)
+                                {
+                                    if (extension.RefersTo == null)
+                                        extension.RefersTo = new List<IReference>();
+                                    extension.RefersTo.Add(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>()));
+                                }
 
                                 if (buttonNdx == 1 && extension.RefersTo != null)
-                                    extension.RefersTo = null;
+                                {
+                                    if (extension.RefersTo.Count > 0)
+                                        extension.RefersTo.Remove(extension.RefersTo.Last());
+                                    else
+                                        extension.RefersTo = null;
+                                }
 
                                 this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionRedrawEntity();
@@ -1130,7 +1133,7 @@ namespace AasxPackageLogic
                         for (int ki = 0; ki < extension.RefersTo.Count; ki++)
                             if (extension.RefersTo[ki] != null)
                                 this.AddKeyReference(
-                                    substack, String.Format("refersTo[{0}]", 0),
+                                    substack, String.Format("refersTo[{0}]", ki),
                                     extension.RefersTo[ki],
                                     repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
                                     addExistingEntities: "All", addFromKnown: true,

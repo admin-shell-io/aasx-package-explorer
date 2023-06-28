@@ -110,20 +110,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                disableDefaultLicense: true,
+                enableGetCheckVisuExt: true);
+            if (help != null)
+                return help;
+
             // rest follows
-
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                var newOpt = JsonConvert.DeserializeObject<AasxPluginMtpViewer.MtpViewerOptions>(args[0] as string);
-                if (newOpt != null)
-                    this._options = newOpt;
-            }
-
-            if (action == "get-json-options")
-            {
-                var json = JsonConvert.SerializeObject(this._options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
 
             if (action == "get-licenses")
             {
@@ -135,20 +129,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
-            }
-
-            if (action == "get-events" && this._eventStack != null)
-            {
-                // try access
-                return this._eventStack.PopEvent();
-            }
-
-            if (action == "get-check-visual-extension")
-            {
-                var cve = new AasxPluginResultBaseObject();
-                cve.strType = "True";
-                cve.obj = true;
-                return cve;
             }
 
             if (action == "fill-panel-visual-extension" && this._viewerControl != null)

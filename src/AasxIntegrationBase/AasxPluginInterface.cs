@@ -8,6 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using AnyUi;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,6 +37,23 @@ namespace AasxIntegrationBase
             this.name = name;
             this.info = info;
             UseAsync = useAsync;
+        }
+    }
+
+    public class AasxPluginListOfActionDescription : List<AasxPluginActionDescriptionBase>
+    {
+        public AasxPluginListOfActionDescription AddAction(
+            AasxPluginActionDescriptionBase item)
+        {
+            this.Add(item);
+            return this;
+        }
+
+        public AasxPluginListOfActionDescription AddAction(
+            string name, string info, bool useAsync = false)
+        {
+            this.Add(new AasxPluginActionDescriptionBase(name, info, useAsync));
+            return this;
         }
     }
 
@@ -337,6 +355,100 @@ namespace AasxIntegrationBase
         public AasxPluginActionDescriptionBase[] ListActions()
         {
             throw new NotImplementedException();
+        }
+
+        public AasxPluginListOfActionDescription ListActionsBasicHelper(
+            bool enableCheckVisualExt,
+            bool enableOptions = true,
+            bool enableLicenses = true,
+            bool enableEvents = false,
+            bool enablePanelWpf = false)
+        {
+            var res = new AasxPluginListOfActionDescription();
+            
+            // for speed reasons, have the most often used at top!
+            if (enableCheckVisualExt)
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "call-check-visual-extension",
+                    "When called with Referable, returns possibly visual extension for it."));
+            // rest follows
+            if (enableOptions)
+            {
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "set-json-options", "Sets plugin-options according to provided JSON string."));
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "get-json-options", "Gets plugin-options as a JSON string."));
+            }
+            if (enableLicenses)
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "get-licenses", "Reports about used licenses."));
+            if (enableEvents)
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "get-events", "Pops and returns the earliest event from the event stack."));
+            if (enableCheckVisualExt)
+                res.Add(new AasxPluginActionDescriptionBase(
+                "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
+            if (enablePanelWpf)
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "fill-panel-visual-extension",
+                    "When called, fill given WPF panel with control for graph display."));
+            
+            return res;
+        }
+
+        /// <summary>
+        /// Tries to provide default activate actions functionality.
+        /// </summary>
+        /// <returns>Result not null means, helper was sucessfull</returns>
+        public AasxPluginResultBase ActivateActionBasicHelper<T>(
+            string action, ref T options, object[] args,
+            bool disableDefaultLicense = false,
+            bool enableGetCheckVisuExt = false)
+            where T : AasxPluginOptionsBase
+        {
+            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
+            {
+                var newOpt = JsonConvert.DeserializeObject<T>(
+                    args[0] as string);
+                if (newOpt != null)
+                    options = newOpt;
+            }
+
+            if (action == "get-json-options")
+            {
+                // need to care about AAS serialization of enums
+                // see: https://stackoverflow.com/questions/2441290/
+                // javascriptserializer-json-serialization-of-enum-as-string
+                var json = JsonConvert.SerializeObject(options, Newtonsoft.Json.Formatting.Indented,
+                    new Newtonsoft.Json.Converters.StringEnumConverter());
+                return new AasxPluginResultBaseObject("OK", json);
+            }
+
+            if (!disableDefaultLicense && action == "get-licenses")
+            {
+                var lic = new AasxPluginResultLicense();
+                lic.shortLicense = "";
+                lic.longLicense = "";
+                lic.isStandardLicense = true;
+
+                return lic;
+            }
+
+            if (action == "get-events" && _eventStack != null)
+            {
+                // try access
+                return _eventStack.PopEvent();
+            }
+
+            if (enableGetCheckVisuExt && action == "get-check-visual-extension")
+            {
+                var cve = new AasxPluginResultBaseObject();
+                cve.strType = "True";
+                cve.obj = true;
+                return cve;
+            }
+
+            return null;
         }
     }
 

@@ -62,29 +62,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public new AasxPluginActionDescriptionBase[] ListActions()
         {
             _log.Info("ListActions() called");
-            var res = new List<AasxPluginActionDescriptionBase>();
-            // for speed reasons, have the most often used at top!
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "call-check-visual-extension",
-                    "When called with Referable, returns possibly visual extension for it."));
-            // rest follows
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "set-json-options", "Sets plugin-options according to provided JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-events", "Pops and returns the earliest event from the event stack."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "fill-panel-visual-extension",
-                    "When called, fill given WPF panel with control for graph display."));
-            return res.ToArray();
+            return ListActionsBasicHelper(
+                enableCheckVisualExt: true, 
+                enablePanelWpf: true).ToArray();
         }
 
         public new AasxPluginResultBase ActivateAction(string action, params object[] args)
@@ -117,23 +97,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                disableDefaultLicense: true,
+                enableGetCheckVisuExt: true);
+            if (help != null)
+                return help;
+
             // rest follows
-
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                var newOpt =
-                    Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginBomStructure.BomStructureOptions>(
-                        (args[0] as string));
-                if (newOpt != null)
-                    this._options = newOpt;
-            }
-
-            if (action == "get-json-options")
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this._options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
 
             if (action == "get-licenses")
             {
@@ -146,20 +117,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
-            }
-
-            if (action == "get-events" && this._eventStack != null)
-            {
-                // try access
-                return this._eventStack.PopEvent();
-            }
-
-            if (action == "get-check-visual-extension")
-            {
-                var cve = new AasxPluginResultBaseObject();
-                cve.strType = "True";
-                cve.obj = true;
-                return cve;
             }
 
             if (action == "fill-panel-visual-extension" && this._bomControl != null)

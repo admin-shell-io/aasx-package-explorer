@@ -171,6 +171,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return cve;
                 }
 
+                // Note: no use of helper function (ActivateActionBasicHelper)!!
                 // rest follows
 
                 if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
@@ -193,6 +194,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         new[] {
                             typeof(AasxPluginGenericForms.GenericFormOptions),
                             typeof(AasForms.FormDescBase) });
+                    settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(
                         this._options, typeof(AasxPluginGenericForms.GenericFormOptions), settings);
                     return new AasxPluginResultBaseObject("OK", json);

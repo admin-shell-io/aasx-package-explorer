@@ -20,6 +20,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * SMC / Add Prop / does not focus new Prop -- open, frustrated :-(
 * CDs / Add CD / does not focus new CD!! (but has a unique id...) -- same issue :-(
 * serialization of plugin options does not work with Stringify(): "Type" is 20 instead of "GlobalReference"
+  -- refactored, but still not with AAS core
 * Ctrl-V does not work in modal dialogues .. (Blazor only?)
   -> not sop easy to provoke .. test again ..
 * Copy "single/ recursive" for Submodels is not great
@@ -27,6 +28,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * Entity is realized like a Collection, a List or a Submodel , however the attribute 
   is called “statement” in contrast to “value”. This is a little bit confusing. 
   Should we add at least some note “add statement as” .. ???????
+
+* Bug, Extensions erlaubt 0..* refersTo. „Add Reference“ tut nichts. Man kann nur maximal eine 
+  Reference pro Extension hinzufügen
 
 
 ## Done (w.r.t. recently V3.0)

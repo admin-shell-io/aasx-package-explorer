@@ -186,69 +186,7 @@ namespace AasxIntegrationBase
                 {
                     log?.Error(ex, $"loading additional options (${fn})");
                 }
-        }
-
-        //protected MultiValueDictionary<string, AasxPluginOptionsRecordBase> _recordLookup = null;
-
-        //public virtual void Merge(AasxPluginOptionsBase options)
-        //{
-        //}
-
-        //public static T LoadDefaultOptionsFromAssemblyDir<T>(
-        //    string pluginName, Assembly assy = null,
-        //    JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
-        //{
-        //    // expand assy?
-        //    if (assy == null)
-        //        assy = Assembly.GetExecutingAssembly();
-        //    if (pluginName == null || pluginName == "")
-        //        return null;
-
-        //    // build fn
-        //    var optfn = System.IO.Path.Combine(
-        //                System.IO.Path.GetDirectoryName(assy.Location),
-        //                pluginName + ".options.json");
-
-        //    if (System.IO.File.Exists(optfn))
-        //    {
-        //        var optText = System.IO.File.ReadAllText(optfn);
-
-        //        return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
-        //    }
-
-        //    // no
-        //    return null;
-        //}
-
-        //public void TryLoadAdditionalOptionsFromAssemblyDir<T>(
-        //    string pluginName, Assembly assy = null,
-        //    JsonSerializerSettings settings = null,
-        //    LogInstance log = null) where T : AasxPluginOptionsBase
-        //{
-        //    // expand assy?
-        //    if (assy == null)
-        //        assy = Assembly.GetExecutingAssembly();
-        //    if (pluginName == null || pluginName == "")
-        //        return;
-
-        //    // build dir name
-        //    var baseDir = System.IO.Path.GetDirectoryName(assy.Location);
-
-        //    // search
-        //    var files = Directory.GetFiles(baseDir, "*.add-options.json");
-
-        //    foreach (var fn in files)
-        //        try
-        //        {
-        //            var optText = System.IO.File.ReadAllText(fn);
-        //            var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
-        //            this.Merge(opts);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            log?.Error(ex, $"loading additional options (${fn})");
-        //        }
-        //}
+        }        
     }
 
     //

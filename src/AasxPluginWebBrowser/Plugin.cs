@@ -76,20 +76,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginWebBrowser.WebBrowserOptions>(
-                    (args[0] as string));
-                if (newOpt != null)
-                    this._options = newOpt;
-            }
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                disableDefaultLicense: true);
+            if (help != null)
+                return help;
 
-            if (action == "get-json-options")
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this._options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
+            // rest follows
 
             if (action == "get-licenses")
             {
@@ -101,12 +94,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
-            }
-
-            if (action == "get-events" && this._eventStack != null)
-            {
-                // try access
-                return this._eventStack.PopEvent();
             }
 
             if (action == "get-browser-grid" && args != null && args.Length >= 1 && args[0] is string)

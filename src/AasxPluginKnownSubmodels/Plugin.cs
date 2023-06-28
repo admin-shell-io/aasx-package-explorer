@@ -123,45 +123,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
-            // rest follows
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                enableGetCheckVisuExt: true);
+            if (help != null)
+                return help;
 
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                var newOpt = JsonConvert.DeserializeObject<AasxPluginKnownSubmodels.KnownSubmodelsOptions>(
-                    args[0] as string);
-                if (newOpt != null)
-                    _options = newOpt;
-            }
-
-            if (action == "get-json-options")
-            {
-                var json = JsonConvert.SerializeObject(_options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
-
-            if (action == "get-licenses")
-            {
-                var lic = new AasxPluginResultLicense();
-                lic.shortLicense = "";
-                lic.longLicense = "";
-                lic.isStandardLicense = true;
-
-                return lic;
-            }
-
-            if (action == "get-events" && _eventStack != null)
-            {
-                // try access
-                return _eventStack.PopEvent();
-            }
-
-            if (action == "get-check-visual-extension")
-            {
-                var cve = new AasxPluginResultBaseObject();
-                cve.strType = "True";
-                cve.obj = true;
-                return cve;
-            }
+            // rest follows           
 
             if (action == "fill-anyui-visual-extension")
             {

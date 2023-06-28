@@ -24,27 +24,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        private LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AdvancedTextEditOptions options =
-            new AdvancedTextEditOptions();
+        protected AdvancedTextEditOptions _options = new AdvancedTextEditOptions();
 
         private UserControlAdvancedTextEditor theEditControl = null;
 
-        public string GetPluginName()
-        {
-            return "AasxPluginAdvancedTextEditor";
-        }
-
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            PluginName = "AasxPluginAdvancedTextEditor";
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AdvancedTextEditOptions.CreateDefault();
+            _options = AdvancedTextEditOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -53,55 +46,33 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AdvancedTextEditOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
+            _log.Info("ListActions() called");
+            return ListActionsBasicHelper(enableCheckVisualExt: false)
+                .AddAction("get-textedit-control", "Returns a new instance of a Text editor control.")
+                .AddAction("set-content", "Sets mime type and content string.")
+                .AddAction("get-content", "Gets content string.")
+                .ToArray();
         }
 
-        public AasxPluginActionDescriptionBase[] ListActions()
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
-            Log.Info("ListActions() called");
-            var res = new List<AasxPluginActionDescriptionBase>();
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "set-json-options", "Sets plugin-options according to provided JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-events", "Pops and returns the earliest event from the event stack."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-textedit-control", "Returns a new instance of a Text editor control."));
-            res.Add(new AasxPluginActionDescriptionBase("set-content", "Sets mime type and content string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-content", "Gets content string."));
-            return res.ToArray();
-        }
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                disableDefaultLicense: true);
+            if (help != null)
+                return help;
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
-        {
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AdvancedTextEditOptions>(
-                    (args[0] as string));
-                if (newOpt != null)
-                    this.options = newOpt;
-            }
-
-            if (action == "get-json-options")
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this.options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
+            // rest follows
 
             if (action == "get-licenses")
             {
@@ -113,12 +84,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
-            }
-
-            if (action == "get-events" && this.eventStack != null)
-            {
-                // try access
-                return this.eventStack.PopEvent();
             }
 
             if (action == "get-textedit-control" && args != null && args.Length >= 1 && args[0] is string)
