@@ -94,10 +94,9 @@ namespace AasxPluginExportTable.Uml
             {
                 if (sme is Aas.Property p)
                     return Aas.Stringification.ToString(p.ValueType);
-
             }
 
-            return rf.GetSelfDescription().AasElementName;
+            return rf.GetSelfDescription().ElementAbbreviation;
         }
 
         public string EvalInitialValue(Aas.ISubmodelElement sme, int limitToChars = -1)

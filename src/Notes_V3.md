@@ -32,6 +32,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * Bug, Extensions erlaubt 0..* refersTo. „Add Reference“ tut nichts. Man kann nur maximal eine 
   Reference pro Extension hinzufügen
 
+* ExportUML / cancel -> Crash?
 
 ## Done (w.r.t. recently V3.0)
 

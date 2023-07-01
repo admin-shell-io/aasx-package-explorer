@@ -13,6 +13,7 @@ using AdminShellNS;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using Spread = DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Extensions;
 using System;
@@ -93,8 +94,12 @@ namespace AasxPluginExportTable.Table
 
         public class CellRecord
         {
-            public string Fg = null, Bg = null, HorizAlign = null, VertAlign = null, Font = null, Frame = null,
-                Text = "", TextWithHeaders = "", Width = null, Md = "";
+            public string Fg = null, Bg = null, TableBg = null, HorizAlign = null, VertAlign = null, Font = null, Frame = null,
+                Text = "", TextWithHeaders = "", Md = "";
+
+            public double? Width = null;
+
+            public int ColSpan = 1;
 
             public CellRecord() { }
 
@@ -208,7 +213,7 @@ namespace AasxPluginExportTable.Table
                     return;
 
                 // entity in total
-                rep(head, "" + lss.ToString());
+                rep(head, "" + lss.ToStringExtended(format:2));
 
                 // single entities
                 foreach (var ls in lss)
@@ -274,6 +279,24 @@ namespace AasxPluginExportTable.Table
                 }
                 if (rf is Aas.IReferable rfpar)
                     rep(head + "parent", "" + (rfpar.IdShort != null ? rfpar.IdShort : "-"));
+
+                // further details
+                List<string> details = new List<string>();
+                if (rf is Aas.ISubmodelElementList sml)
+                {
+                    details.Add("orderRelevant=" + AdminShellUtil.MapBoolToStringArray(
+                        sml.OrderRelevant, "No", new[] { "No", "Yes" }));
+                    if (sml.SemanticIdListElement?.IsValid() == true)
+                        details.Add("semanticIdListElement=" + sml.SemanticIdListElement.ToStringExtended());
+                    details.Add("typeValueListElement=" + 
+                        AasCore.Aas3_0.Stringification.ToString(sml.TypeValueListElement));
+                    if (sml.ValueTypeListElement != null)
+                    details.Add("valueTypeListElement=" +
+                        AasCore.Aas3_0.Stringification.ToString(sml.ValueTypeListElement));
+                }
+                if (details.Count < 1)
+                    details.Add("-");
+                rep(head + "details", "" + string.Join(", ", details));
             }
 
             private void repModelingKind(string head, Aas.ModellingKind? k)
@@ -364,7 +387,7 @@ namespace AasxPluginExportTable.Table
                 // nice tester: http://regexstorm.net/tester
                 regexReplacements = new Regex(@"%([a-zA-Z0-9.@\[\]]+)%", RegexOptions.IgnoreCase);
                 regexStop = new Regex(@"^(.*?)%stop%(.*)$", RegexOptions.IgnoreCase);
-                regexCommands = new Regex(@"%([A-Za-z0-9-_]+)=(.*?)%", RegexOptions.IgnoreCase);
+                regexCommands = new Regex(@"(%([A-Za-z0-9-_]+)=(.*?)%)", RegexOptions.IgnoreCase);
 
                 // init dictionary
                 repDict = new Dictionary<string, string>();
@@ -664,8 +687,9 @@ namespace AasxPluginExportTable.Table
                     if (match.Groups.Count < 3)
                         continue;
 
-                    var cmd = match.Groups[1].ToString().Trim().ToLower();
-                    var arg = match.Groups[2].ToString();
+                    var allMatch = match.Groups[0].ToString();
+                    var cmd = match.Groups[2].ToString().Trim().ToLower();
+                    var arg = match.Groups[3].ToString();
                     var argtl = arg.Trim().ToLower();
 
                     switch (cmd)
@@ -675,6 +699,9 @@ namespace AasxPluginExportTable.Table
                             break;
                         case "bg":
                             cr.Bg = argtl;
+                            break;
+                        case "table-bg":
+                            cr.TableBg = argtl;
                             break;
                         case "halign":
                             cr.HorizAlign = argtl;
@@ -689,15 +716,24 @@ namespace AasxPluginExportTable.Table
                             cr.Frame = argtl;
                             break;
                         case "width":
-                            cr.Width = argtl;
+                            if (double.TryParse(argtl, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
+                                cr.Width = f;
                             break;
                         case "md":
                             cr.Md = argtl;
                             break;
+                        case "colspan":
+                            if (int.TryParse(argtl, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i)
+                                && i >= 2)
+                                cr.ColSpan = i;
+                            break;
                     }
 
-                    // in any case, replace the wohl match!
-                    // input = Replace(input, match.Index, match.Length, "");
+                    // new approach: try to remove found text in cr.TextWithHeaders
+                    // in the original cr.Text
+                    int p = cr.Text.LastIndexOf(allMatch);
+                    if (p >= 0)
+                        cr.Text = cr.Text.Remove(p, allMatch.Length);
                 }
 
             }
@@ -1029,11 +1065,8 @@ namespace AasxPluginExportTable.Table
                             // get the cell width from the very first top row
                             var cr2 = GetTopCell(0, ci);
                             proc.ProcessCellRecord(cr2);
-                            if (cr2?.Width != null
-                                && double.TryParse(cr2.Width, NumberStyles.Float,
-                                    CultureInfo.InvariantCulture, out var f2)
-                                && f2 > 0)
-                                ws.Column(1 + ci).Width = f2;
+                            if (cr2?.Width != null && cr2.Width.Value > 0)
+                                ws.Column(1 + ci).Width = cr2.Width.Value;
                         }
 
                     }
@@ -1456,6 +1489,251 @@ namespace AasxPluginExportTable.Table
                             foreach (var line in lines)
                                 f.WriteLine(line);
                     }
+
+                    // empty rows
+                    for (int i = 0; i < Math.Max(0, Record.RowsGap); i++)
+                        f.WriteLine("");
+                }
+            }
+
+            return true;
+        }
+
+        //
+        // AsciiDoc
+        // see: https://asciidoc-py.github.io/chunked/index.html
+        //
+
+        protected class AsciiDocColorState
+        {
+            public string TableBg = null;
+
+            /// <summary>
+            /// 0 = at init, 1 = in table
+            /// </summary>
+            public int State = 0;
+
+            public string CurrBg = null;
+        }
+
+        private string ExportAsciiDocEvalColumnText(
+            CellRecord cr, AsciiDocColorState cs, ref int colSkip)
+        {
+            if (cr == null)
+                return "";
+            var colStart = "";
+            if (cr.ColSpan > 1)
+            {
+                colStart = $"{cr.ColSpan}+";
+                colSkip = cr.ColSpan - 1;
+            }
+            if (cr.Font != null)
+            {
+                if (cr.Font.Contains("bold"))
+                    colStart += "s";
+                if (cr.Font.Contains("italic"))
+                    colStart += "e";
+                if (cr.Font.Contains("header"))
+                    colStart += "h";
+            }
+
+            // the pipe sets the column start
+            colStart += "|";
+
+            // background color handling
+            if (cs != null)
+            {
+                // initial start
+                if (cs.State == 0)
+                {
+                    // switch to table background or 1st cell background ..
+                    if (cr.Bg?.HasContent() == true)
+                    {
+                        colStart += "{set:cellbgcolor:" + cr.Bg + "}";
+                        cs.CurrBg = cr.Bg;
+                    }
+                    else
+                    {
+                        colStart += "{set:cellbgcolor:" + cs.TableBg + "}";
+                        cs.CurrBg = cs.TableBg;
+                    }
+                    cs.State = 1;
+                }
+                else
+                if (cr.Bg?.HasContent() == true && cr.Bg != cs.CurrBg)
+                {
+                    // switch to cell background
+                    colStart += "{set:cellbgcolor:" + cr.Bg + "}";
+                    cs.CurrBg = cr.Bg;
+                }
+                else
+                if (cr.Bg?.HasContent() != true && cs.CurrBg != cs.TableBg)
+                {
+                    // switch back to table background
+                    colStart += "{set:cellbgcolor:" + cs.TableBg + "}";
+                    cs.CurrBg = cs.TableBg;
+                }
+            }
+
+            // column body
+            var colBody = cr.Text.Replace("|", "\\|");
+
+            // foreground more straight forward
+            // only "plain colors" allowed, no rgb valur :-(
+            if (cr.Fg != null
+                && Regex.IsMatch(cr.Fg, @"([a-zA-Z.]+)"))
+            {
+                // escape more
+                colBody = colBody.Replace("#", "\\#");
+
+                // unquoted text syntax
+                colBody = " [" + cr.Fg + "]#" + colBody.Trim() + "#";
+            }
+
+            return colStart + colBody + Environment.NewLine;
+        }
+
+        public bool ExportAsciiDoc(
+            string fn,
+            List<ExportTableAasEntitiesList> iterateAasEntities)
+        {
+            // access
+            if (Record?.IsValid() != true)
+                return false;
+
+            using (var f = new StreamWriter(fn))
+            {
+                // Heading
+                f.WriteLine("== Tables");
+                f.WriteLine();
+
+                // over entities
+                foreach (var entities in iterateAasEntities)
+                {
+                    // top entity
+                    var topEnt = entities.FirstOrDefault();
+
+                    // Heading
+                    var hr = topEnt?.GetHeadingReferable();
+                    f.WriteLine($"=== {(hr != null ? hr.IdShort : "Heading")}");
+
+                    // one blank line is important for Markdown
+                    f.WriteLine();
+
+                    // top
+                    var proc = new ItemProcessor(Record, topEnt);
+                    proc.Start();
+                    proc.ReplaceNewlineWith = " +" + Environment.NewLine;
+
+                    // table header
+                    var colSpeci = new List<string>();
+                    for (int ci = 0; ci < Record.Cols; ci++)
+                    {
+                        // get the cell width from the very first top row
+                        var cr = GetTopCell(0, ci);
+                        proc.ProcessCellRecord(cr);
+                        if (cr?.Width.HasValue == true)
+                            colSpeci.Add($"{cr.Width.Value:f0}%");
+                        else
+                            colSpeci.Add("1");
+                    }
+                    f.WriteLine($"[width=\"100%\", cols=\"{string.Join(",", colSpeci)}\"]");
+                    f.WriteLine("|===");
+
+                    // figure out background of the wholew table (top is for top and bottom)
+                    // this will enable color handling for the rest
+                    AsciiDocColorState colorState = null;
+                    {
+                        var cr = GetTopCell(0, 0);
+                        proc.ProcessCellRecord(cr);
+                        if (cr.TableBg?.HasContent() == true)
+                            colorState = new AsciiDocColorState() { TableBg = cr.TableBg };
+                    }
+
+                    // table top rows
+                    for (int ri = 0; ri < Record.RowsTop; ri++)
+                    {
+                        var line = "";
+                        int colSkip = 0;
+                        for (int ci = 0; ci < Record.Cols; ci++)
+                        {
+                            // skip column
+                            if (colSkip > 0)
+                            {
+                                colSkip--;
+                                continue;
+                            }
+
+                            // get cell record
+                            var cr = GetTopCell(ri, ci);
+
+                            // process text
+                            proc.ProcessCellRecord(cr);
+
+                            // cell formatting
+                            var colText = ExportAsciiDocEvalColumnText(cr, colorState, ref colSkip);
+
+                            // add
+                            line += colText;
+                        }
+
+                        f.WriteLine(line);
+                    }
+
+                    // end row
+                    f.WriteLine("");
+                    f.WriteLine("");
+
+                    // elements
+                    foreach (var item in entities)
+                    {
+                        // create processing
+                        proc = new ItemProcessor(Record, item);
+                        proc.Start();
+                        proc.ReplaceNewlineWith = " +" + Environment.NewLine;
+
+                        var lines = new List<string>();
+
+                        // all elements
+                        for (int ri = 0; ri < Record.RowsBody; ri++)
+                        {
+                            var line = "";
+                            int colSkip = 0;
+                            for (int ci = 0; ci < Record.Cols; ci++)
+                            {
+                                // skip column
+                                if (colSkip > 0)
+                                {
+                                    colSkip--;
+                                    continue;
+                                }
+
+                                // get cell record
+                                var cr = GetBodyCell(ri, ci);
+
+                                // process text
+                                proc.ProcessCellRecord(cr);
+
+                                // cell formatting
+                                var colText = ExportAsciiDocEvalColumnText(cr, colorState, ref colSkip);
+
+                                // add
+                                line += colText;
+                            }
+
+                            lines.Add(line);
+                            lines.Add("");
+                            lines.Add("");
+                        }
+
+                        // export really?
+                        if (proc.NumberReplacements > 0)
+                            foreach (var line in lines)
+                                f.WriteLine(line);
+                    }
+
+                    // table footer
+                    f.WriteLine("|===");
 
                     // empty rows
                     for (int i = 0; i < Math.Max(0, Record.RowsGap); i++)

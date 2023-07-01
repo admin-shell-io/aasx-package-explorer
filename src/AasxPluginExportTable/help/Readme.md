@@ -72,7 +72,7 @@ The following placeholder could be used (to be constantly updated):
 ```
 All placeholders delimited by %{..}%, {} = set arithmetics, [] = optional
 {Referable}.{idShort, category, description[@en..], elementName, elementShort, elementShort2, 
-elementAbbreviation, kind, parent}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent}
+elementAbbreviation, kind, parent, details}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent}
 
 {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}, 
 {Qualifiable}.qualifiers, {Qualifiable}.multiplicity

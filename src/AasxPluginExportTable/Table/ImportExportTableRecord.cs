@@ -25,9 +25,9 @@ namespace AasxPluginExportTable
         // Types
         //
 
-        public enum FormatEnum { TSF = 0, LaTex, Word, Excel, NarkdownGH }
+        public enum FormatEnum { TSF = 0, LaTex, Word, Excel, MarkdownGH, AsciiDoc }
         public static string[] FormatNames = new string[] {
-            "Tab separated", "LaTex", "Word", "Excel", "Markdown (GH)"
+            "Tab separated", "LaTex", "Word", "Excel", "Markdown (GH)", "AsciiDoc"
         };
 
         //

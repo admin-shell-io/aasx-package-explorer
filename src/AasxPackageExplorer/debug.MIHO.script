@@ -1,0 +1,4 @@
+﻿// this script is for debugging purposes only
+// it will be copied to build directory
+// Select("Submodel", "First");
+// Tool("ExportTable", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\new.adoc", "Preset", "AsciiDoc");

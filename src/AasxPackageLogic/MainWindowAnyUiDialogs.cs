@@ -495,7 +495,9 @@ namespace AasxPackageLogic
                     "Write decoded AASX package file",
                     null,
                     "AASX package files (*.aasx)|*.aasx",
-                    "For package decrypt: No valid filename for target given!")))
+                    "For package decrypt: No valid filename for target given!",
+                    reworkSpecialFn: true,
+                    argLocation: "Location")))
                     return;
 
                 // now, generally start
@@ -509,8 +511,12 @@ namespace AasxPackageLogic
                         err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
                 };
 
-                // further to logic
+                // delegate work
                 await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+                // browser?
+                await DisplayContextPlus.CheckIfDownloadAndStart(
+                    ticket, Log.Singleton, "File", "Location");
             }
 
             if (cmd == "assesssmt")
@@ -809,13 +815,20 @@ namespace AasxPackageLogic
                     "Write Submodel to JSON data",
                     "Submodel_" + ticket.Submodel?.IdShort + ".json",
                     "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    "Submodel Read: No valid filename.")))
+                    "Submodel Read: No valid filename.",
+                    reworkSpecialFn: true,
+                    argLocation: "Location")))
                     return;
 
                 // do it directly
                 try
                 {
+                    // delegate work
                     await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+                    // browser?
+                    await DisplayContextPlus.CheckIfDownloadAndStart(
+                        ticket, Log.Singleton, "File", "Location");
                 }
                 catch (Exception ex)
                 {
@@ -983,14 +996,20 @@ namespace AasxPackageLogic
                     "Thing Description (TD) export",
                     "Submodel_" + ticket.Submodel?.IdShort + ".jsonld",
                     "JSON files (*.JSONLD)|*.jsonld",
-                    "Thing Description (TD) export: No valid filename.")))
+                    "Thing Description (TD) export: No valid filename.",
+                    reworkSpecialFn: true,
+                    argLocation: "Location")))
                     return;
 
                 // do it
                 try
                 {
-                    // delegate futher
+                    // delegate work
                     await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+                    // browser?
+                    await DisplayContextPlus.CheckIfDownloadAndStart(
+                        ticket, Log.Singleton, "File", "Location");
                 }
                 catch (Exception ex)
                 {
@@ -1065,12 +1084,19 @@ namespace AasxPackageLogic
                     "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
                     "*.aml|All files (*.*)|*.*",
                     "Export AML: No valid filename.",
-                    argFilterIndex: "FilterIndex")))
+                    argFilterIndex: "FilterIndex",
+                    reworkSpecialFn: true,
+                    argLocation: "Location")))
                     return;
 
                 try
                 {
+                    // delegate work
                     await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+                    // browser?
+                    await DisplayContextPlus.CheckIfDownloadAndStart(
+                        ticket, Log.Singleton, "File", "Location");
                 }
                 catch (Exception ex)
                 {
@@ -1105,12 +1131,19 @@ namespace AasxPackageLogic
                     $"Submodel_Schema_{fnPrep}.json",
                     "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
                     "Export JSON schema: No valid filename.",
-                    argFilterIndex: "FilterIndex")))
+                    argFilterIndex: "FilterIndex",
+                    reworkSpecialFn: true,
+                    argLocation: "Location")))
                     return;
 
                 try
                 {
+                    // delegate work
                     await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+                    // browser?
+                    await DisplayContextPlus.CheckIfDownloadAndStart(
+                        ticket, Log.Singleton, "File", "Location");
                 }
                 catch (Exception ex)
                 {
@@ -1142,13 +1175,20 @@ namespace AasxPackageLogic
                     "Select Nodeset file to be exported",
                     "new.xml",
                     "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
-                    "Export i4AAS based OPC UA nodeset: No valid filename.")))
+                    "Export i4AAS based OPC UA nodeset: No valid filename.",
+                    reworkSpecialFn: true,
+                    argLocation: "Location")))
                     return;
 
                 // ReSharper enable PossibleNullReferenceException
                 try
                 {
+                    // delegate work
                     await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+                    // browser?
+                    await DisplayContextPlus.CheckIfDownloadAndStart(
+                        ticket, Log.Singleton, "File", "Location");
                 }
                 catch (Exception ex)
                 {
@@ -1243,12 +1283,19 @@ namespace AasxPackageLogic
                     "new.add-options.json",
                     "Options file for GenericForms (*.add-options.json)|*.add-options.json|All files (*.*)|*.*",
                     "Export GenericForms: No valid filename.",
-                    argFilterIndex: "FilterIndex")))
+                    argFilterIndex: "FilterIndex",
+                    reworkSpecialFn: true,
+                    argLocation: "Location")))
                     return;
 
                 try
                 {
+                    // delegate work
                     await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+                    // browser?
+                    await DisplayContextPlus.CheckIfDownloadAndStart(
+                        ticket, Log.Singleton, "File", "Location");
                 }
                 catch (Exception ex)
                 {
@@ -1268,12 +1315,19 @@ namespace AasxPackageLogic
                     "new.txt",
                     "Text file for PredefinedConcepts (*.txt)|*.txt|All files (*.*)|*.*",
                     "Export PredefinedConcepts: No valid filename.",
-                    argFilterIndex: "FilterIndex")))
+                    argFilterIndex: "FilterIndex",
+                    reworkSpecialFn: true,
+                    argLocation: "Location")))
                     return;
 
                 try
                 {
+                    // delegate work
                     await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+                    // browser?
+                    await DisplayContextPlus.CheckIfDownloadAndStart(
+                        ticket, Log.Singleton, "File", "Location");
                 }
                 catch (Exception ex)
                 {

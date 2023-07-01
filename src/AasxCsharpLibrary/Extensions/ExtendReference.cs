@@ -221,6 +221,9 @@ namespace Extensions
             return new Key(key.Type, key.Value);
         }
 
+        /// <summary>
+        /// Formats: 1 = [key, value] 2 = value
+        /// </summary>
         public static string ToStringExtended(this IReference reference, int format = 1, string delimiter = ",")
         {
             if (reference.Keys == null)

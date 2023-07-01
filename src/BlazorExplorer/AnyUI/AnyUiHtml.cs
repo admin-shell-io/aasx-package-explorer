@@ -947,19 +947,23 @@ namespace AnyUi
             // filename
             var sourceFn = ticket?[argName] as string;
 
-            // no direct queries
-            if (sourceFn?.HasContent() != true && requireNoFlyout)
-                return null;
-
-            // ok, modal?
-            if (sourceFn?.HasContent() != true)
-            {
-                var uc = new AnyUiDialogueDataOpenFile(
+            // prepare
+            var uc = new AnyUiDialogueDataOpenFile(
                     caption: caption,
                     message: "Select filename by uploading it or from stored user files.",
                     filter: filter, proposeFn: proposeFn);
-                uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
+            uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
 
+            // no direct queries
+            if (sourceFn?.HasContent() != true && requireNoFlyout)
+            {
+                uc.Result = false;
+                return uc;
+            }
+
+            // ok, modal?
+            if (sourceFn?.HasContent() != true)
+            {                
                 if (await StartFlyoverModalAsync(uc))
                 {
                     // house keeping
@@ -977,7 +981,8 @@ namespace AnyUi
             if (sourceFn?.HasContent() != true)
             {
                 MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
-                return null;
+                uc.Result = false;
+                return uc;
             }
 
             return new AnyUiDialogueDataOpenFile()
@@ -1007,9 +1012,7 @@ namespace AnyUi
             }
             return false;
         }
-
-        
-
+       
         /// <summary>
         /// Selects a filename to write either from user or from ticket.
         /// </summary>
@@ -1027,23 +1030,27 @@ namespace AnyUi
             // filename
             var targetFn = ticket?[argName] as string;
 
-            // no direct queries
-            if (targetFn?.HasContent() != true && requireNoFlyout)
-                return null;
-
-            // ok, modal?
-            if (targetFn?.HasContent() != true)
-            {
-                var uc = new AnyUiDialogueDataSaveFile(
+            // prepare
+            var uc = new AnyUiDialogueDataSaveFile(
                     caption: caption,
                     message: "Select filename and how to provide the file. " +
                     "It might be possible to store files " +
                     "as user file or on a local file system.",
                     filter: filter, proposeFn: proposeFn);
 
-                uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
-                uc.AllowLocalFiles = Options.Curr.AllowLocalFiles;
+            uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
+            uc.AllowLocalFiles = Options.Curr.AllowLocalFiles;
 
+            // no direct queries
+            if (targetFn?.HasContent() != true && requireNoFlyout)
+            {
+                uc.Result = false;
+                return uc;
+            }
+
+            // ok, modal?
+            if (targetFn?.HasContent() != true)
+            {
                 if (await StartFlyoverModalAsync(uc))
                 {
                     // house keeping
@@ -1061,7 +1068,8 @@ namespace AnyUi
             if (targetFn?.HasContent() != true)
             {
                 MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
-                return null;
+                uc.Result = false;
+                return uc;
             }
 
             return new AnyUiDialogueDataSaveFile()

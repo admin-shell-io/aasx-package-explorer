@@ -77,6 +77,31 @@ namespace AasxPackageExplorer
     }
 
     /// <summary>
+    /// Line of (tabbed) cells with text contents
+    /// </summary>
+    public class LogicValidationRecTabbedCells : LogicValidationRecBase
+    {
+        /// <summary>
+        /// Any comment
+        /// </summary>
+        public string[] Cells = null;
+
+        public override string ToTextLine()
+        {
+            if (Cells == null)
+                return "";
+            return "" + string.Join('\t', Cells);
+        }
+
+        public override AasxPluginExportTableInterop.InteropRow ToTableRow()
+        {
+            if (Cells == null)
+                return new AasxPluginExportTableInterop.InteropRow();
+
+            return new AasxPluginExportTableInterop.InteropRow(Cells).Set(wrap: false);
+        }
+    }
+    /// <summary>
     /// Conclusive or summary statement when validating some business logic
     /// </summary>
     public class LogicValidationRecStatement : LogicValidationRecBase
@@ -168,6 +193,11 @@ namespace AasxPackageExplorer
         public void AddComment(string text)
         {
             this.Add(new LogicValidationRecComment() { Text = text });
+        }
+
+        public void AddTabbedCells(params string[] cells)
+        {
+            this.Add(new LogicValidationRecTabbedCells() { Cells = cells });
         }
 
         public void AddStatement(string id, string outcome, bool isFail, string text)

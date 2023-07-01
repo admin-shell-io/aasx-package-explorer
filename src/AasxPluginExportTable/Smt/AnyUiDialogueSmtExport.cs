@@ -26,8 +26,9 @@ using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
+using AasxPluginExportTable.Uml;
 
-namespace AasxPluginExportTable.Uml
+namespace AasxPluginExportTable.Smt
 {
     /// <summary>
     /// This class allows exporting a Submodel to various UML formats.
@@ -35,12 +36,13 @@ namespace AasxPluginExportTable.Uml
     /// domain is quite the same and maybe special file format dependencies will 
     /// be re equired in the future.
     /// </summary>
-    public static class AnyUiDialogueUmlExport
+    public static class AnyUiDialogueSmtExport
     {
-        public static async Task ExportUmlDialogBased(
+        public static async Task ExportSmtDialogBased(
             LogInstance log,
             AasxMenuActionTicket ticket,
-            AnyUiContextPlusDialogs displayContext)
+            AnyUiContextPlusDialogs displayContext,
+            ExportTableOptions pluginOptionsTable)
         {
             // access
             if (ticket == null || displayContext == null)
@@ -49,27 +51,27 @@ namespace AasxPluginExportTable.Uml
             // check preconditions
             if (ticket.Env == null || ticket.Submodel == null || ticket.SubmodelElement != null)
             {
-                log?.Error("Export UML: A Submodel has to be selected!");
+                log?.Error("Export AsciiDoc SMT spec: A Submodel has to be selected!");
                 return;
             }
 
             // ask for parameter record?
-            var record = ticket["Record"] as ExportUmlRecord;
+            var record = ticket["Record"] as ExportSmtRecord;
             if (record == null)
-                record = new ExportUmlRecord();
+                record = new ExportSmtRecord();
 
             // arguments by reflection
             ticket?.ArgValue?.PopulateObjectFromArgs(record);
 
             // maybe given a format name?
             if (ticket["Format"] is string fmt)
-                for (int i = 0; i < ExportUmlRecord.FormatNames.Length; i++)
-                    if (ExportUmlRecord.FormatNames[i].ToLower()
+                for (int i = 0; i < ExportSmtRecord.FormatNames.Length; i++)
+                    if (ExportSmtRecord.FormatNames[i].ToLower()
                             .Contains(fmt.ToLower()))
-                        record.Format = (ExportUmlRecord.ExportFormat)i;
+                        record.Format = (ExportSmtRecord.ExportFormat)i;
 
             // ok, go on ..
-            var uc = new AnyUiDialogueDataModalPanel("Export UML ..");
+            var uc = new AnyUiDialogueDataModalPanel("Export SMT spec as AsciiDoc ..");
             uc.ActivateRenderPanel(record,
                 (uci) =>
                 {
@@ -82,51 +84,69 @@ namespace AasxPluginExportTable.Uml
                     panel.Add(g);
 
                     // Row 0 : Format
-                    helper.AddSmallLabelTo(g, 0, 0, content: "Format:",
+                    helper.AddSmallLabelTo(g, 0, 0, content: "Format output:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetIntFromControl(
                         helper.Set(
                             helper.AddSmallComboBoxTo(g, 0, 1,
-                                items: ExportUmlRecord.FormatNames,
+                                items: ExportSmtRecord.FormatNames,
                                 selectedIndex: (int)record.Format),
                                 minWidth: 600, maxWidth: 600),
-                        (i) => { record.Format = (ExportUmlRecord.ExportFormat)i; });
+                        (i) => { record.Format = (ExportSmtRecord.ExportFormat)i; });
 
-                    // Row 1 : limiting of values im UML
-                    helper.AddSmallLabelTo(g, 1, 0, content: "Limit values:",
-                        verticalAlignment: AnyUiVerticalAlignment.Center,
-                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    // Row 1 : Format tables
+                    if (pluginOptionsTable?.Presets != null)
+                    {
+                        helper.AddSmallLabelTo(g, 1, 0, content: "From options:",
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                    var g2 = helper.AddSmallGridTo(g, 1, 1, 1, 2, new[] { "200:", "*" });
-                    AnyUiUIElement.SetIntFromControl(
-                        helper.Set(
-                            helper.AddSmallTextBoxTo(g2, 0, 0,
-                                margin: new AnyUiThickness(0, 2, 2, 2),
-                                text: $"{record.LimitInitialValue:D}",
-                                verticalAlignment: AnyUiVerticalAlignment.Center,
-                                verticalContentAlignment: AnyUiVerticalAlignment.Center) /*,
-                        minWidth: 400, maxWidth: 400,
-                        horizontalAlignment: AnyUiHorizontalAlignment.Left */),
-                        (i) => { record.LimitInitialValue = i; });
-                    helper.AddSmallLabelTo(g2, 0, 1,
-                        content: "(0 disables values, -1 = unlimited)",
-                        margin: new AnyUiThickness(10, 0, 0, 0),
-                        verticalAlignment: AnyUiVerticalAlignment.Center,
-                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                        AnyUiComboBox cbPreset = null;
+                        cbPreset = AnyUiUIElement.RegisterControl(
+                            helper.Set(
+                                helper.AddSmallComboBoxTo(g, 1, 2,
+                                    items: pluginOptionsTable.Presets.Select((pr) => "" + pr.Name).ToArray(),
+                                    text: "Please select preset to load .."),
+                                minWidth: 350, maxWidth: 400),
+                                (o) =>
+                                {
+                                    if (!cbPreset.SelectedIndex.HasValue)
+                                        return new AnyUiLambdaActionNone();
+                                    var ndx = cbPreset.SelectedIndex.Value;
+                                    if (ndx < 0 || ndx >= pluginOptionsTable.Presets.Count)
+                                        return new AnyUiLambdaActionNone();
+                                    record.PresetTables = pluginOptionsTable.Presets[ndx].Name;
+                                    return new AnyUiLambdaActionModalPanelReRender(uc);
+                                });
 
-                    // Row 2 : Copy to paste buffer
-                    helper.AddSmallLabelTo(g, 2, 0, content: "Copy to paste buffer:",
+                    }
+
+                    // Row 2 : Export HTML
+                    helper.AddSmallLabelTo(g, 2, 0, content: "Export HTML:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetBoolFromControl(
                         helper.Set(
                             helper.AddSmallCheckBoxTo(g, 2, 1,
-                                content: "(after export, file will be copied to paste buffer)",
-                                isChecked: record.CopyToPasteBuffer,
+                                content: "(export command given by options will be executed)",
+                                isChecked: record.ExportHtml,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),
-                    colSpan: 2),
-                        (b) => { record.CopyToPasteBuffer = b; });
+                                colSpan: 2),
+                        (b) => { record.ExportHtml = b; });
+
+                    // Row 3 : Export PDF
+                    helper.AddSmallLabelTo(g, 3, 0, content: "Export PDF:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.Set(
+                            helper.AddSmallCheckBoxTo(g, 3, 1,
+                                content: "(export command given by options will be executed)",
+                                isChecked: record.ExportPdf,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                                colSpan: 2),
+                        (b) => { record.ExportPdf = b; });
 
                     // give back
                     return panel;
@@ -137,18 +157,18 @@ namespace AasxPluginExportTable.Uml
             {
                 if (!(await displayContext.StartFlyoverModalAsync(uc)))
                     return;
-            }
 
-            // stop
-            await Task.Delay(2000);
+                // stop
+                await Task.Delay(2000);
+            }
 
             // ask for filename?
             if (!(await displayContext.MenuSelectSaveFilenameToTicketAsync(
                         ticket, "File",
-                        "Select file for UML export ..",
+                        "Select file for SMT specification to AsciiDoc ..",
                         "new.puml",
-                        "PlantUML text file (*.puml)|*.puml|UML text file (*.uml)|*.uml|All files (*.*)|*.*",
-                        "Import/ export UML: No valid filename.",
+                        "AsciiDoc (*.adoc)|*.adoc|ZIP archive (*.zip)|*.zip|All files (*.*)|*.*",
+                        "SMT specification to AsciiDoc: No valid filename.",
                         argLocation: "Location",
                         reworkSpecialFn: true)))
                 return;
@@ -164,14 +184,9 @@ namespace AasxPluginExportTable.Uml
             ExportUml.ExportUmlToFile(ticket.Env, sm, record, fn);
 
             // persist
-            await displayContext.CheckIfDownloadAndStart(log, loc, fn);
-            if (record.CopyToPasteBuffer)
-            {
-                var lines = System.IO.File.ReadAllText(fn);
-                displayContext.ClipboardSet(new AnyUiClipboardData(lines));
-            }
+            await displayContext.CheckIfDownloadAndStart(log, loc, fn);           
 
-            log.Info($"Export UML data to file: {fn}");
+            log.Info($"Export \"SMT specification to AsciiDoc file: {fn}");
         }
     }
 }

@@ -55,7 +55,6 @@ namespace AasxPluginExportTable.Uml
             Writeln("skinparam classAttributeIconSize 0");
             Writeln("' skinparam linetype polyline");
             Writeln("skinparam linetype ortho");
-            Writeln("mainframe SMT");
 
             Writeln("");
         }
@@ -84,25 +83,40 @@ namespace AasxPluginExportTable.Uml
                 _builder.AppendLine(line);
         }
 
-        public UmlHandle AddClass(Aas.IReferable rf)
+        public string ViusalIdShort(Aas.IReferable parent, int index, Aas.IReferable rf)
+        {
+            if (parent == null)
+                return rf?.IdShort;
+            if (parent is Aas.ISubmodelElementList)
+            {
+                return $"[{index:00}]";
+            }
+            else
+                return rf?.IdShort;
+        }
+
+        public UmlHandle AddClass(Aas.IReferable rf, string visIdShort)
         {
             // the Referable shall enumerate children (if not, then its not a class)
             var features = rf.EnumerateChildren().ToList();
+            if (features.Count < 1)
+                return null;
 
             // add
             var classId = RegisterObject(rf);
             var stereotype = EvalFeatureType(rf);
             if (stereotype.HasContent())
                 stereotype = "<<" + stereotype + ">>";
-            Writeln($"class {FormatAs(rf.IdShort, classId)} {stereotype} {{");
+            Writeln($"class {FormatAs(visIdShort, classId)} {stereotype} {{");
 
+            int idx = 0;
             foreach (var sme in features)
             {
                 var type = EvalFeatureType(sme);
                 var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
                 var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
 
-                var ln = $"  +{sme.IdShort}";
+                var ln = $"  +{ViusalIdShort(rf, idx++, sme)}";
                 if (type.HasContent())
                     ln += $" : {type}";
                 if (multiplicity.HasContent())
@@ -119,22 +133,26 @@ namespace AasxPluginExportTable.Uml
         }
 
         public UmlHandle ProcessEntity(
-            Aas.IReferable parent, Aas.IReferable rf)
+            Aas.IReferable parent, Aas.IReferable rf, string visIdShort)
         {
             // access
             if (rf == null)
                 return null;
 
             // act flexible                
-            var dstTuple = AddClass(rf);
+            var dstTuple = AddClass(rf, visIdShort);
 
             // recurse
+            var idx = 0;
             var childs = rf.EnumerateChildren();
             if (childs != null)
                 foreach (var sme in childs)
                 {
+                    // idShort
+                    var smeIdShort = ViusalIdShort(rf, idx++, sme);
+
                     // create further entities
-                    var srcTuple = ProcessEntity(rf, sme);
+                    var srcTuple = ProcessEntity(rf, sme, smeIdShort);
 
                     // make associations (often, srcTuple will be null, because not a class!)
                     if (srcTuple?.Valid == true && dstTuple?.Valid == true)
@@ -144,7 +162,7 @@ namespace AasxPluginExportTable.Uml
                             multiplicity = "\"" + multiplicity + "\"";
                         Writeln(post: true,
                             line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} " +
-                                    $": \"{ClearName(sme.IdShort)}\"");
+                                    $": \"{ClearName(smeIdShort)}\"");
                     }
                 }
 
@@ -153,10 +171,18 @@ namespace AasxPluginExportTable.Uml
 
         public void ProcessSubmodel(Aas.ISubmodel submodel)
         {
-            Writeln("mainframe SMT " + submodel.IdShort);
+            // access
+            if (submodel == null)
+                return;
+
+            // frame
+            Writeln("mainframe " 
+                + AdminShellUtil.MapIntToStringArray((int)submodel.Kind, "SM", new[] { "SMT", "SM" })
+                + submodel.IdShort);
             Writeln("");
 
-            ProcessEntity(null, submodel);
+            // entities
+            ProcessEntity(null, submodel, submodel.IdShort);
         }
 
         public void ProcessPost()

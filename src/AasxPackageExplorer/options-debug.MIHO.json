@@ -16,7 +16,8 @@
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx", */
-  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_V3new_spiel1.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_V3new_spiel1.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02006-2-1_Template_Digital Nameplate_V3_kurz.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_B.aasx",
   // "AuxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_A.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\00_FestoDemoBox-Module-2-Kopie2.aasx",

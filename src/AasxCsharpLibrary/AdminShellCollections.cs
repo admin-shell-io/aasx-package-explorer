@@ -65,7 +65,7 @@ namespace AdminShellNS
         public void IncKey(K key)
         {
             if (!this.ContainsKey(key))
-                this.Add(key, 0);
+                this.Add(key, 1);
             else
             {
                 var i = this[key];

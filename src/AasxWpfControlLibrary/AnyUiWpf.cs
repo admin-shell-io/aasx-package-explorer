@@ -1863,15 +1863,20 @@ namespace AnyUi
                    filter: filter, proposeFn: proposeFn);
             uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
 
+            // scripted success?
+            if (ticket?.ScriptMode == true && sourceFn?.HasContent() == true)
+            {
+                uc.Result = true;
+                uc.TargetFileName = sourceFn;
+                return uc;
+            }
+
             // do direct?
             if (sourceFn?.HasContent() != true && requireNoFlyout)
             {
                 // do not perform further with show "new" (overlapping!) flyout ..
                 PerformSpecialOps(modal: true, dialogueData: uc);
-                if (!uc.Result)
-                    return null;
-                return
-                    uc;
+                return uc;
             }
 
             // no, via modal dialog?
@@ -1894,7 +1899,8 @@ namespace AnyUi
             if (sourceFn?.HasContent() != true)
             {
                 MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
-                return null;
+                uc.Result = false;
+                return uc;
             }
 
             return new AnyUiDialogueDataOpenFile()
@@ -1953,13 +1959,21 @@ namespace AnyUi
             uc.AllowUserFiles = PackageContainerUserFile.CheckForUserFilesPossible();
             uc.AllowLocalFiles = Options.Curr.AllowLocalFiles;
 
+            // scripted success?
+            if (ticket?.ScriptMode == true && targetFn?.HasContent() == true)
+            {
+                uc.Result = true;
+                uc.TargetFileName = targetFn;
+                return uc;
+            }
+
             // do direct?
             if (targetFn?.HasContent() != true && requireNoFlyout)
             {
                 // do not perform further with show "new" (overlapping!) flyout ..
                 PerformSpecialOps(modal: true, dialogueData: uc);
                 if (!uc.Result)
-                    return null;
+                    return uc;
 
                 // maybe rework?
                 if (reworkSpecialFn)
@@ -1989,7 +2003,8 @@ namespace AnyUi
             if (targetFn?.HasContent() != true)
             {
                 MainWindowLogic.LogErrorToTicketOrSilentStatic(ticket, msg);
-                return null;
+                uc.Result = false;
+                return uc;
             }
 
             return new AnyUiDialogueDataSaveFile()
@@ -2022,6 +2037,8 @@ namespace AnyUi
                 ticket[argName] = uc.TargetFileName;
                 if (argFilterIndex?.HasContent() == true)
                     ticket[argFilterIndex] = uc.FilterIndex;
+                if (argLocation?.HasContent() == true)
+                    ticket[argLocation] = uc.Location.ToString();
                 return true;
             }
             return false;

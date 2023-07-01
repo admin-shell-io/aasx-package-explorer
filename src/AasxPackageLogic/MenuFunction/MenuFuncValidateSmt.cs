@@ -125,6 +125,20 @@ namespace AasxPackageExplorer
         }
 
         //
+        // semanticId histogram
+        //
+
+        protected IntValueDictionary<string> SemIdHistogram = new IntValueDictionary<string>();
+
+        private void SemIdDoStat(IntValueDictionary<string> dict, string category, string name)
+        {
+            Recs.AddComment("Statistics of semanticId use in: " + category + " " + name);
+            foreach (var v in dict.Keys)
+                // Recs.AddComment(String.Format("SEM01 \t{0,-4}\tof\t{1}\tin\t{2}", dict[v], v, category));
+                Recs.AddTabbedCells("SEM01", "" + dict[v], "of", v, "in", category, name);
+        }
+
+        //
         // Validation
         //
 
@@ -182,6 +196,11 @@ namespace AasxPackageExplorer
                         NumCdFound++;
                         DictCdFound.IncKey(cd);
                     }
+
+                    // histogram
+                    var sk = sem.SemanticId.ToStringExtended(2);
+                    if (sk.Length > 0)
+                        SemIdHistogram.IncKey(sk);
                 }
             }
 
@@ -399,6 +418,7 @@ namespace AasxPackageExplorer
                     RepoKindDoStat(RepoKindNumsAny, "All elements");
                     RepoKindDoStat(RepoKindNumsNonStruct, "Non-structural elements");
 
+                    SemIdDoStat(SemIdHistogram, "SM", sm.SemanticId?.ToStringExtended(2));
                 }
             }
 
@@ -465,6 +485,6 @@ namespace AasxPackageExplorer
                 "(no spaces, …)?");
             Recs.AddAnyFailStatement("AX15", "For all ConceptDescription, is an DataSpecification with " +
                 "content defined?");
-        }        
+        }
     }
 }

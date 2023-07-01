@@ -2,7 +2,7 @@
   "profiles": {
     "AasxPackageExplorer": {
       "commandName": "Project",
-      "commandLineArgs": "-read-json options-debug.MIHO.json -write-all-json options-written.json"
+      "commandLineArgs": "-read-json options-debug.MIHO.json -script debug.MIHO.script"
     }
   }
 }

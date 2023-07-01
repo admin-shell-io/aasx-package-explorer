@@ -277,6 +277,21 @@ namespace AnyUi
             }
         }
 
+        public async Task CheckIfDownloadAndStart(
+            AasxMenuActionTicket ticket,
+            LogInstance log,
+            string argFileName,
+            string argLocation,
+            string contentType = "application/octet-stream")
+        {
+            // access
+            if (ticket == null 
+                || !(ticket[argFileName] is string fn)
+                || !(ticket[argLocation] is string location))
+                return;
+            
+            await CheckIfDownloadAndStart(log, location, fn, contentType);
+        }
 
         /// <summary>
         /// This function add single rows to a given grid (2 or 3 columns) having

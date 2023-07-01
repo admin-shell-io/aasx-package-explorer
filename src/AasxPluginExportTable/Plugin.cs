@@ -192,6 +192,25 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     }
                 });
 
+                // export SMT AsciiDoc
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Export",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ExportSmtAsciiDoc",
+                        Header = "Export Package as AsciiDoc SMT spec …",
+                        HelpText = "Export SMT in package and further AsciiDoc contents into a integrated " +
+                            "AsciiDoc document.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                            .Add("File", "Filename and path of file to exported.")
+                            .Add("Location", "Location of the file (local, user, download).")
+                            .Add("Format", "Format to be either 'adoc' or 'zip'.")
+                            .Add("Record", "Record data", hidden: true)
+                            .AddFromReflection(new ExportUmlRecord())
+                    }
+                });
+
                 // import time series
                 res.Add(new AasxPluginResultSingleMenuItem()
                 {
@@ -263,6 +282,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     }
 
                     if (cmd == "exportuml")
+                    {
+                        await AnyUiDialogueUmlExport.ExportUmlDialogBased(
+                            _log, ticket, displayContext);
+                        return new AasxPluginResultBase();
+                    }
+
+                    if (cmd == "exportuml")
+                    {
+                        await AnyUiDialogueUmlExport.ExportUmlDialogBased(
+                            _log, ticket, displayContext);
+                        return new AasxPluginResultBase();
+                    }
+
+                    if (cmd == "exportsmtasciidoc")
                     {
                         await AnyUiDialogueUmlExport.ExportUmlDialogBased(
                             _log, ticket, displayContext);

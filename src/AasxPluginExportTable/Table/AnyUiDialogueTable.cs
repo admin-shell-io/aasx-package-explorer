@@ -52,6 +52,15 @@ namespace AasxPluginExportTable.TimeSeries
             if (record == null)
                 record = new ImportExportTableRecord();
 
+            // maybe given a preset name?
+            if (ticket["Preset"] is string pname && pluginOptions.Presets != null)
+                for (int i = 0; i < pluginOptions.Presets.Count; i++)
+                    if (pluginOptions.Presets[i].Name.ToLower()
+                            .Contains(pname.ToLower()))
+                    {
+                        record = pluginOptions.Presets[i];
+                    }
+
             // arguments by reflection
             ticket?.ArgValue?.PopulateObjectFromArgs(record);
 
@@ -61,7 +70,7 @@ namespace AasxPluginExportTable.TimeSeries
                     if (ImportExportTableRecord.FormatNames[i].ToLower()
                             .Contains(fmt.ToLower()))
                         record.Format = i;
-
+            
             // work rows, cols
             int workRowsTop, workRowsBody, workCols;
 
@@ -181,8 +190,8 @@ namespace AasxPluginExportTable.TimeSeries
                         if (pluginOptions?.Presets != null)
                         {
                             helper.AddSmallLabelTo(g2, 0, 2, content: "From options:",
-                            verticalAlignment: AnyUiVerticalAlignment.Center,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                                verticalAlignment: AnyUiVerticalAlignment.Center,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
                             AnyUiComboBox cbPreset = null;
                             cbPreset = AnyUiUIElement.RegisterControl(
@@ -452,11 +461,16 @@ namespace AasxPluginExportTable.TimeSeries
                     // give back
                     return panel;
                 });
-            if (!(await displayContext.StartFlyoverModalAsync(uc)))
-                return;
 
-            // stop
-            await Task.Delay(2000);
+            if (!ticket.ScriptMode)
+            {
+                // do the dialogue
+                if (!(await displayContext.StartFlyoverModalAsync(uc)))
+                    return;
+
+                // stop
+                await Task.Delay(2000);
+            }
 
             // dome open/ save dialog base data
             var dlgFileName = "";
@@ -483,10 +497,15 @@ namespace AasxPluginExportTable.TimeSeries
                 dlgFileName = "new.docx";
                 dlgFilter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
             }
-            if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
+            if (record.Format == (int)ImportExportTableRecord.FormatEnum.MarkdownGH)
             {
                 dlgFileName = "new.md";
                 dlgFilter = "Markdown (*.md)|*.md|All files (*.*)|*.*";
+            }
+            if (record.Format == (int)ImportExportTableRecord.FormatEnum.AsciiDoc)
+            {
+                dlgFileName = "new.adoc";
+                dlgFilter = "AsciiDic (*.adoc)|*.adoc|All files (*.*)|*.*";
             }
 
             // ask for filename?
@@ -634,6 +653,10 @@ namespace AasxPluginExportTable.TimeSeries
             if (fn == null)
                 return;
 
+            // filter list for empty lists
+            list = list.Where((li) => li != null && li.Count > 0).ToList();
+
+            // iterate
             try
             {
                 log.Info("Exporting table: {0}", fn);
@@ -649,8 +672,10 @@ namespace AasxPluginExportTable.TimeSeries
                         success = proc.ExportExcel(fn, list);
                     if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
                         success = proc.ExportWord(fn, list);
-                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.MarkdownGH)
                         success = proc.ExportMarkdownGithub(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.AsciiDoc)
+                        success = proc.ExportAsciiDoc(fn, list);
                 }
                 catch (Exception ex)
                 {

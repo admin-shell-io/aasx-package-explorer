@@ -168,11 +168,13 @@ namespace AasxPackageExplorer
                         help: "Export AML file with AAS entities from AAS environment.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "AML file with AAS entities data.")
+                            .Add("Location", "Location selection", hidden: true)
                             .Add("FilterIndex", "Set FilterIndex=2 for compact AML format."))
                     .AddWpfBlazor(name: "SubmodelWrite", header: "Export Submodel to JSON …",
                         help: "Write Submodel to JSON.",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("File", "JSON file to write Submodel data to."))
+                            .Add("File", "JSON file to write Submodel data to.")
+                            .Add("Location", "Location selection", hidden: true))
                     .AddWpfBlazor(name: "SubmodelPut", header: "PUT Submodel to URL …",
                         help: "Put Submodel to REST server.",
                         args: new AasxMenuListOfArgDefs()
@@ -180,28 +182,33 @@ namespace AasxPackageExplorer
                     .AddWpfBlazor(name: "ExportCst", header: "Export to TeamCenter CST …",
                         help: "Export data to SIEMENS TeamCenter containing list of properties.",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("File", "Head-part of filenames to write data to."))
+                            .Add("File", "Head-part of filenames to write data to.")
+                            .Add("Location", "Location selection", hidden: true))
                     .AddWpfBlazor(name: "ExportJsonSchema", header: "Export JSON schema for Submodel Templates …",
                         help: "Export data in JSON schema format to describe AAS Submodel Templates.",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("File", "JSON schema file to write data to."))
+                            .Add("File", "JSON schema file to write data to.")
+                            .Add("Location", "Location selection", hidden: true))
                     .AddWpfBlazor(name: "OPCUAi4aasExport", header: "Export AAS as i4aas-nodeset …",
                         help: "Export OPC UA Nodeset2.xml format as i4aas-nodeset.",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("File", "OPC UA Nodeset2.xml file to write."))
+                            .Add("File", "OPC UA Nodeset2.xml file to write.")
+                            .Add("Location", "Location selection", hidden: true))
                     .AddWpfBlazor(name: "OpcUaExportNodeSetUaPlugin",
                         header: "Export OPC UA Nodeset2.xml (via UA server plug-in) …",
                         help: "Export OPC UA Nodeset2.xml format by starting OPC UA server in plugin and " +
                             "execute a post-process command.",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("File", "OPC UA Nodeset2.xml file to write."))
+                            .Add("File", "OPC UA Nodeset2.xml file to write.")
+                            .Add("Location", "Location selection", hidden: true))
                     .AddWpfBlazor(name: "CopyClipboardElementJson", header: "Copy selected element JSON to clipboard", inputGesture: "Shift+Ctrl+C")
                     .AddWpfBlazor(name: "ExportGenericForms", header: "Export Submodel as options for GenericForms …")
                     .AddWpfBlazor(name: "ExportPredefineConcepts", header: "Export Submodel as snippet for PredefinedConcepts …")
                     .AddWpfBlazor(name: "SubmodelTDExport", header: "Export Submodel as Thing Description JSON LD document",
                         help: "Export Thing Description (TD) file in JSON LD format from an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("File", "JSON LD file with TD data."))
+                            .Add("File", "JSON LD file with TD data.")
+                            .Add("Location", "Location selection", hidden: true))
                     .AddWpfBlazor(name: "PrintAsset", header: "Print Asset as code sheet …",
                         help: "Prints a sheet with 2D codes for the selected asset.")
                     .AddWpfBlazor(name: "ExportSMD", header: "Export TeDZ Simulation Model Description (SMD) …",

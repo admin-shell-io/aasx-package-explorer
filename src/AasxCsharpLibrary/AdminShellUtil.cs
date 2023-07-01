@@ -618,6 +618,24 @@ namespace AdminShellNS
             }
         }
 
+        public static string MapIntToStringArray(int? input, string ifNull, string[] choices)
+        {
+            if (input == null || choices == null || choices.Length < 1)
+                return ifNull;
+            int i = input ?? 0;
+            if (i < 0 || i >= choices.Length)
+                return ifNull;
+            return choices[i];
+        }
+
+        public static string MapBoolToStringArray(bool? input, string ifNull, string[] choices)
+        {
+            if (input == null || choices == null || choices.Length != 2)
+                return ifNull;
+            bool b = input ?? false;
+            return choices[b ? 1 : 0];
+        }
+
         public enum ConstantFoundEnum { No, AnyCase, ExactCase }
 
         public static ConstantFoundEnum CheckIfInConstantStringArray(string[] arr, string str)

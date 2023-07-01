@@ -135,6 +135,9 @@
     <None Update="Opc.Ua.SampleClient.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="debug.MIHO.script">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.2.0.78" />
