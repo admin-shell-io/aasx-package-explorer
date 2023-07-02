@@ -25,18 +25,8 @@ namespace AasxPluginExportTable.Smt
     /// </summary>
     public class ExportSmtRecord
     {
-        public enum ExportFormat { Adoc = 0, Zip }
-
-        public static string[] FormatNames =
-        {
-            "Adoc - single file",
-            "ZIP - archive with included media and export files"
-        };
-
-        public ExportFormat Format = ExportFormat.Adoc;
-
-        public string PresetTables = "";
-
+        [AasxMenuArgument(help: "Numerical zero based index of table export preset to use.")]
+        public int PresetTables = 0;
         public bool ExportHtml = false;
         public bool ExportPdf = false;
     }

@@ -26,6 +26,7 @@ using static AnyUi.AnyUiDialogueDataSaveFile;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using AasxPluginExportTable.Table;
 using AasxPluginExportTable;
+using AasxPluginExportTable.Smt;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -199,8 +200,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     MenuItem = new AasxMenuItem()
                     {
                         Name = "ExportSmtAsciiDoc",
-                        Header = "Export Package as AsciiDoc SMT spec …",
-                        HelpText = "Export SMT in package and further AsciiDoc contents into a integrated " +
+                        Header = "Export Submodel as AsciiDoc SMT spec …",
+                        HelpText = "Export Submodel and referenced arctifacts to an integrated " +
                             "AsciiDoc document.",
                         ArgDefs = new AasxMenuListOfArgDefs()
                             .Add("File", "Filename and path of file to exported.")
@@ -297,8 +298,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     if (cmd == "exportsmtasciidoc")
                     {
-                        await AnyUiDialogueUmlExport.ExportUmlDialogBased(
-                            _log, ticket, displayContext);
+                        await AnyUiDialogueSmtExport.ExportSmtDialogBased(
+                            _log, ticket, displayContext, _options);
                         return new AasxPluginResultBase();
                     }
 

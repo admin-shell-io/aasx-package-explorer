@@ -26,42 +26,57 @@ using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 
-namespace AasxPluginExportTable.Uml
+namespace AasxPluginExportTable.Smt
 {
     /// <summary>
-    /// This class allows exporting a Submodel to various UML formats.
-    /// Note: it is a little misplaced in the "export table" plugin, however the
-    /// domain is quite the same and maybe special file format dependencies will 
-    /// be re equired in the future.
+    /// This class allows exporting a Submodel to an AsciiDoc specification.
+    /// The general approach is to identify several dedicated SME (mostly BLOBs) and
+    /// to chunk together their AsciiDoc contents.
     /// </summary>
-    public static class ExportUml
+    public class ExportSmt
     {
-        public static void ExportUmlToFile(
+        protected Aas.Environment Env = null;
+        protected Aas.ISubmodel SrcSm = null;
+
+        protected void ProcessTextBlock(Aas.IBlob blob)
+        {
+
+        }
+
+        public void ExportSmtToFile(
             Aas.Environment env,
             Aas.ISubmodel submodel,
-            ExportUmlRecord options,
+            ExportSmtRecord options,
             string fn)
         {
             // access
-            if (options == null | !fn.HasContent())
+            if (options == null || submodel == null || !fn.HasContent())
                 return;
+            Env = env;
+            SrcSm = submodel;
 
-            // which writer?
-            IBaseWriter writer = null;
-            if (options.Format == ExportUmlRecord.ExportFormat.Xmi11)
-                writer = new Xmi11Writer();
-            if (options.Format == ExportUmlRecord.ExportFormat.Xmi21)
-                writer = new Xmi21Writer();
-            if (options.Format == ExportUmlRecord.ExportFormat.PlantUml)
-                writer = new PlantUmlWriter();
+            // predefined semantic ids
+            var defs = AasxPredefinedConcepts.AsciiDoc.Static;
+            var mm = MatchMode.Relaxed;
 
-            if (writer != null)
+            // walk the Submodel
+            SrcSm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
             {
-                writer.StartDoc(options);
-                writer.ProcessSubmodel(submodel);
-                writer.ProcessPost();
-                writer.SaveDoc(fn);
-            }
+                // semantic id
+                var semId = sme?.SemanticId;
+                if (semId?.IsValid() != true)
+                    return true;
+
+                // BLOB elements
+                if (sme is Aas.IBlob blob)
+                {
+                    if (semId.Matches(defs.CD_TextBlock.GetCdReference(), mm))
+                        ProcessTextBlock(blob);
+                }
+
+                // go further on
+                return true;
+            });
         }
     }
 }

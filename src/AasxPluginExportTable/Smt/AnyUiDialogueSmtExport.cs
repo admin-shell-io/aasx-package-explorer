@@ -60,15 +60,16 @@ namespace AasxPluginExportTable.Smt
             if (record == null)
                 record = new ExportSmtRecord();
 
+            // try set correct table preset index
+            for (int tpi = 0; tpi < pluginOptionsTable.Presets.Count; tpi++)
+                if (pluginOptionsTable.Presets[tpi].Name?.ToLower().Contains("ascii") == true)
+                {
+                    record.PresetTables = tpi;
+                    break;
+                }
+
             // arguments by reflection
             ticket?.ArgValue?.PopulateObjectFromArgs(record);
-
-            // maybe given a format name?
-            if (ticket["Format"] is string fmt)
-                for (int i = 0; i < ExportSmtRecord.FormatNames.Length; i++)
-                    if (ExportSmtRecord.FormatNames[i].ToLower()
-                            .Contains(fmt.ToLower()))
-                        record.Format = (ExportSmtRecord.ExportFormat)i;
 
             // ok, go on ..
             var uc = new AnyUiDialogueDataModalPanel("Export SMT spec as AsciiDoc ..");
@@ -83,31 +84,19 @@ namespace AasxPluginExportTable.Smt
                                 padding: new AnyUiThickness(0, 5, 0, 5));
                     panel.Add(g);
 
-                    // Row 0 : Format
-                    helper.AddSmallLabelTo(g, 0, 0, content: "Format output:",
-                        verticalAlignment: AnyUiVerticalAlignment.Center,
-                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                    AnyUiUIElement.SetIntFromControl(
-                        helper.Set(
-                            helper.AddSmallComboBoxTo(g, 0, 1,
-                                items: ExportSmtRecord.FormatNames,
-                                selectedIndex: (int)record.Format),
-                                minWidth: 600, maxWidth: 600),
-                        (i) => { record.Format = (ExportSmtRecord.ExportFormat)i; });
-
-                    // Row 1 : Format tables
+                    // Row 0 : Format tables
                     if (pluginOptionsTable?.Presets != null)
                     {
-                        helper.AddSmallLabelTo(g, 1, 0, content: "From options:",
+                        helper.AddSmallLabelTo(g, 0, 0, content: "From options:",
                             verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
                         AnyUiComboBox cbPreset = null;
                         cbPreset = AnyUiUIElement.RegisterControl(
                             helper.Set(
-                                helper.AddSmallComboBoxTo(g, 1, 2,
+                                helper.AddSmallComboBoxTo(g, 0, 2,
                                     items: pluginOptionsTable.Presets.Select((pr) => "" + pr.Name).ToArray(),
-                                    text: "Please select preset to load .."),
+                                    selectedIndex: record.PresetTables),
                                 minWidth: 350, maxWidth: 400),
                                 (o) =>
                                 {
@@ -116,32 +105,32 @@ namespace AasxPluginExportTable.Smt
                                     var ndx = cbPreset.SelectedIndex.Value;
                                     if (ndx < 0 || ndx >= pluginOptionsTable.Presets.Count)
                                         return new AnyUiLambdaActionNone();
-                                    record.PresetTables = pluginOptionsTable.Presets[ndx].Name;
-                                    return new AnyUiLambdaActionModalPanelReRender(uc);
+                                    record.PresetTables = ndx;
+                                    return new AnyUiLambdaActionNone();
                                 });
 
                     }
 
-                    // Row 2 : Export HTML
-                    helper.AddSmallLabelTo(g, 2, 0, content: "Export HTML:",
+                    // Row 1 : Export HTML
+                    helper.AddSmallLabelTo(g, 1, 0, content: "Export HTML:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetBoolFromControl(
                         helper.Set(
-                            helper.AddSmallCheckBoxTo(g, 2, 1,
+                            helper.AddSmallCheckBoxTo(g, 1, 1,
                                 content: "(export command given by options will be executed)",
                                 isChecked: record.ExportHtml,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),
                                 colSpan: 2),
                         (b) => { record.ExportHtml = b; });
 
-                    // Row 3 : Export PDF
-                    helper.AddSmallLabelTo(g, 3, 0, content: "Export PDF:",
+                    // Row 2 : Export PDF
+                    helper.AddSmallLabelTo(g, 2, 0, content: "Export PDF:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetBoolFromControl(
                         helper.Set(
-                            helper.AddSmallCheckBoxTo(g, 3, 1,
+                            helper.AddSmallCheckBoxTo(g, 2, 1,
                                 content: "(export command given by options will be executed)",
                                 isChecked: record.ExportPdf,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),
@@ -167,7 +156,7 @@ namespace AasxPluginExportTable.Smt
                         ticket, "File",
                         "Select file for SMT specification to AsciiDoc ..",
                         "new.puml",
-                        "AsciiDoc (*.adoc)|*.adoc|ZIP archive (*.zip)|*.zip|All files (*.*)|*.*",
+                        "Single AsciiDoc file (*.adoc)|*.adoc|ZIP archive (*.zip)|*.zip|All files (*.*)|*.*",
                         "SMT specification to AsciiDoc: No valid filename.",
                         argLocation: "Location",
                         reworkSpecialFn: true)))
@@ -181,7 +170,8 @@ namespace AasxPluginExportTable.Smt
             sm.SetAllParents();
 
             // export
-            ExportUml.ExportUmlToFile(ticket.Env, sm, record, fn);
+            var export = new ExportSmt();
+            export.ExportSmtToFile(ticket.Env, sm, record, fn);
 
             // persist
             await displayContext.CheckIfDownloadAndStart(log, loc, fn);           

@@ -54,6 +54,7 @@
   "LoadWithoutPrompt": true,
   "ShowIdAsIri": false,
   "VerboseConnect": true,
+  "WorkDir" :  ".\\work",
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
   "StayConnectOptions": "REST-QUEUE", // SIM
