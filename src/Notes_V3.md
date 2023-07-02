@@ -34,6 +34,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * ExportUML / cancel -> Crash?
 
+* Refactor does not preserve Extensions (e.g. Blob to File)
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done

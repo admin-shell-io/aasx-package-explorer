@@ -27,6 +27,10 @@ namespace AasxPluginExportTable.Smt
     {
         [AasxMenuArgument(help: "Numerical zero based index of table export preset to use.")]
         public int PresetTables = 0;
+
+        [AasxMenuArgument(help: "If >=10, column limit to hard wrap AsciiDoc lines at.")]
+        public int WrapLines = 0;
+        public bool IncludeTables = true;
         public bool ExportHtml = false;
         public bool ExportPdf = false;
     }

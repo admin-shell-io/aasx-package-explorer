@@ -80,14 +80,14 @@ namespace AasxPluginExportTable.Smt
                     var panel = new AnyUiStackPanel();
                     var helper = new AnyUiSmallWidgetToolkit();
 
-                    var g = helper.AddSmallGrid(4, 2, new[] { "220:", "*" },
+                    var g = helper.AddSmallGrid(5, 2, new[] { "220:", "*" },
                                 padding: new AnyUiThickness(0, 5, 0, 5));
                     panel.Add(g);
 
                     // Row 0 : Format tables
                     if (pluginOptionsTable?.Presets != null)
                     {
-                        helper.AddSmallLabelTo(g, 0, 0, content: "From options:",
+                        helper.AddSmallLabelTo(g, 0, 0, content: "Preset tables:",
                             verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
@@ -111,31 +111,60 @@ namespace AasxPluginExportTable.Smt
 
                     }
 
-                    // Row 1 : Export HTML
-                    helper.AddSmallLabelTo(g, 1, 0, content: "Export HTML:",
+                    // Row 1 : Word wrap
+                    helper.AddSmallLabelTo(g, 1, 0, content: "Word wrap column:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                    AnyUiUIElement.SetBoolFromControl(
-                        helper.Set(
-                            helper.AddSmallCheckBoxTo(g, 1, 1,
-                                content: "(export command given by options will be executed)",
-                                isChecked: record.ExportHtml,
-                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
-                                colSpan: 2),
-                        (b) => { record.ExportHtml = b; });
 
-                    // Row 2 : Export PDF
-                    helper.AddSmallLabelTo(g, 2, 0, content: "Export PDF:",
+                    AnyUiUIElement.SetIntFromControl(
+                        helper.Set(
+                            helper.AddSmallTextBoxTo(g, 1, 1,
+                                margin: new AnyUiThickness(0, 2, 2, 2),
+                                text: $"{record.WrapLines:D}",
+                                verticalAlignment: AnyUiVerticalAlignment.Center,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                                minWidth: 70, maxWidth: 70,
+                                horizontalAlignment: AnyUiHorizontalAlignment.Left),
+                                (i) => { record.WrapLines = i; });
+
+                    // Row 2 : Include Tables
+                    helper.AddSmallLabelTo(g, 2, 0, content: "Include tables:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetBoolFromControl(
                         helper.Set(
                             helper.AddSmallCheckBoxTo(g, 2, 1,
+                                content: "(generated code for tables will be in main file)",
+                                isChecked: record.IncludeTables,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                                colSpan: 2),
+                            (b) => { record.IncludeTables = b; });
+
+                    // Row 3 : Export HTML
+                    helper.AddSmallLabelTo(g, 3, 0, content: "Export HTML:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.Set(
+                            helper.AddSmallCheckBoxTo(g, 3, 1,
+                                content: "(export command given by options will be executed)",
+                                isChecked: record.ExportHtml,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                                colSpan: 2),
+                            (b) => { record.ExportHtml = b; });
+
+                    // Row 4 : Export PDF
+                    helper.AddSmallLabelTo(g, 4, 0, content: "Export PDF:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.Set(
+                            helper.AddSmallCheckBoxTo(g, 4, 1,
                                 content: "(export command given by options will be executed)",
                                 isChecked: record.ExportPdf,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),
                                 colSpan: 2),
-                        (b) => { record.ExportPdf = b; });
+                            (b) => { record.ExportPdf = b; });
 
                     // give back
                     return panel;
@@ -155,7 +184,7 @@ namespace AasxPluginExportTable.Smt
             if (!(await displayContext.MenuSelectSaveFilenameToTicketAsync(
                         ticket, "File",
                         "Select file for SMT specification to AsciiDoc ..",
-                        "new.puml",
+                        "new.adoc",
                         "Single AsciiDoc file (*.adoc)|*.adoc|ZIP archive (*.zip)|*.zip|All files (*.*)|*.*",
                         "SMT specification to AsciiDoc: No valid filename.",
                         argLocation: "Location",
@@ -171,7 +200,7 @@ namespace AasxPluginExportTable.Smt
 
             // export
             var export = new ExportSmt();
-            export.ExportSmtToFile(ticket.Env, sm, record, fn);
+            export.ExportSmtToFile(log, ticket.Package, sm, pluginOptionsTable, record, fn);
 
             // persist
             await displayContext.CheckIfDownloadAndStart(log, loc, fn);           

@@ -13,8 +13,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AdminShellNS
@@ -261,6 +264,23 @@ namespace AdminShellNS
                 };
         }
 
+        public static bool CheckForTextContentType(string input)
+        {
+            if (input == null)
+                return false;
+            input = input.Trim().ToLower();
+            foreach (var tst in new[] {
+                    System.Net.Mime.MediaTypeNames.Text.Plain,
+                    System.Net.Mime.MediaTypeNames.Text.Xml,
+                    System.Net.Mime.MediaTypeNames.Text.Html,
+                    "application/json",
+                    "application/rdf+xml"
+                })
+                if (input.Contains(tst.ToLower()))
+                    return true;
+            return false;
+        }
+
         public static IEnumerable<AasSubmodelElements> GetAdequateEnums(AasSubmodelElements[] excludeValues = null, AasSubmodelElements[] includeValues = null)
         {
             if (includeValues != null)
@@ -311,7 +331,6 @@ namespace AdminShellNS
                 return AasSubmodelElements.Entity;
             return null;
         }
-
 
         public static ISubmodelElement CreateSubmodelElementFromEnum(AasSubmodelElements smeEnum, ISubmodelElement sourceSme = null)
         {
@@ -709,6 +728,41 @@ namespace AdminShellNS
             return input;
         }
 
+        public static string WrapLinesAtColumn(string text, int columnLimit)
+        {
+            // access
+            if (text == null)
+                return null;
+            if (columnLimit < 10)
+                return text;
+
+            // idea:
+            // https://stackoverflow.com/questions/3961278/word-wrap-a-string-in-multiple-lines
+            // but: outer loop to handle line breaks, inner loop to handle words
+
+            // split lines, preserving empty lines
+            var lines = Regex.Split(text, "\r\n|\r|\n");
+            var outLines = new StringBuilder();
+            foreach (var textLine in lines)
+            {
+                // now words. In future, may use regex?
+                var words = text.Split(new string[] { " " }, StringSplitOptions.None);
+                var sumLine = "";
+                foreach (var word in words)
+                {
+                    sumLine += word + " ";
+                    if (sumLine.Length >= columnLimit)
+                    {
+                        outLines.AppendLine(sumLine);
+                        sumLine = "";
+                    }
+                }
+            }
+
+            // ok, result
+            return outLines.ToString();
+        }
+
         //
         // Reflection
         //
@@ -788,6 +842,43 @@ namespace AdminShellNS
         }
 
         //
+        // temp file utilities
+        //
+
+        // see: https://stackoverflow.com/questions/278439/creating-a-temporary-directory-in-windows
+        public static string GetTemporaryDirectory()
+        {
+            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
+        }
+
+        // see: https://stackoverflow.com/questions/6386113/using-system-io-packaging-to-generate-a-zip-file
+        public static void AddFileToZip(
+            string zipFilename, string fileToAdd, 
+            CompressionOption compression = CompressionOption.Normal,
+            FileMode fileMode = FileMode.OpenOrCreate)
+        {
+            using (Package zip = System.IO.Packaging.Package.Open(zipFilename, FileMode.OpenOrCreate))
+            {
+                string destFilename = ".\\" + Path.GetFileName(fileToAdd);
+                Uri uri = PackUriHelper.CreatePartUri(new Uri(destFilename, UriKind.Relative));
+                if (zip.PartExists(uri))
+                {
+                    zip.DeletePart(uri);
+                }
+                PackagePart part = zip.CreatePart(uri, "", compression);
+                using (FileStream fileStream = new FileStream(fileToAdd, FileMode.Open, FileAccess.Read))
+                {
+                    using (Stream dest = part.GetStream())
+                    {
+                        fileStream.CopyTo(dest);
+                    }
+                }
+            }
+        }
+
+        //
         // some URL enabled path handling
         //
 
@@ -828,6 +919,94 @@ namespace AdminShellNS
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        }
+
+        public static bool CheckIfAsciiOnly(byte[] data, int bytesToCheck = int.MaxValue)
+        {
+            if (data == null)
+                return true;
+            
+            var ascii = true;
+            for (int i = 0; i < Math.Min(data.Length, bytesToCheck); i++)
+                if (data[i] >= 128)
+                    ascii = false;
+            return ascii;
+        }
+
+        // see: https://stackoverflow.com/questions/5209506/how-can-i-know-what-image-format-i-get-from-a-stream
+        // based on https://devblogs.microsoft.com/scripting/psimaging-part-1-test-image/
+        // see https://en.wikipedia.org/wiki/List_of_file_signatures
+        /* Bytes in c# have a range of 0 to 255 so each byte can be represented as
+            * a two digit hex string. */
+        private static readonly Dictionary<string, string[][]> SignatureTable = new Dictionary<string, string[][]>
+        {
+            {
+                ".jpg",
+                new[]
+                {
+                    new[] {"FF", "D8", "FF", "DB"},
+                    new[] {"FF", "D8", "FF", "EE"},
+                    new[] {"FF", "D8", "FF", "E0", "00", "10", "4A", "46", "49", "46", "00", "01"}
+                }
+            },
+            {
+                ".gif",
+                new[]
+                {
+                    new [] { "47", "49", "46", "38", "37", "61" },
+                    new [] { "47", "49", "46", "38", "39", "61" }
+                }
+            },
+            {
+                ".png",
+                new[]
+                {
+                    new[] {"89", "50", "4E", "47", "0D", "0A", "1A", "0A"}
+                }
+            },
+            {
+                ".bmp",
+                new []
+                {
+                    new[] { "42", "4D" }
+                }
+            }
+        };
+
+        /// <summary>
+        /// Takes a byte array and determines the image file type by
+        /// comparing the first few bytes of the file to a list of known
+        /// image file signatures.
+        /// </summary>
+        public static string GuessImageTypeExtension(byte[] imageData)
+        {
+            foreach (KeyValuePair<string, string[][]> signatureEntry in SignatureTable)
+            {
+                foreach (string[] signature in signatureEntry.Value)
+                {
+                    bool isMatch = true;
+                    for (int i = 0; i < signature.Length; i++)
+                    {
+                        string signatureByte = signature[i];
+
+                        // ToString("X") gets the hex representation and pads it to always be length 2
+                        string imageByte = imageData[i]
+                            .ToString("X2");
+
+                        if (signatureByte == imageByte)
+                            continue;
+                        isMatch = false;
+                        break;
+                    }
+
+                    if (isMatch)
+                    {
+                        return signatureEntry.Key;
+                    }
+                }
+            }
+
+            return null;
         }
 
         //

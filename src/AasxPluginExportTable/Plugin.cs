@@ -208,7 +208,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                             .Add("Location", "Location of the file (local, user, download).")
                             .Add("Format", "Format to be either 'adoc' or 'zip'.")
                             .Add("Record", "Record data", hidden: true)
-                            .AddFromReflection(new ExportUmlRecord())
+                            .AddFromReflection(new ExportSmtRecord())
                     }
                 });
 
@@ -268,45 +268,52 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     && args[1] is AasxMenuActionTicket ticket
                     && args[2] is AnyUiContextPlusDialogs displayContext)
                 {
-                    if (cmd == "exporttable")
+                    try
                     {
-                        await AnyUiDialogueTable.ImportExportTableDialogBased(
-                            _options, _log, ticket, displayContext, _options, doImport: false);
-                        return new AasxPluginResultBase();
-                    }
+                        if (cmd == "exporttable")
+                        {
+                            await AnyUiDialogueTable.ImportExportTableDialogBased(
+                                _options, _log, ticket, displayContext, _options, doImport: false);
+                            return new AasxPluginResultBase();
+                        }
 
-                    if (cmd == "importtable")
-                    {
-                        await AnyUiDialogueTable.ImportExportTableDialogBased(
-                            _options, _log, ticket, displayContext, _options, doImport: true);
-                        return new AasxPluginResultBase();
-                    }
+                        if (cmd == "importtable")
+                        {
+                            await AnyUiDialogueTable.ImportExportTableDialogBased(
+                                _options, _log, ticket, displayContext, _options, doImport: true);
+                            return new AasxPluginResultBase();
+                        }
 
-                    if (cmd == "exportuml")
-                    {
-                        await AnyUiDialogueUmlExport.ExportUmlDialogBased(
-                            _log, ticket, displayContext);
-                        return new AasxPluginResultBase();
-                    }
+                        if (cmd == "exportuml")
+                        {
+                            await AnyUiDialogueUmlExport.ExportUmlDialogBased(
+                                _log, ticket, displayContext);
+                            return new AasxPluginResultBase();
+                        }
 
-                    if (cmd == "exportuml")
-                    {
-                        await AnyUiDialogueUmlExport.ExportUmlDialogBased(
-                            _log, ticket, displayContext);
-                        return new AasxPluginResultBase();
-                    }
+                        if (cmd == "exportuml")
+                        {
+                            await AnyUiDialogueUmlExport.ExportUmlDialogBased(
+                                _log, ticket, displayContext);
+                            return new AasxPluginResultBase();
+                        }
 
-                    if (cmd == "exportsmtasciidoc")
-                    {
-                        await AnyUiDialogueSmtExport.ExportSmtDialogBased(
-                            _log, ticket, displayContext, _options);
-                        return new AasxPluginResultBase();
-                    }
+                        if (cmd == "exportsmtasciidoc")
+                        {
+                            await AnyUiDialogueSmtExport.ExportSmtDialogBased(
+                                _log, ticket, displayContext, _options);
+                            return new AasxPluginResultBase();
+                        }
 
-                    if (cmd == "importtimeseries")
+                        if (cmd == "importtimeseries")
+                        {
+                            await AnyUiDialogueTimeSeries.ImportTimeSeriesDialogBased(
+                                _log, ticket, displayContext);
+                            return new AasxPluginResultBase();
+                        }
+                    } catch (Exception ex)
                     {
-                        await AnyUiDialogueTimeSeries.ImportTimeSeriesDialogBased(_log, ticket, displayContext);
-                        return new AasxPluginResultBase();
+                        _log?.Error(ex, "when executing plugin menu item " + cmd);
                     }
                 }
             }

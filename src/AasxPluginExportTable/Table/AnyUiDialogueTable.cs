@@ -18,7 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0;
 
-namespace AasxPluginExportTable.TimeSeries
+namespace AasxPluginExportTable.Table
 {
     /// <summary>
     /// This class allows exporting a Submodel to various UML formats.
@@ -637,7 +637,7 @@ namespace AasxPluginExportTable.TimeSeries
             }
         }
 
-        private static void Export(
+        public static void Export(
             ExportTableOptions options,
             AasxPluginExportTable.ImportExportTableRecord record,
             string fn,
@@ -691,8 +691,7 @@ namespace AasxPluginExportTable.TimeSeries
             catch (Exception ex)
             {
                 log?.Error(ex, "When exporting table, an error occurred");
-            }
-
+            }            
         }
 
         private static void Import(

@@ -196,5 +196,11 @@ namespace AasxPluginExportTable.Uml
             var text = _builder.ToString();
             System.IO.File.WriteAllText(fn, text);
         }
+
+        public string ToString()
+        {
+            _builder.AppendLine("@enduml");
+            return _builder.ToString();
+        }
     }
 }
