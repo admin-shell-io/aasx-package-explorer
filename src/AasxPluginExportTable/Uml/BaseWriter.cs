@@ -30,7 +30,7 @@ namespace AasxPluginExportTable.Uml
     public interface IBaseWriter
     {
         void StartDoc(ExportUmlRecord options);
-        void ProcessSubmodel(Aas.ISubmodel submodel);
+        void ProcessTopElement(Aas.IReferable rf, int remainDepth = int.MaxValue);
         void ProcessPost();
         void SaveDoc(string fn);
     }

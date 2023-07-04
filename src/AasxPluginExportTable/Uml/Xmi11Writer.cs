@@ -171,9 +171,9 @@ namespace AasxPluginExportTable.Uml
                 ProcessEntity(rf, c);
         }
 
-        public void ProcessSubmodel(Aas.ISubmodel submodel)
+        public void ProcessTopElement(Aas.IReferable rf, int remainDepth = int.MaxValue)
         {
-            ProcessEntity(null, submodel);
+            ProcessEntity(null, rf);
         }
 
         public void ProcessPost()

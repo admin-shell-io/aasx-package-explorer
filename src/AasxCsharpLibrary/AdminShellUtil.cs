@@ -524,6 +524,11 @@ namespace AdminShellNS
             return res;
         }
 
+        public static string FromDouble(double input, string format)
+        {
+            return string.Format(CultureInfo.InvariantCulture, format, input);
+        }
+
         public static int CountHeadingSpaces(string line)
         {
             if (line == null)
@@ -834,9 +839,9 @@ namespace AdminShellNS
                 case TypeCode.Boolean:
                     var isFalse = value == null
                         || (value is int vi && vi == 0)
-                        || (value is string vs && vs == "")
+                        || (value is string vs && (vs == "" || vs == "false") )
                         || (value is bool vb && !vb);
-                    f.SetValue(obj, isFalse);
+                    f.SetValue(obj, !isFalse);
                     break;
             }
         }

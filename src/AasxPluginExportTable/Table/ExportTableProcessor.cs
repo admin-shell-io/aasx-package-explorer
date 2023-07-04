@@ -42,18 +42,16 @@ namespace AasxPluginExportTable.Table
         /// </summary>
         public Aas.IReferable Parent;
 
-        public Aas.ISubmodel sm;
-        public Aas.ISubmodelElement sme;
+        public Aas.IReferable rf;
         public Aas.IConceptDescription cd;
 
         public ExportTableAasEntitiesItem(
-            int depth, Aas.ISubmodel sm = null, Aas.ISubmodelElement sme = null,
+            int depth, Aas.IReferable rf = null,
             Aas.IConceptDescription cd = null,
             Aas.IReferable parent = null)
         {
             this.depth = depth;
-            this.sm = sm;
-            this.sme = sme;
+            this.rf = rf;
             this.cd = cd;
             Parent = parent;
         }
@@ -62,10 +60,8 @@ namespace AasxPluginExportTable.Table
         {
             if (Parent != null)
                 return Parent;
-            if (sm != null)
-                return sm;
-            if (sme != null)
-                return sme;
+            if (rf != null)
+                return rf;
             return null;
         }
     }
@@ -402,8 +398,8 @@ namespace AasxPluginExportTable.Table
                 {
                     // shortcuts
                     var par = Item.Parent;
-                    var sm = Item.sm;
-                    var sme = Item.sme;
+                    var sm = Item.rf as Aas.ISubmodel;
+                    var sme = Item.rf as Aas.ISubmodelElement;
                     var cd = Item.cd;
 
                     // general for the item
@@ -1397,7 +1393,8 @@ namespace AasxPluginExportTable.Table
             using (var f = new StreamWriter(fn))
             {
                 // Heading
-                f.WriteLine("# 3 Heading");
+                if (!Record.NoHeadings)
+                    f.WriteLine("# 3 Heading");
                 f.WriteLine();
 
                 // over entities
@@ -1408,8 +1405,11 @@ namespace AasxPluginExportTable.Table
                     var topEnt = entities.FirstOrDefault();
 
                     // Heading
-                    var hr = topEnt?.GetHeadingReferable();
-                    f.WriteLine($"## 3.{headingIdx++} {(hr != null ? hr.IdShort : "Heading")}");
+                    if (!Record.NoHeadings)
+                    {
+                        var hr = topEnt?.GetHeadingReferable();
+                        f.WriteLine($"## 3.{headingIdx++} {(hr != null ? hr.IdShort : "Heading")}");
+                    }
 
                     // one blank line is important for Markdown
                     f.WriteLine();
@@ -1604,7 +1604,8 @@ namespace AasxPluginExportTable.Table
             using (var f = new StreamWriter(fn))
             {
                 // Heading
-                f.WriteLine("== Tables");
+                if (!Record.NoHeadings)
+                    f.WriteLine("== Tables");
                 f.WriteLine();
 
                 // over entities
@@ -1614,8 +1615,11 @@ namespace AasxPluginExportTable.Table
                     var topEnt = entities.FirstOrDefault();
 
                     // Heading
-                    var hr = topEnt?.GetHeadingReferable();
-                    f.WriteLine($"=== {(hr != null ? hr.IdShort : "Heading")}");
+                    if (!Record.NoHeadings)
+                    {
+                        var hr = topEnt?.GetHeadingReferable();
+                        f.WriteLine($"=== {(hr != null ? hr.IdShort : "Heading")}");
+                    }
 
                     // one blank line is important for Markdown
                     f.WriteLine();

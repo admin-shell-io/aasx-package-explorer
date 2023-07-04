@@ -30,8 +30,14 @@ namespace AasxPluginExportTable.Smt
 
         [AasxMenuArgument(help: "If >=10, column limit to hard wrap AsciiDoc lines at.")]
         public int WrapLines = 0;
+
+        [AasxMenuArgument(help: "If true, will include table data in main AsciiDoc file.")]
         public bool IncludeTables = true;
+        
+        [AasxMenuArgument(help: "If true, will execute external program to produce HTML from AsciiDic.")]
         public bool ExportHtml = false;
+
+        [AasxMenuArgument(help: "If true, will execute external program to produce PDF from AsciiDic.")]
         public bool ExportPdf = false;
     }
 }

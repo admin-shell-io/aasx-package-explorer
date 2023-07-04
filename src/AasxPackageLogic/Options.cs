@@ -582,12 +582,6 @@ namespace AasxPackageLogic
             Cmd = "-cmd")]
         public string ScriptCmd = "";
 
-        [OptionDescription(Description =
-            "If not null points to the directory, where the system may create files to process some data. " +
-            "Could be different from the .exe directory. Needs to exist.",
-            Cmd = "-work-dir")]
-        public string WorkDir = null;
-
         [OptionDescription(Description = "May contain different string-based options for stay connect, " +
             "event update mechanisms")]
         public string StayConnectOptions = "";

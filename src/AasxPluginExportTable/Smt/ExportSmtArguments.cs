@@ -16,6 +16,7 @@ using AasxIntegrationBase;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
+using AasxPluginExportTable.Uml;
 
 namespace AasxPluginExportTable
 {
@@ -32,6 +33,24 @@ namespace AasxPluginExportTable
         /// For image link elements: If set, the filename of the target file which is to be created.
         /// </summary>
         public string fileName = null;
+
+        /// <summary>
+        /// If set, will determine the depth level of UML/ Tables generation.
+        /// A value of 1 will process only the top level and stop.
+        /// </summary>
+        public int? depth = null;
+
+        /// <summary>
+        /// If set, will contrain the element (image) to a certain width in percent 
+        /// in a range of [1..100].
+        /// </summary>
+        public double? width = null;
+
+        /// <summary>
+        /// A JSON sub structure for UML options may be given.
+        /// Example: "uml" : { "outline" : true }
+        /// </summary>
+        public ExportUmlRecord uml = null;
 
         // ReSharper enable UnassignedField.Global
 

@@ -14,6 +14,7 @@ using AasxPackageLogic.PackageCentral;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -1577,6 +1579,13 @@ namespace AnyUi
                 res = uc;
             }
 
+            if (dialogueData is AnyUiDialogueDataLogMessage ddsc)
+            {
+                var uc = new LogMessageFlyout(ddsc.Caption, "");
+                uc.DiaData = ddsc;
+                res = uc;
+            }
+
             if (dialogueData is AnyUiDialogueDataSelectFromList ddsl)
             {
                 var uc = new SelectFromListFlyout();
@@ -2098,6 +2107,120 @@ namespace AnyUi
             }
             return false;
         }
+
+        /// <summary>
+        /// Selects a text either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public override async Task<AnyUiDialogueDataLogMessage> MenuExecuteSystemCommand(            
+            string caption,
+            string workDir,
+            string cmd,
+            string args)
+        {
+            // create dialogue
+            var uc = new AnyUiDialogueDataLogMessage(caption);
+
+            // create logger
+            Process proc = null;
+            var logError = false;
+            var logBuffer = new List<StoredPrint>();
+
+            // wrap to track errors
+            try
+            {
+                // start
+                lock (logBuffer)
+                {
+                    logBuffer.Add(new StoredPrint(StoredPrint.Color.Black, 
+                        "Starting in " + workDir + " : " + cmd + " " + args + " .."));
+                };
+
+                // start process??
+                proc = new Process();
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.FileName = cmd;
+                proc.StartInfo.Arguments = args;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.EnableRaisingEvents = true;
+                proc.StartInfo.WorkingDirectory = workDir;
+
+                // see: https://stackoverflow.com/questions/1390559/
+                // how-to-get-the-output-of-a-system-diagnostics-process
+
+                // see: https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.beginoutputreadline?
+                // view=net-7.0&redirectedfrom=MSDN#System_Diagnostics_Process_BeginOutputReadLine
+
+                uc.CheckForLogAndEnd = () =>
+                {
+                    StoredPrint[] msgs = null;
+                    lock (logBuffer)
+                    {
+                        if (logBuffer.Count > 0)
+                        {
+                            foreach (var sp in logBuffer)
+                                Log.Singleton.Append(sp);
+
+                            msgs = logBuffer.ToArray();
+                            logBuffer.Clear();
+                        }
+                    };
+                    return new Tuple<object[], bool>(msgs, !logError && proc != null && proc.HasExited);
+                };
+
+                proc.OutputDataReceived += (s1, e1) =>
+                {
+                    var msg = e1.Data;
+                    if (msg?.HasContent() == true)
+                        lock (logBuffer)
+                        {
+                            logBuffer.Add(new StoredPrint(StoredPrint.Color.Black, "" + msg));
+                        };
+                };
+
+                proc.ErrorDataReceived += (s2, e2) =>
+                {
+                    var msg = e2.Data;
+                    if (msg?.HasContent() == true)
+                        lock (logBuffer)
+                        {
+                            logError = true;
+                            logBuffer.Add(new StoredPrint(StoredPrint.Color.Red, "" + msg));
+                        };
+                };
+
+                proc.Exited += (s3, e3) =>
+                {
+                    lock (logBuffer)
+                    {
+                        logBuffer.Add(new StoredPrint(StoredPrint.Color.Black, "Done."));
+                    };
+                };
+
+                proc.Start();
+
+                proc.BeginOutputReadLine();
+                proc.BeginErrorReadLine();
+
+                await StartFlyoverModalAsync(uc);
+            } 
+            catch (Exception ex)
+            {
+                // mirror exception to inside and outside
+                lock (logBuffer)
+                {
+                    logError = true;
+                    logBuffer.Add(new StoredPrint(StoredPrint.Color.Red, "" + ex.Message));
+                }
+                Log.Singleton.Error(ex, "executing system command");
+            }           
+            
+            return uc;        
+        }
+                
     }
 
     public class AnyUiColorToWpfBrushConverter : IValueConverter

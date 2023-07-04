@@ -58,7 +58,7 @@ namespace AasxPluginExportTable.Uml
             if (writer != null)
             {
                 writer.StartDoc(options);
-                writer.ProcessSubmodel(submodel);
+                writer.ProcessTopElement(submodel);
                 writer.ProcessPost();
                 writer.SaveDoc(fn);
             }

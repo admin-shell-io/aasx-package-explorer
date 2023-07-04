@@ -36,9 +36,21 @@ namespace AasxPluginExportTable.Uml
 
         public ExportFormat Format = ExportFormat.PlantUml;
 
+        [AasxMenuArgument(help: "Strings delimted by spaces will matched against class names and on " +
+            "positive match will suppress rendering of such class.")]
+        public string Suppress = null;
+
         [AasxMenuArgument(help: "If greater or equal zero, limits the number of characters for inital values.")]
         public int LimitInitialValue = 15;
 
+        [AasxMenuArgument(help: "If set, no members are rendered inside a class.")]
+        public bool Outline = false;
+
+        [AasxMenuArgument(help: "If set, changes the direction of adding graphical elements (PlantUML).")]
+        public bool SwapDirection = false;
+
+        [AasxMenuArgument(help: "If set, system clipboard will have generated code, in order e.g. to directly " +
+            "paste to PlantUML.")]
         public bool CopyToPasteBuffer = false;
     }
 }

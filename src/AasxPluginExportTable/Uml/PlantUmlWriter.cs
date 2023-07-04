@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace AasxPluginExportTable.Uml
 {
@@ -49,7 +50,8 @@ namespace AasxPluginExportTable.Uml
             Writeln("@startuml");
 
             Writeln("!theme plain");
-            Writeln("left to right direction");
+
+            Writeln(_options.SwapDirection ? "top to bottom direction" : "left to right direction");
             Writeln("hide class circle");
             Writeln("hide class methods");
             Writeln("skinparam classAttributeIconSize 0");
@@ -95,11 +97,30 @@ namespace AasxPluginExportTable.Uml
                 return rf?.IdShort;
         }
 
+        public bool CheckIfNameIsSuppressed(string name)
+        {
+            if (name == null || _options.Suppress?.HasContent() != true)
+                return false;
+
+            foreach (var se in _options.Suppress.Split(new[] { ' ' }, 
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                if (name.Contains(se, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            }
+
+            return false;
+        }
+
         public UmlHandle AddClass(Aas.IReferable rf, string visIdShort)
         {
             // the Referable shall enumerate children (if not, then its not a class)
             var features = rf.EnumerateChildren().ToList();
             if (features.Count < 1)
+                return null;
+
+            // check, if to suppress
+            if (CheckIfNameIsSuppressed(rf?.IdShort))
                 return null;
 
             // add
@@ -109,21 +130,24 @@ namespace AasxPluginExportTable.Uml
                 stereotype = "<<" + stereotype + ">>";
             Writeln($"class {FormatAs(visIdShort, classId)} {stereotype} {{");
 
-            int idx = 0;
-            foreach (var sme in features)
+            if (!_options.Outline)
             {
-                var type = EvalFeatureType(sme);
-                var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
-                var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
+                int idx = 0;
+                foreach (var sme in features)
+                {
+                    var type = EvalFeatureType(sme);
+                    var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
+                    var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
 
-                var ln = $"  +{ViusalIdShort(rf, idx++, sme)}";
-                if (type.HasContent())
-                    ln += $" : {type}";
-                if (multiplicity.HasContent())
-                    ln += $" [{multiplicity}]";
-                if (initialValue.HasContent())
-                    ln += $" = \"{initialValue}\"";
-                Writeln(ln);
+                    var ln = $"  +{ViusalIdShort(rf, idx++, sme)}";
+                    if (type.HasContent())
+                        ln += $" : {type}";
+                    if (multiplicity.HasContent())
+                        ln += $" [{multiplicity}]";
+                    if (initialValue.HasContent())
+                        ln += $" = \"{initialValue}\"";
+                    Writeln(ln);
+                }
             }
 
             Writeln($"}}");
@@ -133,7 +157,7 @@ namespace AasxPluginExportTable.Uml
         }
 
         public UmlHandle ProcessEntity(
-            Aas.IReferable parent, Aas.IReferable rf, string visIdShort)
+            Aas.IReferable parent, Aas.IReferable rf, string visIdShort, int remainDepth)
         {
             // access
             if (rf == null)
@@ -142,47 +166,60 @@ namespace AasxPluginExportTable.Uml
             // act flexible                
             var dstTuple = AddClass(rf, visIdShort);
 
-            // recurse
-            var idx = 0;
-            var childs = rf.EnumerateChildren();
-            if (childs != null)
-                foreach (var sme in childs)
-                {
-                    // idShort
-                    var smeIdShort = ViusalIdShort(rf, idx++, sme);
-
-                    // create further entities
-                    var srcTuple = ProcessEntity(rf, sme, smeIdShort);
-
-                    // make associations (often, srcTuple will be null, because not a class!)
-                    if (srcTuple?.Valid == true && dstTuple?.Valid == true)
+            // recurse?
+            if (remainDepth > 1)
+            {
+                var idx = 0;
+                var childs = rf.EnumerateChildren();
+                if (childs != null)
+                    foreach (var sme in childs)
                     {
-                        var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
-                        if (multiplicity.HasContent())
-                            multiplicity = "\"" + multiplicity + "\"";
-                        Writeln(post: true,
-                            line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} " +
-                                    $": \"{ClearName(smeIdShort)}\"");
+                        // idShort
+                        var smeIdShort = ViusalIdShort(rf, idx++, sme);
+
+                        // create further entities
+                        var srcTuple = ProcessEntity(rf, sme, smeIdShort, remainDepth - 1);
+
+                        // make associations (often, srcTuple will be null, because not a class!)
+                        if (srcTuple?.Valid == true && dstTuple?.Valid == true)
+                        {
+                            var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
+                            if (multiplicity.HasContent())
+                                multiplicity = "\"" + multiplicity + "\"";
+
+                            var smeIdS = ClearName(smeIdShort);
+                            if (_options.Outline)
+                                smeIdS = "";
+
+                            Writeln(post: true,
+                                line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} " +
+                                        $": \"{smeIdS}\"");
+                        }
                     }
-                }
+            }
 
             return dstTuple;
         }
 
-        public void ProcessSubmodel(Aas.ISubmodel submodel)
+        public void ProcessTopElement(
+            Aas.IReferable rf,
+            int remainDepth = int.MaxValue)
         {
             // access
-            if (submodel == null)
+            if (rf == null)
                 return;
 
             // frame
-            Writeln("mainframe " 
-                + AdminShellUtil.MapIntToStringArray((int)submodel.Kind, "SM", new[] { "SMT", "SM" })
-                + submodel.IdShort);
+            var info = " " + rf.IdShort;
+            if (rf is Aas.ISubmodel rfsm)
+                info = AdminShellUtil.MapIntToStringArray((int)rfsm.Kind, "SM", new[] { "SMT", "SM" })
+                    + info;
+
+            Writeln("mainframe " + info);
             Writeln("");
 
             // entities
-            ProcessEntity(null, submodel, submodel.IdShort);
+            ProcessEntity(null, rf, rf.IdShort, remainDepth);
         }
 
         public void ProcessPost()
@@ -197,7 +234,7 @@ namespace AasxPluginExportTable.Uml
             System.IO.File.WriteAllText(fn, text);
         }
 
-        public string ToString()
+        public override string ToString()
         {
             _builder.AppendLine("@enduml");
             return _builder.ToString();

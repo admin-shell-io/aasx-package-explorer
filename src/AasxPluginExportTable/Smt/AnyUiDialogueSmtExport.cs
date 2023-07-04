@@ -184,8 +184,8 @@ namespace AasxPluginExportTable.Smt
             if (!(await displayContext.MenuSelectSaveFilenameToTicketAsync(
                         ticket, "File",
                         "Select file for SMT specification to AsciiDoc ..",
-                        "new.adoc",
-                        "Single AsciiDoc file (*.adoc)|*.adoc|ZIP archive (*.zip)|*.zip|All files (*.*)|*.*",
+                        "new.zip",
+                        "AsciiDoc ZIP archive (*.zip)|*.zip|Single AsciiDoc file (*.adoc)|*.adoc|All files (*.*)|*.*",
                         "SMT specification to AsciiDoc: No valid filename.",
                         argLocation: "Location",
                         reworkSpecialFn: true)))
@@ -200,7 +200,9 @@ namespace AasxPluginExportTable.Smt
 
             // export
             var export = new ExportSmt();
-            export.ExportSmtToFile(log, ticket.Package, sm, pluginOptionsTable, record, fn);
+            export.ExportSmtToFile(
+                log, displayContext, ticket.Package, 
+                sm, pluginOptionsTable, record, fn);
 
             // persist
             await displayContext.CheckIfDownloadAndStart(log, loc, fn);           

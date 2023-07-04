@@ -29,6 +29,8 @@ using System.Collections;
 using System.Drawing.Imaging;
 using AasxPluginExportTable.Uml;
 using AasxPluginExportTable.Table;
+using System.Runtime.Intrinsics.X86;
+using AnyUi;
 
 namespace AasxPluginExportTable.Smt
 {
@@ -62,6 +64,8 @@ namespace AasxPluginExportTable.Smt
             }
 
             // simply add
+            if (header?.HasContent() == true)
+                _adoc.AppendLine("");
             _adoc.AppendLine(header + text);
         }
 
@@ -142,15 +146,20 @@ namespace AasxPluginExportTable.Smt
             if (args?.fileName?.HasContent() == true)
                 fn = args.fileName;
 
-            // svae absolute
+            // save absolute
             var absFn = Path.Combine(_tempDir, fn);
             File.WriteAllBytes(absFn, data);
             _log?.Info("Image data with {0} bytes writen to {1}.", data.Length, absFn);
 
             // create link text
+            var astr = "";
+            if (args?.width != null)
+                astr = $"width=\"{AdminShellUtil.FromDouble(args.width ?? 0.0, "{0:0.0}")}%\"";
             if (doLink)
             {
-                _adoc.AppendLine($"image::{fn}[]");
+                _adoc.AppendLine("");
+                _adoc.AppendLine($"image::{fn}[{astr}]");
+                _adoc.AppendLine("");
             }
         }
 
@@ -162,35 +171,41 @@ namespace AasxPluginExportTable.Smt
 
             // try find target of reference
             var target = _package?.AasEnv.FindReferableByReference(refel.Value);
-            if (target == null
-                ||!(target is Aas.ISubmodel refsm))
+            if (target == null)
             {
                 _log?.Error("ExportSMT: No target reference for UML found in {0}", 
                     refel.GetReference()?.ToStringExtended(1));
                 return;
             }
 
+            // check arguments
+            var q = refel.HasExtensionOfName("ExportSmt.Args");
+            var args = ExportSmtArguments.Parse(q?.Value);
+            var processDepth = args?.depth ?? int.MaxValue;
+
             // determine (automatic) target file name
-            var pumlFn = "uml_" + Path.GetRandomFileName().Replace(".","_");
+            var pumlName = "uml_" + Path.GetRandomFileName().Replace(".","_");
             if (refel.IdShort.HasContent())
-                pumlFn = AdminShellUtil.FilterFriendlyName(refel.IdShort);
-            pumlFn += ".puml";
+                pumlName = AdminShellUtil.FilterFriendlyName(refel.IdShort);
+            var pumlFn = pumlName + ".puml";
             var absPumlFn = Path.Combine(_tempDir, pumlFn);
 
             // make options
             var umlOptions = new ExportUmlRecord();
+            if (args?.uml != null)
+                umlOptions = args.uml;
 
             // make writer
             var writer = new PlantUmlWriter();
             writer.StartDoc(umlOptions);
-            writer.ProcessSubmodel(refsm);
+            writer.ProcessTopElement(target, processDepth);
             writer.ProcessPost();
             _log?.Info("ExportSMT: writing PlantUML to {0} ..", absPumlFn);
             writer.SaveDoc(absPumlFn);
 
             // include file into AsciiDoc
             _adoc.AppendLine("");
-            _adoc.AppendLine("[plantuml, bar, svg]");
+            _adoc.AppendLine($"[plantuml, {pumlName}, svg]");
             _adoc.AppendLine("----");
             _adoc.AppendLine("include::" + pumlFn + "[]");
             _adoc.AppendLine("----");
@@ -205,8 +220,7 @@ namespace AasxPluginExportTable.Smt
 
             // try find target of reference
             var target = _package?.AasEnv.FindReferableByReference(refel.Value);
-            if (target == null
-                || !(target is Aas.ISubmodel refsm))
+            if (target == null)
             {
                 _log?.Error("ExportSMT: No target reference for Tables found in {0}",
                     refel.GetReference()?.ToStringExtended(1));
@@ -222,6 +236,16 @@ namespace AasxPluginExportTable.Smt
                 return;
             }
             var optionsTable = _optionsAll.Presets[_optionsSmt.PresetTables];
+
+            // check arguments
+            var q = refel.HasExtensionOfName("ExportSmt.Args");
+            var args = ExportSmtArguments.Parse(q?.Value);
+            var processDepth = int.MaxValue;
+            if (args?.depth != null)
+            {
+                processDepth = (int) args.depth;
+                optionsTable.NoHeadings = true;
+            }
 
             // determine (automatic) target file name
             var tableFn = "table_" + Path.GetRandomFileName().Replace(".", "_");
@@ -243,7 +267,8 @@ namespace AasxPluginExportTable.Smt
             var ticket = new AasxMenuActionTicket();
 
             AnyUiDialogueTable.Export(
-                _optionsAll, optionsTable, absTableFn, target as Aas.ISubmodel, _package?.AasEnv, ticket, _log);
+                _optionsAll, optionsTable, absTableFn, 
+                target, _package?.AasEnv, ticket, _log, maxDepth: processDepth);
 
             // include file into AsciiDoc
             if (_optionsSmt.IncludeTables)
@@ -271,6 +296,7 @@ namespace AasxPluginExportTable.Smt
 
         public void ExportSmtToFile(
             LogInstance log,
+            AnyUiContextPlusDialogs displayContext,
             AdminShellPackageEnv package,
             Aas.ISubmodel submodel,
             ExportTableOptions optionsAll,
@@ -345,17 +371,39 @@ namespace AasxPluginExportTable.Smt
             var title = (_srcSm.IdShort?.HasContent() == true) 
                     ? AdminShellUtil.FilterFriendlyName(_srcSm.IdShort) 
                     : "output";
-            var adocFn = Path.Combine(_tempDir, title + ".adoc");
+            var adocFn = title + ".adoc";
+            var absAdocFn = Path.Combine(_tempDir, adocFn);
 
             // write it
-            File.WriteAllText(adocFn, adocText);
-            log?.Info("ExportSmt: written {0} bytes to temp file {1}.", adocText.Length, adocFn);
+            File.WriteAllText(absAdocFn, adocText);
+            log?.Info("ExportSmt: written {0} bytes to temp file {1}.", adocText.Length, absAdocFn);
+
+            // start outside commands?
+            if (_optionsSmt.ExportHtml)
+            {
+                var cmd = _optionsAll.SmtExportHtmlCmd;
+                var args = _optionsAll.SmtExportHtmlArgs
+                    .Replace("%WD%", "" + _tempDir)
+                    .Replace("%ADOC%", "" + adocFn);
+
+                displayContext?.MenuExecuteSystemCommand("Exporting HTML", _tempDir, cmd, args);
+            }
+
+            if (_optionsSmt.ExportPdf)
+            {
+                var cmd = _optionsAll.SmtExportPdfCmd;
+                var args = _optionsAll.SmtExportPdfArgs
+                    .Replace("%WD%", "" + _tempDir)
+                    .Replace("%ADOC%", "" + adocFn);
+
+                displayContext?.MenuExecuteSystemCommand("Exporting PDF", _tempDir, cmd, args);
+            }
 
             // now, how to handle files?
             if (_singleFile)
             {
-                // simpy copy
-                File.Copy(adocFn, fn, overwrite: true);
+                // simply copy
+                File.Copy(absAdocFn, fn, overwrite: true);
                 log?.Info("ExportSmt: copied temp file to {0}", fn);
             }
             else

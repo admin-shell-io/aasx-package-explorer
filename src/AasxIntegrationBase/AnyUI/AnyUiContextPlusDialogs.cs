@@ -436,5 +436,19 @@ namespace AnyUi
             // OK
             return true;
         }
+
+        /// <summary>
+        /// Selects a text either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public async virtual Task<AnyUiDialogueDataLogMessage> MenuExecuteSystemCommand(
+            string caption,
+            string workDir,
+            string cmd,
+            string args)
+        {
+            await Task.Yield();
+            return null;
+        }
     }
 }

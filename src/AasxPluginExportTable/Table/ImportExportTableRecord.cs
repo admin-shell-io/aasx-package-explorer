@@ -54,6 +54,11 @@ namespace AasxPluginExportTable
 
         public bool ActInHierarchy = false;
 
+        /// <summary>
+        /// If set, will NOT add any headings before each generate table
+        /// </summary>
+        public bool NoHeadings = false;
+
         // Note: the records contains elements for 1 + Rows, 1 + Columns fields
         public List<string> Top = new List<string>();
         public List<string> Body = new List<string>();

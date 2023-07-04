@@ -24,6 +24,11 @@ namespace AasxPluginExportTable
     {
         public string TemplateIdConceptDescription = "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 
+        public string SmtExportHtmlCmd = "";
+        public string SmtExportHtmlArgs = "";
+        public string SmtExportPdfCmd = "";
+        public string SmtExportPdfArgs = "";
+
         public ExportUmlRecord UmlExport = null;
 
         public ImportTimeSeriesRecord TimeSeriesImport = null;

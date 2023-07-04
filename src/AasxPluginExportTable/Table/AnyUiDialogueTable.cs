@@ -562,32 +562,12 @@ namespace AasxPluginExportTable.Table
         private static void ExportTable_EnumerateSubmodel(
             List<ExportTableAasEntitiesList> list, Aas.Environment env,
             bool broadSearch, bool actInHierarchy, int depth,
-            Aas.ISubmodel sm, Aas.ISubmodelElement sme)
+            Aas.IReferable coll, 
+            int maxDepth)
         {
             // check
-            if (list == null || env == null || sm == null)
+            if (list == null || env == null || coll == null)
                 return;
-
-            //
-            // Submodel or SME ??
-            //
-
-            Aas.IReferable coll = null;
-            if (sme == null)
-            {
-                // yield SM
-                // MIHO 21-11-24: IMHO this makes no sense
-                //// list.Add(new ExportTableAasEntitiesItem(depth, sm: sm, parentSm: sm));
-
-                // use collection
-                coll = sm;
-            }
-            else
-            {
-                // simple check for SME collection
-                if (sme is Aas.IReferable)
-                    coll = (sme as Aas.IReferable);
-            }
 
             // prepare listItem
             ExportTableAasEntitiesList listItem = null;
@@ -614,15 +594,16 @@ namespace AasxPluginExportTable.Table
                     var cd = env.FindConceptDescriptionByReference(sme2?.SemanticId);
 
                     // add
-                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd,
+                    listItem.Add(new ExportTableAasEntitiesItem(depth, sme2, cd,
                         parent: coll as Aas.IReferable));
 
                     // go directly deeper?
                     if (!broadSearch && ci != null &&
-                        ci is Aas.IReferable)
+                        ci is Aas.IReferable
+                        && depth < maxDepth)
                         ExportTable_EnumerateSubmodel(
                             list, env, broadSearch: false, actInHierarchy,
-                            depth: 1 + depth, sm: sm, sme: ci);
+                            depth: 1 + depth, ci, maxDepth);
                 }
 
             // pass 2: go for recursion AFTER?
@@ -630,10 +611,11 @@ namespace AasxPluginExportTable.Table
             {
                 if (coll != null)
                     foreach (var ci in coll.EnumerateChildren())
-                        if (ci != null && ci is Aas.IReferable)
+                        if (ci != null && ci is Aas.IReferable
+                            && depth < maxDepth)
                             ExportTable_EnumerateSubmodel(
                                 list, env, broadSearch: true, actInHierarchy,
-                                depth: 1 + depth, sm: sm, sme: ci);
+                                depth: 1 + depth, ci, maxDepth);
             }
         }
 
@@ -641,14 +623,15 @@ namespace AasxPluginExportTable.Table
             ExportTableOptions options,
             AasxPluginExportTable.ImportExportTableRecord record,
             string fn,
-            Aas.ISubmodel sm, Aas.Environment env,
+            Aas.IReferable rf, Aas.Environment env,
             AasxMenuActionTicket ticket = null,
-            LogInstance log = null)
+            LogInstance log = null,
+            int maxDepth = int.MaxValue)
         {
             // prepare list of items to be exported
             var list = new List<ExportTableAasEntitiesList>();
             ExportTable_EnumerateSubmodel(list, env, broadSearch: false,
-                actInHierarchy: record.ActInHierarchy, depth: 1, sm: sm, sme: null);
+                actInHierarchy: record.ActInHierarchy, depth: 1, rf, maxDepth);
 
             if (fn == null)
                 return;
