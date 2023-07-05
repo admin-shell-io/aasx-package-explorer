@@ -448,7 +448,7 @@ namespace AnyUi
             string args)
         {
             await Task.Yield();
-            return null;
+            throw new NotImplementedException("MenuExecuteSystemCommand");
         }
     }
 }

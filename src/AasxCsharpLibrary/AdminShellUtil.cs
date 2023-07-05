@@ -253,6 +253,8 @@ namespace AdminShellNS
                     System.Net.Mime.MediaTypeNames.Text.Plain,
                     System.Net.Mime.MediaTypeNames.Text.Xml,
                     System.Net.Mime.MediaTypeNames.Text.Html,
+                    "text/markdown",
+                    "text/asciidoc",
                     "application/json",
                     "application/rdf+xml",
                     System.Net.Mime.MediaTypeNames.Application.Pdf,
@@ -273,6 +275,8 @@ namespace AdminShellNS
                     System.Net.Mime.MediaTypeNames.Text.Plain,
                     System.Net.Mime.MediaTypeNames.Text.Xml,
                     System.Net.Mime.MediaTypeNames.Text.Html,
+                    "text/markdown",
+                    "text/asciidoc",
                     "application/json",
                     "application/rdf+xml"
                 })

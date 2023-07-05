@@ -15,12 +15,14 @@ using AdminShellNS.Display;
 using AnyUi;
 using Extensions;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Windows.Documents;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
@@ -2093,7 +2095,7 @@ namespace AasxPackageLogic
                 indexPosition: 0,
                 injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
                     new[] { "Sync" },
-                    new[] { "Copy (if target is empty) idShort to shortName and SubmodelElement idShort." },
+                    new[] { "Copy (if target is empty) idShort to preferredName and SubmodelElement idShort." },
                     (v) =>
                     {
                         AnyUiLambdaActionBase la = new AnyUiLambdaActionNone();
@@ -2101,11 +2103,13 @@ namespace AasxPackageLogic
                             return la;
 
                         var ds = cd.GetIEC61360();
-                        if (ds != null && (ds.ShortName == null || ds.ShortName.Count < 1))
+                        if (ds != null && (ds.PreferredName == null || ds.PreferredName.Count < 1
+                            // the following absurd case happens in reality ..
+                            || ( ds.PreferredName.Count == 1 && ds.PreferredName[0].Text?.HasContent() != true )))
                         {
-                            ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
+                            ds.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>
                             {
-                                new Aas.LangStringShortNameTypeIec61360(
+                                new Aas.LangStringPreferredNameTypeIec61360(
                                     AdminShellUtil.GetDefaultLngIso639(), cd.IdShort)
                             };
                             this.AddDiaryEntry(cd, new DiaryEntryStructChange());
@@ -3501,37 +3505,89 @@ namespace AasxPackageLogic
             {
                 this.AddGroup(stack, "Blob", this.levelColors.MainSection);
 
-                // Value
+                // check, if this is binary
 
-                AddKeyValueExRef(
-                    stack, "value", blb, (blb.Value == null) ? "" : Encoding.Default.GetString(blb.Value),
-                    null, repo,
-                    v =>
-                    {
-                        blb.Value = Encoding.Default.GetBytes((string)v);
-                        this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
-                        return new AnyUiLambdaActionNone();
-                    },
-                    limitToOneRowForNoEdit: true,
-                    auxButtonTitles: new[] { "\u2261" },
-                    auxButtonToolTips: new[] { "Edit in multiline editor" },
-                    auxButtonLambda: (buttonNdx) =>
-                    {
-                        if (buttonNdx == 0)
+                var isBinary = !AdminShellUtil.CheckForTextContentType(blb.ContentType);
+                if (AdminShellUtil.CheckIfAsciiOnly(blb.Value, bytesToCheck: 2048))
+                    isBinary = false;
+
+                // Value (depending on binary)
+
+                if (!isBinary)
+                {
+                    // show text and let directly edit
+                    AddKeyValueExRef(
+                        stack, "value", blb, (blb.Value == null) ? "" : Encoding.Default.GetString(blb.Value),
+                        null, repo,
+                        v =>
                         {
-                            var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit Blob '{"" + blb.IdShort}'",
-                                                mimeType: blb.ContentType,
-                                                text: Encoding.Default.GetString(blb.Value ?? new byte[0]));
-                            if (this.context.StartFlyoverModal(uc))
+                            blb.Value = Encoding.Default.GetBytes((string)v);
+                            this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
+                            return new AnyUiLambdaActionNone();
+                        },
+                        limitToOneRowForNoEdit: true,
+                        auxButtonTitles: new[] { "\u2261" },
+                        auxButtonToolTips: new[] { "Edit in multiline editor" },
+                        auxButtonLambda: (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0)
                             {
-                                blb.Value = Encoding.Default.GetBytes(uc.Text);
-                                this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
-                                return new AnyUiLambdaActionRedrawEntity();
+                                var uc = new AnyUiDialogueDataTextEditor(
+                                                    caption: $"Edit Blob '{"" + blb.IdShort}'",
+                                                    mimeType: blb.ContentType,
+                                                    text: Encoding.Default.GetString(blb.Value ?? new byte[0]));
+                                if (this.context.StartFlyoverModal(uc))
+                                {
+                                    blb.Value = Encoding.Default.GetBytes(uc.Text);
+                                    this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
                             }
+                            return new AnyUiLambdaActionNone();
+                        });
+                } 
+                else
+                {
+                    // show warnings!
+                    var g = AddSmallGrid(1, 3, new[] { "#", "*", "#" });
+                    stack.Add(g);
+                    g.ColumnDefinitions[0].MinWidth = GetWidth(FirstColumnWidth.Standard);
+
+                    AddSmallLabelTo(g, 0, 0, content: "value:", 
+                        margin: new AnyUiThickness(5, 0, 0, 0));
+                    AddSmallLabelTo(g, 0, 1, content: "(This value seems to contain binary content of " +
+                        $"{"" + blb.Value?.Length.ToString()} bytes.)",
+                        margin: new AnyUiThickness(5, 0, 0, 0));
+
+                    if (editMode)
+                        AnyUiUIElement.RegisterControl(
+                            AddSmallButtonTo(
+                                g, 0, 2, content: "\u2261",
+                                toolTip: "Edit in multiline editor",
+                                margin: new AnyUiThickness(2),
+                                padding: new AnyUiThickness(5, 0, 5, 0)),
+                            setValueAsync: async (o) =>
+                            {
+                                if (AnyUiMessageBoxResult.Yes == await 
+                                        this.context.MessageBoxFlyoutShowAsync(
+                                    "Edit value? Value seems to be binary data.",
+                                    "Multiline editor",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                    {
+                                        var uc = new AnyUiDialogueDataTextEditor(
+                                            caption: $"Edit Blob '{"" + blb.IdShort}'",
+                                            mimeType: blb.ContentType,
+                                            text: Encoding.Default.GetString(blb.Value ?? new byte[0]));
+                                        if (await context.StartFlyoverModalAsync(uc))
+                                        {
+                                            blb.Value = Encoding.Default.GetBytes(uc.Text);
+                                            this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
+                                            return new AnyUiLambdaActionRedrawEntity();
+                                        }
+                                    }                            
+                                return new AnyUiLambdaActionNone();
+                            });
                         }
-                        return new AnyUiLambdaActionNone();
-                    });
 
                 // ContentType
 
@@ -3558,6 +3614,89 @@ namespace AasxPackageLogic
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
 
+                // Further file assistance
+
+                if (editMode && uploadAssistance != null && packages.Main != null)
+                {
+
+                    this.AddGroup(stack, "File to blob assistance", this.levelColors.SubSection);
+
+                    this.AddKeyDropTarget(
+                        stack, "Source file to add",
+                        !(this.uploadAssistance.SourcePath.HasContent())
+                            ? "(Please drop a file to set source file to add)"
+                            : this.uploadAssistance.SourcePath,
+                        null, repo,
+                        v =>
+                        {
+                            this.uploadAssistance.SourcePath = v as string;
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }, minHeight: 40);
+
+                    this.AddActionPanel(
+                        stack, "Action",
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("select-source", "Select source file",
+                                "Select a filename to be added later.")
+                            .AddAction("add-to-blob", "Add to Blob",
+                                "Add or update blob value from given file.")
+                            .AddAction("clear-blob", "Clear Blob",
+                                "Clear blob value."),
+                        ticketAction: (buttonNdx, ticket) =>
+                        {
+                            if (buttonNdx == 0)
+                            {
+                                var uc = new AnyUiDialogueDataOpenFile(
+                                message: "Select a file to add..");
+                                this.context?.StartFlyoverModal(uc);
+                                if (uc.Result && uc.TargetFileName != null)
+                                {
+                                    this.uploadAssistance.SourcePath = uc.TargetFileName;
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+                            }
+
+                            if (buttonNdx == 1)
+                            {
+                                try
+                                {
+                                    // read file
+                                    Log.Singleton.Info("Add to blob: reading {0} .. ", uploadAssistance.SourcePath);
+                                    var data = System.IO.File.ReadAllBytes(uploadAssistance.SourcePath);
+
+                                    // put it into blob (binary wise)
+                                    blb.Value = data;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(
+                                        ex, $"Adding file {uploadAssistance.SourcePath} to blob");
+                                }
+
+                                // refresh dialogue
+                                uploadAssistance.SourcePath = "";
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+
+                            if (buttonNdx == 2)
+                            {
+                                if (AnyUiMessageBoxResult.Yes == context.MessageBoxFlyoutShow(
+                                    "Clear value? This operation cannot be reverted.",
+                                    "Blob",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                {
+                                    blb.Value = new byte[] { };
+
+                                    // refresh dialogue
+                                    uploadAssistance.SourcePath = "";
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+                            }
+
+                            return new AnyUiLambdaActionNone();
+                        });
+                }
             }
             else if (sme is Aas.ReferenceElement rfe)
             {

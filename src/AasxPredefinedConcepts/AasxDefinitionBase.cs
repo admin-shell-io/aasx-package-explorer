@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
@@ -167,8 +169,12 @@ namespace AasxPredefinedConcepts
                 }
 #endif
                 // TODO (MIHO, 2022-12-31): for V3.0, another method of deserialization is required!!
+                // res ??= JsonConvert.DeserializeObject<T>(entry.contents);
 
-                res ??= JsonConvert.DeserializeObject<T>(entry.contents);
+                var node = System.Text.Json.Nodes.JsonNode.Parse(entry.contents);
+                res ??= ExtendIClass.IClassFrom(typeof(T), node) as T;
+
+                
             }
             catch (Exception ex)
             {
@@ -245,8 +251,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(Aas.Submodel);
-                var isCD = fi.FieldType == typeof(Aas.ConceptDescription);
+                var isSM = typeof(Aas.ISubmodel).IsAssignableFrom(fi.FieldType);
+                var isCD = typeof(Aas.IConceptDescription).IsAssignableFrom(fi.FieldType);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;

@@ -72,6 +72,14 @@
                             DialogueData="evs.DialogueData" />
                     }
 
+                    @if (evs.DialogueData is AnyUiDialogueDataLogMessage)
+                    {
+                        int a = 1;
+                        <AnyUiFlyoutLogMessage 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
                     @if (evs.DialogueData is AnyUiDialogueDataSelectFromList)
                     {
                         <AnyUiFlyoutSelectFromList 

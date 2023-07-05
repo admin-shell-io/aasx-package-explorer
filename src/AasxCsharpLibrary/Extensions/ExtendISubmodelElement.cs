@@ -655,7 +655,7 @@ namespace Extensions
             return null;
         }
 
-        public static IEnumerable<T> FindDeep<T>(this List<ISubmodelElement> submodelElements, Predicate<T> match = null) where T : ISubmodelElement
+        public static IEnumerable<T> FindDeep<T>(this IEnumerable<ISubmodelElement> submodelElements, Predicate<T> match = null) where T : ISubmodelElement
         {
             foreach (var smw in submodelElements)
             {
@@ -670,6 +670,8 @@ namespace Extensions
 
                 // dive into?
                 // TODO (MIHO, 2020-07-31): would be nice to use IEnumerateChildren for this ..
+                // TODO (MIHO, 2023-01-01): would be nice to use AasCore.DescendOnce() for this ..
+#if __old__
                 if (current is SubmodelElementCollection smc && smc.Value != null)
                     foreach (var x in smc.Value.FindDeep<T>(match))
                         yield return x;
@@ -706,6 +708,12 @@ namespace Extensions
                     foreach (var x in operationVariables.FindDeep<T>(match))
                         yield return x;
                 }
+#else
+                var smeChilds = current.DescendOnce().Where((ic) => ic is ISubmodelElement)
+                        .Cast<ISubmodelElement>();
+                foreach (var x in smeChilds.FindDeep<T>(match))
+                    yield return x;
+#endif
             }
         }
 
@@ -1363,7 +1371,7 @@ namespace Extensions
             return res;
         }
 
-        #endregion
+#endregion
 
         public static ISubmodelElement UpdateFrom(this ISubmodelElement elem, ISubmodelElement source)
         {

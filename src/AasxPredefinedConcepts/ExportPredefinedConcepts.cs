@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -80,11 +81,24 @@ namespace AasxPredefinedConcepts
                 var keySM = "SM_" + sm.IdShort;
                 if (true)
                 {
+                    // JsonNET does not work, because modelType is not serialized
+#if __old__
                     // ok, for Serialization we just want the plain element with no BLOBs..
                     var settings = new JsonSerializerSettings();
                     settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(
                         deep: false, complete: false);
+                    settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                     var jsonStr = JsonConvert.SerializeObject(sm, Formatting.Indented, settings);
+#else
+                    // challenge: SM without SMEs
+                    var smClone = sm.Copy();
+                    smClone.SubmodelElements = null;
+                    var jsonStr = Jsonization.Serialize.ToJsonObject(smClone)
+                        .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                        {
+                            WriteIndented = true
+                        });
+#endif
 
                     // export
                     snippets.WriteLine($"\"{keySM}\" : {jsonStr},");
@@ -100,11 +114,19 @@ namespace AasxPredefinedConcepts
                 foreach (var k in usedCds.Keys)
                 {
                     // ok, for Serialization we just want the plain element with no BLOBs..
+#if __old__
                     var settings = new JsonSerializerSettings();
                     settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(
                         deep: false, complete: false);
+                    settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                     var jsonStr = JsonConvert.SerializeObject(usedCds[k], Formatting.Indented, settings);
-
+#else
+                    var jsonStr = Jsonization.Serialize.ToJsonObject(usedCds[k])
+                        .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                        {
+                            WriteIndented = true
+                        });
+#endif
                     // export
                     snippets.WriteLine($"\"{k}\" : {jsonStr},");
                 }

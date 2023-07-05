@@ -95,11 +95,12 @@ namespace AasxPredefinedConcepts
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.VDI2770v11.Static);
 
-            thePool.IndexReferables("ZVEI Digital Nameplate v1.0",
+            thePool.IndexReferables("ZVEI Digital Typeplate v1.0 (deprecated)",
                 new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate()).GetAllReferables());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiNameplateV10.Static);
+            thePool.IndexDefinitions(AasxPredefinedConcepts.DigitalNameplateV20.Static);
 
             thePool.IndexReferables("ZVEI Digital Identification v1.0",
                 new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfIdentification(

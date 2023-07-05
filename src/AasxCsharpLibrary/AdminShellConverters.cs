@@ -156,28 +156,33 @@ namespace AdminShellNS
 
             }
 
+            // see: https://stackoverflow.com/questions/4963160/
+            // how-to-determine-if-a-type-implements-an-interface-with-c-sharp-reflection
+
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
             {
                 JsonProperty property = base.CreateProperty(member, memberSerialization);
+                var icic = StringComparison.InvariantCultureIgnoreCase;
 
-                if (!BlobHasValue && property.DeclaringType == typeof(Blob) &&
-                    property.PropertyName == "value")
+                if (!BlobHasValue && typeof(IBlob).IsAssignableFrom(property.DeclaringType)
+                    && property.PropertyName.Equals("value", icic))
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!SubmodelHasElements && property.DeclaringType == typeof(Submodel) &&
-                    property.PropertyName == "submodelElements")
+                if (!SubmodelHasElements && typeof(ISubmodel).IsAssignableFrom(property.DeclaringType)
+                    && property.PropertyName.Equals("submodelElements", icic))
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!SmcHasValue && property.DeclaringType == typeof(SubmodelElementCollection) &&
-                    property.PropertyName == "value")
+                if (!SmcHasValue && typeof(ISubmodelElementCollection).IsAssignableFrom(property.DeclaringType)
+                    && property.PropertyName.Equals("value", icic))
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!OpHasVariables && property.DeclaringType == typeof(Operation) &&
-                    (property.PropertyName == "in" || property.PropertyName == "out"))
+                if (!OpHasVariables && typeof(IOperation).IsAssignableFrom(property.DeclaringType)
+                    && (property.PropertyName.Equals("in", icic)
+                        || property.PropertyName.Equals("out", icic)))
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!AasHasViews && property.DeclaringType == typeof(AssetAdministrationShell) &&
-                    property.PropertyName == "views")
+                if (!AasHasViews && typeof(IAssetAdministrationShell).IsAssignableFrom(property.DeclaringType)
+                    && property.PropertyName.Equals("views", icic))
                     property.ShouldSerialize = instance => { return false; };
 
                 return property;

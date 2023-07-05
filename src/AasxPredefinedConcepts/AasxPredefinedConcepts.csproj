@@ -8,6 +8,7 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\DigitalNameplateV20.json" />
     <None Remove="Resources\ZveiContactInformationV10.json" />
     <None Remove="Resources\ZveiDigitalTypeplate.json" />
     <None Remove="Resources\ZveiTimeSeriesDataV10.json" />
@@ -18,6 +19,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\ZveiContactInformationV10.json" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate.json" />
+    <EmbeddedResource Include="Resources\DigitalNameplateV20.json" />
     <EmbeddedResource Include="Resources\ZveiNameplateV10.json" />
     <EmbeddedResource Include="Resources\ZveiTechnicalData.json" />
     <EmbeddedResource Include="Resources\VDI2770v11.json" />

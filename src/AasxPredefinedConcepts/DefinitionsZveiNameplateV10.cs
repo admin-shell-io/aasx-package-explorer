@@ -16,7 +16,7 @@ using Aas = AasCore.Aas3_0;
 namespace AasxPredefinedConcepts
 {
     /// <summary>
-    /// Definitions of Submodel VDI2770 according to new alignment with VDI
+    /// Definitions of Submodel Digital Nameplate 
     /// </summary>
     public class ZveiNameplateV10 : AasxDefinitionBase
     {

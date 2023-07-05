@@ -1,0 +1,45 @@
+﻿@page "/AnyUiFlyoutLogMessage"
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataLogMessage ddte)
+{
+    @* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddte.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		 <form>
+          <div class="mb-3">
+			<textarea readonly
+				class="form-control form-control-lg" id="message-text" @bind="TextLines"
+				style="resize: none; height: 60vh; font-family: monospace,monospace;" />
+          </div>
+        </form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	public string TextLines = "";
+
+	public void LeaveResult(bool result)
+	{
+		EventSession?.EndModal(result);
+	}
+}

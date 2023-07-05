@@ -36,6 +36,10 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * Refactor does not preserve Extensions (e.g. Blob to File)
 
+* lag for "Add known" is, when the UC dialogue creates a new pool object ..
+  var uc = new SelectFromReferablesPoolFlyout(AasxPredefinedConcepts.DefinitionsPool.Static);
+  public static DefinitionsPool Static { get { return thePool; } }
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done

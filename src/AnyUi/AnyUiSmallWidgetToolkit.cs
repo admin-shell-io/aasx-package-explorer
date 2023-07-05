@@ -358,7 +358,7 @@ namespace AnyUi
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
             double? setHeight = null, AnyUiVerticalAlignment? verticalAlignment = null,
-            bool? directInvoke = null)
+            bool? directInvoke = null, string toolTip = null)
         {
             var but = new AnyUiButton();
             but.Margin = margin;
@@ -377,6 +377,8 @@ namespace AnyUi
             if (directInvoke.HasValue)
                 but.DirectInvoke = directInvoke.Value;
             but.Content = content;
+            if (toolTip != null)
+                but.ToolTip = toolTip;
             AnyUiGrid.SetRow(but, row);
             AnyUiGrid.SetColumn(but, col);
             g.Children.Add(but);

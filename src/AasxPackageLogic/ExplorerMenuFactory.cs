@@ -201,9 +201,18 @@ namespace AasxPackageExplorer
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "OPC UA Nodeset2.xml file to write.")
                             .Add("Location", "Location selection", hidden: true))
-                    .AddWpfBlazor(name: "CopyClipboardElementJson", header: "Copy selected element JSON to clipboard", inputGesture: "Shift+Ctrl+C")
-                    .AddWpfBlazor(name: "ExportGenericForms", header: "Export Submodel as options for GenericForms …")
-                    .AddWpfBlazor(name: "ExportPredefineConcepts", header: "Export Submodel as snippet for PredefinedConcepts …")
+                    .AddWpfBlazor(name: "CopyClipboardElementJson", 
+                        header: "Copy selected element JSON to clipboard", inputGesture: "Shift+Ctrl+C")
+                    .AddWpfBlazor(name: "ExportGenericForms", 
+                        header: "Export Submodel as options for GenericForms …",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "OPC UA Nodeset2.xml file to write.")
+                            .Add("Location", "Location selection", hidden: true))
+                    .AddWpfBlazor(name: "ExportPredefineConcepts", 
+                        header: "Export Submodel as snippet for PredefinedConcepts …",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "OPC UA Nodeset2.xml file to write.")
+                            .Add("Location", "Location selection", hidden: true))
                     .AddWpfBlazor(name: "SubmodelTDExport", header: "Export Submodel as Thing Description JSON LD document",
                         help: "Export Thing Description (TD) file in JSON LD format from an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
