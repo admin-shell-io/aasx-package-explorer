@@ -2,7 +2,7 @@
 // it will be copied to build directory
 // Select("Submodel", "First");
 // Tool("ExportTable", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\new.adoc", "Preset", "AsciiDoc");
-Select("Submodel", "First");
-Select("Submodel", "Next");
+// Select("Submodel", "First");
+// Select("Submodel", "Next");
 // Tool("exportsmtasciidoc", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\new.zip", "ExportHtml", "true");
 // Tool("Exit");

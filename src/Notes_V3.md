@@ -40,6 +40,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   var uc = new SelectFromReferablesPoolFlyout(AasxPredefinedConcepts.DefinitionsPool.Static);
   public static DefinitionsPool Static { get { return thePool; } }
 
+* plugin known submodels does not render correctly for Blazor
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done

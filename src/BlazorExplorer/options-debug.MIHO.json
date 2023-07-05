@@ -20,8 +20,9 @@
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\00_FestoDemoBox-Module-2-Kopie2.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02003-1-2_Template_TechnicalData.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_B.aasx",
-  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02006-2-1_Template_Digital Nameplate_V3_lang.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02006-2-1_Template_Digital Nameplate_V3_lang.aasx",
   // "AuxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_A.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_V3new_spiel1.aasx",
   "WindowLeft": 100,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -112,6 +113,10 @@
     */
     {
       "Path": "..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\AasxPluginDigitalNameplate\\bin\\Debug\\net6.0-windows\\AasxPluginDigitalNameplate.dll",
       "Args": []
     },
     {

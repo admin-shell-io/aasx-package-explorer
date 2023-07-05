@@ -127,7 +127,8 @@ namespace Extensions
         }
         #endregion
 
-        public static void Validate(this ConceptDescription conceptDescription, AasValidationRecordList results)
+        public static void Validate(
+            this IConceptDescription conceptDescription, AasValidationRecordList results)
         {
             // access
             if (results == null)
@@ -178,11 +179,13 @@ namespace Extensions
             //    }
         }
 
-        public static Key GetSingleKey(this ConceptDescription conceptDescription)
+        public static Key GetSingleKey(this IConceptDescription conceptDescription)
         {
             return new Key(KeyTypes.ConceptDescription, conceptDescription.Id);
         }
-        public static ConceptDescription ConvertFromV10(this ConceptDescription conceptDescription, AasxCompatibilityModels.AdminShellV10.ConceptDescription sourceConceptDescription)
+
+        public static ConceptDescription ConvertFromV10(
+            this ConceptDescription conceptDescription, AasxCompatibilityModels.AdminShellV10.ConceptDescription sourceConceptDescription)
         {
             if (sourceConceptDescription == null)
             {
@@ -223,7 +226,8 @@ namespace Extensions
             return conceptDescription;
         }
 
-        public static ConceptDescription ConvertFromV20(this ConceptDescription cd, AasxCompatibilityModels.AdminShellV20.ConceptDescription srcCD)
+        public static ConceptDescription ConvertFromV20(
+            this ConceptDescription cd, AasxCompatibilityModels.AdminShellV20.ConceptDescription srcCD)
         {
             if (srcCD == null)
                 return null;
@@ -269,7 +273,8 @@ namespace Extensions
             return cd;
         }
 
-        public static EmbeddedDataSpecification AddEmbeddedDataSpecification(this ConceptDescription cd, EmbeddedDataSpecification eds)
+        public static EmbeddedDataSpecification AddEmbeddedDataSpecification(
+            this IConceptDescription cd, EmbeddedDataSpecification eds)
         {
             if (cd == null)
                 return null;
@@ -281,13 +286,13 @@ namespace Extensions
             return eds;
         }
 
-        public static Reference GetCdReference(this ConceptDescription conceptDescription)
+        public static Reference GetCdReference(this IConceptDescription conceptDescription)
         {
             var key = new Key(KeyTypes.ConceptDescription, conceptDescription.Id);
             return new Reference(ReferenceTypes.ModelReference, new List<IKey> { key });
         }
 
-        public static void AddIsCaseOf(this ConceptDescription cd,
+        public static void AddIsCaseOf(this IConceptDescription cd,
             Reference ico)
         {
             if (cd.IsCaseOf == null)

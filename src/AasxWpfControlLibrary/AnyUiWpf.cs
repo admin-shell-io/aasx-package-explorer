@@ -869,6 +869,7 @@ namespace AnyUi
                             }
 
                             wpf.Stretch = (Stretch)(int) cntl.Stretch;
+                            wpf.StretchDirection = StretchDirection.Both;
                         }
                    }
                 }),

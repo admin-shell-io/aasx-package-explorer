@@ -922,7 +922,8 @@ namespace Extensions
             return null;
         }
 
-        public static T FindFirstAnySemanticIdAs<T>(this List<ISubmodelElement> submodelElements, Key[] semId, MatchMode matchMode = MatchMode.Strict)
+        public static T FindFirstAnySemanticIdAs<T>(
+            this List<ISubmodelElement> submodelElements, IKey[] semId, MatchMode matchMode = MatchMode.Strict)
                 where T : ISubmodelElement
         {
             if (semId == null)
@@ -936,7 +937,8 @@ namespace Extensions
             return default(T);
         }
 
-        public static T CreateNew<T>(string idShort = null, string category = null, Reference semanticId = null)
+        public static T CreateNew<T>(
+            string idShort = null, string category = null, IReference semanticId = null)
                 where T : ISubmodelElement, new()
         {
             var res = new T();
@@ -949,7 +951,7 @@ namespace Extensions
             return res;
         }
 
-        public static T CreateSMEForCD<T>(this List<ISubmodelElement> submodelELements, ConceptDescription conceptDescription, string category = null, string idShort = null,
+        public static T CreateSMEForCD<T>(this List<ISubmodelElement> submodelELements, IConceptDescription conceptDescription, string category = null, string idShort = null,
                 string idxTemplate = null, int maxNum = 999, bool addSme = false, bool isTemplate = false)
                 where T : ISubmodelElement
         {
@@ -1002,7 +1004,8 @@ namespace Extensions
             return (T)sme;
         }
 
-        public static IEnumerable<T> FindAllSemanticIdAs<T>(this List<ISubmodelElement> submodelELements, Key semId, MatchMode matchMode = MatchMode.Strict)
+        public static IEnumerable<T> FindAllSemanticIdAs<T>(this List<ISubmodelElement> submodelELements, 
+            IKey semId, MatchMode matchMode = MatchMode.Strict)
                 where T : ISubmodelElement
         {
             foreach (var submodelElement in submodelELements)
@@ -1024,7 +1027,7 @@ namespace Extensions
         }
 
         public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements,
-            Key semId, MatchMode matchMode = MatchMode.Strict)
+            IKey semId, MatchMode matchMode = MatchMode.Strict)
             where T : ISubmodelElement
         {
             return submodelElements.FindAllSemanticIdAs<T>(semId, matchMode).FirstOrDefault<T>();
@@ -1037,7 +1040,8 @@ namespace Extensions
             return submodelElements.FindAllSemanticIdAs<T>(semId, matchMode).FirstOrDefault<T>();
         }
 
-        public static void RecurseOnReferables(this List<ISubmodelElement> submodelElements, object state, List<IReferable> parents,
+        public static void RecurseOnReferables(
+            this List<ISubmodelElement> submodelElements, object state, List<IReferable> parents,
                 Func<object, List<IReferable>, IReferable, bool> lambda)
         {
             if (lambda == null)
@@ -1107,7 +1111,9 @@ namespace Extensions
             }
         }
 
-        public static void RecurseOnSubmodelElements(this List<ISubmodelElement> submodelElements, object state, List<ISubmodelElement> parents, Action<object, List<ISubmodelElement>, ISubmodelElement> lambda)
+        public static void RecurseOnSubmodelElements(
+            this List<ISubmodelElement> submodelElements, object state, 
+            List<ISubmodelElement> parents, Action<object, List<ISubmodelElement>, ISubmodelElement> lambda)
         {
             // trivial
             if (lambda == null)
@@ -1171,7 +1177,8 @@ namespace Extensions
             }
         }
 
-        public static IEnumerable<T> FindAllSemanticIdAs<T>(this List<ISubmodelElement> submodelELements, string semanticId) where T : ISubmodelElement
+        public static IEnumerable<T> FindAllSemanticIdAs<T>(
+            this List<ISubmodelElement> submodelELements, string semanticId) where T : ISubmodelElement
         {
             foreach (var submodelElement in submodelELements)
             {
@@ -1185,12 +1192,14 @@ namespace Extensions
             }
         }
 
-        public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelELements, string semanticId) where T : ISubmodelElement
+        public static T FindFirstSemanticIdAs<T>(
+            this List<ISubmodelElement> submodelELements, string semanticId) where T : ISubmodelElement
         {
             return submodelELements.FindAllSemanticIdAs<T>(semanticId).FirstOrDefault();
         }
 
-        public static T FindFirstAnySemanticIdAs<T>(this List<ISubmodelElement> submodelELements, string[] semanticIds) where T : ISubmodelElement
+        public static T FindFirstAnySemanticIdAs<T>(
+            this List<ISubmodelElement> submodelELements, string[] semanticIds) where T : ISubmodelElement
         {
             if (semanticIds == null)
                 return default;
@@ -1239,14 +1248,16 @@ namespace Extensions
             }
         }
 
-        public static T FindFirstAnySemanticId<T>(this List<ISubmodelElement> submodelElements, string[] allowedSemanticIds, bool invertAllowed = false) where T : ISubmodelElement
+        public static T FindFirstAnySemanticId<T>(
+            this List<ISubmodelElement> submodelElements, string[] allowedSemanticIds, 
+            bool invertAllowed = false) where T : ISubmodelElement
         {
             return submodelElements.FindAllSemanticId<T>(allowedSemanticIds, invertAllowed).FirstOrDefault();
         }
 
         public static IEnumerable<T> FindAllSemanticId<T>(
             this List<ISubmodelElement> smes,
-            Key[] allowedSemanticIds, MatchMode mm = MatchMode.Strict,
+            IKey[] allowedSemanticIds, MatchMode mm = MatchMode.Strict,
             bool invertedAllowed = false) where T : ISubmodelElement
         {
             if (allowedSemanticIds == null || allowedSemanticIds.Length < 1)
@@ -1282,14 +1293,14 @@ namespace Extensions
 
         public static T FindFirstAnySemanticId<T>(
             this List<ISubmodelElement> submodelElements,
-            Key[] allowedSemanticIds, MatchMode mm = MatchMode.Strict,
+            IKey[] allowedSemanticIds, MatchMode mm = MatchMode.Strict,
             bool invertAllowed = false) where T : ISubmodelElement
         {
             return submodelElements.FindAllSemanticId<T>(allowedSemanticIds, mm, invertAllowed).FirstOrDefault();
         }
 
         public static IEnumerable<ISubmodelElement> FindAllSemanticId(
-            this List<ISubmodelElement> submodelElements, Key semId,
+            this List<ISubmodelElement> submodelElements, IKey semId,
             Type[] allowedTypes = null,
             MatchMode matchMode = MatchMode.Strict)
         {
@@ -1311,7 +1322,9 @@ namespace Extensions
                 }
         }
 
-        public static ISubmodelElement FindFirstSemanticId(this List<ISubmodelElement> submodelElements, Key semId, Type[] allowedTypes = null, MatchMode matchMode = MatchMode.Strict)
+        public static ISubmodelElement FindFirstSemanticId(
+            this List<ISubmodelElement> submodelElements, 
+            IKey semId, Type[] allowedTypes = null, MatchMode matchMode = MatchMode.Strict)
         {
             return submodelElements.FindAllSemanticId(semId, allowedTypes, matchMode)?.FirstOrDefault<ISubmodelElement>();
         }
@@ -1332,7 +1345,6 @@ namespace Extensions
         {
             return smes.FindAllSemanticIdAs<T>(cd, matchMode).FirstOrDefault<T>();
         }
-
 
         public static string IterateIdShortTemplateToBeUnique(this List<ISubmodelElement> submodelElements, string idShortTemplate, int maxNum)
         {
