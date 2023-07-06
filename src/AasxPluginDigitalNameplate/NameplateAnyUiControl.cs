@@ -760,7 +760,6 @@ namespace AasxPluginDigitalNameplate
 
             if (plate.Markings != null && plate.Markings.Count > 0)
             {
-
                 var gridMarksOut = AddGridWithIndex(uitk, grid, 4, 2, rowSpan: 2, colSpan: 2,
                         index: "(20)");
 
@@ -769,16 +768,25 @@ namespace AasxPluginDigitalNameplate
                 var numRow = 1;
                 if (numCol > MarkingsPerRow)
                 {
-                    numRow = numCol / MarkingsPerRow;
+                    numRow = 1 + ((numMarks - 1) / MarkingsPerRow);
                     numCol = MarkingsPerRow;
                 }
                 
-                var colWidths = new List<string>();
-                for (int i = 0; i < numCol; i++)
-                    colWidths.Add("#");
+                //var colWidths = new List<string>();
+                //for (int i = 0; i < numCol; i++)
+                //    colWidths.Add("#");
 
-                var gridMarksIn = uitk.AddSmallGridTo(
-                    gridMarksOut, 0, 1, numRow, numCol, colWidths: colWidths.ToArray());
+                //var gridMarksIn = uitk.AddSmallGridTo(
+                //    gridMarksOut, 0, 1, numRow, numCol, colWidths: colWidths.ToArray());
+
+                var wrapPanel = new AnyUiWrapPanel();
+                AnyUiGrid.SetRow(wrapPanel, 0);
+                AnyUiGrid.SetColumn(wrapPanel, 1);
+                gridMarksOut.Add(wrapPanel);
+
+
+                //var gridMarksIn = uitk.AddSmallGrid(numRow, numCol, colWidths: colWidths.ToArray());
+                //wrapPanel.Add(gridMarksIn);
 
                 for (int i = 0; i < numMarks; i++)
                 {
@@ -799,12 +807,11 @@ namespace AasxPluginDigitalNameplate
                     {
                         // render IMAGE
                         var img = uitk.Set(
-                            uitk.AddSmallImageTo(gridMarksIn, row, col,
-                                stretch: AnyUiStretch.Uniform,
-                                bitmap: markImg),
-                            margin: new AnyUiThickness(0, 0, 4, 0),
+                            new AnyUiImage() { Stretch = AnyUiStretch.Uniform, BitmapInfo = markImg },
+                            margin: new AnyUiThickness(0, 0, 4, 4),
                             horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
                             verticalAlignment: AnyUiVerticalAlignment.Stretch);
+                        wrapPanel.Add(img);
 
                         img.MaxHeight = 70;
                         img.MaxWidth = 100;
@@ -812,14 +819,18 @@ namespace AasxPluginDigitalNameplate
                     else
                     {
                         // render TEXT
-                        var tb = uitk.AddSmallBasicLabelTo(gridMarksIn, row, col,
-                            content: "" + mark.Name, fontSize: 1.4,
-                            margin: new AnyUiThickness(0, 0, 4, 0),
-                            padding: new AnyUiThickness(4),
-                            background: AnyUiBrushes.White,
-                            textWrapping: AnyUiTextWrapping.Wrap,
-                            verticalAlignment: AnyUiVerticalAlignment.Stretch,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                        var tb = new AnyUiTextBlock()
+                        {
+                            Text = "" + mark.Name,
+                            FontSize = 1.4,
+                            Margin = new AnyUiThickness(0, 0, 4, 4),
+                            Padding = new AnyUiThickness(4),
+                            Background = AnyUiBrushes.White,
+                            TextWrapping = AnyUiTextWrapping.Wrap,
+                            VerticalAlignment = AnyUiVerticalAlignment.Stretch,
+                            VerticalContentAlignment = AnyUiVerticalAlignment.Center
+                        };
+                        wrapPanel.Add(tb);
 
                         tb.MaxHeight = 70;
                         tb.MaxWidth = 100;
