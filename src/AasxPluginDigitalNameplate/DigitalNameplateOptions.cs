@@ -46,9 +46,9 @@ namespace AasxPluginDigitalNameplate
 
             var dpp = "This Digital Nameplate stands for a standardized Submodel of the " +
                 "Asset Administration Shell (AAS). It is based on IEC 61406 series for identification of the " +
-                "asset and IEC 63278 series for interoperable access of information. \n" +
+                "asset and IEC 63278 series for interoperable access of information. " +
                 "Submodel, AAS and IEC standards are, among others, also important building blocks of the " +
-                "Digital Product Passwort ( DPP4.0 ) initiative. \n";
+                "Digital Product Passwort ( DPP4.0 ) initiative. \n\n";
 
             // V1.0
 

@@ -43,7 +43,7 @@ namespace AasxPluginDigitalNameplate
 		public string SoftwareVersion = "";
 		public string CountryOfOrigin = "";
 
-        public string ExplSafetyStr = "";
+        public string ExplSafetyStr = "(not analyzed)";
 		
 		public string CompanyLogo = "";
 
@@ -59,7 +59,26 @@ namespace AasxPluginDigitalNameplate
         public NameplateData() { }
 
         //
-        // Default
+        // various
+        //
+
+        public static string TryGuessAssetId(
+            AdminShellPackageEnv package,
+            Aas.Submodel subModel)
+        {
+            // access
+            if (package?.AasEnv == null || subModel == null)
+                return null;
+
+            // check all Submodels
+            var aas = package.AasEnv.FindAasWithSubmodelId(subModel.Id);
+
+            // give back
+            return aas?.AssetInformation?.GlobalAssetId;
+        }
+
+        //
+        // V1.0
         //
 
         public static NameplateData ParseSubmodelForV10(
@@ -79,6 +98,8 @@ namespace AasxPluginDigitalNameplate
             var mm = MatchMode.Relaxed;
 
             // SME on top level
+            res.URIOfTheProduct = "" + TryGuessAssetId(thePackage, subModel);
+
             res.ManufacturerName = "" + subModel.SubmodelElements
                 .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(defs.CD_ManNam?.GetSingleKey(), mm)?
                 .Value?.GetDefaultString(defaultLang);
