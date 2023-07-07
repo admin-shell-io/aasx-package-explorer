@@ -33,22 +33,22 @@ namespace Extensions
         //public static string GetDefaultString(this List<ILangStringTextType> langStringSet, string defaultLang = null)
         //{
         //    return ExtendLangString.GetDefaultStringGen(langStringSet, defaultLang);
-            //// start
-            //if (defaultLang == null)
-            //    defaultLang = "en"; //Default Lang in old implementation is en
+        //// start
+        //if (defaultLang == null)
+        //    defaultLang = "en"; //Default Lang in old implementation is en
 
-            //string res = null;
+        //string res = null;
 
-            //// search
-            //foreach (var langString in langStringSet)
-            //    if (langString.Language.Equals(defaultLang, StringComparison.OrdinalIgnoreCase))
-            //        res = langString.Text;
+        //// search
+        //foreach (var langString in langStringSet)
+        //    if (langString.Language.Equals(defaultLang, StringComparison.OrdinalIgnoreCase))
+        //        res = langString.Text;
 
-            //if (res == null && langStringSet.Count > 0)
-            //    res = langStringSet[0].Text;
+        //if (res == null && langStringSet.Count > 0)
+        //    res = langStringSet[0].Text;
 
-            //// found?
-            //return res;
+        //// found?
+        //return res;
         //}
 
         public static List<T> Create<T>(string language, string text) where T : IAbstractLangString, new()
@@ -127,7 +127,7 @@ namespace Extensions
             Func<string, string, T> createLs) where T : class
         {
             // access
-            if (cell == null  || createLs == null)
+            if (cell == null || createLs == null)
                 return null;
 
             // iterative approach
@@ -139,7 +139,7 @@ namespace Extensions
                 {
                     if (cell.Trim() != "")
                     {
-                        res.Add(createLs(ExtendLangString.LANG_DEFAULT, cell));                        
+                        res.Add(createLs(ExtendLangString.LANG_DEFAULT, cell));
                     }
                     break;
                 }

@@ -186,7 +186,7 @@ namespace AasxIntegrationBase
                 {
                     log?.Error(ex, $"loading additional options (${fn})");
                 }
-        }        
+        }
     }
 
     //

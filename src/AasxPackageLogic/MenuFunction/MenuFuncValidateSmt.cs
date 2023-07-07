@@ -76,8 +76,8 @@ namespace AasxPackageExplorer
         /// </summary>
         public enum RepoKind { Unknown, AdminShellIo, Url, Eclass, Iec, OtherRai }
 
-        public string[] RepoKindExplain = { "Unknown", "https://admin-shell.io", "Other URL", 
-            "ECLASS", "IEC", "Other RAI" }; 
+        public string[] RepoKindExplain = { "Unknown", "https://admin-shell.io", "Other URL",
+            "ECLASS", "IEC", "Other RAI" };
 
         public RepoKind DetectRepoKind(string id)
         {
@@ -142,7 +142,7 @@ namespace AasxPackageExplorer
         // Validation
         //
 
-        public bool CheckForRegex (string head, string pattern, string input, 
+        public bool CheckForRegex(string head, string pattern, string input,
             RegexOptions options = RegexOptions.None,
             Func<Match, bool> matchLambda = null)
         {
@@ -172,7 +172,7 @@ namespace AasxPackageExplorer
             if (rf is IHasSemantics sem)
             {
                 if (sem.SemanticId == null || sem.SemanticId.IsValid() != true)
-                    Recs.AddElemDetail("AX08", "Fail", true, 
+                    Recs.AddElemDetail("AX08", "Fail", true,
                         "Element does not have a valid semanticId.", rf.GetReference());
                 else
                 {
@@ -180,7 +180,7 @@ namespace AasxPackageExplorer
                     var rk = DetectRepoKind(sem.SemanticId.Keys[0].Value);
                     RepoKindNumsAny[(int)rk]++;
                     if (rk == RepoKind.Unknown)
-                        Recs.AddElemDetail("AX09", "Fail", true, 
+                        Recs.AddElemDetail("AX09", "Fail", true,
                             "Non-structural elements features unknown kind of semanticId!", rf.GetReference());
 
                     // find a CD?
@@ -239,7 +239,7 @@ namespace AasxPackageExplorer
                 if ((ver != null && !(fsem2.Contains("/" + ver + "/")))
                     || (rev != null && !(fsem2.Contains("/" + rev + "/"))))
                 {
-                    Recs.AddElemDetail("AX07", "Fail", true, 
+                    Recs.AddElemDetail("AX07", "Fail", true,
                         "Structural element does not have version/revision in semanticId. " +
                         "SemanticId=" + fsem + ".", rf.GetReference());
                 }
@@ -372,13 +372,13 @@ namespace AasxPackageExplorer
 
                     // administrative info
                     if (sm.Administration == null)
-                        Recs.AddStatement("AX06", "Fail", true, 
+                        Recs.AddStatement("AX06", "Fail", true,
                             "Submodel does not have a valid administrative information.");
                     else
                     {
                         // check
                         if (ver != sm.Administration.Version || rev != sm.Administration.Revision)
-                            Recs.AddStatement("AX06", "Fail", true, 
+                            Recs.AddStatement("AX06", "Fail", true,
                                 "Submodel version/ revision does not match filename.");
 
                         // if in doubt, take over ver/rev
@@ -396,7 +396,7 @@ namespace AasxPackageExplorer
                     CheckStructuralElement(sm, ver, rev);
 
                     // over all SMEs
-                    foreach(var sme in sm.FindDeep<ISubmodelElement>())
+                    foreach (var sme in sm.FindDeep<ISubmodelElement>())
                     {
                         CheckAnyElement(sme);
 
@@ -439,7 +439,7 @@ namespace AasxPackageExplorer
                         unUsedCds++;
 
             Recs.AddComment($"{unUsedCds} ConceptDescriptions in AAS-ENV but not used in the SMTs of this AAS");
-            
+
             if (unUsedCds > 0)
                 Recs.AddStatement("AX13", "Fail", true, "Within the AASX package, ConceptDescriptions found, " +
                     "which were not referred to by SMT elements.");

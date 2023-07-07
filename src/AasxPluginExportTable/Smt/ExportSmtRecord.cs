@@ -33,7 +33,7 @@ namespace AasxPluginExportTable.Smt
 
         [AasxMenuArgument(help: "If true, will include table data in main AsciiDoc file.")]
         public bool IncludeTables = true;
-        
+
         [AasxMenuArgument(help: "If true, will execute external program to produce HTML from AsciiDic.")]
         public bool ExportHtml = false;
 

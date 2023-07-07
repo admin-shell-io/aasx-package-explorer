@@ -18,7 +18,7 @@ namespace Extensions
             return String.Format("[{0},{1}]", ls.Language, ls.Text);
         }
 
-        public static string ToStringExtended(this List<ILangStringTextType> elems, 
+        public static string ToStringExtended(this List<ILangStringTextType> elems,
             int format = 1, string delimiter = ",")
         {
             return string.Join(delimiter, elems.Select((k) => k.ToStringExtended(format)));

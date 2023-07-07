@@ -9,7 +9,7 @@ namespace Extensions
         {
             return new List<ILangStringShortNameTypeIec61360> { new LangStringShortNameTypeIec61360(language, text) };
         }
-        
+
         public static string GetDefaultString(this List<ILangStringShortNameTypeIec61360> langStringSet, string defaultLang = null)
         {
             return ExtendLangString.GetDefaultStringGen(langStringSet, defaultLang);

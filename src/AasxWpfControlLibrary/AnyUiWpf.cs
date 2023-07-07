@@ -2039,7 +2039,7 @@ namespace AnyUi
             bool reworkSpecialFn = false)
         {
             var uc = await MenuSelectSaveFilenameAsync(
-                ticket, argName, caption, proposeFn, filter, msg, 
+                ticket, argName, caption, proposeFn, filter, msg,
                 reworkSpecialFn: reworkSpecialFn);
 
             if (uc.Result && uc.TargetFileName.HasContent())
@@ -2113,7 +2113,7 @@ namespace AnyUi
         /// Selects a text either from user or from ticket.
         /// </summary>
         /// <returns>Success</returns>
-        public override async Task<AnyUiDialogueDataLogMessage> MenuExecuteSystemCommand(            
+        public override async Task<AnyUiDialogueDataLogMessage> MenuExecuteSystemCommand(
             string caption,
             string workDir,
             string cmd,
@@ -2133,7 +2133,7 @@ namespace AnyUi
                 // start
                 lock (logBuffer)
                 {
-                    logBuffer.Add(new StoredPrint(StoredPrint.Color.Black, 
+                    logBuffer.Add(new StoredPrint(StoredPrint.Color.Black,
                         "Starting in " + workDir + " : " + cmd + " " + args + " .."));
                 };
 
@@ -2207,7 +2207,7 @@ namespace AnyUi
                 proc.BeginErrorReadLine();
 
                 await StartFlyoverModalAsync(uc);
-            } 
+            }
             catch (Exception ex)
             {
                 // mirror exception to inside and outside
@@ -2217,11 +2217,11 @@ namespace AnyUi
                     logBuffer.Add(new StoredPrint(StoredPrint.Color.Red, "" + ex.Message));
                 }
                 Log.Singleton.Error(ex, "executing system command");
-            }           
-            
-            return uc;        
+            }
+
+            return uc;
         }
-                
+
     }
 
     public class AnyUiColorToWpfBrushConverter : IValueConverter

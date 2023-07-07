@@ -245,7 +245,7 @@ namespace AasxPluginExportTable.Table
 
             if (preset == "description")
                 elem.Description = ExtendLangStringSet.Parse<Aas.LangStringTextType>(
-                    commit(cell), (lng,txt) => new Aas.LangStringTextType(lng, txt))
+                    commit(cell), (lng, txt) => new Aas.LangStringTextType(lng, txt))
                     .Cast<Aas.ILangStringTextType>().ToList();
 
             if (preset == "value")
@@ -375,7 +375,7 @@ namespace AasxPluginExportTable.Table
                 cd.GetIEC61360().Definition = ExtendLangStringSet.Parse<Aas.LangStringDefinitionTypeIec61360>(
                     commit(cell), (lng, txt) => new Aas.LangStringDefinitionTypeIec61360(lng, txt))
                     .Cast<Aas.ILangStringDefinitionTypeIec61360>().ToList();
-            
+
             if (preset == "unit")
                 cd.GetIEC61360().Unit = commit(cell);
 

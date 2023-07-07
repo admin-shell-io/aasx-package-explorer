@@ -141,7 +141,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
-            }            
+            }
 
             if (action == "fill-anyui-visual-extension")
             {

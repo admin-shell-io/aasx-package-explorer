@@ -38,8 +38,8 @@ namespace AasxPredefinedConcepts
             this.DomainInfo = "Definitions for exporting AsciiDoc formats";
 
             // IReferable
-            SEM_AsciiDocSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { 
-                new Aas.Key(Aas.KeyTypes.Submodel, 
+            SEM_AsciiDocSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() {
+                new Aas.Key(Aas.KeyTypes.Submodel,
                 "http://admin-shell.io/aasx-package-explorer/functions/asciidoc/1/0") });
 
             CD_TextBlock = CreateSparseConceptDescription("en", "IRI",

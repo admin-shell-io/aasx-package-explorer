@@ -175,7 +175,7 @@ namespace AnyUi
         {
             await Task.Yield();
             return null;
-        }        
+        }
 
         /// <summary>
         /// If ticket does not contain the filename named by <c>argName</c>,
@@ -195,7 +195,7 @@ namespace AnyUi
             await Task.Yield();
             return false;
         }
-       
+
         /// <summary>
         /// Selects a text either from user or from ticket.
         /// </summary>
@@ -285,11 +285,11 @@ namespace AnyUi
             string contentType = "application/octet-stream")
         {
             // access
-            if (ticket == null 
+            if (ticket == null
                 || !(ticket[argFileName] is string fn)
                 || !(ticket[argLocation] is string location))
                 return;
-            
+
             await CheckIfDownloadAndStart(log, location, fn, contentType);
         }
 

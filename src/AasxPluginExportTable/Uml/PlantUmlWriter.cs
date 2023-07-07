@@ -102,7 +102,7 @@ namespace AasxPluginExportTable.Uml
             if (name == null || _options.Suppress?.HasContent() != true)
                 return false;
 
-            foreach (var se in _options.Suppress.Split(new[] { ' ' }, 
+            foreach (var se in _options.Suppress.Split(new[] { ' ' },
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             {
                 if (name.Contains(se, StringComparison.InvariantCultureIgnoreCase))

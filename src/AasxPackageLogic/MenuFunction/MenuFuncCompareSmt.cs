@@ -101,8 +101,8 @@ namespace AasxPackageExplorer
                 // nothing to do
                 return;
 
-            Action lambdaHead = () => 
-                Recs.AddElemDetail("Q01", "DIFF", true, "Difference(s) on element of second: ", 
+            Action lambdaHead = () =>
+                Recs.AddElemDetail("Q01", "DIFF", true, "Difference(s) on element of second: ",
                     (qlf2 as Aas.IReferable)?.GetReference());
 
             if (qlf1.Qualifiers == null)
@@ -217,7 +217,7 @@ namespace AasxPackageExplorer
                     rl.AddDifference("E06", "DIFF", true, "Identifiable/id", id1, id2);
 
                 // administrative information
-                if (idf1.Administration is Aas.IAdministrativeInformation ai1 
+                if (idf1.Administration is Aas.IAdministrativeInformation ai1
                     && idf2.Administration is Aas.IAdministrativeInformation ai2)
                 {
                     var ais1 = ai1.ToStringExtended(1);
@@ -249,11 +249,11 @@ namespace AasxPackageExplorer
                 var vl1 = "" + prop1.Value;
                 var vl2 = "" + prop2.Value;
                 if (vl1 != vl2)
-                    rl.AddDifference("E09", "DIFF", true, "value", 
+                    rl.AddDifference("E09", "DIFF", true, "value",
                         AdminShellUtil.ShortenWithEllipses(vl1, 60),
                         AdminShellUtil.ShortenWithEllipses(vl2, 60));
             }
-            
+
             if (firstRf is Aas.IMultiLanguageProperty mlp1 && secondRf is Aas.IMultiLanguageProperty mlp2)
             {
                 var ml1 = "" + mlp1.Value?.ToStringExtended(1);
@@ -356,7 +356,7 @@ namespace AasxPackageExplorer
                 Recs.AddStatement("R11", "DIFF", true, "First list of children is 0 while second is not!");
                 return;
             }
-            
+
             if (secondChilds.Count < 1)
             {
                 lambdaHead();
@@ -392,7 +392,7 @@ namespace AasxPackageExplorer
                 else
                 {
                     // report an addition
-                    Recs.AddElemDetail("R20", "ADD", true, 
+                    Recs.AddElemDetail("R20", "ADD", true,
                         "Second: Added element found:", ch2.GetReference());
                     ListSme(ch2, "R21", "ADD");
                 }
@@ -432,7 +432,7 @@ namespace AasxPackageExplorer
             Recs.AddComment("Second AASX (main): " + secondFn);
 
             // SMT content
-            for (int i=0; i<2; i++)
+            for (int i = 0; i < 2; i++)
             {
                 if (IndexEnv(i).AssetAdministrationShells == null
                     || IndexEnv(i).AssetAdministrationShells.Count < 1

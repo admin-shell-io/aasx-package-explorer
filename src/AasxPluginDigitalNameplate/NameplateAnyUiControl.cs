@@ -236,7 +236,7 @@ namespace AasxPluginDigitalNameplate
             scroll.Content = stackGrid;
 
             // add a small explanation
-            var gridExpl = uitk.AddSmallGridTo(stackGrid, 0, 0, 1, 2, colWidths: new[] { "*", "#" }, rowHeights: new[] { "#"},
+            var gridExpl = uitk.AddSmallGridTo(stackGrid, 0, 0, 1, 2, colWidths: new[] { "*", "#" }, rowHeights: new[] { "#" },
                 margin: new AnyUiThickness(0, 0, 0, 10));
 
             uitk.AddSmallBasicLabelTo(gridExpl, 0, 0,
@@ -250,7 +250,7 @@ namespace AasxPluginDigitalNameplate
             uitk.Set(
                 AddNamedImage(uitk, gridExpl, 0, 1, "iec-logo.png", stretch: AnyUiStretch.UniformToFill),
                     margin: new AnyUiThickness(10, 0, 0, 0),
-                    verticalAlignment: AnyUiVerticalAlignment.Stretch, 
+                    verticalAlignment: AnyUiVerticalAlignment.Stretch,
                     maxHeight: 100);
 
             // add the nameplate itself
@@ -266,7 +266,7 @@ namespace AasxPluginDigitalNameplate
                     margin: new AnyUiThickness(0, 10, 0, 0));
 
                 uitk.AddSmallBasicLabelTo(gridReport, 0, 0,
-                    content: "Individual elements of the Digital Nameplate:", 
+                    content: "Individual elements of the Digital Nameplate:",
                     fontSize: 1.4f, setBold: true,
                     foreground: AnyUiBrushes.DarkGray);
 
@@ -287,7 +287,7 @@ namespace AasxPluginDigitalNameplate
         {
             switch (qual)
             {
-                case Quality.Free: 
+                case Quality.Free:
                     return new AnyUiBrush(0xbbfcfcfc);
                 case Quality.Good:
                     return new AnyUiBrush(0x7389ff79);
@@ -399,7 +399,7 @@ namespace AasxPluginDigitalNameplate
 
         protected AnyUiImage AddNamedImage(
             AnyUiSmallWidgetToolkit uitk,
-            AnyUiGrid grid, int row, int col,            
+            AnyUiGrid grid, int row, int col,
             string mediaPath,
             AnyUiStretch? stretch = null)
         {
@@ -422,12 +422,12 @@ namespace AasxPluginDigitalNameplate
                 // load
                 bitmapInfo = AnyUiGdiHelper.CreateAnyUiBitmapInfo(imagePath);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 LogInternally.That.SilentlyIgnoredError(ex);
             }
-            
-            var res = (bitmapInfo == null) ? null : 
+
+            var res = (bitmapInfo == null) ? null :
                 uitk.AddSmallImageTo(grid, row, col,
                     stretch: stretch,
                     bitmap: bitmapInfo);
@@ -459,7 +459,7 @@ namespace AasxPluginDigitalNameplate
                         {
                             byte[] pngBytes = code.GetGraphic(20,
                                 darkColorRgba: new byte[] { 0, 0, 0, 0xff },
-                                lightColorRgba: new byte[] { 0xff, 0xff, 0xff, 0 } );
+                                lightColorRgba: new byte[] { 0xff, 0xff, 0xff, 0 });
 
                             using (MemoryStream ms = new MemoryStream())
                             {
@@ -557,7 +557,7 @@ namespace AasxPluginDigitalNameplate
             // make a outer grid
             var grid = uitk.AddSmallGrid(7, 8,
                 rowHeights: new[] { "#", "#", "#", "#", "#", "#", "#" },
-                colWidths: new[] { "14:", "14:", "*", "*", "*", "*", "14:", "14:" }, 
+                colWidths: new[] { "14:", "14:", "*", "*", "*", "*", "14:", "14:" },
                 margin: new AnyUiThickness(2));
 
             uitk.Set(uitk.AddSmallLabelTo(grid, 0, 0, content: ""), maxHeight: 4, minHeight: 4);
@@ -603,7 +603,7 @@ namespace AasxPluginDigitalNameplate
                     // screw by image
                     uitk.Set(
                         AddNamedImage(
-                            uitk, grid, screwPos[2 * i + 0], screwPos[2 * i + 1], 
+                            uitk, grid, screwPos[2 * i + 0], screwPos[2 * i + 1],
                             "screw-black2.png", stretch: AnyUiStretch.None));
                 }
             }
@@ -672,13 +672,13 @@ namespace AasxPluginDigitalNameplate
                 rowSpan: 2);
 
             AddIndexTextBlock(uitk, pdGrid, 0, 0, index: "(11)", text: "" + plate.ManufacturerProductRoot,
-                statement: ((plate.ManufacturerProductRoot?.HasContent() == true) 
+                statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
                     ? new IndexStatement(Quality.Good, statement: "Is given.")
                     : new IndexStatement(Quality.Warn, statement: "Should be given."))
                     .Set(description: "ManufacturerProductRoot:\n" +
                         "Top level of the product hierarchy of a organisation. Typically denotes a category " +
                         "of assets, such as: \"flow meter\"."));
-            
+
             AddIndexTextBlock(uitk, pdGrid, 1, 0, index: "(12)", text: "" + plate.ManufacturerProductFamily,
                 statement: ((plate.ManufacturerProductFamily?.HasContent() == true)
                     ? new IndexStatement(Quality.Good, statement: "Is given.")
@@ -687,7 +687,7 @@ namespace AasxPluginDigitalNameplate
                         "2nd level of the product hierarchy of a organisation. Typically denotes a specific " +
                         "type family of asset, such as: \"ABC\", which is within the given " +
                         "top level (category)."));
-            
+
             AddIndexTextBlock(uitk, pdGrid, 2, 0, index: "(13)", text: "" + plate.ManufacturerProductType,
                 statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
                     ? new IndexStatement(Quality.Good, statement: "Is given.")
@@ -695,7 +695,7 @@ namespace AasxPluginDigitalNameplate
                     .Set(description: "ManufacturerProductType:\n" +
                         "Specific product type of an asset. Typically specific enough to order " +
                         "a spare or replacement part."));
-            
+
             AddIndexTextBlock(uitk, pdGrid, 3, 0, index: "(14)", text: "" + plate.OrderCodeOfManufacturer,
                 statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
                     ? new IndexStatement(Quality.Good, statement: "Is given.")
@@ -704,8 +704,8 @@ namespace AasxPluginDigitalNameplate
                         "Unique combination of numbers and letters given by the manufacturer precisely " +
                         "defining the asset type. Full information given to order an exact replacement " +
                         "of the asset."));
-            
-            AddIndexTextBlock(uitk, pdGrid, 4, 0, index: "(15)", 
+
+            AddIndexTextBlock(uitk, pdGrid, 4, 0, index: "(15)",
                 text: "" + plate.ProductArticleNumberOfManufacturer,
                 statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
                     ? new IndexStatement(Quality.Good, statement: "Is given.")
@@ -713,16 +713,16 @@ namespace AasxPluginDigitalNameplate
                     .Set(description: "ProductArticleNumberOfManufacturer:\n" +
                         "Unique product identifier of the manufacturerTop defined by the ordering " +
                         "system of the manufacturer. Typically known as part number."));
-            
+
             AddIndexTextBlock(uitk, pdGrid, 5, 0, index: "(16)", text: "" + plate.SerialNumber,
                 statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
                     ? new IndexStatement(Quality.Good, statement: "Is given.")
-                    : new IndexStatement(Quality.Warn, 
+                    : new IndexStatement(Quality.Warn,
                         statement: "Should be given, if asset is an product instance."))
                     .Set(description: "SerialNumber:\n" +
                         "Unique combination of numbers and letters used to identify the " +
                         "product (asset) instance once it has been manufactured. Does not need to be " +
-                        "worldwide unqiue, only for the manufacturer."));            
+                        "worldwide unqiue, only for the manufacturer."));
 
             // Product designation
 
@@ -771,7 +771,7 @@ namespace AasxPluginDigitalNameplate
                     numRow = 1 + ((numMarks - 1) / MarkingsPerRow);
                     numCol = MarkingsPerRow;
                 }
-                
+
                 //var colWidths = new List<string>();
                 //for (int i = 0; i < numCol; i++)
                 //    colWidths.Add("#");
@@ -915,7 +915,7 @@ namespace AasxPluginDigitalNameplate
 
                 // finish
                 return;
-            }            
+            }
         }
 
         #endregion
@@ -935,7 +935,7 @@ namespace AasxPluginDigitalNameplate
             _displayContext = newCdp;
             _panel = newPanel;
             _panel.Children.Clear();
-            
+
             // the default: the full shelf
             RenderFullNameplate(_panel, _uitk);
         }

@@ -843,7 +843,7 @@ namespace AdminShellNS
                 case TypeCode.Boolean:
                     var isFalse = value == null
                         || (value is int vi && vi == 0)
-                        || (value is string vs && (vs == "" || vs == "false") )
+                        || (value is string vs && (vs == "" || vs == "false"))
                         || (value is bool vb && !vb);
                     f.SetValue(obj, !isFalse);
                     break;
@@ -864,7 +864,7 @@ namespace AdminShellNS
 
         // see: https://stackoverflow.com/questions/6386113/using-system-io-packaging-to-generate-a-zip-file
         public static void AddFileToZip(
-            string zipFilename, string fileToAdd, 
+            string zipFilename, string fileToAdd,
             CompressionOption compression = CompressionOption.Normal,
             FileMode fileMode = FileMode.OpenOrCreate)
         {
@@ -934,7 +934,7 @@ namespace AdminShellNS
         {
             if (data == null)
                 return true;
-            
+
             var ascii = true;
             for (int i = 0; i < Math.Min(data.Length, bytesToCheck); i++)
                 if (data[i] >= 128)

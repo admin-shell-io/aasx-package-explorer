@@ -9,7 +9,7 @@ namespace Extensions
         public static string LANG_DEFAULT = "en";
 
         // new version
-        public static string GetDefaultStringGen<T>(List<T> langStrings, string defaultLang = null) 
+        public static string GetDefaultStringGen<T>(List<T> langStrings, string defaultLang = null)
             where T : IAbstractLangString
         {
             // start

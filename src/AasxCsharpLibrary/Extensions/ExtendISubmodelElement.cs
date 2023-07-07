@@ -48,9 +48,9 @@ namespace Extensions
             }
             else
                 return childSubmodelElement;
-        }        
+        }
 
-        public static List<ISubmodelElement> GetChildsAsList (this ISubmodelElement sme)
+        public static List<ISubmodelElement> GetChildsAsList(this ISubmodelElement sme)
         {
             return sme.DescendOnce().Where((x) => x is ISubmodelElement).Cast<ISubmodelElement>().ToList();
         }
@@ -854,7 +854,7 @@ namespace Extensions
                 var res = submodelElements.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
                 if (res is MultiLanguageProperty mlp)
                 {
-                    mlp.Value = new List<ILangStringTextType>() { 
+                    mlp.Value = new List<ILangStringTextType>() {
                         new LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), srcProp.Value) };
                     mlp.ValueId = srcProp.ValueId;
                     return res;
@@ -1004,7 +1004,7 @@ namespace Extensions
             return (T)sme;
         }
 
-        public static IEnumerable<T> FindAllSemanticIdAs<T>(this List<ISubmodelElement> submodelELements, 
+        public static IEnumerable<T> FindAllSemanticIdAs<T>(this List<ISubmodelElement> submodelELements,
             IKey semId, MatchMode matchMode = MatchMode.Strict)
                 where T : ISubmodelElement
         {
@@ -1112,7 +1112,7 @@ namespace Extensions
         }
 
         public static void RecurseOnSubmodelElements(
-            this List<ISubmodelElement> submodelElements, object state, 
+            this List<ISubmodelElement> submodelElements, object state,
             List<ISubmodelElement> parents, Action<object, List<ISubmodelElement>, ISubmodelElement> lambda)
         {
             // trivial
@@ -1249,7 +1249,7 @@ namespace Extensions
         }
 
         public static T FindFirstAnySemanticId<T>(
-            this List<ISubmodelElement> submodelElements, string[] allowedSemanticIds, 
+            this List<ISubmodelElement> submodelElements, string[] allowedSemanticIds,
             bool invertAllowed = false) where T : ISubmodelElement
         {
             return submodelElements.FindAllSemanticId<T>(allowedSemanticIds, invertAllowed).FirstOrDefault();
@@ -1323,7 +1323,7 @@ namespace Extensions
         }
 
         public static ISubmodelElement FindFirstSemanticId(
-            this List<ISubmodelElement> submodelElements, 
+            this List<ISubmodelElement> submodelElements,
             IKey semId, Type[] allowedTypes = null, MatchMode matchMode = MatchMode.Strict)
         {
             return submodelElements.FindAllSemanticId(semId, allowedTypes, matchMode)?.FirstOrDefault<ISubmodelElement>();
@@ -1383,7 +1383,7 @@ namespace Extensions
             return res;
         }
 
-#endregion
+        #endregion
 
         public static ISubmodelElement UpdateFrom(this ISubmodelElement elem, ISubmodelElement source)
         {

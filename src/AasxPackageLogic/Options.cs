@@ -927,7 +927,7 @@ namespace AasxPackageLogic
                     // difficult to pass a C# like script with double quoted inner strings via
                     // the command line.
                     /// An example would be: 
-                    for (int i=index+1; i<args.Length; i++)
+                    for (int i = index + 1; i < args.Length; i++)
                         optionsInformation.ScriptCmd += args[i] + " ";
 
                     // virtuall stop the parsing

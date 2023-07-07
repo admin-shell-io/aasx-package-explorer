@@ -187,7 +187,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
                 // ReSharper enable UnusedVariable
             }
-            
+
             if (action == "get-list-new-submodel")
             {
                 // prepare list

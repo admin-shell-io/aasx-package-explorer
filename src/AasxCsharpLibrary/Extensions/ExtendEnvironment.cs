@@ -109,7 +109,7 @@ namespace Extensions
                         foreach (var eds in hds.EmbeddedDataSpecifications)
                         {
                             if (eds.DataSpecificationContent == null)
-                                eds.DataSpecificationContent = 
+                                eds.DataSpecificationContent =
                                     new DataSpecificationIec61360(
                                         new List<ILangStringPreferredNameTypeIec61360>());
                         }
@@ -276,7 +276,9 @@ namespace Extensions
 #endif
 
         //TODO:jtikekar to test
-        public static AasCore.Aas3_0.Environment CreateFromExistingEnvironment(this AasCore.Aas3_0.Environment environment, AasCore.Aas3_0.Environment sourceEnvironment, List<IAssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<ISubmodel> filterForSubmodel = null, List<IConceptDescription> filterForConceptDescriptions = null)
+        public static AasCore.Aas3_0.Environment CreateFromExistingEnvironment(this AasCore.Aas3_0.Environment environment, 
+            AasCore.Aas3_0.Environment sourceEnvironment, List<IAssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<ISubmodel> filterForSubmodel = null, 
+            List<IConceptDescription> filterForConceptDescriptions = null)
         {
             if (filterForAas == null)
             {
@@ -346,7 +348,8 @@ namespace Extensions
 
         }
 
-        public static void CreateFromExistingEnvRecurseForCDs(this AasCore.Aas3_0.Environment environment, AasCore.Aas3_0.Environment sourceEnvironment, List<ISubmodelElement> submodelElements, ref List<IConceptDescription> filterForConceptDescription)
+        public static void CreateFromExistingEnvRecurseForCDs(this AasCore.Aas3_0.Environment environment, AasCore.Aas3_0.Environment sourceEnvironment, 
+            List<ISubmodelElement> submodelElements, ref List<IConceptDescription> filterForConceptDescription)
         {
             if (submodelElements == null || submodelElements.Count == 0 || filterForConceptDescription == null || filterForConceptDescription.Count == 0)
             {

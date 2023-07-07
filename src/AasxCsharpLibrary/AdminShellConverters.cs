@@ -191,7 +191,8 @@ namespace AdminShellNS
 
         public class AdaptiveAasIClassConverter : JsonConverter
         {
-            public enum ConversionMode { 
+            public enum ConversionMode
+            {
                 /// <summary>
                 /// For (known) nodes of the AAS meta model, the converison of Newtonsoft.Json
                 /// is used. This is done by invoking creation of the real data type for the

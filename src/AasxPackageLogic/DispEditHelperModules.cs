@@ -454,7 +454,7 @@ namespace AasxPackageLogic
                     stack, repo, identifiable.Administration.Creator, "creator:", "Create data element!",
                     v =>
                     {
-                        identifiable.Administration.Creator = 
+                        identifiable.Administration.Creator =
                             new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
@@ -580,8 +580,8 @@ namespace AasxPackageLogic
                                         hasDataSpecification.Add(
                                             new Aas.EmbeddedDataSpecification(
                                                 new Aas.Reference(
-                                                    Aas.ReferenceTypes.ExternalReference, 
-                                                    new Aas.IKey[] { 
+                                                    Aas.ReferenceTypes.ExternalReference,
+                                                    new Aas.IKey[] {
                                                         new Aas.Key(KeyTypes.GlobalReference, preset.value) }
                                                     .ToList()),
                                             null));
@@ -1614,7 +1614,7 @@ namespace AasxPackageLogic
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => dsiec.LevelType == null || 
+                            () => dsiec.LevelType == null ||
                                 !(dsiec.LevelType.Min || dsiec.LevelType.Max
                                   || dsiec.LevelType.Nom || dsiec.LevelType.Typ),
                             "Consider specifying a IEC61360 level type attribute for the " +
@@ -1635,7 +1635,7 @@ namespace AasxPackageLogic
                 paddingCaption: new AnyUiThickness(5, 0, 0, 0),
                 marginGrid: new AnyUiThickness(4, 0, 0, 0),
                 minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
-                
+
                 Action<int, string, bool, Action<bool>> lambda = (col, name, value, setValue) =>
                 {
                     AnyUiUIElement.RegisterControl(
