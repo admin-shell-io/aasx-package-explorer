@@ -169,6 +169,9 @@
                         <tr>
                             @for (int ci = 0; ci < _numCol; ci++)
                             {
+                                if (_numCol == 8 && ci == 0)
+                                    ;
+
                                 // this checks exactly for the root coordinates (no span coordinates)
                                 var foundContent = false;
                                 foreach (var ch in GetChildsAt(ri, ci))

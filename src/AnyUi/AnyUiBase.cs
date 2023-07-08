@@ -259,7 +259,7 @@ namespace AnyUi
                 solidColorBrush.R + ", " +
                 solidColorBrush.G + ", " +
                 solidColorBrush.B + ", " +
-                solidColorBrush.A + ")";
+                string.Format(CultureInfo.InvariantCulture, "{0:0.00}", 1.0 * solidColorBrush.A / 255.0) + ")";
         }
     }
 
@@ -1117,6 +1117,14 @@ namespace AnyUi
             {
                 // valid at all?
                 if (ch.GridRow == null || ch.GridColumn == null)
+                    continue;
+
+                // a border is not valid
+                if (ch is AnyUiBorder)
+                    continue;
+
+                // is child valid for HTML?
+                if ((ch.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
                     continue;
 
                 // first check, if in intervals

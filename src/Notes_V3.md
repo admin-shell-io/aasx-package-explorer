@@ -42,6 +42,12 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * plugin known submodels does not render correctly for Blazor
 
+ move up/down of SM does not work always
+
+* "Adds known" / for SM (DPP v20) there is Id not SemanticId!
+
+* ExportPreDef double exports CDs???
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done

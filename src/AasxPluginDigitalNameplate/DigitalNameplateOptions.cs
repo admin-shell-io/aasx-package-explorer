@@ -28,6 +28,9 @@ namespace AasxPluginDigitalNameplate
     /// </summary>
     public class DigitalNameplateOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
+        public enum ParserEnum { V10, V20 };
+
+        public ParserEnum Parser = DigitalNameplateOptionsRecord.ParserEnum.V10;
         public string Explanation = "";
     }
 
@@ -58,6 +61,8 @@ namespace AasxPluginDigitalNameplate
             rec.AllowSubmodelSemanticId.Add(
                 AasxPredefinedConcepts.ZveiNameplateV10.Static.SM_Nameplate.GetSemanticKey());
 
+            rec.Parser = DigitalNameplateOptionsRecord.ParserEnum.V10;
+
             rec.Explanation = dpp +
                "This is version V1.0 of the Submodel for digital nameplate. It was originally created by the " +
                "ZVEI association in 2021.";
@@ -69,6 +74,8 @@ namespace AasxPluginDigitalNameplate
 
             rec.AllowSubmodelSemanticId.Add(
                 AasxPredefinedConcepts.DigitalNameplateV20.Static.SM_Nameplate.GetSemanticKey());
+
+            rec.Parser = DigitalNameplateOptionsRecord.ParserEnum.V20;
 
             rec.Explanation = dpp +
                "This is version V2.0 of the Submodel for digital nameplate. It is maintained by " +

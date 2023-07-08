@@ -13,6 +13,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
+using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.Convert;
 using AasxSignature;
 using AdminShellNS;
@@ -867,6 +868,205 @@ namespace AasxPackageLogic
                 {
                     Log.Singleton.Error(ex, "when adding Submodel to AAS");
                 }
+            }
+
+            if (cmd == "newsubmodelfromknown")
+            {
+                //
+                // start
+                //
+
+                // arguments
+                if (ticket.Env == null
+                || ticket.AAS == null
+                || ticket.Submodel != null)
+                {
+                    LogErrorToTicket(ticket,
+                        "New Submodel from known: No valid AAS-Env, AAS selected or individual " +
+                        "Submodel selected!");
+                    return;
+                }
+
+                // try to get tuple?
+                var domainPart = ticket["Domain"] as string;
+
+                // try to get full domain
+                string domainFull = null;
+                foreach (var dom in AasxPredefinedConcepts.DefinitionsPool.Static.GetDomains())
+                    if (dom.Contains(domainPart, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        domainFull = dom;
+                        break;
+                    }
+                if (domainFull == null)
+                {
+                    LogErrorToTicket(ticket,
+                        "New Submodel from known: Full domain could not be identified. Aborting!");
+                    return;
+                }
+
+                // try to get Referables to work on
+                var listRfs = AasxPredefinedConcepts.DefinitionsPool.Static.GetEntitiesForDomain(domainFull)
+                        .Where((o) => o is DefinitionsPoolReferableEntity)
+                        .Cast<DefinitionsPoolReferableEntity>()
+                        .Select((o) => o.Ref)
+                        .Where((rf) => rf != null);
+
+                var listSm = listRfs.Where((rf) => rf is Aas.ISubmodel);
+                var listCd = listRfs.Where((rf) => rf is Aas.IConceptDescription);
+
+                //
+                // generate Submodels
+                //
+
+                int createdSms = 0;
+                foreach (var knownSm in listSm)
+                {
+                    // individual instance
+                    var smres = (knownSm as Aas.ISubmodel)?.Copy();
+                    if (smres == null)
+                        continue;
+
+                    // need instance ids
+                    if (smres.Kind == null || smres.Kind == Aas.ModellingKind.Instance)
+                        smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdSubmodelInstance);
+                    else
+                        smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdSubmodelTemplate);
+
+                    // add Submodel
+                    var smref = smres.GetReference().Copy();
+                    ticket.AAS.AddSubmodelReference(smref);
+                    ticket.Env.Submodels.Add(smres);
+                    createdSms++;
+                }
+
+                Log.Singleton.Info("New Submodel from known: {0} (empty) Submodels created.", createdSms);
+
+                //
+                // generate ConceptDescriptions
+                //
+
+                int createdCds = 0, foundCds = 0;
+                foreach (var knownCd in listCd)
+                {
+                    // individual instance
+                    var cdres = (knownCd as Aas.IConceptDescription)?.Copy();
+                    if (cdres == null)
+                        continue;
+
+                    // check if already existing
+                    var cdFound = ticket.Env.FindConceptDescriptionById(cdres.Id);
+                    if (cdFound != null)
+                    {
+                        foundCds++;
+                        continue;
+                    }
+                   
+                    // ok, add
+                    ticket.Env.ConceptDescriptions.Add(cdres);
+                    createdCds++;
+                }
+
+                Log.Singleton.Info("New Submodel from known: {0} ConceptDesciptions created, " +
+                    "{1} ConceptDesciptions already found in Environment.", createdCds, foundCds);
+
+#if __not_now
+
+                // or search?
+                if (record == null && ticket["Name"] is string name && name.HasContent())
+                {
+                    foreach (var rec in GetPotentialGeneratedSubmodels())
+                        if (rec.Item2?.ToLower().Contains(name.ToLower()) == true)
+                        {
+                            record = rec;
+                            break;
+                        }
+                }
+
+                // found?
+                if (record == null || record.Item1 == null
+                    || record.Item2?.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket, "New Submodel from plugin: " +
+                        "No name or selection given to which Submodel shall be generated.");
+                    return;
+                }
+
+                // try to invoke plugin to get submodel
+                Aas.Submodel smres = null;
+                List<Aas.ConceptDescription> cdres = null;
+                try
+                {
+                    var res = record.Item1.InvokeAction("generate-submodel", record.Item2) as AasxPluginResultBase;
+                    if (res is AasxPluginResultBaseObject rbo)
+                    {
+                        smres = rbo.obj as Aas.Submodel;
+                    }
+                    if (res is AasxPluginResultGenerateSubmodel rgsm)
+                    {
+                        smres = rgsm.sm;
+                        cdres = rgsm.cds;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+
+                // something
+                if (smres == null)
+                {
+                    LogErrorToTicket(ticket,
+                        "New Submodel from plugin: Error accessing plugins. Aborting.");
+                    return;
+                }
+
+                try
+                {
+                    // Submodel needs an identification
+                    smres.Id = "";
+                    if (smres.Kind == null || smres.Kind == Aas.ModellingKind.Instance)
+                        smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdSubmodelInstance);
+                    else
+                        smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdSubmodelTemplate);
+
+                    // add Submodel
+                    var smref = smres.GetReference().Copy();
+                    ticket.AAS.AddSubmodelReference(smref);
+                    ticket.Env.Submodels.Add(smres);
+
+                    // add ConceptDescriptions?
+                    if (cdres != null && cdres.Count > 0)
+                    {
+                        int nr = 0;
+                        foreach (var cd in cdres)
+                        {
+                            if (cd == null || cd.Id == null)
+                                continue;
+                            var cdFound = ticket.Env.FindConceptDescriptionById(cd.Id);
+                            if (cdFound != null)
+                                continue;
+                            // ok, add
+                            var newCd = cd.Copy();
+                            ticket.Env.ConceptDescriptions.Add(newCd);
+                            nr++;
+                        }
+                        Log.Singleton.Info(
+                            $"added {nr} ConceptDescritions for Submodel {smres.IdShort}.");
+                    }
+
+                    // give data bickt
+                    ticket["SmRef"] = smref;
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "when adding Submodel to AAS");
+                }
+#endif
             }
 
             if (cmd == "convertelement")

@@ -1382,6 +1382,50 @@ namespace AasxPackageLogic
                 MainWindow.RedrawAllElementsAndFocus(nextFocus: ticket["SmRef"]);
             }
 
+            if (cmd == "newsubmodelfromknown")
+            {
+                // create a list of Submodels form the known pool
+                var listOfSm = new List<AnyUiDialogueListItem>();
+                foreach (var dom in AasxPredefinedConcepts.DefinitionsPool.Static.GetDomains())
+                    listOfSm.Add(new AnyUiDialogueListItem("" + dom, dom));
+
+                // could be nothing
+                if (listOfSm.Count < 1)
+                {
+                    LogErrorToTicket(ticket, "New Submodel from pool of known: No Submodels available " +
+                        "to be generated.");
+                    return;
+                }
+
+                // prompt if no name is given
+                if (ticket["Domain"] == null)
+                {
+                    var uc = new AnyUiDialogueDataSelectFromList(
+                        "Select domain of known entities to be generated ..");
+                    uc.ListOfItems = listOfSm;
+                    if (!(await DisplayContext.StartFlyoverModalAsync(uc))
+                        || uc.ResultItem == null)
+                        return;
+
+                    ticket["Domain"] = uc.ResultItem.Tag;
+                }
+
+                // do it
+                try
+                {
+                    // delegate futher
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When generating Submodel from known entities, an error occurred");
+                }
+
+                // redisplay
+                MainWindow.RedrawAllElementsAndFocus(nextFocus: ticket["SmRef"]);
+            }
+
             if (cmd == "convertelement")
             {
                 // check

@@ -96,6 +96,9 @@
 
     if (Element is AnyUiGrid grid)
     {
+        if (grid.RowDefinitions.Count == 8 && grid.ColumnDefinitions.Count == 8)
+            ;
+
         <AnyUiRenderGrid DisplayData="@DisplayData"
                          Session="@Session"
                          Parent="@Parent"
@@ -243,6 +246,8 @@
     if (Element is AnyUiSelectableTextBlock stb)
     {
         style.SetSpecifics(
+            foreground: stb.Foreground,
+            background: stb.Background,
             margin: stb.Margin,
             padding: stb.Padding,
             textWrapping: stb.TextWrapping,
@@ -255,7 +260,6 @@
         if (stb.TextAsHyperlink)
         {
             <a href="@stb.Text" class="selectable-text" style="@style">
-                <!-- <MultiLineText InputString="@stb.Text"/> -->
                 <AnyUiRenderMultiText DisplayData="@DisplayData"
                                       Session="@Session"
                                       Parent="@Parent"

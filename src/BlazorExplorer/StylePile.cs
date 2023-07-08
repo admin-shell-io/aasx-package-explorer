@@ -232,7 +232,7 @@ namespace BlazorUI
 
             // colors
             Set("color", foreground?.HtmlRgb(), doNotSetIfNull: true, add: true);
-            Set("background-color", background?.HtmlRgb(), doNotSetIfNull: true, add: true);
+            Set("background-color", background?.HtmlRgba(), doNotSetIfNull: true, add: true);
             Set("border-color", borderBrush?.HtmlRgb(), doNotSetIfNull: true, add: true);
 
             if (margin != null)

@@ -1040,6 +1040,15 @@ namespace Extensions
             return submodelElements.FindAllSemanticIdAs<T>(semId, matchMode).FirstOrDefault<T>();
         }
 
+        public static IEnumerable<ISubmodelElement> Join (params IEnumerable<ISubmodelElement>[] lists)
+        {
+            if (lists == null || lists.Length < 1)
+                yield break;
+            foreach (var l in lists)
+                foreach (var sme in l)
+                    yield return sme;
+        }
+
         public static void RecurseOnReferables(
             this List<ISubmodelElement> submodelElements, object state, List<IReferable> parents,
                 Func<object, List<IReferable>, IReferable, bool> lambda)

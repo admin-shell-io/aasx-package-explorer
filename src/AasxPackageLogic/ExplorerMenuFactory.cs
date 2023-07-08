@@ -274,12 +274,17 @@ namespace AasxPackageExplorer
                     .AddWpfBlazor(name: "LocationPush", header: "Push location", inputGesture: "Ctrl+Shift+P")
                     .AddWpfBlazor(name: "LocationPop", header: "Pop location", inputGesture: "Ctrl+Shift+O"))
                 .AddSeparator()
-                .AddMenu(header: "Plugins …", attachPoint: "Plugins", childs: (new AasxMenu())
-                    .AddWpfBlazor(name: "NewSubmodelFromPlugin", header: "New Submodel", inputGesture: "Ctrl+Shift+M",
+                .AddMenu(header: "Create …", attachPoint: "Plugins", childs: (new AasxMenu())
+                    .AddWpfBlazor(name: "NewSubmodelFromPlugin", header: "New Submodel from plugin", inputGesture: "Ctrl+Shift+M",
                             help: "Creates a new Submodel based on defintions provided by plugin.",
                             args: new AasxMenuListOfArgDefs()
                                 .Add("Name", "Name of the Submodel (partially)")
                                 .Add("Record", "Record data", hidden: true)
+                                .Add("SmRef", "Return: Submodel generated", hidden: true))
+                    .AddWpfBlazor(name: "NewSubmodelFromKnown", header: "New Submodel from pool of known",
+                            help: "Creates a new Submodel based on defintions provided by a pool of known definitions.",
+                            args: new AasxMenuListOfArgDefs()
+                                .Add("Domain", "Domain of knowledge/ name of the Submodel (partially)")
                                 .Add("SmRef", "Return: Submodel generated", hidden: true)))
                 .AddSeparator()
                 .AddWpfBlazor(name: "ConvertElement", header: "Convert …",

@@ -45,7 +45,7 @@ namespace AasxPluginDigitalNameplate
 
         public string ExplSafetyStr = "(not analyzed)";
 		
-		public string CompanyLogo = "";
+		public Aas.IFile CompanyLogo = null;
 
         public class MarkingInfo
         {
@@ -206,11 +206,176 @@ namespace AasxPluginDigitalNameplate
 
         public static NameplateData ParseSubmodelForV20(
             AdminShellPackageEnv thePackage,
-            Aas.Submodel subModel, AasxPredefinedConcepts.VDI2770v11 defs11,
-            string defaultLang,
-            int selectedDocClass, AasxLanguageHelper.LangEnum selectedLanguage)
+            Aas.Submodel subModel, DigitalNameplateOptions options,
+            string defaultLang = null)
         {
-            return null;
+            // access 
+            if (subModel == null || options == null)
+                return null;
+
+            // make result
+            var res = new NameplateData();
+
+            // shortcuts
+            var defs = AasxPredefinedConcepts.DigitalNameplateV20.Static;
+            var mm = MatchMode.Relaxed;
+
+            // SME on top level
+            res.URIOfTheProduct = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IProperty>(
+                    defs.CD_URIOfTheProduct?.GetSingleKey(), mm)?
+                .Value;
+
+            res.ManufacturerName = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_ManufacturerName?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.ManufacturerProductDesignation = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_ManufacturerProductDesignation?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.ManufacturerProductRoot = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_ManufacturerProductRoot?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.ManufacturerProductFamily = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_ManufacturerProductFamily?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.ManufacturerProductType = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_ManufacturerProductType?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.OrderCodeOfManufacturer = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_OrderCodeOfManufacturer?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.ProductArticleNumberOfManufacturer = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_ProductArticleNumberOfManufacturer?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.SerialNumber = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IProperty>(defs.CD_SerialNumber?.GetSingleKey(), mm)?
+                .Value;
+
+            res.YearOfConstruction = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IProperty>(defs.CD_YearOfConstruction?.GetSingleKey(), mm)?
+                .Value;
+
+            res.DateOfManufacture = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IProperty>(defs.CD_DateOfManufacture?.GetSingleKey(), mm)?
+                .Value;
+
+            res.HardwareVersion = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_HardwareVersion?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.FirmwareVersion = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_FirmwareVersion?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.SoftwareVersion = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                    defs.CD_SoftwareVersion?.GetSingleKey(), mm)?
+                .Value?.GetDefaultString(defaultLang);
+
+            res.CountryOfOrigin = "" + subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IProperty>(defs.CD_CountryOfOrigin?.GetSingleKey(), mm)?
+                .Value;
+
+            res.CompanyLogo = subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.IFile>(defs.CD_CompanyLogo?.GetSingleKey(), mm);
+
+            // find contact info?
+            var smcContInf = subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(
+                    defs.CD_ContactInformation?.GetSingleKey(), mm);
+            if (smcContInf?.Value != null)
+            {
+                res.ContactInformation = new List<string>();
+
+                Action<List<Aas.ISubmodelElement>, string, Aas.IKey> tryAdd = (coll, header, key) =>
+                {
+                    var st = coll?
+                        .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(key, mm)?
+                        .Value?.GetDefaultString(defaultLang);
+                    if (st?.HasContent() == true)
+                        res.ContactInformation.Add(("" + header) + st);
+                };
+
+                tryAdd(smcContInf?.Value, null, defs.CD_ZipCodeOfPOBox?.GetSingleKey());
+                tryAdd(smcContInf?.Value, null, defs.CD_POBox?.GetSingleKey());
+                tryAdd(smcContInf?.Value, null, defs.CD_Street?.GetSingleKey());
+                tryAdd(smcContInf?.Value, null, defs.CD_CityTown?.GetSingleKey());
+                tryAdd(smcContInf?.Value, null, defs.CD_StateCounty?.GetSingleKey());
+                tryAdd(smcContInf?.Value, null, defs.CD_NationalCode?.GetSingleKey());
+                tryAdd(smcContInf?.Value, null, defs.CD_AddressOfAdditionalLink?.GetSingleKey());
+
+                // Phone
+
+                var smc2 = smcContInf?.Value?
+                    .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Phone?.GetSingleKey(), mm);
+                if (smc2 != null)
+                    tryAdd(smc2.Value, null, defs.CD_TelephoneNumber?.GetSingleKey());
+
+                // Fax
+
+                smc2 = smcContInf?.Value?
+                    .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Fax?.GetSingleKey(), mm);
+                if (smc2 != null)
+                    tryAdd(smc2.Value, null, defs.CD_FaxNumber?.GetSingleKey());
+
+                // Email
+
+                smc2 = smcContInf?.Value?
+                    .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Email?.GetSingleKey(), mm);
+                if (smc2 != null)
+                    tryAdd(smc2.Value, null, defs.CD_EmailAddress?.GetSingleKey());
+            }
+
+            // find markings?
+            var collMarkings = subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Markings?.GetSingleKey(), mm)?.Value;
+            if (collMarkings == null)
+                collMarkings = subModel.SubmodelElements
+                .FindFirstSemanticIdAs<Aas.ISubmodelElementList>(defs.CD_Markings?.GetSingleKey(), mm)?.Value;
+            if (collMarkings != null)
+            {
+                res.Markings = new List<MarkingInfo>();
+
+                foreach (var smcMark in collMarkings
+                    .FindAllSemanticIdAs<Aas.SubmodelElementCollection>(defs.CD_Marking?.GetSingleKey(), mm))
+                {
+                    var mi = new MarkingInfo();
+                    res.Markings.Add(mi);
+
+                    mi.Name = "" + smcMark?.Value
+                        .FindFirstSemanticIdAs<Aas.IProperty>(defs.CD_MarkingName?.GetSingleKey(), mm)?
+                        .Value;
+
+                    mi.File = smcMark?.Value
+                        .FindFirstSemanticIdAs<Aas.IFile>(defs.CD_MarkingFile?.GetSingleKey(), mm);
+
+                    mi.AddText = new List<string>();
+                    foreach (var mat in smcMark?.Value
+                        .FindAllSemanticIdAs<Aas.IProperty>(defs.CD_MarkingAdditionalText?.GetSingleKey(), mm))
+                    {
+                        mi.AddText.Add("" + mat?.Value);
+                    }
+                }
+            }
+
+            // done
+            return res;
         }
     }
 }

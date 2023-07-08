@@ -153,7 +153,11 @@ namespace AasxPluginDigitalNameplate
                 return;
 
             // acquire information
-            _nameplateData = NameplateData.ParseSubmodelForV10(_package, _submodel, _options);
+            if (_foundRecord.Parser == DigitalNameplateOptionsRecord.ParserEnum.V10)
+                _nameplateData = NameplateData.ParseSubmodelForV10(_package, _submodel, _options);
+
+            if (_foundRecord.Parser == DigitalNameplateOptionsRecord.ParserEnum.V20)
+                _nameplateData = NameplateData.ParseSubmodelForV20(_package, _submodel, _options);
 
             // bring it to the panel            
             RenderPanelOutside(view, uitk, _renderedVersion);
@@ -257,6 +261,7 @@ namespace AasxPluginDigitalNameplate
             var gridNp = uitk.Set(RenderAnyUiNameplateData(uitk, _nameplateData),
                 margin: new AnyUiThickness(18, 10, 18, 10));
             AnyUiGrid.SetRow(gridNp, 1);
+            AnyUiGrid.SetColumn(gridNp, 0);
             stackGrid.Add(gridNp);
 
             // add report area
@@ -492,6 +497,34 @@ namespace AasxPluginDigitalNameplate
             return res;
         }
 
+        protected AnyUiImage AddAasxFileImage(
+            AnyUiSmallWidgetToolkit uitk,
+            AnyUiGrid grid, int row, int col,
+            Aas.IFile aasFile,
+            AnyUiStretch? stretch = null)
+        {
+            // access
+            if (aasFile?.Value.HasContent() != true)
+                return null;
+
+            AnyUiBitmapInfo bitmapInfo = null;
+            try
+            {
+                bitmapInfo = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package,aasFile.Value);
+            }
+            catch (Exception ex)
+            {
+                LogInternally.That.SilentlyIgnoredError(ex);
+            }
+
+            var res = (bitmapInfo == null) ? null :
+                uitk.AddSmallImageTo(grid, row, col,
+                    stretch: stretch,
+                    bitmap: bitmapInfo);
+
+            return res;
+        }
+
         protected AnyUiGrid AddReportLineFromIndex(
             AnyUiSmallWidgetToolkit uitk,
             AnyUiGrid grid, int row, int col,
@@ -505,7 +538,8 @@ namespace AasxPluginDigitalNameplate
             var g2 = uitk.AddSmallGridTo(grid, row, col,
                 2, 2,
                 rowHeights: new[] { "#", "#" }, colWidths: new[] { "24:", "*" },
-                margin: new AnyUiThickness(2));
+                margin: new AnyUiThickness(2),
+                background: AnyUiBrushes.LightGray);
 
             // very small label
             uitk.AddSmallBasicLabelTo(g2, 0, 0,
@@ -524,7 +558,7 @@ namespace AasxPluginDigitalNameplate
                     content: index.Description,
                     fontSize: 1.0f,
                     margin: new AnyUiThickness(0, 4, 0, 2),
-                    background: AnyUiBrushes.White,
+                    background: AnyUiBrushes.LightGray,
                     textWrapping: AnyUiTextWrapping.Wrap,
                     verticalAlignment: AnyUiVerticalAlignment.Top,
                     verticalContentAlignment: AnyUiVerticalAlignment.Stretch,
@@ -537,7 +571,7 @@ namespace AasxPluginDigitalNameplate
                     content: index.Statement,
                     fontSize: 1.0f,
                     margin: new AnyUiThickness(0, 4, 0, 2),
-                    background: AnyUiBrushes.White,
+                    background: AnyUiBrushes.LightGray,
                     textWrapping: AnyUiTextWrapping.Wrap,
                     verticalAlignment: AnyUiVerticalAlignment.Top,
                     verticalContentAlignment: AnyUiVerticalAlignment.Stretch,
@@ -555,33 +589,32 @@ namespace AasxPluginDigitalNameplate
                 return new AnyUiStackPanel();
 
             // make a outer grid
-            var grid = uitk.AddSmallGrid(7, 8,
-                rowHeights: new[] { "#", "#", "#", "#", "#", "#", "#" },
+            var grid = uitk.AddSmallGrid(8, 8,
+                rowHeights: new[] { "#", "#", "#", "#", "#", "#", "#", "#" },
                 colWidths: new[] { "14:", "14:", "*", "*", "*", "*", "14:", "14:" }, 
                 margin: new AnyUiThickness(2));
 
-            uitk.Set(uitk.AddSmallLabelTo(grid, 0, 0, content: ""), maxHeight: 4, minHeight: 4);
-
             // Background image
 
-            uitk.Set(AddNamedImage(uitk, grid, 0, 0, "metal-plate3.png", stretch: AnyUiStretch.Fill),
-                rowSpan: 7,
+            uitk.Set(
+                AddNamedImage(uitk, grid, 0, 0, "metal-plate3.png", stretch: AnyUiStretch.Fill),
+                rowSpan: 8,
                 colSpan: 8,
                 horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
-                verticalAlignment: AnyUiVerticalAlignment.Stretch);
+                verticalAlignment: AnyUiVerticalAlignment.Stretch,
+                skipForTarget: AnyUiTargetPlatform.Browser);
 
             // Borders
 
             uitk.Set(
-                uitk.AddSmallBorderTo(grid, 0, 1, rowSpan: 7, colSpan: 6,
+                uitk.AddSmallBorderTo(grid, 0, 1, rowSpan: 8, colSpan: 6,
                     margin: new AnyUiThickness(3, 3, 3, 3),
                     background: AnyUiBrushes.Transparent,
                     borderBrush: AnyUiBrushes.Black,
                     borderThickness: new AnyUiThickness(1.5),
-                    cornerRadius: 4.0),
-                skipForTarget: AnyUiTargetPlatform.Browser);
+                    cornerRadius: 4.0));
 
-            var screwPos = new[] { 0, 0, 0, 7, 6, 0, 6, 7 };
+            var screwPos = new[] { 0, 0, 0, 7, 7, 0, 7, 7 };
             for (int i = 0; i < 4; i++)
             {
                 if (false)
@@ -646,6 +679,8 @@ namespace AasxPluginDigitalNameplate
                 text: prodBigStr,
                 statement: prodBigStmt);
 
+#if __off
+
             // Manu Name
 
             var desc = "ManufacturerName:\n" +
@@ -661,9 +696,19 @@ namespace AasxPluginDigitalNameplate
 
             // Logo
 
-            AddIndexTextBlock(uitk, grid, 1, 5,
+            var gridLogo = AddGridWithIndex(uitk, grid, 1, 5,
                 index: "(2)",
-                text: "LOGO");
+                statement: ((plate.CompanyLogo?.Value?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Error, statement: "Should be given."))
+                    .Set(description: "CompanyLogo:\n" +
+                        "A graphic mark used to represent a organisation or product. " +
+                        "Helpful to users to assess the validity of representation of the asset."));
+
+            if (plate.CompanyLogo != null)
+            {
+                AddAasxFileImage(uitk, gridLogo, 0, 1, plate.CompanyLogo, AnyUiStretch.Uniform);
+            }
 
             // Product details
 
@@ -741,7 +786,7 @@ namespace AasxPluginDigitalNameplate
 
             AddIndexTextBlock(uitk, grid, 2, 4, colSpan: 2,
                 index: "(3)",
-                text: "" + string.Join(" * ", (plate.ContactInformation ?? (new[] { "-" }).ToList())),
+                text: "" + string.Join(" \u2022 ", (plate.ContactInformation ?? (new[] { "-" }).ToList())),
                 statement: ((plate.ContactInformation != null && plate.ContactInformation.Count >= 2)
                 ? new IndexStatement(Quality.Good, statement: "Is given.")
                 : new IndexStatement(Quality.Warn, statement: "Should be given."))
@@ -760,9 +805,11 @@ namespace AasxPluginDigitalNameplate
 
             if (plate.Markings != null && plate.Markings.Count > 0)
             {
-                var gridMarksOut = AddGridWithIndex(uitk, grid, 4, 2, rowSpan: 2, colSpan: 2,
+                // indexed grid
+                var gridMarksOut = AddGridWithIndex(uitk, grid, 4, 2, rowSpan: 3, colSpan: 2,
                         index: "(20)");
 
+                // raster
                 var numMarks = plate.Markings.Count;
                 var numCol = numMarks;
                 var numRow = 1;
@@ -772,22 +819,14 @@ namespace AasxPluginDigitalNameplate
                     numCol = MarkingsPerRow;
                 }
                 
-                //var colWidths = new List<string>();
-                //for (int i = 0; i < numCol; i++)
-                //    colWidths.Add("#");
-
-                //var gridMarksIn = uitk.AddSmallGridTo(
-                //    gridMarksOut, 0, 1, numRow, numCol, colWidths: colWidths.ToArray());
-
+                // wrap within raster
                 var wrapPanel = new AnyUiWrapPanel();
+                wrapPanel.VerticalAlignment = AnyUiVerticalAlignment.Bottom;
                 AnyUiGrid.SetRow(wrapPanel, 0);
                 AnyUiGrid.SetColumn(wrapPanel, 1);
                 gridMarksOut.Add(wrapPanel);
 
-
-                //var gridMarksIn = uitk.AddSmallGrid(numRow, numCol, colWidths: colWidths.ToArray());
-                //wrapPanel.Add(gridMarksIn);
-
+                // fill raster
                 for (int i = 0; i < numMarks; i++)
                 {
                     // access
@@ -838,9 +877,32 @@ namespace AasxPluginDigitalNameplate
                 }
             }
 
-            // Year of construction
+            // versions
+
+            var vers = new List<string>();
+            if (plate.HardwareVersion?.HasContent() == true)
+                vers.Add("H/W: " + plate.HardwareVersion);
+            if (plate.FirmwareVersion?.HasContent() == true)
+                vers.Add("F/W: " + plate.FirmwareVersion);
+            if (plate.SoftwareVersion?.HasContent() == true)
+                vers.Add("S/W: " + plate.SoftwareVersion);
+
+            var versStr = string.Join("\n", vers);
 
             AddIndexTextBlock(uitk, grid, 4, 4,
+                index: "(18)",
+                text: "" + versStr,
+                statement: ((versStr.HasContent())
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Error, statement: "Should be given."))
+                    .Set(description: "(Hard|Firm|Soft)wareVersion:\n" +
+                        "Hardware versions often lead to a new type or order code of the asset. " +
+                        "Firmware is directly supplied by the device (asset), while software is used " +
+                        "by the device (asset)."));
+
+            // Year of construction
+
+            AddIndexTextBlock(uitk, grid, 5, 4,
                 index: "(4)",
                 text: "" + plate.YearOfConstruction,
                 statement: ((plate.YearOfConstruction?.HasContent() == true)
@@ -851,7 +913,7 @@ namespace AasxPluginDigitalNameplate
 
             // Date of manufacture
 
-            AddIndexTextBlock(uitk, grid, 5, 4,
+            AddIndexTextBlock(uitk, grid, 6, 4,
                 index: "(5)",
                 text: "" + plate.DateOfManufacture,
                 statement: ((plate.DateOfManufacture?.HasContent() == true)
@@ -865,7 +927,7 @@ namespace AasxPluginDigitalNameplate
 
             if (plate.URIOfTheProduct?.HasContent() == true)
             {
-                var gridQr = AddGridWithIndex(uitk, grid, 4, 5, rowSpan: 2,
+                var gridQr = AddGridWithIndex(uitk, grid, 4, 5, rowSpan: 3,
                     index: "(6)",
                     statement: ((plate.URIOfTheProduct?.HasContent() == true)
                         ? new IndexStatement(Quality.Good, statement: "Is given.")
@@ -874,16 +936,18 @@ namespace AasxPluginDigitalNameplate
                             "Unique global identification of the product (asset) using an " +
                             "universal resource identifier (URI) according IEC 61406."));
 
-                AddQrCode(uitk, gridQr, 0, 1, plate.URIOfTheProduct, stretch: AnyUiStretch.Uniform);
+                // AddQrCode(uitk, gridQr, 0, 1, plate.URIOfTheProduct, stretch: AnyUiStretch.Uniform);
             }
+
+#endif
 
             // ok
             return grid;
         }
 
-        #endregion      
+#endregion
 
-        #region Event handling
+#region Event handling
         //=============
 
         private Action<AasxPluginEventReturnBase> _menuSubscribeForNextEventReturn = null;
@@ -918,9 +982,9 @@ namespace AasxPluginDigitalNameplate
             }            
         }
 
-        #endregion
+#endregion
 
-        #region Update
+#region Update
         //=============
 
         public void Update(params object[] args)
@@ -940,16 +1004,16 @@ namespace AasxPluginDigitalNameplate
             RenderFullNameplate(_panel, _uitk);
         }
 
-        #endregion
+#endregion
 
-        #region Callbacks
+#region Callbacks
         //===============
 
-        #endregion
+#endregion
 
-        #region Utilities
+#region Utilities
         //===============
 
-        #endregion
+#endregion
     }
 }

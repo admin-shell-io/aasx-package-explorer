@@ -12,7 +12,7 @@
       "version": "2",
       "revision": "1"
     },
-    "id": "www.example.com/ids/sm/1225_9020_5022_1974",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate",
     "kind": "Template",
     "semanticId": {
       "type": "ExternalReference",
@@ -2070,6 +2070,46 @@
             {
               "language": "en",
               "text": "Markings"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Collection of product markings"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Marking": {
+    "idShort": "Marking",
+    "id": "0173-1#01-AHD206#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Marking"
             }
           ],
           "shortName": [
