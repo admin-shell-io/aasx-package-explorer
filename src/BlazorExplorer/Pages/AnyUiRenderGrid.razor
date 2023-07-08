@@ -93,6 +93,20 @@
         tablestyle.Add("table-layout", "fixed");
     }
 
+    // background image
+    if (_grid.BackgroundImageHtml != null)
+    {
+        var path = "/api/image/" + _grid.BackgroundImageHtml.ImageGuid;
+        tablestyle.Add("background-image", "url('" + path+ "')");
+        if (_grid.BackgroundImageHtml.Stretch != AnyUiStretch.None)
+        {
+            // https://www.w3schools.com/html/html_images_background.asp
+            tablestyle.Add("background-repeat", "no-repeat");
+            tablestyle.Add("background-attachment", "fixed");
+            tablestyle.Add("background-size", "100% 100%");
+        }
+    }
+
     // 
     // Render
     //
@@ -254,6 +268,11 @@
                                         if (cd.Width.Type == AnyUiGridUnitType.Auto)
                                             tdStyle -= "overflow";
                                     }
+
+                                    // line height (nneds to be in tze parent of d7v/ span elements)
+                                    if (ch is AnyUiTextBlock chtb && chtb.LineHeightPercent.HasValue)
+                                        tdStyle.Add("line-height", 
+                                            FormattableString.Invariant($"{chtb.LineHeightPercent.Value:0.00}%"));
 
                                     // now render
                                     <td style="@tdStyle" colspan="@colspan" rowspan="@rowspan" data-source="AnyUiRenderGrid.razor tdStyle">

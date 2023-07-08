@@ -1085,6 +1085,11 @@ namespace AnyUi
         public List<AnyUiRowDefinition> RowDefinitions = new List<AnyUiRowDefinition>();
         public List<AnyUiColumnDefinition> ColumnDefinitions = new List<AnyUiColumnDefinition>();
 
+        /// <summary>
+        /// If Grid is rendered as HTML table, set the global <table>-Background accordingly.
+        /// </summary>
+        public AnyUiImage BackgroundImageHtml = null;
+
         public static void SetRow(AnyUiUIElement el, int value) { if (el != null) el.GridRow = value; }
         public static void SetRowSpan(AnyUiUIElement el, int value) { if (el != null) el.GridRowSpan = value; }
         public static void SetColumn(AnyUiUIElement el, int value) { if (el != null) el.GridColumn = value; }
@@ -1256,6 +1261,7 @@ namespace AnyUi
     {
         public AnyUiThickness Padding;
         public AnyUiTextWrapping? TextWrapping;
+        public double? LineHeightPercent = null;
         public string Text { get { return _text; } set { _text = value; Touch(); } }
         private string _text = null;
     }

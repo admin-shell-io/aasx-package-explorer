@@ -260,7 +260,7 @@ namespace BlazorUI
                 // https://www.w3schools.com/cssref/pr_border-color.asp
                 // https://developer.mozilla.org/de/docs/Web/CSS/border-width
                 if (borderThickness.AllEqual)
-                    Set("border-width", $"{borderThickness.Left}px", add: true);
+                    Set("border-width", FormattableString.Invariant($"{borderThickness.Left:0.00}px"), add: true);
                 else
                     Set("border-width",
                         FormattableString.Invariant($"{borderThickness.Top}px {borderThickness.Right}px ") +

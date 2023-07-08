@@ -29,6 +29,7 @@ using System.Numerics;
 using System.Windows.Forms;
 using QRCoder;
 using ImageMagick;
+using System.DirectoryServices.ActiveDirectory;
 
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable AccessToModifiedClosure
@@ -243,6 +244,9 @@ namespace AasxPluginDigitalNameplate
             var gridExpl = uitk.AddSmallGridTo(stackGrid, 0, 0, 1, 2, colWidths: new[] { "*", "#" }, rowHeights: new[] { "#" },
                 margin: new AnyUiThickness(0, 0, 0, 10));
 
+            // required for HTML rendering
+            gridExpl.ColumnDefinitions[1].MinWidth = 100;
+
             uitk.AddSmallBasicLabelTo(gridExpl, 0, 0,
                 background: AnyUiBrushes.LightBlue,
                 content: "" + _foundRecord?.Explanation,
@@ -251,7 +255,7 @@ namespace AasxPluginDigitalNameplate
                 verticalAlignment: AnyUiVerticalAlignment.Stretch,
                 verticalContentAlignment: AnyUiVerticalAlignment.Top);
 
-            uitk.Set(
+            var imgIec = uitk.Set(
                 AddNamedImage(uitk, gridExpl, 0, 1, "iec-logo.png", stretch: AnyUiStretch.UniformToFill),
                     margin: new AnyUiThickness(10, 0, 0, 0),
                     verticalAlignment: AnyUiVerticalAlignment.Stretch,
@@ -381,7 +385,8 @@ namespace AasxPluginDigitalNameplate
             string text,
             double? fontSize = null,
             int? rowSpan = null, int? colSpan = null,
-            IndexStatement statement = null)
+            IndexStatement statement = null,
+            double ?lineHeight = null)
         {
             // make a outer grid
             var g2 = AddGridWithIndex(
@@ -392,12 +397,13 @@ namespace AasxPluginDigitalNameplate
             var tb = uitk.AddSmallBasicLabelTo(g2, 0, 1,
                 content: text, /* multiLine: true, */ fontSize: fontSize,
                 margin: new AnyUiThickness(0, 2, 0, 0),
-                background: new AnyUiBrush(0x40ffffff),
+                background: AnyUiBrushes.Transparent, // new AnyUiBrush(0x40ffffff),
                 textWrapping: AnyUiTextWrapping.Wrap,
                 verticalAlignment: AnyUiVerticalAlignment.Stretch,
                 verticalContentAlignment: AnyUiVerticalAlignment.Top);
 
             tb.MaxHeight = 150;
+            tb.LineHeightPercent = lineHeight;
 
             return g2;
         }
@@ -581,6 +587,8 @@ namespace AasxPluginDigitalNameplate
             return g2;
         }
 
+#if backup
+
         public AnyUiFrameworkElement RenderAnyUiNameplateData(
             AnyUiSmallWidgetToolkit uitk, NameplateData plate)
         {
@@ -678,8 +686,6 @@ namespace AasxPluginDigitalNameplate
                 index: "(10)", fontSize: 2.0f,
                 text: prodBigStr,
                 statement: prodBigStmt);
-
-#if __off
 
             // Manu Name
 
@@ -939,15 +945,400 @@ namespace AasxPluginDigitalNameplate
                 // AddQrCode(uitk, gridQr, 0, 1, plate.URIOfTheProduct, stretch: AnyUiStretch.Uniform);
             }
 
-#endif
-
             // ok
             return grid;
         }
 
-#endregion
+#endif
 
-#region Event handling
+        public AnyUiFrameworkElement RenderAnyUiNameplateData(
+            AnyUiSmallWidgetToolkit uitk, NameplateData plate)
+        {
+            // access
+            if (plate == null)
+                return new AnyUiStackPanel();
+
+            // make a outer grid
+            var plateGrid = uitk.AddSmallGrid(3, 5,
+                rowHeights: new[] { "#", "#", "#" },
+                colWidths: new[] { "14:", "14:", "*", "14:", "14:" },
+                margin: new AnyUiThickness(2));
+
+            // Background image
+
+            var backImg = uitk.Set(
+                AddNamedImage(uitk, plateGrid, 0, 0, "metal-plate3.png", stretch: AnyUiStretch.Fill),
+                rowSpan: 3,
+                colSpan: 5,
+                horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
+                verticalAlignment: AnyUiVerticalAlignment.Stretch,
+                skipForTarget: AnyUiTargetPlatform.Browser);
+
+            plateGrid.BackgroundImageHtml = backImg;
+
+            // Borders
+
+            var border = uitk.Set(
+                uitk.AddSmallBorderTo(plateGrid, 1, 2, rowSpan: 1, colSpan: 1,
+                    margin: new AnyUiThickness(3, 3, 3, 3),
+                    background: AnyUiBrushes.Transparent,
+                    borderBrush: AnyUiBrushes.Black,
+                    borderThickness: new AnyUiThickness(1.5),
+                    cornerRadius: 4.0));
+
+            var screwPos = new[] { 0, 0, 0, 4, 2, 0, 2, 4 };
+            for (int i = 0; i < 4; i++)
+            {
+                if (false)
+                {
+                    // screw by border
+                    var brd = uitk.Set(
+                        uitk.AddSmallBorderTo(plateGrid, screwPos[2 * i + 0], screwPos[2 * i + 1],
+                            margin: new AnyUiThickness(2),
+                            background: AnyUiBrushes.Transparent,
+                            borderBrush: AnyUiBrushes.Black,
+                            borderThickness: new AnyUiThickness(1.0),
+                            cornerRadius: 4.0),
+                        skipForTarget: AnyUiTargetPlatform.Browser);
+                    brd.Height = 6;
+                    brd.MaxHeight = 12;
+                }
+                else
+                {
+                    // screw by image
+                    uitk.Set(
+                        AddNamedImage(
+                            uitk, plateGrid, screwPos[2 * i + 0], screwPos[2 * i + 1],
+                            "screw-black2.png", stretch: AnyUiStretch.None));
+                }
+            }
+
+            // make a outer grid
+            var grid = uitk.AddSmallGrid(6, 4,
+                rowHeights: new[] { "#", "#", "#", "#", "#", "#" },
+                colWidths: new[] { "*", "*", "*", "*" },
+                margin: new AnyUiThickness(2));
+
+            border.Child = grid;
+
+            //
+            // By which id is the product identified ("big" id)?
+            //
+
+            var prodBigStr = "";
+            var prodBigStmt = new IndexStatement()
+            {
+                Description = "ManufacturerProductFamily or ManufacturerProductType:\n" +
+                    "Clear identification for the asset responsible, which asset is represented."
+            };
+
+            if (plate.ManufacturerProductType?.HasContent() == true)
+            {
+                prodBigStr = plate.ManufacturerProductType;
+                prodBigStmt.Quality = Quality.Good;
+                prodBigStmt.Statement = "ManufacturerProductType (V2.0) is recommended over " +
+                    "ManufacturerProductType.";
+            }
+            else
+            if (plate.ManufacturerProductFamily?.HasContent() == true)
+            {
+                prodBigStr = plate.ManufacturerProductFamily;
+                prodBigStmt.Quality = Quality.Warn;
+                prodBigStmt.Statement = "If possible, use ManufacturerProductType (V2.0) instead of " +
+                        "ManufacturerProductType.";
+            }
+            else
+            {
+                prodBigStr = plate.ManufacturerProductFamily;
+                prodBigStmt.Quality = Quality.Error;
+                prodBigStmt.Statement = "Either the product type or at least the product family shall be given.";
+            }
+
+            AddIndexTextBlock(uitk, grid, 0, 0, colSpan: 2,
+                index: "(10)", fontSize: 2.0f,
+                lineHeight: 150,
+                text: prodBigStr,
+                statement: prodBigStmt);
+
+            // Manu Name
+
+            var desc = "ManufacturerName:\n" +
+                "Legally valid designation of the natural or judicial person which places " +
+                "the asset on the market. Typically, the company name including the legal form";
+
+            AddIndexTextBlock(uitk, grid, 0, 2,
+                index: "(1)", fontSize: 2.0f,
+                lineHeight: 150,
+                text: "" + plate.ManufacturerName,
+                statement: (plate.ManufacturerName?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, desc, "Is given.")
+                    : new IndexStatement(Quality.Error, desc, "ManufacturerName needs to be given!"));
+
+            // Logo
+
+            var gridLogo = AddGridWithIndex(uitk, grid, 0, 3,
+                index: "(2)",
+                statement: ((plate.CompanyLogo?.Value?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Error, statement: "Should be given."))
+                    .Set(description: "CompanyLogo:\n" +
+                        "A graphic mark used to represent a organisation or product. " +
+                        "Helpful to users to assess the validity of representation of the asset."));
+
+            if (plate.CompanyLogo != null)
+            {
+                AddAasxFileImage(uitk, gridLogo, 0, 1, plate.CompanyLogo, AnyUiStretch.Uniform);
+            }
+
+            // Product details
+
+            var pdGrid = uitk.Set(
+                uitk.AddSmallGridTo(grid, 1, 0, 10, 1),
+                rowSpan: 2);
+
+            AddIndexTextBlock(uitk, pdGrid, 0, 0, index: "(11)", text: "" + plate.ManufacturerProductRoot,
+                lineHeight: 120,
+                statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Warn, statement: "Should be given."))
+                    .Set(description: "ManufacturerProductRoot:\n" +
+                        "Top level of the product hierarchy of a organisation. Typically denotes a category " +
+                        "of assets, such as: \"flow meter\"."));
+
+            AddIndexTextBlock(uitk, pdGrid, 1, 0, index: "(12)", text: "" + plate.ManufacturerProductFamily,
+                lineHeight: 120,
+                statement: ((plate.ManufacturerProductFamily?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Warn, statement: "Should be given."))
+                    .Set(description: "ManufacturerProductFamily:\n" +
+                        "2nd level of the product hierarchy of a organisation. Typically denotes a specific " +
+                        "type family of asset, such as: \"ABC\", which is within the given " +
+                        "top level (category)."));
+
+            AddIndexTextBlock(uitk, pdGrid, 2, 0, index: "(13)", text: "" + plate.ManufacturerProductType,
+                lineHeight: 120,
+                statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Warn, statement: "Should be given."))
+                    .Set(description: "ManufacturerProductType:\n" +
+                        "Specific product type of an asset. Typically specific enough to order " +
+                        "a spare or replacement part."));
+
+            AddIndexTextBlock(uitk, pdGrid, 3, 0, index: "(14)", text: "" + plate.OrderCodeOfManufacturer,
+                lineHeight: 120,
+                statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Warn, statement: "Should be given."))
+                    .Set(description: "OrderCodeOfManufacturer:\n" +
+                        "Unique combination of numbers and letters given by the manufacturer precisely " +
+                        "defining the asset type. Full information given to order an exact replacement " +
+                        "of the asset."));
+
+            AddIndexTextBlock(uitk, pdGrid, 4, 0, index: "(15)",
+                lineHeight: 120,
+                text: "" + plate.ProductArticleNumberOfManufacturer,
+                statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Warn, statement: "Should be given."))
+                    .Set(description: "ProductArticleNumberOfManufacturer:\n" +
+                        "Unique product identifier of the manufacturerTop defined by the ordering " +
+                        "system of the manufacturer. Typically known as part number."));
+
+            AddIndexTextBlock(uitk, pdGrid, 5, 0, index: "(16)", text: "" + plate.SerialNumber,
+                lineHeight: 120,
+                statement: ((plate.ManufacturerProductRoot?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Warn,
+                        statement: "Should be given, if asset is an product instance."))
+                    .Set(description: "SerialNumber:\n" +
+                        "Unique combination of numbers and letters used to identify the " +
+                        "product (asset) instance once it has been manufactured. Does not need to be " +
+                        "worldwide unqiue, only for the manufacturer."));
+
+            // Product designation
+
+            AddIndexTextBlock(uitk, grid, 1, 1, rowSpan: 2,
+                index: "(17)",
+                text: "" + plate.ManufacturerProductDesignation,
+                lineHeight: 120,
+                statement: ((plate.ManufacturerProductDesignation?.HasContent() == true
+                             && plate.ManufacturerProductDesignation.Length < 50)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Warn, statement: "Should be given and concise."))
+                    .Set(description: "ManufacturerProductDesignation:\n" +
+                        "Short description of the product (short text). Ideally not longer than " +
+                        "50 characters."));
+
+            // Contact information
+
+            AddIndexTextBlock(uitk, grid, 1, 2, colSpan: 2,
+                index: "(3)",
+                text: "" + string.Join(" \u2022 ", (plate.ContactInformation ?? (new[] { "-" }).ToList())),
+                lineHeight: 120,
+                statement: ((plate.ContactInformation != null && plate.ContactInformation.Count >= 2)
+                ? new IndexStatement(Quality.Good, statement: "Is given.")
+                : new IndexStatement(Quality.Warn, statement: "Should be given."))
+                .Set(description: "ContactInformation:\n" +
+                    "At least, the following information needs to be given: Street, Zipcode, CityTown, " +
+                    "NationalCode."));
+
+            // Explosion safety
+
+            if (plate.ExplSafetyStr != null)
+                AddIndexTextBlock(uitk, grid, 2, 2, colSpan: 2,
+                    index: "(30)",
+                    lineHeight: 120,
+                    text: "" + plate.ExplSafetyStr);
+
+            // Markings
+
+            if (plate.Markings != null && plate.Markings.Count > 0)
+            {
+                // indexed grid
+                var gridMarksOut = AddGridWithIndex(uitk, grid, 3, 0, rowSpan: 3, colSpan: 2,
+                        index: "(20)");
+
+                // raster
+                var numMarks = plate.Markings.Count;
+                var numCol = numMarks;
+                var numRow = 1;
+                if (numCol > MarkingsPerRow)
+                {
+                    numRow = 1 + ((numMarks - 1) / MarkingsPerRow);
+                    numCol = MarkingsPerRow;
+                }
+
+                // wrap within raster
+                var wrapPanel = new AnyUiWrapPanel();
+                wrapPanel.VerticalAlignment = AnyUiVerticalAlignment.Bottom;
+                AnyUiGrid.SetRow(wrapPanel, 0);
+                AnyUiGrid.SetColumn(wrapPanel, 1);
+                gridMarksOut.Add(wrapPanel);
+
+                // fill raster
+                for (int i = 0; i < numMarks; i++)
+                {
+                    // access
+                    var mark = plate.Markings[i];
+                    if (mark == null)
+                        continue;
+
+                    int row = i / MarkingsPerRow;
+                    int col = i % MarkingsPerRow;
+
+                    // render EITHER image or text
+                    AnyUiBitmapInfo markImg = null;
+                    if (_package != null)
+                        markImg = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, mark.File?.Value);
+
+                    if (markImg != null)
+                    {
+                        // render IMAGE
+                        var img = uitk.Set(
+                            new AnyUiImage() { Stretch = AnyUiStretch.Uniform, BitmapInfo = markImg },
+                            margin: new AnyUiThickness(0, 0, 4, 4),
+                            horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
+                            verticalAlignment: AnyUiVerticalAlignment.Stretch);
+                        wrapPanel.Add(img);
+
+                        img.MaxHeight = 70;
+                        img.MaxWidth = 100;
+                    }
+                    else
+                    {
+                        // render TEXT
+                        var tb = new AnyUiTextBlock()
+                        {
+                            Text = "" + mark.Name,
+                            FontSize = 1.4,
+                            Margin = new AnyUiThickness(0, 0, 4, 4),
+                            Padding = new AnyUiThickness(4),
+                            Background = AnyUiBrushes.White,
+                            TextWrapping = AnyUiTextWrapping.Wrap,
+                            VerticalAlignment = AnyUiVerticalAlignment.Stretch,
+                            VerticalContentAlignment = AnyUiVerticalAlignment.Center
+                        };
+                        wrapPanel.Add(tb);
+
+                        tb.MaxHeight = 70;
+                        tb.MaxWidth = 100;
+                    }
+                }
+            }
+
+            // versions
+
+            var vers = new List<string>();
+            if (plate.HardwareVersion?.HasContent() == true)
+                vers.Add("H/W: " + plate.HardwareVersion);
+            if (plate.FirmwareVersion?.HasContent() == true)
+                vers.Add("F/W: " + plate.FirmwareVersion);
+            if (plate.SoftwareVersion?.HasContent() == true)
+                vers.Add("S/W: " + plate.SoftwareVersion);
+
+            var versStr = string.Join("\n", vers);
+
+            AddIndexTextBlock(uitk, grid, 3, 2,
+                index: "(18)",
+                text: "" + versStr,
+                lineHeight: 120,
+                statement: ((versStr.HasContent())
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Error, statement: "Should be given."))
+                    .Set(description: "(Hard|Firm|Soft)wareVersion:\n" +
+                        "Hardware versions often lead to a new type or order code of the asset. " +
+                        "Firmware is directly supplied by the device (asset), while software is used " +
+                        "by the device (asset)."));
+
+            // Year of construction
+
+            AddIndexTextBlock(uitk, grid, 4, 2,
+                index: "(4)",
+                text: "" + plate.YearOfConstruction,
+                lineHeight: 120,
+                statement: ((plate.YearOfConstruction?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Error, statement: "Shall be given."))
+                    .Set(description: "YearOfConstruction:\n" +
+                        "Year (4 digits) as completion of manufacture of asset."));
+
+            // Date of manufacture
+
+            AddIndexTextBlock(uitk, grid, 5, 2,
+                index: "(5)",
+                text: "" + plate.DateOfManufacture,
+                lineHeight: 120,
+                statement: ((plate.DateOfManufacture?.HasContent() == true)
+                    ? new IndexStatement(Quality.Good, statement: "Is given.")
+                    : new IndexStatement(Quality.Warn, statement: "Should be given."))
+                    .Set(description: "SerialNumber:\n" +
+                        "Date from which the production and / or development process is completed or " +
+                        "from which a service is provided completely."));
+
+            // URI of product (QR)
+
+            if (plate.URIOfTheProduct?.HasContent() == true)
+            {
+                var gridQr = AddGridWithIndex(uitk, grid, 3, 3, rowSpan: 3,
+                    index: "(6)",
+                    statement: ((plate.URIOfTheProduct?.HasContent() == true)
+                        ? new IndexStatement(Quality.Good, statement: "Is given.")
+                        : new IndexStatement(Quality.Error, statement: "Shall be given."))
+                        .Set(description: "URIOfTheProduct:\n" +
+                            "Unique global identification of the product (asset) using an " +
+                            "universal resource identifier (URI) according IEC 61406."));
+
+                AddQrCode(uitk, gridQr, 0, 1, plate.URIOfTheProduct, stretch: AnyUiStretch.Uniform);
+            }
+
+            // ok
+            return plateGrid;
+        }
+
+
+        #endregion
+
+        #region Event handling
         //=============
 
         private Action<AasxPluginEventReturnBase> _menuSubscribeForNextEventReturn = null;

@@ -6,6 +6,11 @@
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>false</UseWPF>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    
+    <!-- force NuGet / Build to put required.dll and more to bin folder -->
+    <!-- Drawback: puts all other *.dll as well :-( -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Resources\**" />
