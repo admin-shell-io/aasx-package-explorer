@@ -201,11 +201,11 @@ namespace AasxPluginExportTable.Smt
             // export
             var export = new ExportSmt();
             export.ExportSmtToFile(
-                log, displayContext, ticket.Package, 
+                log, displayContext, ticket.Package,
                 sm, pluginOptionsTable, record, fn);
 
             // persist
-            await displayContext.CheckIfDownloadAndStart(log, loc, fn);           
+            await displayContext.CheckIfDownloadAndStart(log, loc, fn);
 
             log.Info($"Export \"SMT specification to AsciiDoc file: {fn}");
         }

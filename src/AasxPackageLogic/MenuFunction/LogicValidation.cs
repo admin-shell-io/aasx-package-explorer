@@ -174,7 +174,7 @@ namespace AasxPackageExplorer
 
         public override string ToTextLine()
         {
-            return String.Format("{0,-6} {1,-10} {2} Difference 1={3} 2={4}", 
+            return String.Format("{0,-6} {1,-10} {2} Difference 1={3} 2={4}",
                 Id, OutcomeText, Text, Value1, Value2);
         }
 
@@ -202,11 +202,12 @@ namespace AasxPackageExplorer
 
         public void AddStatement(string id, string outcome, bool isFail, string text)
         {
-            this.Add(new LogicValidationRecStatement() {
+            this.Add(new LogicValidationRecStatement()
+            {
                 Id = id,
                 OutcomeText = outcome,
                 OutcomeFail = isFail,
-                Text = text 
+                Text = text
             });
         }
 
@@ -380,7 +381,8 @@ namespace AasxPackageExplorer
                 try
                 {
                     WriteTargetFile(exportFmt, targetFn);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     MainWindowLogic.LogErrorToTicketStatic(ticket, ex,
                         $"While performing '{caption}'");

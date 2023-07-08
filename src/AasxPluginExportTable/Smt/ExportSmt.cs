@@ -107,14 +107,14 @@ namespace AasxPluginExportTable.Smt
 
             if (data == null)
             {
-                _log?.Error("No image data found in AAS element {0}", 
+                _log?.Error("No image data found in AAS element {0}",
                     sme?.GetReference()?.ToStringExtended(1));
                 return;
             }
 
             if (!dataExt.HasContent())
             {
-                _log?.Error("No data format extension found in AAS element {0}", 
+                _log?.Error("No data format extension found in AAS element {0}",
                     sme?.GetReference()?.ToStringExtended(1));
                 return;
             }
@@ -173,7 +173,7 @@ namespace AasxPluginExportTable.Smt
             var target = _package?.AasEnv.FindReferableByReference(refel.Value);
             if (target == null)
             {
-                _log?.Error("ExportSMT: No target reference for UML found in {0}", 
+                _log?.Error("ExportSMT: No target reference for UML found in {0}",
                     refel.GetReference()?.ToStringExtended(1));
                 return;
             }
@@ -184,7 +184,7 @@ namespace AasxPluginExportTable.Smt
             var processDepth = args?.depth ?? int.MaxValue;
 
             // determine (automatic) target file name
-            var pumlName = "uml_" + Path.GetRandomFileName().Replace(".","_");
+            var pumlName = "uml_" + Path.GetRandomFileName().Replace(".", "_");
             if (refel.IdShort.HasContent())
                 pumlName = AdminShellUtil.FilterFriendlyName(refel.IdShort);
             var pumlFn = pumlName + ".puml";
@@ -228,8 +228,8 @@ namespace AasxPluginExportTable.Smt
             }
 
             // find options for tables
-            if (_optionsAll?.Presets == null || _optionsSmt == null 
-                || _optionsSmt.PresetTables < 0 
+            if (_optionsAll?.Presets == null || _optionsSmt == null
+                || _optionsSmt.PresetTables < 0
                 || _optionsSmt.PresetTables > _optionsAll.Presets.Count)
             {
                 _log?.Error("ExportSMT: Error accessing selected table presets for conversion.");
@@ -243,7 +243,7 @@ namespace AasxPluginExportTable.Smt
             var processDepth = int.MaxValue;
             if (args?.depth != null)
             {
-                processDepth = (int) args.depth;
+                processDepth = (int)args.depth;
                 optionsTable.NoHeadings = true;
             }
 
@@ -267,7 +267,7 @@ namespace AasxPluginExportTable.Smt
             var ticket = new AasxMenuActionTicket();
 
             AnyUiDialogueTable.Export(
-                _optionsAll, optionsTable, absTableFn, 
+                _optionsAll, optionsTable, absTableFn,
                 target, _package?.AasEnv, ticket, _log, maxDepth: processDepth);
 
             // include file into AsciiDoc
@@ -275,7 +275,7 @@ namespace AasxPluginExportTable.Smt
             {
                 // read file, append
                 var lines = File.ReadAllLines(absTableFn);
-                
+
                 _adoc.AppendLine("");
                 _adoc.AppendLine("// Table generated from " + refel.GetReference()?.ToStringExtended(1));
                 _adoc.AppendLine("");
@@ -368,8 +368,8 @@ namespace AasxPluginExportTable.Smt
             var adocText = _adoc.ToString();
 
             // build adoc file
-            var title = (_srcSm.IdShort?.HasContent() == true) 
-                    ? AdminShellUtil.FilterFriendlyName(_srcSm.IdShort) 
+            var title = (_srcSm.IdShort?.HasContent() == true)
+                    ? AdminShellUtil.FilterFriendlyName(_srcSm.IdShort)
                     : "output";
             var adocFn = title + ".adoc";
             var absAdocFn = Path.Combine(_tempDir, adocFn);
@@ -413,7 +413,7 @@ namespace AasxPluginExportTable.Smt
                 foreach (var infn in Directory.EnumerateFiles(_tempDir, "*"))
                 {
                     AdminShellUtil.AddFileToZip(
-                        fn, infn, 
+                        fn, infn,
                         fileMode: first ? FileMode.Create : FileMode.OpenOrCreate);
                     first = false;
                 }

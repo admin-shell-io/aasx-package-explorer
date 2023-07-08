@@ -964,7 +964,7 @@ namespace AnyUi
 
             // ok, modal?
             if (sourceFn?.HasContent() != true)
-            {                
+            {
                 if (await StartFlyoverModalAsync(uc))
                 {
                     // house keeping
@@ -1013,7 +1013,7 @@ namespace AnyUi
             }
             return false;
         }
-       
+
         /// <summary>
         /// Selects a filename to write either from user or from ticket.
         /// </summary>
@@ -1164,123 +1164,123 @@ namespace AnyUi
             return false;
         }
 
-		/// <summary>
-		/// Selects a text either from user or from ticket.
-		/// </summary>
-		/// <returns>Success</returns>
-		public override async Task<AnyUiDialogueDataLogMessage> MenuExecuteSystemCommand(
-			string caption,
-			string workDir,
-			string cmd,
-			string args)
-		{
-			// create dialogue
-			var uc = new AnyUiDialogueDataLogMessage(caption);
+        /// <summary>
+        /// Selects a text either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public override async Task<AnyUiDialogueDataLogMessage> MenuExecuteSystemCommand(
+            string caption,
+            string workDir,
+            string cmd,
+            string args)
+        {
+            // create dialogue
+            var uc = new AnyUiDialogueDataLogMessage(caption);
 
-			// create logger
-			Process proc = null;
-			var logError = false;
-			var logBuffer = new List<StoredPrint>();
+            // create logger
+            Process proc = null;
+            var logError = false;
+            var logBuffer = new List<StoredPrint>();
 
-			// wrap to track errors
-			try
-			{
-				// start
-				lock (logBuffer)
-				{
-					logBuffer.Add(new StoredPrint(StoredPrint.Color.Black,
-						"Starting in " + workDir + " : " + cmd + " " + args + " .."));
-				};
+            // wrap to track errors
+            try
+            {
+                // start
+                lock (logBuffer)
+                {
+                    logBuffer.Add(new StoredPrint(StoredPrint.Color.Black,
+                        "Starting in " + workDir + " : " + cmd + " " + args + " .."));
+                };
 
-				// start process??
-				proc = new Process();
-				proc.StartInfo.UseShellExecute = true;
-				proc.StartInfo.FileName = cmd;
-				proc.StartInfo.Arguments = args;
-				proc.StartInfo.RedirectStandardOutput = true;
-				proc.StartInfo.RedirectStandardError = true;
-				proc.StartInfo.UseShellExecute = false;
-				proc.StartInfo.CreateNoWindow = true;
-				proc.EnableRaisingEvents = true;
-				proc.StartInfo.WorkingDirectory = workDir;
+                // start process??
+                proc = new Process();
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.FileName = cmd;
+                proc.StartInfo.Arguments = args;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.EnableRaisingEvents = true;
+                proc.StartInfo.WorkingDirectory = workDir;
 
-				// see: https://stackoverflow.com/questions/1390559/
-				// how-to-get-the-output-of-a-system-diagnostics-process
+                // see: https://stackoverflow.com/questions/1390559/
+                // how-to-get-the-output-of-a-system-diagnostics-process
 
-				// see: https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.beginoutputreadline?
-				// view=net-7.0&redirectedfrom=MSDN#System_Diagnostics_Process_BeginOutputReadLine
+                // see: https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.beginoutputreadline?
+                // view=net-7.0&redirectedfrom=MSDN#System_Diagnostics_Process_BeginOutputReadLine
 
-				uc.CheckForLogAndEnd = () =>
-				{
-					StoredPrint[] msgs = null;
-					lock (logBuffer)
-					{
-						if (logBuffer.Count > 0)
-						{
-							foreach (var sp in logBuffer)
-								Log.Singleton.Append(sp);
+                uc.CheckForLogAndEnd = () =>
+                {
+                    StoredPrint[] msgs = null;
+                    lock (logBuffer)
+                    {
+                        if (logBuffer.Count > 0)
+                        {
+                            foreach (var sp in logBuffer)
+                                Log.Singleton.Append(sp);
 
-							msgs = logBuffer.ToArray();
-							logBuffer.Clear();
-						}
-					};
-					return new Tuple<object[], bool>(msgs, !logError && proc != null && proc.HasExited);
-				};
+                            msgs = logBuffer.ToArray();
+                            logBuffer.Clear();
+                        }
+                    };
+                    return new Tuple<object[], bool>(msgs, !logError && proc != null && proc.HasExited);
+                };
 
-				proc.OutputDataReceived += (s1, e1) =>
-				{
-					var msg = e1.Data;
-					if (msg?.HasContent() == true)
-						lock (logBuffer)
-						{
-							logBuffer.Add(new StoredPrint(StoredPrint.Color.Black, "" + msg));
-						};
-				};
+                proc.OutputDataReceived += (s1, e1) =>
+                {
+                    var msg = e1.Data;
+                    if (msg?.HasContent() == true)
+                        lock (logBuffer)
+                        {
+                            logBuffer.Add(new StoredPrint(StoredPrint.Color.Black, "" + msg));
+                        };
+                };
 
-				proc.ErrorDataReceived += (s2, e2) =>
-				{
-					var msg = e2.Data;
-					if (msg?.HasContent() == true)
-						lock (logBuffer)
-						{
-							logError = true;
-							logBuffer.Add(new StoredPrint(StoredPrint.Color.Red, "" + msg));
-						};
-				};
+                proc.ErrorDataReceived += (s2, e2) =>
+                {
+                    var msg = e2.Data;
+                    if (msg?.HasContent() == true)
+                        lock (logBuffer)
+                        {
+                            logError = true;
+                            logBuffer.Add(new StoredPrint(StoredPrint.Color.Red, "" + msg));
+                        };
+                };
 
-				proc.Exited += (s3, e3) =>
-				{
-					lock (logBuffer)
-					{
-						logBuffer.Add(new StoredPrint(StoredPrint.Color.Black, "Done."));
-					};
-				};
+                proc.Exited += (s3, e3) =>
+                {
+                    lock (logBuffer)
+                    {
+                        logBuffer.Add(new StoredPrint(StoredPrint.Color.Black, "Done."));
+                    };
+                };
 
-				proc.Start();
+                proc.Start();
 
-				proc.BeginOutputReadLine();
-				proc.BeginErrorReadLine();
+                proc.BeginOutputReadLine();
+                proc.BeginErrorReadLine();
 
-				await StartFlyoverModalAsync(uc);
-			}
-			catch (Exception ex)
-			{
-				// mirror exception to inside and outside
-				lock (logBuffer)
-				{
-					logError = true;
-					logBuffer.Add(new StoredPrint(StoredPrint.Color.Red, "" + ex.Message));
-				}
-				Log.Singleton.Error(ex, "executing system command");
-			}
+                await StartFlyoverModalAsync(uc);
+            }
+            catch (Exception ex)
+            {
+                // mirror exception to inside and outside
+                lock (logBuffer)
+                {
+                    logError = true;
+                    logBuffer.Add(new StoredPrint(StoredPrint.Color.Red, "" + ex.Message));
+                }
+                Log.Singleton.Error(ex, "executing system command");
+            }
 
-			return uc;
-		}
+            return uc;
+        }
 
-		/// <summary>
-		/// The display context tells, if user files are allowable for the application
-		/// </summary>
-		public override bool UserFilesAllowed()
+        /// <summary>
+        /// The display context tells, if user files are allowable for the application
+        /// </summary>
+        public override bool UserFilesAllowed()
         {
             return true;
         }

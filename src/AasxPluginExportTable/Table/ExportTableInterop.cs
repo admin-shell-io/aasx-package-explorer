@@ -46,14 +46,14 @@ namespace AasxPluginExportTable.Table
             var ws = wb.Worksheets.Add("Export");
 
             // cellwise export
-            for (int ri=0; ri<table.Rows.Count; ri++)
+            for (int ri = 0; ri < table.Rows.Count; ri++)
             {
                 var row = table.Rows[ri];
-                for (int ci=0; ci<row.Cells.Count; ci++)
+                for (int ci = 0; ci < row.Cells.Count; ci++)
                 {
                     // source
                     var srcCell = row.Cells[ci];
-                    
+
                     // basic cell
                     var dstCell = ws.Cell(1 + ri, 1 + ci);
 

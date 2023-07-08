@@ -33,7 +33,7 @@ namespace Extensions
                 new List<IKey> { ExtendIDataSpecificationContent.GetKeyForIec61360() }),
                 new DataSpecificationIec61360(
                         ExtendLangStringSet.CreateManyPreferredNamesFromStringArray(preferredNames),
-                        new List<ILangStringShortNameTypeIec61360> { 
+                        new List<ILangStringShortNameTypeIec61360> {
                             new LangStringShortNameTypeIec61360(AdminShellUtil.GetDefaultLngIso639(), shortName) },
                         unit,
                         unitId,

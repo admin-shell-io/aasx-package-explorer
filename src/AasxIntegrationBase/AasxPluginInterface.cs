@@ -368,7 +368,7 @@ namespace AasxIntegrationBase
             bool enableNewSubmodel = false)
         {
             var res = new AasxPluginListOfActionDescription();
-            
+
             // for speed reasons, have the most often used at top!
             if (enableCheckVisualExt)
                 res.Add(new AasxPluginActionDescriptionBase(
@@ -388,7 +388,7 @@ namespace AasxIntegrationBase
             if (enableEventsGet)
                 res.Add(new AasxPluginActionDescriptionBase(
                     "get-events", "Pops and returns the earliest event from the event stack."));
-            if (enableEventReturn) 
+            if (enableEventReturn)
                 res.Add(new AasxPluginActionDescriptionBase(
                     "event-return", "Called to return a result evaluated by the host for a certain event."));
             if (enableCheckVisualExt)
@@ -420,7 +420,7 @@ namespace AasxIntegrationBase
                     "generate-submodel",
                     "Returns a generated default Submodel based on the name provided as string argument."));
             }
-            
+
             return res;
         }
 

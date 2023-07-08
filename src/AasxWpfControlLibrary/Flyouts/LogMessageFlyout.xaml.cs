@@ -77,7 +77,7 @@ namespace AasxPackageExplorer
                 if (DiaData?.CheckForLogAndEnd != null)
                 {
                     var res = DiaData.CheckForLogAndEnd();
-                    
+
                     if (res.Item1 is string[] lmsgs && lmsgs.Length > 0)
                         foreach (var lmsg in lmsgs)
                             this.LogMessage(lmsg);

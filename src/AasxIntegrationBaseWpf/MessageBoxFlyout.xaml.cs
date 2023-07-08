@@ -68,7 +68,7 @@ namespace AasxIntegrationBase
 
             var layout = LayoutButtons(buttons);
             RenderButtonLayout(
-                this, this.StackPanelButtons, layout, 
+                this, this.StackPanelButtons, layout,
                 StackPanelButton_Click, out buttonToResult);
         }
 
@@ -115,20 +115,20 @@ namespace AasxIntegrationBase
         {
             var res = new ModalFooterButtonLayout();
 
-			// build up from left to right!
+            // build up from left to right!
 
-			if (extraButtons != null)
-				for (int i = 0; i < extraButtons.Length; i++)
-					res.Add(new ModalFooterButton(extraButtons[i], AnyUiMessageBoxResult.Extra0 + i));
+            if (extraButtons != null)
+                for (int i = 0; i < extraButtons.Length; i++)
+                    res.Add(new ModalFooterButton(extraButtons[i], AnyUiMessageBoxResult.Extra0 + i));
 
-			if (dialogButtons == AnyUiMessageBoxButton.OK)
+            if (dialogButtons == AnyUiMessageBoxButton.OK)
             {
                 res.Add(new ModalFooterButton("OK", AnyUiMessageBoxResult.OK, primary: true));
             }
             if (dialogButtons == AnyUiMessageBoxButton.OKCancel)
             {
-				res.Add(new ModalFooterButton("Cancel", AnyUiMessageBoxResult.Cancel));
-				res.Add(new ModalFooterButton("OK", AnyUiMessageBoxResult.OK, primary: true));
+                res.Add(new ModalFooterButton("Cancel", AnyUiMessageBoxResult.Cancel));
+                res.Add(new ModalFooterButton("OK", AnyUiMessageBoxResult.OK, primary: true));
             }
             if (dialogButtons == AnyUiMessageBoxButton.YesNo)
             {
@@ -168,7 +168,7 @@ namespace AasxIntegrationBase
             foreach (var btn in layout)
             {
                 var b = new Button();
-                b.Style = (Style) control.FindResource("TranspRoundCorner");
+                b.Style = (Style)control.FindResource("TranspRoundCorner");
                 b.Content = "" + btn.Title;
                 b.Height = buttonHeight;
                 b.MinWidth = buttonWidth;

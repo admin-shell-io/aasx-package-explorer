@@ -26,22 +26,22 @@ namespace AasxPluginDigitalNameplate
     public class NameplateData
     {
         public string URIOfTheProduct = "";
-		public string ManufacturerName = "";
-		public string ManufacturerProductDesignation = "";
-		public List<string> ContactInformation = null;
+        public string ManufacturerName = "";
+        public string ManufacturerProductDesignation = "";
+        public List<string> ContactInformation = null;
 
-		public string ManufacturerProductRoot = "";
-		public string ManufacturerProductFamily = "";
-		public string ManufacturerProductType = "";
-		public string OrderCodeOfManufacturer = "";
-		public string ProductArticleNumberOfManufacturer = "";
-		public string SerialNumber = "";
-		public string YearOfConstruction = "";
-		public string DateOfManufacture = "";
-		public string HardwareVersion = "";
-		public string FirmwareVersion = "";
-		public string SoftwareVersion = "";
-		public string CountryOfOrigin = "";
+        public string ManufacturerProductRoot = "";
+        public string ManufacturerProductFamily = "";
+        public string ManufacturerProductType = "";
+        public string OrderCodeOfManufacturer = "";
+        public string ProductArticleNumberOfManufacturer = "";
+        public string SerialNumber = "";
+        public string YearOfConstruction = "";
+        public string DateOfManufacture = "";
+        public string HardwareVersion = "";
+        public string FirmwareVersion = "";
+        public string SoftwareVersion = "";
+        public string CountryOfOrigin = "";
 
         public string ExplSafetyStr = "(not analyzed)";
 		
@@ -54,7 +54,7 @@ namespace AasxPluginDigitalNameplate
             public List<string> AddText = null;
         }
 
-		public List<MarkingInfo> Markings = null;		
+        public List<MarkingInfo> Markings = null;
 
         public NameplateData() { }
 
@@ -133,7 +133,7 @@ namespace AasxPluginDigitalNameplate
                         .FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(key, mm)?
                         .Value?.GetDefaultString(defaultLang);
                     if (st?.HasContent() == true)
-                        res.ContactInformation.Add(("" + header ) + st);
+                        res.ContactInformation.Add(("" + header) + st);
                 };
 
                 tryAdd(smcContInf?.Value, null, defs.CD_ZipCodOfPOBox?.GetSingleKey());

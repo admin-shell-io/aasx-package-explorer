@@ -201,14 +201,14 @@ namespace AasxPackageExplorer
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "OPC UA Nodeset2.xml file to write.")
                             .Add("Location", "Location selection", hidden: true))
-                    .AddWpfBlazor(name: "CopyClipboardElementJson", 
+                    .AddWpfBlazor(name: "CopyClipboardElementJson",
                         header: "Copy selected element JSON to clipboard", inputGesture: "Shift+Ctrl+C")
-                    .AddWpfBlazor(name: "ExportGenericForms", 
+                    .AddWpfBlazor(name: "ExportGenericForms",
                         header: "Export Submodel as options for GenericForms …",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "OPC UA Nodeset2.xml file to write.")
                             .Add("Location", "Location selection", hidden: true))
-                    .AddWpfBlazor(name: "ExportPredefineConcepts", 
+                    .AddWpfBlazor(name: "ExportPredefineConcepts",
                         header: "Export Submodel as snippet for PredefinedConcepts …",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "OPC UA Nodeset2.xml file to write.")

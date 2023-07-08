@@ -204,7 +204,8 @@ namespace AasCore.Aas3_0
             var decOctet = "([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])";
             var ipv4address = $"{decOctet}\\.{decOctet}\\.{decOctet}\\.{decOctet}";
             var ls32 = $"({h16}:{h16}|{ipv4address})";
-            var ipv6address = $"(({h16}:){{6}}{ls32}|::({h16}:){{5}}{ls32}|({h16})?::({h16}:){{4}}{ls32}|(({h16}:)?{h16})?::({h16}:){{3}}{ls32}|(({h16}:){{2}}{h16})?::({h16}:){{2}}{ls32}|(({h16}:){{3}}{h16})?::{h16}:{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?::{h16}|(({h16}:){{6}}{h16})?::)";
+            var ipv6address = $"(({h16}:){{6}}{ls32}|::({h16}:){{5}}{ls32}|({h16})?::({h16}:){{4}}{ls32}|(({h16}:)?{h16})?::({h16}:)" +
+                $"{{3}}{ls32}|(({h16}:){{2}}{h16})?::({h16}:){{2}}{ls32}|(({h16}:){{3}}{h16})?::{h16}:{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?::{h16}|(({h16}:){{6}}{h16})?::)";
             var unreserved = "[a-zA-Z0-9\\-._~]";
             var subDelims = "[!$&'()*+,;=]";
             var ipvfuture = $"[vV][0-9A-Fa-f]+\\.({unreserved}|{subDelims}|:)+";
@@ -360,7 +361,15 @@ namespace AasCore.Aas3_0
         private static Regex _constructMatchesXsAnyUri()
         {
             var scheme = "[a-zA-Z][a-zA-Z0-9+\\-.]*";
-            var ucschar = "([\\xa0-\\ud7ff\\uf900-\\ufdcf\\ufdf0-\\uffef]|\\ud800[\\udc00-\\udfff]|[\\ud801-\\ud83e][\\udc00-\\udfff]|\\ud83f[\\udc00-\\udffd]|\\ud840[\\udc00-\\udfff]|[\\ud841-\\ud87e][\\udc00-\\udfff]|\\ud87f[\\udc00-\\udffd]|\\ud880[\\udc00-\\udfff]|[\\ud881-\\ud8be][\\udc00-\\udfff]|\\ud8bf[\\udc00-\\udffd]|\\ud8c0[\\udc00-\\udfff]|[\\ud8c1-\\ud8fe][\\udc00-\\udfff]|\\ud8ff[\\udc00-\\udffd]|\\ud900[\\udc00-\\udfff]|[\\ud901-\\ud93e][\\udc00-\\udfff]|\\ud93f[\\udc00-\\udffd]|\\ud940[\\udc00-\\udfff]|[\\ud941-\\ud97e][\\udc00-\\udfff]|\\ud97f[\\udc00-\\udffd]|\\ud980[\\udc00-\\udfff]|[\\ud981-\\ud9be][\\udc00-\\udfff]|\\ud9bf[\\udc00-\\udffd]|\\ud9c0[\\udc00-\\udfff]|[\\ud9c1-\\ud9fe][\\udc00-\\udfff]|\\ud9ff[\\udc00-\\udffd]|\\uda00[\\udc00-\\udfff]|[\\uda01-\\uda3e][\\udc00-\\udfff]|\\uda3f[\\udc00-\\udffd]|\\uda40[\\udc00-\\udfff]|[\\uda41-\\uda7e][\\udc00-\\udfff]|\\uda7f[\\udc00-\\udffd]|\\uda80[\\udc00-\\udfff]|[\\uda81-\\udabe][\\udc00-\\udfff]|\\udabf[\\udc00-\\udffd]|\\udac0[\\udc00-\\udfff]|[\\udac1-\\udafe][\\udc00-\\udfff]|\\udaff[\\udc00-\\udffd]|\\udb00[\\udc00-\\udfff]|[\\udb01-\\udb3e][\\udc00-\\udfff]|\\udb3f[\\udc00-\\udffd]|\\udb44[\\udc00-\\udfff]|[\\udb45-\\udb7e][\\udc00-\\udfff]|\\udb7f[\\udc00-\\udffd])";
+            var ucschar = "([\\xa0-\\ud7ff\\uf900-\\ufdcf\\ufdf0-\\uffef]|\\ud800[\\udc00-\\udfff]|[\\ud801-\\ud83e][\\udc00-\\udfff]|\\ud83f[\\udc" +
+                "00-\\udffd]|\\ud840[\\udc00-\\udfff]|[\\ud841-\\ud87e][\\udc00-\\udfff]|\\ud87f[\\udc00-\\udffd]|\\ud880[\\udc00-\\udfff]|[\\ud881-\\ud8" +
+                "be][\\udc00-\\udfff]|\\ud8bf[\\udc00-\\udffd]|\\ud8c0[\\udc00-\\udfff]|[\\ud8c1-\\ud8fe][\\udc00-\\udfff]|\\ud8ff[\\udc00-\\udffd]|\\ud9" +
+                "00[\\udc00-\\udfff]|[\\ud901-\\ud93e][\\udc00-\\udfff]|\\ud93f[\\udc00-\\udffd]|\\ud940[\\udc00-\\udfff]|[\\ud941-\\ud97e][\\udc00-\\udff" +
+                "f]|\\ud97f[\\udc00-\\udffd]|\\ud980[\\udc00-\\udfff]|[\\ud981-\\ud9be][\\udc00-\\udfff]|\\ud9bf[\\udc00-\\udffd]|\\ud9c0[\\udc00-\\udff" +
+                "f]|[\\ud9c1-\\ud9fe][\\udc00-\\udfff]|\\ud9ff[\\udc00-\\udffd]|\\uda00[\\udc00-\\udfff]|[\\uda01-\\uda3e][\\udc00-\\udfff]|\\uda3f[\\udc" +
+                "00-\\udffd]|\\uda40[\\udc00-\\udfff]|[\\uda41-\\uda7e][\\udc00-\\udfff]|\\uda7f[\\udc00-\\udffd]|\\uda80[\\udc00-\\udfff]|[\\uda81-\\uda" +
+                "be][\\udc00-\\udfff]|\\udabf[\\udc00-\\udffd]|\\udac0[\\udc00-\\udfff]|[\\udac1-\\udafe][\\udc00-\\udfff]|\\udaff[\\udc00-\\udffd]|\\ud" +
+                "b00[\\udc00-\\udfff]|[\\udb01-\\udb3e][\\udc00-\\udfff]|\\udb3f[\\udc00-\\udffd]|\\udb44[\\udc00-\\udfff]|[\\udb45-\\udb7e][\\udc00-\\udfff]|\\udb7f[\\udc00-\\udffd])";
             var iunreserved = $"([a-zA-Z0-9\\-._~]|{ucschar})";
             var pctEncoded = "%[0-9A-Fa-f][0-9A-Fa-f]";
             var subDelims = "[!$&'()*+,;=]";
@@ -369,7 +378,9 @@ namespace AasCore.Aas3_0
             var decOctet = "([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])";
             var ipv4address = $"{decOctet}\\.{decOctet}\\.{decOctet}\\.{decOctet}";
             var ls32 = $"({h16}:{h16}|{ipv4address})";
-            var ipv6address = $"(({h16}:){{6}}{ls32}|::({h16}:){{5}}{ls32}|({h16})?::({h16}:){{4}}{ls32}|(({h16}:)?{h16})?::({h16}:){{3}}{ls32}|(({h16}:){{2}}{h16})?::({h16}:){{2}}{ls32}|(({h16}:){{3}}{h16})?::{h16}:{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?::{h16}|(({h16}:){{6}}{h16})?::)";
+            var ipv6address = $"(({h16}:){{6}}{ls32}|::({h16}:){{5}}{ls32}|({h16})?::({h16}:){{4}}{ls32}|(({h16}:)?{h16})?::({h16}:){{3}}{ls32}|" +
+                $"(({h16}:){{2}}{h16})?::({h16}:){{2}}{ls32}|(({h16}:){{3}}{h16})?::{h16}:{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?" +
+                $"::{h16}|(({h16}:){{6}}{h16})?::)";
             var unreserved = "[a-zA-Z0-9\\-._~]";
             var ipvfuture = $"[vV][0-9A-Fa-f]+\\.({unreserved}|{subDelims}|:)+";
             var ipLiteral = $"\\[({ipv6address}|{ipvfuture})\\]";
@@ -806,7 +817,9 @@ namespace AasCore.Aas3_0
         [CodeAnalysis.SuppressMessage("ReSharper", "StringLiteralTypo")]
         private static Regex _constructMatchesXsDuration()
         {
-            var durationRep = "-?P((([0-9]+Y([0-9]+M)?([0-9]+D)?|([0-9]+M)([0-9]+D)?|([0-9]+D))(T(([0-9]+H)([0-9]+M)?([0-9]+(\\.[0-9]+)?S)?|([0-9]+M)([0-9]+(\\.[0-9]+)?S)?|([0-9]+(\\.[0-9]+)?S)))?)|(T(([0-9]+H)([0-9]+M)?([0-9]+(\\.[0-9]+)?S)?|([0-9]+M)([0-9]+(\\.[0-9]+)?S)?|([0-9]+(\\.[0-9]+)?S))))";
+            var durationRep = "-?P((([0-9]+Y([0-9]+M)?([0-9]+D)?|([0-9]+M)([0-9]+D)?|([0-9]+D))(T(([0-9]+H)([0-9]+M)?([0-9]+(\\.[0-9]+)?S)?|([0-" +
+                "9]+M)([0-9]+(\\.[0-9]+)?S)?|([0-9]+(\\.[0-9]+)?S)))?)|(T(([0-9]+H)([0-9]+M)?([0-9]+(\\.[0-9]+)?S)?|([0-9]+M)([0-9]+(\\.[0-9]+)?S" +
+                ")?|([0-9]+(\\.[0-9]+)?S))))";
             var pattern = $"^{durationRep}$";
 
             return new Regex(pattern);

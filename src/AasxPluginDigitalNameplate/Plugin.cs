@@ -196,7 +196,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     _sessions.Remove(args[0]);
                 }
                 // ReSharper enable UnusedVariable
-            }            
+            }
 
             // default
             return null;

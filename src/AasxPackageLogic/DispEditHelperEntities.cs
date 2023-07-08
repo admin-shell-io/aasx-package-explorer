@@ -173,7 +173,7 @@ namespace AasxPackageLogic
 
                         if (i == 3)
                         {
-                            var k2 = SmartSelectAasEntityKeys(packages, 
+                            var k2 = SmartSelectAasEntityKeys(packages,
                                 PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "All");
 
                             if (k2 != null && k2.Count >= 1)
@@ -2105,7 +2105,7 @@ namespace AasxPackageLogic
                         var ds = cd.GetIEC61360();
                         if (ds != null && (ds.PreferredName == null || ds.PreferredName.Count < 1
                             // the following absurd case happens in reality ..
-                            || ( ds.PreferredName.Count == 1 && ds.PreferredName[0].Text?.HasContent() != true )))
+                            || (ds.PreferredName.Count == 1 && ds.PreferredName[0].Text?.HasContent() != true)))
                         {
                             ds.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>
                             {
@@ -2854,7 +2854,8 @@ namespace AasxPackageLogic
                 DispSmeListAddNewHelper(env, stack, repo,
                     key: "SubmodelElement:",
                     listOfSME,
-                    setValueLambda: (sml) => {
+                    setValueLambda: (sml) =>
+                    {
                         if (sme is Aas.SubmodelElementCollection)
                             (sme as Aas.SubmodelElementCollection).Value = sml;
                         if (sme is Aas.SubmodelElementList)
@@ -3545,7 +3546,7 @@ namespace AasxPackageLogic
                             }
                             return new AnyUiLambdaActionNone();
                         });
-                } 
+                }
                 else
                 {
                     // show warnings!
@@ -3553,7 +3554,7 @@ namespace AasxPackageLogic
                     stack.Add(g);
                     g.ColumnDefinitions[0].MinWidth = GetWidth(FirstColumnWidth.Standard);
 
-                    AddSmallLabelTo(g, 0, 0, content: "value:", 
+                    AddSmallLabelTo(g, 0, 0, content: "value:",
                         margin: new AnyUiThickness(5, 0, 0, 0));
                     AddSmallLabelTo(g, 0, 1, content: "(This value seems to contain binary content of " +
                         $"{"" + blb.Value?.Length.ToString()} bytes.)",
@@ -3568,26 +3569,26 @@ namespace AasxPackageLogic
                                 padding: new AnyUiThickness(5, 0, 5, 0)),
                             setValueAsync: async (o) =>
                             {
-                                if (AnyUiMessageBoxResult.Yes == await 
+                                if (AnyUiMessageBoxResult.Yes == await
                                         this.context.MessageBoxFlyoutShowAsync(
                                     "Edit value? Value seems to be binary data.",
                                     "Multiline editor",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                {
+                                    var uc = new AnyUiDialogueDataTextEditor(
+                                        caption: $"Edit Blob '{"" + blb.IdShort}'",
+                                        mimeType: blb.ContentType,
+                                        text: Encoding.Default.GetString(blb.Value ?? new byte[0]));
+                                    if (await context.StartFlyoverModalAsync(uc))
                                     {
-                                        var uc = new AnyUiDialogueDataTextEditor(
-                                            caption: $"Edit Blob '{"" + blb.IdShort}'",
-                                            mimeType: blb.ContentType,
-                                            text: Encoding.Default.GetString(blb.Value ?? new byte[0]));
-                                        if (await context.StartFlyoverModalAsync(uc))
-                                        {
-                                            blb.Value = Encoding.Default.GetBytes(uc.Text);
-                                            this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
-                                            return new AnyUiLambdaActionRedrawEntity();
-                                        }
-                                    }                            
+                                        blb.Value = Encoding.Default.GetBytes(uc.Text);
+                                        this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
+                                        return new AnyUiLambdaActionRedrawEntity();
+                                    }
+                                }
                                 return new AnyUiLambdaActionNone();
                             });
-                        }
+                }
 
                 // ContentType
 

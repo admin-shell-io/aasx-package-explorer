@@ -30,7 +30,7 @@ namespace Extensions
             //// found?
             //return res;
         }
-        
+
         public static List<ILangStringPreferredNameTypeIec61360> ConvertFromV20(
             this List<ILangStringPreferredNameTypeIec61360> lss,
             AasxCompatibilityModels.AdminShellV20.LangStringSetIEC61360 src)

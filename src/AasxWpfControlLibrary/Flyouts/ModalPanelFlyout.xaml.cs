@@ -86,8 +86,8 @@ namespace AasxPackageExplorer
             {
                 var res = buttonToResult[sender as Button];
                 DiaData.ResultButton = res;
-                DiaData.Result = 
-                    res == AnyUiMessageBoxResult.OK 
+                DiaData.Result =
+                    res == AnyUiMessageBoxResult.OK
                     || res == AnyUiMessageBoxResult.Yes
                     || res >= AnyUiMessageBoxResult.Extra0;
                 ControlClosed?.Invoke();
@@ -122,7 +122,7 @@ namespace AasxPackageExplorer
                 RenderedContentContainer = panelCnt;
                 panelCnt.UpdateLayout();
                 this.UpdateLayout();
-            } 
+            }
             else
             {
                 // delete the inital scroll viewer or rendered container, add directly

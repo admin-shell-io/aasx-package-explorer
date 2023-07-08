@@ -209,7 +209,7 @@ namespace AasxPluginExportTable.Table
                     return;
 
                 // entity in total
-                rep(head, "" + lss.ToStringExtended(format:2));
+                rep(head, "" + lss.ToStringExtended(format: 2));
 
                 // single entities
                 foreach (var ls in lss)
@@ -284,11 +284,11 @@ namespace AasxPluginExportTable.Table
                         sml.OrderRelevant, "No", new[] { "No", "Yes" }));
                     if (sml.SemanticIdListElement?.IsValid() == true)
                         details.Add("semanticIdListElement=" + sml.SemanticIdListElement.ToStringExtended());
-                    details.Add("typeValueListElement=" + 
+                    details.Add("typeValueListElement=" +
                         AasCore.Aas3_0.Stringification.ToString(sml.TypeValueListElement));
                     if (sml.ValueTypeListElement != null)
-                    details.Add("valueTypeListElement=" +
-                        AasCore.Aas3_0.Stringification.ToString(sml.ValueTypeListElement));
+                        details.Add("valueTypeListElement=" +
+                            AasCore.Aas3_0.Stringification.ToString(sml.ValueTypeListElement));
                 }
                 if (details.Count < 1)
                     details.Add("-");

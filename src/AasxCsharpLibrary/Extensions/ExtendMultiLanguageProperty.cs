@@ -70,7 +70,7 @@ namespace Extensions
 
             if (source is Property srcProp)
             {
-                elem.Value = new List<ILangStringTextType> { 
+                elem.Value = new List<ILangStringTextType> {
                     new LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), srcProp.Value) };
                 if (srcProp.ValueId != null)
                     elem.ValueId = srcProp.ValueId.Copy();
@@ -87,13 +87,13 @@ namespace Extensions
             if (source is AasCore.Aas3_0.Range srcRng)
             {
                 if (srcRng.Min != null)
-                    elem.Value = new List<ILangStringTextType> { 
+                    elem.Value = new List<ILangStringTextType> {
                         new LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), srcRng.Min) };
             }
 
             if (source is File srcFile)
             {
-                elem.Value = new List<ILangStringTextType> { 
+                elem.Value = new List<ILangStringTextType> {
                     new LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), srcFile.Value) };
             }
 

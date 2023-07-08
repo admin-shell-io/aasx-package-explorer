@@ -311,7 +311,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                                 _log, ticket, displayContext);
                             return new AasxPluginResultBase();
                         }
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         _log?.Error(ex, "when executing plugin menu item " + cmd);
                     }

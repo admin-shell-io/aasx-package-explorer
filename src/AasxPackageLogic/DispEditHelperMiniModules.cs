@@ -1636,7 +1636,7 @@ namespace AasxPackageLogic
 
                                 // add defaults?
                                 if (Options.Curr.DefaultLang.HasContent())
-                                    foreach (var lng in Options.Curr.DefaultLang.Split(',', 
+                                    foreach (var lng in Options.Curr.DefaultLang.Split(',',
                                         StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                                         mlp.Value.Add(new LangStringTextType("" + lng, ""));
                             }

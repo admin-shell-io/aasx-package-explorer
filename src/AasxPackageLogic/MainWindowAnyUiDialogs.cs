@@ -224,7 +224,7 @@ namespace AasxPackageLogic
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
                         (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
                         "All files (*.*)|*.*",
-                    "Save AASX: No valid filename.", 
+                    "Save AASX: No valid filename.",
                     reworkSpecialFn: true);
                 if (ucsf?.Result != true)
                     return;
@@ -308,7 +308,7 @@ namespace AasxPackageLogic
                     {
                         var lru = PackageCentral?.Repositories?.FindLRU();
                         if (lru != null && ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Local)
-                            lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, 
+                            lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem,
                                 ucsf.TargetFileName);
                     }
                     catch (Exception ex)

@@ -70,7 +70,7 @@ namespace AasxPluginExportTable.Table
                     if (ImportExportTableRecord.FormatNames[i].ToLower()
                             .Contains(fmt.ToLower()))
                         record.Format = i;
-            
+
             // work rows, cols
             int workRowsTop, workRowsBody, workCols;
 
@@ -374,8 +374,8 @@ namespace AasxPluginExportTable.Table
                         for (int tc = 0; tc < totalCols; tc++)
                         {
                             // first columns label
-                            var txtRowHead = (tc == 0) ? "Table" 
-                                    : ((tc == 1) ? "Column\u00bbHead" : $"Column {tc-1}");
+                            var txtRowHead = (tc == 0) ? "Table"
+                                    : ((tc == 1) ? "Column\u00bbHead" : $"Column {tc - 1}");
 
                             helper.Set(
                                 helper.AddSmallLabelTo(g2, 0, tc,
@@ -518,7 +518,7 @@ namespace AasxPluginExportTable.Table
                             dlgFileName,
                             dlgFilter,
                             "Export table: No valid filename.",
-                            argLocation: "Location", 
+                            argLocation: "Location",
                             reworkSpecialFn: true)))
                     return;
             }
@@ -562,7 +562,7 @@ namespace AasxPluginExportTable.Table
         private static void ExportTable_EnumerateSubmodel(
             List<ExportTableAasEntitiesList> list, Aas.Environment env,
             bool broadSearch, bool actInHierarchy, int depth,
-            Aas.IReferable coll, 
+            Aas.IReferable coll,
             int maxDepth)
         {
             // check
@@ -674,7 +674,7 @@ namespace AasxPluginExportTable.Table
             catch (Exception ex)
             {
                 log?.Error(ex, "When exporting table, an error occurred");
-            }            
+            }
         }
 
         private static void Import(

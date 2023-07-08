@@ -174,7 +174,7 @@ namespace AasxPredefinedConcepts
                 var node = System.Text.Json.Nodes.JsonNode.Parse(entry.contents);
                 res ??= ExtendIClass.IClassFrom(typeof(T), node) as T;
 
-                
+
             }
             catch (Exception ex)
             {

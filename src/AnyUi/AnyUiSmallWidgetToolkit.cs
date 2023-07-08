@@ -760,7 +760,7 @@ namespace AnyUi
         }
 
         public AnyUiGrid AddSubGrid(AnyUiStackPanel view, string caption,
-            int rows, int cols, string[] colWidths = null, 
+            int rows, int cols, string[] colWidths = null,
             AnyUiThickness marginGrid = null,
             AnyUiThickness paddingCaption = null,
             int minWidthFirstCol = -1)
