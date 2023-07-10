@@ -236,7 +236,7 @@ namespace AasxPluginExportTable.Table
             if (preset == "category")
                 elem.Category = commit(cell);
 
-            // TODO: check remove
+            // TODO (???, 0000-00-00): check remove
             //if (preset == "kind")
             //    elem.Kind = Aas.Stringification.ModelingKindFromString(commit(cell));
 

@@ -153,7 +153,7 @@ namespace AasxPackageExplorer
                                         //var p = Aas.Property.CreateNew(
                                         //    cd.GetDefaultShortName(), "PARAMETER",
                                         //    Key.GetFromRef(cd.GetCdReference()));
-                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference, 
+                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference,
                                             new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                         if (is_subheadline)
                                         {
@@ -328,7 +328,7 @@ namespace AasxPackageExplorer
                                                 //var p = Aas.Property.CreateNew(
                                                 //    cd.GetDefaultShortName(), "PARAMETER",
                                                 //    Key.GetFromRef(cd.GetCdReference()));
-                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", 
+                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER",
                                                     semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                                 p.Value = FVALUE[k];
 

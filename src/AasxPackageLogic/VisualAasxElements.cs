@@ -1224,7 +1224,7 @@ namespace AasxPackageLogic
                         this.Info += " = " + vl;
                 }
 
-                //TODO:jtikekar support DataSpecificationPhysicalUnit
+                //TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
                 var dspu = theCD.GetPhysicalUnit();
                 if (dspu != null)
@@ -2381,7 +2381,7 @@ namespace AasxPackageLogic
             else if (entity is VisualElementAsset veas && veas.theAsset != null)
             {
                 // maintain parent. If in doubt, set null
-                //TODO:jtikekar assetInformation is no more referable
+                //TODO (jtikekar, 0000-00-00): assetInformation is no more referable
                 //veas.theAsset.Parent = veas.theEnv;
             }
             else if (entity is VisualElementSubmodelRef vesmref)

@@ -89,7 +89,7 @@ namespace Extensions
             return conceptDescription.EmbeddedDataSpecifications?.GetIEC61360Content();
         }
 
-        //TODO:jtikekar DataSpecificationPhysicalUnit
+        //TODO (jtikekar, 0000-00-00): DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
         public static DataSpecificationPhysicalUnit GetPhysicalUnit(this ConceptDescription conceptDescription)
         {
@@ -140,7 +140,7 @@ namespace Extensions
 
             // check IEC61360 spec
 
-            //TODO:jtikekar Temporarily Removed
+            //TODO (jtikekar, 0000-00-00): Temporarily Removed
             //var eds61360 = this.IEC61360DataSpec;
             //if (eds61360 != null)
             //{

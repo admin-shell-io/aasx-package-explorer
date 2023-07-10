@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Extensions
 {
-    //TODO:jtikekar remove or seperate
+    //TODO (jtikekar, 0000-00-00): remove or seperate
     public static class ExtendLangStringSet
     {
         #region AasxPackageExplorer

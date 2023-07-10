@@ -82,7 +82,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                //TODO:jtikekar check with Micha
+                //TODO (jtikekar, 0000-00-00): check with Micha
                 this.AddKeyValueExRef(stack, "globalAssetId", asset, asset.GlobalAssetId, null, repo,
                     setValue: v =>
                     {
@@ -335,7 +335,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                //TODO:jtikekar check with Micha
+                //TODO (jtikekar, 0000-00-00): check with Micha
                 this.AddKeyValueExRef(stack, "assetType", asset, asset.AssetType, null, repo,
                     setValue: v =>
                     {
@@ -2209,7 +2209,7 @@ namespace AasxPackageLogic
                         breakIfTrue: true),
                 });
 
-            //TODO:jtikekar cd.dataspecifications vs embeddedDS
+            //TODO (jtikekar, 0000-00-00): cd.dataspecifications vs embeddedDS
             // use the normal module to edit ALL data specifications
             this.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.EmbeddedDataSpecifications,
                 (ds) => { cd.EmbeddedDataSpecifications = ds; },
@@ -2570,7 +2570,7 @@ namespace AasxPackageLogic
 
                 // although SML is the ideal case for acceleration, the calculation/ display of
                 // the index position prevents us from this
-                // TODO (MIHO, 23-01-17): optimize also this important special case
+                // TODO (MIHO, 2023-01-17): optimize also this important special case
                 if (parentContainer != null && parentContainer is Aas.SubmodelElementList &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
@@ -2977,7 +2977,7 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0)
                             {
                                 // prepare
-                                //TODO: jtikekar not a good solution to add null SME
+                                //TODO (jtikekar, 0000-00-00): not a good solution to add null SME
                                 ovl ??= new List<Aas.IOperationVariable>();
                                 var ov = new Aas.OperationVariable(null);
                                 ovl.Add(ov);
@@ -4052,7 +4052,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNavigateTo(
                             new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>(kl)), translateAssetToAAS: true);
                     };
-                    //TODO:jtikekar check with Micha
+                    //TODO (jtikekar, 0000-00-00): check with Micha
                     this.AddKeyValueExRef(stack, "globalAssetId", ent, ent.GlobalAssetId, null, repo,
                         v =>
                         {

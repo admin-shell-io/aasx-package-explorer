@@ -813,8 +813,8 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        //TODO:jtikekar need to test
-                        //TODO:MIHO refectored to extension method
+                        //TODO (jtikekar, 0000-00-00): need to test
+                        //TODO (MIHO, 0000-00-00): refectored to extension method
                         //if (typeof(T) is ILangStringTextType)
                         //{
                         //    langStr?.Add(new LangStringTextType("", ""));
@@ -895,7 +895,7 @@ namespace AasxPackageLogic
                         if (tbLang != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].Language.GetHashCode() &&
                                 //(this.highlightField.containingObject == langStr[currentI]))
-                                //TODO:jtikekar need to test
+                                //TODO (jtikekar, 0000-00-00): need to test
                                 CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
                             this.HighligtStateElement(tbLang, true);
 
@@ -920,7 +920,7 @@ namespace AasxPackageLogic
                         if (tbStr != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].Text.GetHashCode() &&
                                 //(this.highlightField.containingObject == langStr[currentI]))
-                                //TODO:jtikekar need to test
+                                //TODO (jtikekar, 0000-00-00): need to test
                                 CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
                             this.HighligtStateElement(tbStr, true);
 
@@ -1104,7 +1104,7 @@ namespace AasxPackageLogic
                     //if (o is Key k)
                     //    keys.Add(k.Value);
 
-                    //TODO: jtikekar Test
+                    //TODO (jtikekar, 0000-00-00): Test
                     if (o is Aas.IIdentifiable id)
                         keys.Add(id.Id);
                     if (o is Aas.Key k)
@@ -1777,7 +1777,7 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        var k = new Aas.Key(Aas.KeyTypes.GlobalReference, ""); //TODO:jtikekar default key
+                        var k = new Aas.Key(Aas.KeyTypes.GlobalReference, ""); //TODO (jtikekar, 0000-00-00): default key
                         keys.Add(k);
 
                         emitCustomEvent?.Invoke(relatedReferable);

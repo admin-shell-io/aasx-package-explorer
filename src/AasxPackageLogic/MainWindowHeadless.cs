@@ -963,7 +963,7 @@ namespace AasxPackageLogic
                         foundCds++;
                         continue;
                     }
-                   
+
                     // ok, add
                     ticket.Env.ConceptDescriptions.Add(cdres);
                     createdCds++;

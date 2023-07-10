@@ -31,7 +31,7 @@ function Main {
             "MsaglWpfControl/VNode.cs" `
             "AasxFileServerRestLibrary/**" `
             "AasxCsharpLib_bkp/**" `
-            "AasxServer.DomainModelV3_0_RC02"`
+            "AasxServer.DomainModelV3_0_RC02/**"`
         --max-lines-in-file 100000 `
         --max-line-length 240 `
         --ignore-lines-matching '[a-z]+://[^ \t]+$'

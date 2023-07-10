@@ -44,8 +44,8 @@ namespace AasxPluginDigitalNameplate
         public string CountryOfOrigin = "";
 
         public string ExplSafetyStr = "(not analyzed)";
-		
-		public Aas.IFile CompanyLogo = null;
+
+        public Aas.IFile CompanyLogo = null;
 
         public class MarkingInfo
         {

@@ -94,7 +94,7 @@ namespace AasxPluginExportTable.Table
                     workRowsBody = record.RowsBody;
                     workCols = record.Cols;
 
-                    // TODO: Put this into above function!
+                    // TODO (???, 0000-00-00): Put this into above function!
                     g.ColumnDefinitions[0].MinWidth = 120;
                     g.ColumnDefinitions[0].MaxWidth = 120;
 

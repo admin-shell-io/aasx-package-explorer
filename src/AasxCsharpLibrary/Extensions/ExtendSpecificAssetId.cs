@@ -16,7 +16,7 @@ namespace AdminShellNS.Extensions
             if (specificAssetId.Value != other.Value) return false;
             if (!specificAssetId.ExternalSubjectId.Matches(other.ExternalSubjectId)) return false;
 
-            //TODO: jtikekar Check optional parameter i.e., Semantic Id and supplementatry semantic id
+            //TODO (jtikekar, 0000-00-00): Check optional parameter i.e., Semantic Id and supplementatry semantic id
 
             return true;
         }

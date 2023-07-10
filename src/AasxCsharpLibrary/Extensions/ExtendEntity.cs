@@ -69,7 +69,7 @@ namespace Extensions
 
             if (sourceEntity.assetRef != null)
             {
-                //TODO:jtikekar whether to convert to Global or specific asset id
+                //TODO (jtikekar, 0000-00-00): whether to convert to Global or specific asset id
                 var assetRef = ExtensionsUtil.ConvertReferenceFromV20(sourceEntity.assetRef, ReferenceTypes.ExternalReference);
                 entity.GlobalAssetId = assetRef.GetAsIdentifier();
             }

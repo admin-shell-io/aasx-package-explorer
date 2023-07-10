@@ -1555,8 +1555,8 @@ namespace AasxPackageLogic
                 // execute
                 await DisplayContext.StartFlyoverModalAsync(uc);
 
-                // HACK: wait for modal window to close
-                // TODO: remove
+                // HACK (??, 0000-00-00): wait for modal window to close
+                // TODO (???, 0000-00-00): remove
                 await Task.Delay(1000);
 
                 // always remember script
@@ -1679,7 +1679,8 @@ namespace AasxPackageLogic
             {
                 // check for ReferenceElement
                 var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
-                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
+                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),
+                    //TODO (jtikekar, 0000-00-00): Test
                     MatchMode.Relaxed);
                 if (navTo?.Value == null)
                     continue;

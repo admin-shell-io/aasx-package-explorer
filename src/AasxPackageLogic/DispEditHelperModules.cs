@@ -266,7 +266,8 @@ namespace AasxPackageLogic
                 {
                     if (i == 0)
                     {
-                         //checksum= referable.ComputeHashcode();  //TODO:jtikekar support attributes
+                         //checksum= referable.ComputeHashcode();  
+                         //TODO (jtikekar, 0000-00-00): support attributes
                         this.AddDiaryEntry(referable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }
@@ -610,7 +611,7 @@ namespace AasxPackageLogic
                 // now use the normal mechanism to deal with editMode or not ..
                 if (hasDataSpecification != null && hasDataSpecification.Count > 0)
                 {
-                    //TODO:jtikekar: refactor
+                    //TODO (jtikekar, 0000-00-00): refactor
                     // MIHO: is this at all required?
                     //List<string>[] presetKeys = new List<string>[addPresetKeyLists.Length];
                     //for (int j = 0; j < addPresetKeyLists.Length; j++)
@@ -845,7 +846,7 @@ namespace AasxPackageLogic
                                             as Aas.DataSpecificationIec61360,
                                         relatedReferable: relatedReferable, superMenu: superMenu);
 
-                                //TODO:jtikekar support DataSpecificationPhysicalUnit
+                                //TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
                                 if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.PhysicalUnit)
                                     this.DisplayOrEditEntityDataSpecificationPhysicalUnit(
@@ -1299,7 +1300,7 @@ namespace AasxPackageLogic
         //            return new AnyUiLambdaActionRedrawEntity();
         //        }))
         //    {
-        //        //TODO:jtikekar need to test
+        //        //TODO (jtikekar, 0000-00-00): need to test
         //        foreach (var specificAssetId in pair)
         //        {
         //            this.IdentifierKeyValueSinglePairHelper(
@@ -1662,7 +1663,7 @@ namespace AasxPackageLogic
         // DataSpecificationIEC61360
         //
 
-        //TODO:jtikekar support DataSpecificationPhysicalUnit
+        //TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
         public void DisplayOrEditEntityDataSpecificationPhysicalUnit(
     AnyUiStackPanel stack,

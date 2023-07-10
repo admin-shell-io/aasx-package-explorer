@@ -38,7 +38,7 @@ namespace Extensions
             if (ct == ContentTypes.Iec61360)
                 return new DataSpecificationIec61360(
                     new List<ILangStringPreferredNameTypeIec61360>());
-            //TODO:jtikekar DataSpecificationPhysicalUnit
+            //TODO (jtikekar, 0000-00-00): DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
             if (ct == ContentTypes.PhysicalUnit)
                 return new DataSpecificationPhysicalUnit("", "", null); 
@@ -58,7 +58,7 @@ namespace Extensions
         {
             if (content is DataSpecificationIec61360)
                 return ContentTypes.Iec61360;
-            //TODO:jtikekar DataSpecificationPhysicalUnit
+            //TODO (jtikekar, 0000-00-00): DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
             if (content is DataSpecificationPhysicalUnit)
                 return ContentTypes.PhysicalUnit; 

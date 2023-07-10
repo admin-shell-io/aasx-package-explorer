@@ -245,8 +245,9 @@ namespace BlazorUI.Data
             // focus info
             var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
 
-            // TODO: Can we set title of the browser tab?
-            //var t = "AASX Package Explorer V3RC02";  //TODO:jtikekar remove V3RC02
+            // TODO (??, 0000-00-00): Can we set title of the browser tab?
+            //var t = "AASX Package Explorer V3RC02";  
+            //TODO (jtikekar, 0000-00-00): remove V3RC02
             //if (PackageCentral.MainAvailable)
             //    t += " - " + PackageCentral.MainItem.ToString();
             //if (PackageCentral.AuxAvailable)
@@ -526,7 +527,7 @@ namespace BlazorUI.Data
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
-                        if (work.Keys[0].Type == Aas.KeyTypes.GlobalReference) //TODO: jtikekar KeyTypes.AssetInformation
+                        if (work.Keys[0].Type == Aas.KeyTypes.GlobalReference) //TODO (jtikekar, 0000-00-00): KeyTypes.AssetInformation
                             fi = PackageCentral.Repositories.FindByAssetId(work.Keys[0].Value.Trim());
                         if (work.Keys[0].Type == Aas.KeyTypes.AssetAdministrationShell)
                             fi = PackageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());

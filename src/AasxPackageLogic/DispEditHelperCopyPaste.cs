@@ -746,7 +746,7 @@ namespace AasxPackageLogic
             Func<T, T, bool> checkEquality = null,
             Action<T, bool> modifyAfterClone = null,
             Action<CopyPasteItemBase> extraAction = null,
-            AasxMenu superMenu = null) /*where T : new()*/ //TODO:jtikekar Test
+            AasxMenu superMenu = null) /*where T : new()*/ //TODO (jtikekar, 0000-00-00): Test
         {
             // access
             if (parentContainer == null || cpbInternal == null || sm == null || cloneEntity == null)
@@ -995,7 +995,8 @@ namespace AasxPackageLogic
             Func<CopyPasteBuffer, bool> checkPasteInfo = null,
             Func<CopyPasteItemBase, bool, object> doPasteInto = null,
             AasxMenu superMenu = null)
-                where T : Aas.IIdentifiable/*, new()*/ //TODO:jtikekar Test
+                where T : Aas.IIdentifiable/*, new()*/
+            //TODO (jtikekar, 0000-00-00): Test
         {
             // access
             if (parentContainer == null || cpbInternal == null || entity == null || cloneEntity == null)
@@ -1189,7 +1190,8 @@ namespace AasxPackageLogic
             string label = "Buffer:",
             Func<CopyPasteItemBase, bool, object> lambdaPasteInto = null,
             AasxMenu superMenu = null)
-                where T : Aas.IIdentifiable/*, new()*/   //TODO: jtikekar test
+                where T : Aas.IIdentifiable/*, new()*/
+            //TODO (jtikekar, 0000-00-00): test
         {
             // access
             if (cpbInternal == null || lambdaPasteInto == null)

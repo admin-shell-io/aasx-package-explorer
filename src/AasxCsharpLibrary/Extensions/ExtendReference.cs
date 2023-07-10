@@ -252,7 +252,7 @@ namespace Extensions
             return rf.Keys.Count;
         }
 
-        //TODO: check if required
+        //TODO (??, 0000-00-00): check if required
         //public static int Count(this Reference rf)
         //{
         //    return rf.Keys.Count;
@@ -263,7 +263,7 @@ namespace Extensions
             return rf.Keys.Last();
         }
 
-        //TODO: check if required
+        //TODO (??, 0000-00-00): check if required
         //public static IKey Last(this Reference rf)
         //{
         //    return rf.Keys.Last();

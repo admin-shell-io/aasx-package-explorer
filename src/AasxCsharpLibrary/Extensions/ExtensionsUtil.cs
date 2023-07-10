@@ -103,7 +103,8 @@ namespace Extensions
                 AnnotatedRelationshipElement => KeyTypes.AnnotatedRelationshipElement,
                 IIdentifiable => KeyTypes.Identifiable,
                 IReferable => KeyTypes.Referable,
-                Reference => KeyTypes.GlobalReference,//TODO:jtikekar what about model reference
+                Reference => KeyTypes.GlobalReference,
+                //TODO (jtikekar, 0000-00-00): what about model reference
                 _ => KeyTypes.SubmodelElement,  // default case
             };
         }

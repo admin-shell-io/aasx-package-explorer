@@ -1039,7 +1039,7 @@ namespace AasxPackageLogic
                     substack, "valueType", extension, Aas.Stringification.ToString(extension.ValueType), null, repo,
                     comboBoxIsEditable: editMode,
                     //comboBoxItems: DataElement.ValueTypeItems,
-                    //TODO:jtikekar change
+                    //TODO (jtikekar, 0000-00-00): change
                     comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
                     comboBoxMinWidth: 190,
                     //new string[] {

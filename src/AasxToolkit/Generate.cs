@@ -120,7 +120,7 @@ namespace AasxToolkit
                 //var asset1 = new AssetInformation("Asset_3s7plfdrs35");
                 var asset1 = new AssetInformation(AssetKind.Instance);
                 //aasenv1.Assets.Add(asset1);
-                //TODO:jtikekar 
+                //TODO (jtikekar, 0000-00-00): ?
                 //asset1.SetIdentification("IRI", "http://example.com/3s7plfdrs35", "3s7plfdrs35");
                 //No Description in AssetInformation
                 //asset1.AddDescription("en", "USB Stick");
@@ -131,7 +131,7 @@ namespace AasxToolkit
                 var subCad = CreateSubmodelCad(prefs, repo, aasenv1);
 
                 // Test Hashing
-                //TODO:jtikekar Uncomment ComputeHashcode
+                //TODO (jtikekar, 0000-00-00): Uncomment ComputeHashcode
                 //Log.WriteLine(2, "Hash for submodel CAD = " + subCad.ComputeHashcode());
                 //subCad.Category += "!";
                 //Log.WriteLine(2, "Hash for submodel CAD = " + subCad.ComputeHashcode());
@@ -979,7 +979,7 @@ namespace AasxToolkit
             sw001.Statements.Add(ps001_1);
             sw001.Statements.Add(ps001_2);
 
-            //TODO: jtikekar keyType should be AssetInformation
+            //TODO (jtikekar, 0000-00-00): keyType should be AssetInformation
             var la001 = new Entity(
                 EntityType.SelfManagedEntity, idShort: "Lamp001", globalAssetId: "example.com/assets/23224234234232342343234");
             sub1.Add(la001);

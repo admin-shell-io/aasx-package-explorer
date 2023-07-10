@@ -409,7 +409,7 @@ namespace AasxAmlImExport
                         {
                             if (res == null)
                                 res = new List<Reference>(); //default initilization
-                            //TODO: jtikekar Temporarily removed, cannot be added, as it may reflect in the other places, like AssetAdministrationShell does not contain EmbeddedDS
+                            //TODO (jtikekar, 0000-00-00): Temporarily removed, cannot be added, as it may reflect in the other places, like AssetAdministrationShell does not contain EmbeddedDS
                             //res.Add(new EmbeddedDataSpecification(r));
                             res.Add(r);
                         }
@@ -519,7 +519,7 @@ namespace AasxAmlImExport
                 if (id != null)
                 {
                     // set data
-                    //TODO: jtikekar Uncomment and Support
+                    //TODO (jtikekar, 0000-00-00): Uncomment and Support
                     //asset.identification = new Identification(idType, id);
 
                     //NO administrativeInformation, catagory or description in V3 AssetInformation
@@ -1118,7 +1118,8 @@ namespace AasxAmlImExport
 
                             // make temporary object official
                             currentAas.AssetInformation = asset;
-                            //matcher.AddMatch(asset, ie); //TODO jtikekar AssetInformation is not Referable
+                            //matcher.AddMatch(asset, ie); 
+                            //TODO (jtikekar, 0000-00-00): AssetInformation is not Referable
                         }
                         else
                             Debug(indentation, "  ASSET with insufficient attributes. Skipping");
@@ -1160,7 +1161,7 @@ namespace AasxAmlImExport
                             // there might be the case, that a submodel with the same identification is already
                             // existing.
                             // If so, that switch to it and ignore the newly parsed set of information
-                            // (TODO: check, if to merge information?)
+                            //TODO (?, 0000-00-00): check, if to merge information?
                             var existSm = this.package.AasEnv.FindSubmodelById(sm.Id);
                             if (existSm != null)
                                 sm = existSm;
@@ -1444,7 +1445,7 @@ namespace AasxAmlImExport
 
                             // AAS might already exist by parsing instance, therefore check for existance
                             // If so, then switch to it and ignore the newly parsed set of information
-                            // (TODO: check, if to merge information?)
+                            //TODO (?, 0000-00-00): check, if to merge information?)
                             var existAas = this.package.AasEnv.FindAasById(aas.Id);
                             if (existAas != null)
                                 aas = existAas;
@@ -1474,7 +1475,7 @@ namespace AasxAmlImExport
 
                             // there might be the case, that a submodel with the same identification already exists.
                             // If so, that switch to it and ignore the newly parsed set of information
-                            // (TODO: check, if to merge information?)
+                            //TODO (?, 0000-00-00): check, if to merge information?)
                             var existSm = this.package.AasEnv.FindSubmodelById(sm.Id);
                             if (existSm != null)
                                 sm = existSm;

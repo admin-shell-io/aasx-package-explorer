@@ -14,7 +14,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Aas = AasCore.Aas3_0; //TODO:jtikekar change to AAS
+using Aas = AasCore.Aas3_0;
+//TODO (jtikekar, 0000-00-00): change to AAS
 
 namespace AasxIntegrationBase
 {
@@ -237,7 +238,7 @@ namespace AasxIntegrationBase
                 yield return new EmulateAttribute("Value", textSearchable: true);
             }
 
-            //TODO:jtikekar support other forms of LangString 
+            //TODO (jtikekar, 0000-00-00): support other forms of LangString 
             if (obj is Aas.ILangStringTextType)
             {
                 yield return new EmulateAttribute("Language", textSearchable: true);

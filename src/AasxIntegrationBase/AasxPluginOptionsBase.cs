@@ -14,7 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Aas = AasCore.Aas3_0; //TODO:jtikekar remove
+using Aas = AasCore.Aas3_0;
+//TODO (jtikekar, 0000-00-00): remove
 using AAS = AasCore.Aas3_0;
 
 // ReSharper disable AssignNullToNotNullAttribute .. a bit unclear, why issues here
