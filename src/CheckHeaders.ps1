@@ -50,7 +50,10 @@ function Main
             "WpfXamlTool\Resources\preset1.xaml" `
             "AasxFileServerRestLibrary\**" `
             "es6numberserializer\**" `
-            "jsoncanonicalizer\**" 
+            "jsoncanonicalizer\**" `
+            "AasCore.Aas3_0/**" `
+            "AasxCsharpLib_bkp/**" `
+            "AasxServer.DomainModelV3_0_RC02/**"
 
     if($LASTEXITCODE -ne 0)
     {
