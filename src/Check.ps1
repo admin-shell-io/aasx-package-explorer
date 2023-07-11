@@ -13,6 +13,7 @@ function Main
     AssertDotnet
     Set-Location $PSScriptRoot
     & dotnet.exe run --project CheckScript
+    Read-Host -Prompt "Press Enter to exit"
 }
 
 $previousLocation = Get-Location; try
