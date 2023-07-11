@@ -106,7 +106,9 @@ namespace AnyUi
         /// <summary>
         /// Denotes, which event type leads to a special HTML rendering.
         /// </summary>
+        // dead-csharp off
         // public AnyUiHtmlEventType EventType;
+        // dead-csharp on
 
         // constructor: guarantee some data
 
@@ -328,6 +330,8 @@ namespace AnyUi
                 while (i < sessions.Count)
                 {
                     var s = sessions[i];
+
+                    // dead-csharp off
                     //if (s.htmlDotnetEventIn)
                     //{
                     //    switch (s.htmlDotnetEventType)
@@ -385,6 +389,7 @@ namespace AnyUi
                     //            break;
                     //    }
                     //}
+                    // dead-csharp on
 
                     if (s.BackgroundAction == AnyUiHtmlBackgroundActionType.ContextMenu
                         && s.SpecialAction is AnyUiSpecialActionContextMenu sacm)
@@ -406,10 +411,6 @@ namespace AnyUi
                         s.BackgroundAction = AnyUiHtmlBackgroundActionType.None;
                         s.SpecialAction = null;
 
-                        // trigger display(again)
-                        //Program.signalNewData(
-                        //    new Program.NewDataAvailableArgs(
-                        //        Program.DataRedrawMode.None, evs.SessionId));
                         s.JsRuntime?.InvokeVoidAsync("blazorCloseModalForce");
 
                         // remember close
@@ -439,8 +440,6 @@ namespace AnyUi
                     if (s.BackgroundAction == AnyUiHtmlBackgroundActionType.SetValue
                         && s.SpecialAction is AnyUiSpecialActionSetValue sasv)
                     {
-                        // simply do event loop (but here in the "background")
-                        // while (!s.EventDone) Task.Delay(1);
                         // reset everything
                         s.EventOpen = false;
                         s.EventDone = false;
@@ -457,7 +456,6 @@ namespace AnyUi
                             var ret = sasv.UiElement.setValueLambda?.Invoke(sasv.Argument);
 
                             // not required?!
-                            // while (s.htmlDotnetEventOut) Task.Delay(1);
 
                             // trigger handling of lambda return
                             Program.signalNewData(
@@ -501,13 +499,14 @@ namespace AnyUi
                 {
                     lock (dc.htmlDotnetLock)
                     {
+                        // dead-csharp off
                         //while (found.htmlDotnetEventIn) Task.Delay(1);
                         //found.htmlEventInputs.Clear();
                         //found.htmlDotnetEventType = "setValueLambda";
                         //found.htmlDotnetEventInputs.Add(el);
                         //found.htmlDotnetEventInputs.Add(o);
                         //found.htmlDotnetEventIn = true;
-
+                        // dead-csharp on
                         // simply treat woodoo as error!
                         evs.JsRuntime = dc._jsRuntime;
 
@@ -541,6 +540,7 @@ namespace AnyUi
                 {
                     lock (dc.htmlDotnetLock)
                     {
+                        // dead-csharp off
                         // woodoo? -> wait for "old" dislogs????
                         // while (/* evs.htmlDotnetEventIn || evs.EventOpen) Task.Delay(1);
 
@@ -550,7 +550,7 @@ namespace AnyUi
                         //evs.htmlDotnetEventInputs.Add(el);
                         //evs.htmlDotnetEventInputs.Add(cntlcm);
                         //evs.htmlDotnetEventIn = true;
-
+                        // dead-csharp on
                         // simply treat woodoo as error!
                         evs.JsRuntime = dc._jsRuntime;
 
@@ -573,7 +573,7 @@ namespace AnyUi
                         Program.signalNewData(
                             new Program.NewDataAvailableArgs(
                                 Program.DataRedrawMode.None, evs.SessionId));
-
+                        // dead-csharp off
                         // wait modal
                         //while (!evs.EventDone) Task.Delay(1);
                         //evs.EventOpen = false;
@@ -584,7 +584,7 @@ namespace AnyUi
                         //    new Program.NewDataAvailableArgs(
                         //        Program.DataRedrawMode.None, evs.SessionId));
                         // context?._jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
-
+                        // dead-csharp on
                     }
 
                 }
@@ -612,12 +612,6 @@ namespace AnyUi
             var dd = evs.StartModal(new AnyUiDialogueDataMessageBox(
                 caption, message, buttons, image));
 
-            //evs.htmlEventInputs.Clear();
-            //evs.htmlEventType = "MessageBoxFlyoutShow";
-            //evs.htmlEventInputs.Add(message);
-            //evs.htmlEventInputs.Add(caption);
-            //evs.htmlEventInputs.Add(buttons);
-            //evs.htmlEventIn = true;
 
             // trigger display
             Program.signalNewData(
@@ -632,11 +626,6 @@ namespace AnyUi
             if (dd.Result)
                 r = dd.ResultButton;
 
-            //evs.htmlEventType = "";
-            //evs.htmlEventOutputs.Clear();
-            //evs.htmlEventOut = false;
-            //evs.htmlEventInputs.Clear();
-            //evs.htmlDotnetEventIn = false;
 
             return r;
         }
@@ -756,16 +745,12 @@ namespace AnyUi
             evs.EventOpen = false;
             evs.EventDone = false;
 
-            // trigger display (again)
-            //Program.signalNewData(
-            //    new Program.NewDataAvailableArgs(
-            //        Program.DataRedrawMode.None, evs.SessionId));
             _jsRuntime.InvokeVoidAsync("blazorCloseModalForce");
 
             evs.NotifyModalClose();
 
             return dd.Result;
-
+            // dead-csharp off
             //// access
             //if (dialogueData == null)
             //    return false;
@@ -825,6 +810,7 @@ namespace AnyUi
             //}
             //// result
             //return dialogueData.Result;
+            // dead-csharp om
         }
 
         public async override Task<bool> StartFlyoverModalAsync(AnyUiDialogueDataBase dialogueData, Action rerender = null)

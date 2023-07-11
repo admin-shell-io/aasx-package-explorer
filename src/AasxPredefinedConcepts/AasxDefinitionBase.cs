@@ -168,9 +168,10 @@ namespace AasxPredefinedConcepts
                     }
                 }
 #endif
+                // dead-csharp off
                 // TODO (MIHO, 2022-12-31): for V3.0, another method of deserialization is required!!
                 // res ??= JsonConvert.DeserializeObject<T>(entry.contents);
-
+                // dead-csharp on
                 var node = System.Text.Json.Nodes.JsonNode.Parse(entry.contents);
                 res ??= ExtendIClass.IClassFrom(typeof(T), node) as T;
 

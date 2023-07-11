@@ -47,6 +47,7 @@ namespace BlazorUI
 
         public AnyUiLambdaActionBase HandleGlobalKeyDown(KeyEventArgs e, bool preview)
         {
+            // dead-csharp off
             //// access
             //if (e == null || Menu == null)
             //    return null;
@@ -67,7 +68,7 @@ namespace BlazorUI
             //        return ticket.UiLambdaAction;
             //    }
             //}
-
+            // dead-csharp off
             return null;
         }
 
@@ -89,15 +90,11 @@ namespace BlazorUI
 
             object kgConv = null; // new KeyGestureConverter();
 
-            // RenderItemCollection(menuInfo, menuInfo, wpfMenu.Items, cmdBindings, inputBindings, kgConv);
+          
         }
 
         public bool IsChecked(string name)
         {
-            //var wpf = _blazorItems.Get2OrDefault(_menuItems.Get2OrDefault(name?.Trim().ToLower()));
-            //if (wpf != null)
-            //    return false; // wpf.IsChecked;
-            //return false;
 
             // directly look up menu item and return *internal* state
             var mi = _menuItems.Get2OrDefault(name?.Trim().ToLower());

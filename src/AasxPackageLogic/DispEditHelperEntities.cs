@@ -3989,7 +3989,7 @@ namespace AasxPackageLogic
                         stack, "Statements", "Please add statements via editing of sub-ordinate entities");
 
                 // EntityType
-
+                // dead-csharp off
                 //is not nullable!
                 //this.AddHintBubble(
                 //    stack, hintMode,
@@ -4003,7 +4003,7 @@ namespace AasxPackageLogic
                 //                "or SelfManagedEntity (with assigned Aas.AssetInformation reference)",
                 //            severityLevel: HintCheck.Severity.High)
                 //    });
-
+                // dead-csharp on
                 AddKeyValueExRef(
                     stack, "entityType", ent, Aas.Stringification.ToString(ent.EntityType), null, repo,
                     v =>

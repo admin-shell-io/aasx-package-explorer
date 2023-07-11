@@ -704,7 +704,6 @@ namespace AnyUi
                 lab.Background = background;
             if (setBold)
                 lab.FontWeight = AnyUiFontWeight.Bold;
-            // if (setNoWrap)
             lab.TextWrapping = AnyUiTextWrapping.NoWrap;
             if (wrapping.HasValue)
                 lab.TextWrapping = wrapping.Value;

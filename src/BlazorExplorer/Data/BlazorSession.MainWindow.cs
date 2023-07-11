@@ -177,9 +177,11 @@ namespace BlazorUI.Data
             // further actions
             try
             {
+                // dead-csharp off
                 // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
                 //if (!doNotNavigateAfterLoaded)
                 //    UiCheckIfActivateLoadedNavTo();
+                // dead-csharp off
 
                 if (indexItems && packItem?.Container?.Env?.AasEnv != null)
                     packItem.Container.SignificantElements
@@ -219,6 +221,7 @@ namespace BlazorUI.Data
             }
             else
             {
+                // dead-csharp off
                 // visually a new content
                 // switch off edit mode -> will will cause the browser to show the AAS as selected element
                 // and -> this will update the left side of the screen correctly!
@@ -228,6 +231,7 @@ namespace BlazorUI.Data
                 RedrawElementView();
                 // ShowContentBrowser(Options.Curr.ContentHome, silent: true);
                 // _eventHandling.Reset();
+                // dead-csharp on
             }
         }
 
@@ -244,7 +248,7 @@ namespace BlazorUI.Data
         {
             // focus info
             var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
-
+            // dead-csharp off
             // TODO (??, 0000-00-00): Can we set title of the browser tab?
             //var t = "AASX Package Explorer V3RC02";  
             //TODO (jtikekar, 0000-00-00): remove V3RC02
@@ -253,11 +257,11 @@ namespace BlazorUI.Data
             //if (PackageCentral.AuxAvailable)
             //    t += " (auxiliary AASX: " + PackageCentral.AuxItem.ToString() + ")";            
             // this.Title = t;
-
+            // dead-csharp on
 #if _log_times
             Log.Singleton.Info("Time 10 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
 #endif
-
+            // dead-csharp off
             // clear the right section, first (might be rebuild by callback from below)
             // DispEditEntityPanel.ClearDisplayDefautlStack();
             // ContentTakeOver.IsEnabled = false;
@@ -266,7 +270,7 @@ namespace BlazorUI.Data
             DisplayElements.RebuildAasxElements(
                 PackageCentral, PackageCentral.Selector.Main, this.EditMode,
                 lazyLoadingFirst: true);
-
+            // dead-csharp on
             // ok .. try re-focus!!
             if (keepFocus || nextFocusMdo != null)
             {
@@ -337,7 +341,7 @@ namespace BlazorUI.Data
             // try identify the business object
             if (DisplayElements.SelectedItem != null)
             {
-                // ButtonHistory.Push(DisplayElements.SelectedItem);
+
             }
 
             // may be flush events
@@ -566,6 +570,7 @@ namespace BlazorUI.Data
             {
                 if (veFound != null)
                 {
+                    // dead-csharp off
                     // show ve
                     DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
                     // remember in history
@@ -580,6 +585,7 @@ namespace BlazorUI.Data
                     // everything is in default state, push adequate button history
                     var veTop = DisplayElements.GetDefaultVisualElement();
                     // ButtonHistory.Push(veTop);
+                    // dead-csharp off
                 }
             }
             catch (Exception ex)

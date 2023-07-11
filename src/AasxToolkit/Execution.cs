@@ -355,7 +355,6 @@ namespace AasxToolkit
                                 fil.Parent = fil;
 
                                 var so = new AdminShellUtil.SearchOptions();
-                                //so.allowedAssemblies = new[] { typeof(AdminShell).Assembly };
                                 so.allowedAssemblies = new[] { typeof(IClass).Assembly };
                                 var sr = new AdminShellUtil.SearchResults();
 

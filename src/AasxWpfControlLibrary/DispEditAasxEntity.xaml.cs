@@ -27,7 +27,7 @@ namespace AasxPackageExplorer
         private ListOfVisualElementBasic _theEntities = null;
         private DispEditHelperMultiElement _helper = new DispEditHelperMultiElement();
         private AnyUiUIElement _lastRenderedRootElement = null;
-        // private AnyUiDisplayContextWpf _displayContext = null;
+        
 
         #region Public events and properties
         //

@@ -310,7 +310,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     if (!(await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc))
                         || !uc.Result)
                         return;
-
+                    // dead-csharp off
                     //var inputDialog = new Microsoft.Win32.OpenFileDialog();
                     //inputDialog.Title = "AASX Package File to be uploaded in the file repository";
                     //inputDialog.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
@@ -327,7 +327,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     //{
                     //    return;
                     //}
-
+                    // dead-csharp on
                     //Add file to package explorer's unnamed repo
 
 #if TODO
@@ -353,7 +353,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     if (!(await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc))
                         || !uc.Result)
                         return;
-
+                    // dead-csharp off
                     //var inputDlg = new Microsoft.Win32.OpenFileDialog();
                     //inputDlg.Title = "Multi-select AASX package files to be in repository";
                     //inputDlg.Filter = "AASX package files (*.aasx)|*.aasx" +
@@ -370,7 +370,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     //// loop
                     //foreach (var fn in inputDlg.FileNames)
                     //    fr.AddByAasxFn(_packageCentral, fn);
-
+                    // dead-csharp on
                     // loop
                     foreach (var fn in uc.Filenames)
                         fr.AddByAasxFn(_packageCentral, fn);
@@ -385,13 +385,6 @@ namespace AasxWpfControlLibrary.PackageCentral
                     await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc);
                     if (!uc.Result)
                         return;
-
-                    //var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):",
-                    //    AnyUiMessageBoxImage.Question);
-                    //uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
-                    //_flyout.StartFlyoverModal(uc);
-                    //if (!uc.Result)
-                    //    return;
 
                     // execute
                     try

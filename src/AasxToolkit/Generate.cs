@@ -115,7 +115,7 @@ namespace AasxToolkit
 
             try
             {
-
+                // dead-csharp off
                 // ASSET
                 //var asset1 = new AssetInformation("Asset_3s7plfdrs35");
                 var asset1 = new AssetInformation(AssetKind.Instance);
@@ -163,7 +163,7 @@ namespace AasxToolkit
                 //Viw Not supported in V3
                 //var view1 = CreateStochasticViewOnSubmodels(
                 //    new[] { subCad, subDocu, subDatasheet, subVars }, "View1");
-
+                // dead-csharp on
                 // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
                 var aas1 = new AssetAdministrationShell(repo.CreateOneTimeId(), new AssetInformation(AssetKind.Instance), idShort: "AAS_3s7plfdrs35", administration: new AdministrativeInformation(version: "1", revision: "0"));
@@ -401,9 +401,6 @@ namespace AasxToolkit
 
                         // VERSION
                         cd = preDefs.CD_VDI2770_DocumentVersionId;
-                        //using (var prop = Property.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         var prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
@@ -412,9 +409,6 @@ namespace AasxToolkit
 
                         // TITLE
                         cd = preDefs.CD_VDI2770_Title;
-                        //using (var mlp = MultiLanguageProperty.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         var mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(mlp);
@@ -429,9 +423,6 @@ namespace AasxToolkit
 
                         // SUMMARY
                         cd = preDefs.CD_VDI2770_Summary;
-                        //using (var p = MultiLanguageProperty.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(p);
@@ -442,9 +433,6 @@ namespace AasxToolkit
 
                         // TITLE
                         cd = preDefs.CD_VDI2770_Keywords;
-                        //using (var mlp = MultiLanguageProperty.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(mlp);
@@ -455,9 +443,6 @@ namespace AasxToolkit
 
                         // SET DATE
                         cd = preDefs.CD_VDI2770_Date;
-                        //using (var prop = Property.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
@@ -467,9 +452,6 @@ namespace AasxToolkit
 
                         // STATUS
                         cd = preDefs.CD_VDI2770_StatusValue;
-                        //using (var prop = Property.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
@@ -478,9 +460,6 @@ namespace AasxToolkit
 
                         // ROLE
                         cd = preDefs.CD_VDI2770_Role;
-                        //using (var prop = Property.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
@@ -489,9 +468,6 @@ namespace AasxToolkit
 
                         // ORGANIZATION
                         cd = preDefs.CD_VDI2770_OrganizationName;
-                        //using (var prop = Property.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
@@ -500,9 +476,6 @@ namespace AasxToolkit
 
                         // ORGANIZATION OFFICIAL
                         cd = preDefs.CD_VDI2770_OrganizationOfficialName;
-                        //using (var prop = Property.CreateNew(
-                        //    cd.GetDefaultPreferredName(), "CONSTANT",
-                        //    Key.GetFromRef(cd.GetReference())))
                         prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
@@ -514,9 +487,6 @@ namespace AasxToolkit
                         {
                             // physical file
                             cd = preDefs.CD_VDI2770_DigitalFile;
-                            //using (var file = File.CreateNew(
-                            //    cd.GetDefaultPreferredName(), "CONSTANT",
-                            //    Key.GetFromRef(cd.GetReference())))
                             var file = new AasCore.Aas3_0.File("", idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                             {
                                 p1.Add(file);
@@ -528,9 +498,6 @@ namespace AasxToolkit
                         {
                             // URL
                             cd = preDefs.CD_VDI2770_DigitalFile;
-                            //using (var p = File.CreateNew(
-                            //    cd.GetDefaultPreferredName(), "CONSTANT",
-                            //    Key.GetFromRef(cd.GetReference())))
                             var file = new AasCore.Aas3_0.File("", idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                             {
                                 p1.Add(file);
@@ -605,8 +572,6 @@ namespace AasxToolkit
             }
 
             // CONCEPT: Width
-            //using (var cd = ConceptDescription.CreateNew(
-            //    "Width", Identification.IRDI, "0173-1#02-BAF016#005"))
             cd = new ConceptDescription("0173-1#02-BAF016#005", idShort: "Width");
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -631,8 +596,6 @@ namespace AasxToolkit
             }
 
             // CONCEPT: Height
-            //using (var cd = ConceptDescription.CreateNew(
-            //    "Height", Identification.IRDI, "0173-1#02-BAA020#008"))
             cd = new ConceptDescription("0173-1#02-BAA020#008", idShort: "Height");
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -651,8 +614,6 @@ namespace AasxToolkit
                         "perpendicular to diameter/length/width/depth" }
                 );
 
-                //var p = Property.CreateNew(
-                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
                 var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.ValueType = DataTypeDefXsd.Double;
@@ -660,8 +621,6 @@ namespace AasxToolkit
             }
 
             // CONCEPT: Depth
-            //using (var cd = ConceptDescription.CreateNew(
-            //    "Depth", Identification.IRDI, "0173-1#02-BAB577#007"))
             cd = new ConceptDescription("0173-1#02-BAB577#007", idShort: "Depth");
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -679,8 +638,6 @@ namespace AasxToolkit
                         "the rear , generally away from the observer expansion is described as depth" }
                 );
 
-                //var p = Property.CreateNew(
-                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
                 var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.ValueType = DataTypeDefXsd.Double;
@@ -688,8 +645,6 @@ namespace AasxToolkit
             }
 
             // CONCEPT: Weight
-            //using (var cd = ConceptDescription.CreateNew(
-            //    "Weight", Identification.IRDI, "0173-1#02-AAS627#001"))
             cd = new ConceptDescription("0173-1#02-AAS627#001", idShort: "Weight");
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -703,25 +658,12 @@ namespace AasxToolkit
                     "en", "Mass of the individual packaging of an article" }
                 );
 
-                // as designed
-                //var p = Property.CreateNew(
-                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
                 var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.Qualifiers = new List<IQualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value: "SPEC", semanticId: new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId: new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF579") })) };
-                //p.AddQualifier("life cycle qual", "SPEC",
-                //    KeyList.CreateNew(
-                //        "GlobalReference", false, Identification.IRDI,
-                //        "0112/2///61360_4#AAF575"),
-                //    Reference.CreateNew(
-                //        "GlobalReference", false, Identification.IRDI,
-                //        "0112/2///61360_4#AAF579"));
                 p.ValueType = DataTypeDefXsd.Double;
                 p.Value = "23.1";
 
-                // as produced
-                //var p2 = Property.CreateNew(
-                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
                 var p2 = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p2);
                 p.Qualifiers = new List<IQualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value: "BUILT", semanticId: new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId: new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF573") })) };
@@ -743,14 +685,8 @@ namespace AasxToolkit
                     "Schweißen usw. in die endgültige Form gebracht werden" }
                 );
 
-                //var p = ReferenceElement.CreateNew(
-                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
                 var p = new ReferenceElement(idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                //p.Value = p.Value = Reference.CreateNew(
-                //    Key.CreateNew(
-                //        "GlobalReference", false, Identification.IRDI,
-                //        "0173-1#07-AAA878#004")); // Polyamide (PA)
                 p.Value = new Reference(ReferenceTypes.ExternalReference, new List<IKey>() { new Key(KeyTypes.GlobalReference, "0173-1#07-AAA878#004") });
             }
 
@@ -784,8 +720,6 @@ namespace AasxToolkit
                     "en", "legally valid designation of the natural or judicial person..." }
                 );
 
-                //var p = MultiLanguageProperty.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
-                //            Key.GetFromRef(cd.GetReference()));
                 var p = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 if (p.Value == null)
@@ -796,7 +730,7 @@ namespace AasxToolkit
                 p.Value.Add(new LangStringTextType("de", "Ein deutscher Wert."));
                 sme1 = p;
             }
-
+            // dead-csharp off
             // CONCEPT: Range
             //using (var cd = ConceptDescription.CreateNew(
             //    "VoltageRange",

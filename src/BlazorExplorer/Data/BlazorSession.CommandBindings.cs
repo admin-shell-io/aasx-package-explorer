@@ -293,7 +293,7 @@ namespace BlazorUI.Data
                 return;
             }
 
-
+            // dead-csharp off
             //// REFACTOR: WPF required
             //if (cmd == "exporttable"
             //    ||  cmd == "importtable"
@@ -304,7 +304,7 @@ namespace BlazorUI.Data
 
             //    return;
             //}
-
+            // dead-csharp on
             // REFACTOR: WPF required
             if (cmd == "serverpluginemptysample"
                 || cmd == "serverpluginopcua"

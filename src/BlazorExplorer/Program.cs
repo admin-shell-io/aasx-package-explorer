@@ -162,7 +162,7 @@ namespace BlazorExplorer
                 MyLambda = lambda;
             }
         }
-
+        // dead-csharp off
         //public static void signalNewData(DataRedrawMode mode, int sessionNumber = 0,
         //    AnyUiLambdaActionBase newLambdaAction = null,
         //    AasxPluginResultEventBase newPluginResultEvent = null,
@@ -174,7 +174,7 @@ namespace BlazorExplorer
         //        newPluginResultEvent,
         //        onlyUpdatePanel: onlyUpdateAasxPanel));
         //}
-
+        // dead-csharp on
         public static void signalNewData(NewDataAvailableArgs args)
         {
             NewDataAvailable?.Invoke(null, args);

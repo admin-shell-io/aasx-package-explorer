@@ -96,7 +96,7 @@ namespace BlazorUI.Data
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
-
+            // dead-csharp off
             // TODO (??, 0000-00-00): missng for WPF refactoring
             // asset thumbnail
             //        try
@@ -126,6 +126,7 @@ namespace BlazorUI.Data
             //                {
             //                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             //                }
+            // dead-csharp on
         }
     }
 }

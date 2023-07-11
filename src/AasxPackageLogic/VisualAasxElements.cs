@@ -2370,9 +2370,11 @@ namespace AasxPackageLogic
             }
             else if (entity is VisualElementAsset veas && veas.theAsset != null)
             {
+                // dead-csharp off
                 // maintain parent. If in doubt, set null
                 //TODO (jtikekar, 0000-00-00): assetInformation is no more referable
                 //veas.theAsset.Parent = veas.theEnv;
+                // dead-csharp off
             }
             else if (entity is VisualElementSubmodelRef vesmref)
             {
@@ -2618,7 +2620,6 @@ namespace AasxPackageLogic
                 }
                 else
                 if (data.ParentElem is Aas.IReferable parentMgr
-                    //&& data.ParentElem is IEnumerateChildren parentEnum
                     && data.ThisElem is Aas.ISubmodelElement thisSme2)
                 {
                     // try find according visual elements by business objects == Referables

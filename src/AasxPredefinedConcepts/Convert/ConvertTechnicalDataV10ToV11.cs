@@ -77,14 +77,14 @@ namespace AasxPredefinedConcepts.Convert
 
                     //smcSectDst ??= new Aas.SubmodelElementCollection(smcSectSrc, shallowCopy: true);
                     smcSectDst ??= smcSectSrc.Copy();
-
+                    // dead-csharp off
                     //jtikekar: no need to add manually, should be taken care by cloning above.
                     // add manually
                     //smcSectDst.IdShort = smcSectSrc.IdShort;
                     //smcSectDst.Category = smcSectSrc.Category;
                     //if (smcSectSrc.Description != null)
                     //    smcSectDst.Description = smcSectSrc.Description;
-
+                    // dead-csharp on
                     smcDest.Value.Add(smcSectDst);
 
                     // recurse
