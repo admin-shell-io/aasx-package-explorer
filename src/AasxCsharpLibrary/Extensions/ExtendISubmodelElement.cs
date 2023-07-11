@@ -224,40 +224,6 @@ namespace Extensions
 
             foreach (var x in submodelElement.Descend().OfType<T>())
                 yield return x;
-
-            //if (submodelElement is SubmodelElementList sml && sml.Value != null)
-            //    foreach (var ce in sml.Value)
-            //        if (ce != null)
-            //            foreach (var x in ce.FindDeep<T>())
-            //                yield return x;
-
-            //if (submodelElement is AnnotatedRelationshipElement arel && arel.Annotations != null)
-            //    foreach (var x in arel.FindDeep<T>())
-            //        yield return x;
-
-            //if (submodelElement is Entity entity)
-            //    foreach (var statement in entity.Statements)
-            //        foreach (var x in statement.FindDeep<T>())
-            //            yield return x;
-
-            //if (submodelElement is Operation operation)
-            //{
-            //    var variableCollection = new SubmodelElementCollection();
-            //    variableCollection.Value = new List<ISubmodelElement>();
-            //    foreach (var inputVariable in operation.InputVariables)
-            //    {
-            //        variableCollection.Value.Add(inputVariable.Value);
-            //    }
-            //    foreach (var outputVariable in operation.OutputVariables)
-            //    {
-            //        variableCollection.Value.Add(outputVariable.Value);
-            //    }
-            //    foreach (var inOutVariable in operation.InoutputVariables)
-            //    {
-            //        variableCollection.Value.Add(inOutVariable.Value);
-            //    }
-            //    yield return (T)variableCollection.FindDeep<T>();
-            //}
         }
 
         public static ISubmodelElement ConvertFromV10(this ISubmodelElement submodelElement, AdminShellV10.SubmodelElement sourceSubmodelElement, bool shallowCopy = false)

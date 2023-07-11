@@ -308,8 +308,6 @@ namespace Extensions
                 filterForConceptDescriptions = new List<IConceptDescription>();
             }
 
-            //var outputEnvironment = new AasCore.Aas3_0_RC02.Environment();  
-
             //Copy AssetAdministrationShells
             foreach (var aas in sourceEnvironment.AssetAdministrationShells)
             {
@@ -682,7 +680,7 @@ namespace Extensions
 
                         return environment.FindReferableByReference(reference, ++keyIndex);
                     }
-
+                // dead-csharp off
                 // TODO (MIHO, 2023-01-01): stupid generalization :-(
                 case KeyTypes.GlobalReference:
                 case KeyTypes.ConceptDescription:
@@ -691,6 +689,7 @@ namespace Extensions
                         // by a flat GlobalReference :-(
 
                         // find an Asset by that id?
+
                         var keyedAas = environment.FindAasWithAssetInformation(firstKeyId);
                         if (keyedAas?.AssetInformation != null)
                         {
@@ -726,7 +725,7 @@ namespace Extensions
                         // Nope
                         return null;
                     }
-
+                // dead-csharp on
                 case KeyTypes.Submodel:
                     {
                         var submodel = environment.FindSubmodelById(firstKeyId);
@@ -828,12 +827,6 @@ namespace Extensions
                     if (aas != null)
                         foreach (var r in aas.FindAllReferences())
                             yield return r;
-
-            //if (this.Assets != null)
-            //    foreach (var asset in this.Assets)
-            //        if (asset != null)
-            //            foreach (var r in asset.FindAllReferences())
-            //                yield return new LocatedReference(asset, r);
 
             if (environment.Submodels != null)
                 foreach (var sm in environment.Submodels)

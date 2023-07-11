@@ -16,8 +16,10 @@ namespace Extensions
 
         public static Tuple<string, string> ToCaptionInfo(this IAssetInformation assetInformation)
         {
+            // dead-csharp off
             //TODO (jtikekar, 0000-00-00): support KeyType.AssetInformation
             //var caption = Key.AssetInformation;
+            // dead-csharp on
             var caption = "AssetInformation";
             var info = "" + assetInformation.GlobalAssetId;
             return Tuple.Create(caption, info);

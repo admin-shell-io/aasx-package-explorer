@@ -64,7 +64,6 @@ namespace AasxAmlImExport
             private class IeViewAmlTarget
             {
                 public InternalElementType Ie;
-                //public View View;
                 public CAEXObject AmlTarget;
 
                 public IeViewAmlTarget(InternalElementType ie, CAEXObject amlTarget)
@@ -111,7 +110,6 @@ namespace AasxAmlImExport
                     return null;
 
                 // build a Reference
-                //var res = new Reference();
                 var keyList = new List<IKey>();
 
                 // over all entries
@@ -410,7 +408,9 @@ namespace AasxAmlImExport
                             if (res == null)
                                 res = new List<Reference>(); //default initilization
                             //TODO (jtikekar, 0000-00-00): Temporarily removed, cannot be added, as it may reflect in the other places, like AssetAdministrationShell does not contain EmbeddedDS
+                            // dead-csharp off
                             //res.Add(new EmbeddedDataSpecification(r));
+                            // dead-csharp on
                             res.Add(r);
                         }
                     }
@@ -518,6 +518,7 @@ namespace AasxAmlImExport
                 // we need to have some important information
                 if (id != null)
                 {
+                    // dead-csharp off
                     // set data
                     //TODO (jtikekar, 0000-00-00): Uncomment and Support
                     //asset.identification = new Identification(idType, id);
@@ -536,7 +537,7 @@ namespace AasxAmlImExport
                     //No DataSpecification asset
                     //if (ds != null)
                     //    asset.hasDataSpecification = ds;
-
+                    // dead-csharp on
                     // result
                     return asset;
                 }
@@ -566,7 +567,7 @@ namespace AasxAmlImExport
                     return null;
                 return idDict[ID];
             }
-
+            // dead-csharp off
             //private View TryParseViewFromIe(InstanceHierarchyType insthier, InternalElementType ie)
             //{
             //    // access
@@ -626,7 +627,7 @@ namespace AasxAmlImExport
             //        // uups!
             //        return null;
             //}
-
+            // dead-csharp on
             private ISubmodel TryParseSubmodelFromIe(SystemUnitClassType ie)
             {
                 // begin new (temporary) object
@@ -1118,13 +1119,12 @@ namespace AasxAmlImExport
 
                             // make temporary object official
                             currentAas.AssetInformation = asset;
-                            //matcher.AddMatch(asset, ie); 
                             //TODO (jtikekar, 0000-00-00): AssetInformation is not Referable
                         }
                         else
                             Debug(indentation, "  ASSET with insufficient attributes. Skipping");
                     }
-
+                    // dead-csharp off
                     //
                     // View
                     //
@@ -1144,6 +1144,7 @@ namespace AasxAmlImExport
                     //    else
                     //        Debug(indentation, "  VIEW with insufficient attributes. Skipping");
                     //}
+                    // dead-csharp on
 
                     //
                     // Submodel
@@ -1359,7 +1360,6 @@ namespace AasxAmlImExport
                         if (CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_Header + smeEnum.ToString()))
                         {
                             // begin new (temporary) object
-                            //var sme = SubmodelElementWrapper.CreateAdequateType(ae);
                             var sme = AdminShellUtil.CreateSubmodelElementFromEnum(smeEnum);
                             if (sme == null)
                                 continue;
@@ -1635,7 +1635,6 @@ namespace AasxAmlImExport
                     aasTarget.CollectReferencesByParent(theref.Keys);
 
                     // add
-                    //ieViewAmlTarget.View.AddContainedElement(theref);
                 }
             }
 

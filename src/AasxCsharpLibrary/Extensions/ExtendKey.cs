@@ -112,6 +112,7 @@ namespace Extensions
                         }));
                 if (tf == AdminShellUtil.ConstantFoundEnum.AnyCase)
                     // violation case
+                    // dead-csharp off
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, container,
                         "Key: type in wrong casing",
@@ -121,6 +122,7 @@ namespace Extensions
                             //key.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
                             //    KeyElements, key.type);
                         }));
+                // dead-csharp on
             }
 
             // may give result "to be deleted"
@@ -187,7 +189,7 @@ namespace Extensions
             // no
             return null;
         }
-
+        // dead-csharp off
         // -------------------------------------------------------------------------------------------------------------
         #region Handling with enums for KeyTypes
 
@@ -226,6 +228,6 @@ namespace Extensions
         //    => ExtendKey.MapFrom(Enum.GetValues(typeof(AasReferables)).OfType<AasReferables>());
 
         #endregion
-
+        // dead-csharp on
     }
 }

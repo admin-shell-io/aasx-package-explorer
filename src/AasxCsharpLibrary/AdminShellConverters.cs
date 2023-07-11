@@ -99,6 +99,7 @@ namespace AdminShellNS
             {
                 if (elementName == KeyTypes.AssetAdministrationShell.ToString())
                     return new AssetAdministrationShell("", null);
+                // dead-csharp off
                 //TODO (jtikekar, 0000-00-00): refactor default
                 //if (elementName == "Asset")  
                 //TODO (jtikekar, 0000-00-00): Change
@@ -109,6 +110,7 @@ namespace AdminShellNS
                     return new Submodel("");
                 //if (elementName == KeyTypes.View)
                 //    return new View();
+                // dead-csharp on
                 return CreateSubmodelElementIstance(elementName);
             }
 

@@ -72,7 +72,7 @@ namespace AasxPackageExplorer
         public PackageCentral PackageCentral
         {
             get => Logic?.PackageCentral;
-            // set { _logic ??= new MainWindowDispatch(); _logic.PackageCentral = value; }
+           
         }
 
         public AasxMenuWpf MainMenu = new AasxMenuWpf();
@@ -157,8 +157,6 @@ namespace AasxPackageExplorer
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.FileName = url;
                 proc.Start();
-
-                // System.Diagnostics.Process.Start(url);
             }
         }
 
@@ -464,7 +462,7 @@ namespace AasxPackageExplorer
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);
         }
-
+        // dead-csharp off
         //public PackageContainerListBase UiLoadFileRepository(string fn)
         //{
         //    try
@@ -543,7 +541,7 @@ namespace AasxPackageExplorer
         //    // nothing found
         //    return false;
         //}
-
+        // dead-csharp on
 
         public void UiShowRepositories(bool visible)
         {
@@ -1986,7 +1984,6 @@ namespace AasxPackageExplorer
                         // closure logic
                         var storedI = i;
 
-                        //if (observable is IRecurseOnReferables recurse)
                         if (observable is Aas.IReferable referable)
                             referable.RecurseOnReferables(null,
                                 includeThis: true,
@@ -2097,7 +2094,6 @@ namespace AasxPackageExplorer
                         source: refEv.GetReference(),
                         sourceSemanticId: refEv.SemanticId,
                         observableReference: refEv.Observed,
-                        //observableSemanticId: (observable as IGetSemanticId)?.GetSemanticId());
                         observableSemanticId: null);
                     //TODO (jtikekar, 0000-00-00): IDiaryData support
 

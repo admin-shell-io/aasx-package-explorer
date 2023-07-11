@@ -291,7 +291,7 @@ namespace AasxPackageExplorer
             // stays in WPF, ask OZ
             if (cmd == "connectrest")
                 CommandBinding_ConnectRest();
-
+            // dead-csharp off
             // REFACTOR: STAYS HERE
             //if (cmd == "exporttable")
             //    await CommandBinding_ExportImportTableUml(cmd, ticket, import: false);
@@ -307,7 +307,7 @@ namespace AasxPackageExplorer
             // REFACTOR: STAYS HERE
             //if (cmd == "importtimeseries")
             //    await CommandBinding_ExportImportTableUml(cmd, ticket, importTimeSeries: true);
-
+            // dead-csharp on
             // REFACTOR: STAYS HERE
             if (cmd == "serverpluginemptysample")
                 CommandBinding_ExecutePluginServer(
@@ -1203,7 +1203,7 @@ namespace AasxPackageExplorer
                         $"Import/Export: While displaying html-based help.");
                 }
             };
-
+            // dead-csharp off
             //if (cmd == "exporttable" || cmd == "importtable")
             //{
             //    if (ticket?.ScriptMode != true)
@@ -1335,7 +1335,7 @@ namespace AasxPackageExplorer
             //        Logic?.LogErrorToTicket(ticket, ex, "Import time series: passing on.");
             //    }
             //}
-
+            // dead-csharp on
             // redraw
             CommandExecution_RedrawAll();
         }

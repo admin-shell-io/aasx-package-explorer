@@ -37,7 +37,7 @@ namespace Extensions
 
             return false;
         }
-
+        // dead-csharp off
         //public static string GetDefaultString(this List<ILangStringTextType> langStringSet, string defaultLang = null)
         //{
         //    return ExtendLangString.GetDefaultStringGen(langStringSet, defaultLang);
@@ -58,7 +58,7 @@ namespace Extensions
         //// found?
         //return res;
         //}
-
+        // dead-csharp on
         public static List<T> Create<T>(string language, string text) where T : IAbstractLangString, new()
         {
             return new List<T> { new T { Language = language, Text = text } };
@@ -118,7 +118,6 @@ namespace Extensions
             AasxCompatibilityModels.AdminShellV20.LangStringSet sourceLangStrings)
         {
 
-            //if (!sourceLangStrings.langString.IsNullOrEmpty())
             if (sourceLangStrings.langString != null && sourceLangStrings.langString.Count != 0)
             {
                 langStringSet = new List<ILangStringTextType>();

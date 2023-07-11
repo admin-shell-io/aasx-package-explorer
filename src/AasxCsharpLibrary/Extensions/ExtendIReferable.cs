@@ -318,8 +318,6 @@ namespace Extensions
                 var idf = referable as IIdentifiable;
                 if (idf != null)
                 {
-                    //var k = Key.CreateNew(
-                    //    idf.GetElementName(), true, idf.identification?.idType, idf.identification?.id);
 
                     var key = new Key((KeyTypes)Stringification.KeyTypesFromString(idf.GetType().Name), idf.Id);
                     refs.Insert(0, key);
@@ -327,7 +325,6 @@ namespace Extensions
             }
             else
             {
-                //var k = Key.CreateNew(this.GetElementName(), true, "IdShort", referable.IdShort);
                 var key = new Key((KeyTypes)Stringification.KeyTypesFromString(referable.GetType().Name), referable.IdShort);
                 refs.Insert(0, key);
                 // recurse upwards!

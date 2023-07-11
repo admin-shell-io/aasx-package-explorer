@@ -649,12 +649,6 @@ namespace AasxIntegrationBase
                 elName = "Environment";
                 businessObject = obj;
             }
-            //else
-            //if (obj is Aas.IClass objic2)
-            //{
-            //    elName = objic2.GetType().Name;
-            //    businessObject = obj;
-            //}
 
             // enrich qualified name, accordingly
             var qualifiedName = qualifiedNameHead;

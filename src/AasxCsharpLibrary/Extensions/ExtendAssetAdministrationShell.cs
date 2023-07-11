@@ -31,11 +31,12 @@ namespace Extensions
 
         public static IEnumerable<LocatedReference> FindAllReferences(this IAssetAdministrationShell assetAdministrationShell)
         {
+            // dead-csharp off
             // Asset
             //TODO (jtikekar, 0000-00-00): support asset
             //if (assetAdministrationShell.AssetInformation != null)
             //    yield return new LocatedReference(assetAdministrationShell, assetAdministrationShell.AssetInformation);
-
+            // dead-csharp on
             // Submodel references
             if (assetAdministrationShell.Submodels != null)
                 foreach (var r in assetAdministrationShell.Submodels)
@@ -123,7 +124,6 @@ namespace Extensions
                     var keyList = new List<IKey>();
                     foreach (var refKey in submodelRef.Keys)
                     {
-                        //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
                         var keyType = Stringification.KeyTypesFromString(refKey.type);
                         if (keyType != null)
                         {
@@ -199,7 +199,6 @@ namespace Extensions
                     var keyList = new List<IKey>();
                     foreach (var refKey in submodelRef.Keys)
                     {
-                        //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
                         var keyType = Stringification.KeyTypesFromString(refKey.type);
                         if (keyType != null)
                         {

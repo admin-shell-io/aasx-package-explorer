@@ -259,24 +259,24 @@ namespace Extensions
         {
             return rf.Keys.Count;
         }
-
+        // dead-csharp off
         //TODO (??, 0000-00-00): check if required
         //public static int Count(this Reference rf)
         //{
         //    return rf.Keys.Count;
         //}
-
+        // dead-csharp on
         public static IKey Last(this IReference rf)
         {
             return rf.Keys.Last();
         }
-
+        // dead-csharp off
         //TODO (??, 0000-00-00): check if required
         //public static IKey Last(this Reference rf)
         //{
         //    return rf.Keys.Last();
         //}
-
+        // dead-csharp on
         public static string ListOfValues(this Reference rf, string delim)
         {
             string res = "";

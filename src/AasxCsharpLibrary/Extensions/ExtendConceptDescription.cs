@@ -52,7 +52,7 @@ namespace Extensions
                     ));
 
             conceptDescription.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification> { eds };
-
+            // dead-csharp off
             // TODO (MIHO, 2022-12-22): Check, but I think it makes no sense
             // conceptDescription.IsCaseOf ??= new List<Reference>();
             // conceptDescription.IsCaseOf.Add(new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, conceptDescription.Id) }));
@@ -71,6 +71,7 @@ namespace Extensions
         }
 
         */
+        // dead-csharp on
 
         public static Tuple<string, string> ToCaptionInfo(this IConceptDescription conceptDescription)
         {
@@ -142,6 +143,7 @@ namespace Extensions
             if (results == null)
                 return;
 
+            // dead-csharp off
             // check CD itself
             //Handled by BaseValidation Method
             //conceptDescription.Validate(results);
@@ -185,6 +187,7 @@ namespace Extensions
             //        // validate
             //        eds61360.dataSpecificationContent.dataSpecificationIEC61360.Validate(results, this);
             //    }
+            // dead-csharp on
         }
 
         public static Key GetSingleKey(this IConceptDescription conceptDescription)
