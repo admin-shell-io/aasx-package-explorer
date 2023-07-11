@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 
+Copyright (c) 2018-2023 
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 

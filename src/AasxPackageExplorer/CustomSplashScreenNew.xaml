@@ -9,7 +9,7 @@
         Title="AASX Package Explorer Splash Screen" Width="550" Height="350" Background="White" WindowStyle="None"
         WindowStartupLocation="CenterScreen" Topmost="True" MouseDown="Window_MouseDown">
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -38,7 +38,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="1" Grid.Row="0" FontSize="18" FontWeight="Bold">AASX Package Explorer</TextBlock>
-                <TextBlock x:Name="TextBlockCopyRight" Grid.Column="1" Grid.Row="1" FontSize="12" FontWeight="Bold" Margin="0,4,0,0">Copyright (c) 2018-2021 Festo SE &amp; Co.</TextBlock>
+                <TextBlock x:Name="TextBlockCopyRight" Grid.Column="1" Grid.Row="1" FontSize="12" FontWeight="Bold" Margin="0,4,0,0">Copyright (c) 2018-2023 Festo SE &amp; Co.</TextBlock>
                 <DockPanel Grid.Column="1" Grid.Row="2" Margin="0,4,0,0">
                     <TextBlock FontSize="12" FontWeight="Bold" Margin="0,0,4,0">Authors:</TextBlock>
                     <TextBlock x:Name="TextBlockAuthors" FontSize="12" FontWeight="Bold" TextWrapping="Wrap">Michael Hoffmeister and more</TextBlock>
