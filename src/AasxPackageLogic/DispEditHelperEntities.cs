@@ -2008,7 +2008,7 @@ namespace AasxPackageLogic
                             }
                             return new AnyUiLambdaActionNone();
                         }));
-                
+
 
                 // HasKind
                 this.DisplayOrEditEntityModelingKind(

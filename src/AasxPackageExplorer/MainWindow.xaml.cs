@@ -72,7 +72,7 @@ namespace AasxPackageExplorer
         public PackageCentral PackageCentral
         {
             get => Logic?.PackageCentral;
-           
+
         }
 
         public AasxMenuWpf MainMenu = new AasxMenuWpf();

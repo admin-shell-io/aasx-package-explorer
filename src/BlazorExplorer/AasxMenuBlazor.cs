@@ -90,7 +90,7 @@ namespace BlazorUI
 
             object kgConv = null; // new KeyGestureConverter();
 
-          
+
         }
 
         public bool IsChecked(string name)

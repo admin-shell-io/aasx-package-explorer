@@ -74,10 +74,10 @@ namespace AasxPredefinedConcepts.Convert
                     if (smcSectSrc.SemanticId?.MatchesExactlyOneKey(defsV10.CD_SubSection.GetSingleKey()) == true)
                         smcSectDst = smcDest.Value.CreateSMEForCD<Aas.SubmodelElementCollection>(
                             defsV11.CD_SubSection, addSme: false);
-
+                    // dead-csharp off
                     //smcSectDst ??= new Aas.SubmodelElementCollection(smcSectSrc, shallowCopy: true);
                     smcSectDst ??= smcSectSrc.Copy();
-                    // dead-csharp off
+
                     //jtikekar: no need to add manually, should be taken care by cloning above.
                     // add manually
                     //smcSectDst.IdShort = smcSectSrc.IdShort;

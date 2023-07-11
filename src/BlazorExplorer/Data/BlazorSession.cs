@@ -287,10 +287,6 @@ namespace BlazorUI.Data
             PackageCentral.MainItem.New();
             RedrawAllAasxElements();
 
-            // pump all pending log messages(from plugins) into the
-            // log / status line, before setting the last information
-            // MainTimer_HandleLogMessages();
-
             // Try to load?            
             if (Options.Curr.AasxToLoad != null)
             {
@@ -638,7 +634,7 @@ namespace BlazorUI.Data
         /// </summary>
         public void MainTimerTick()
         {
-            
+
         }
 
         /// <summary>

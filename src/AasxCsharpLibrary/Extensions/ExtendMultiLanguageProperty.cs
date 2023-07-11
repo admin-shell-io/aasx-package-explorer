@@ -46,7 +46,7 @@ namespace Extensions
                 var keyList = new List<IKey>();
                 foreach (var refKey in sourceProperty.valueId.Keys)
                 {
-                    
+
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
                     if (keyType != null)
                     {
