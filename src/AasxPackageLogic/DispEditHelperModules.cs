@@ -25,7 +25,6 @@ namespace AasxPackageLogic
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
     /// editing disting modules of the GUI, such as the different (re-usable) Interfaces of the AAS entities
     /// </summary>
-    //public class DispEditHelperModules : DispEditHelperCopyPaste
     public class DispEditHelperModules : DispEditHelperMiniModules
     {
         //
@@ -611,6 +610,7 @@ namespace AasxPackageLogic
                 // now use the normal mechanism to deal with editMode or not ..
                 if (hasDataSpecification != null && hasDataSpecification.Count > 0)
                 {
+                    // dead-csharp off
                     //TODO (jtikekar, 0000-00-00): refactor
                     // MIHO: is this at all required?
                     //List<string>[] presetKeys = new List<string>[addPresetKeyLists.Length];
@@ -632,7 +632,7 @@ namespace AasxPackageLogic
                         //    keys.Add(key.Value);
                         //}
                         // if (hasDataSpecification[i].DataSpecification != null)
-
+                        // dead-csharp on
                         int currentI = i;
                         if (this.SafeguardAccess(
                             stack, this.repo, hasDataSpecification[i].DataSpecification,
@@ -1273,7 +1273,7 @@ namespace AasxPackageLogic
             }
 
         }
-
+        // dead-csharp off
         //not anymore required?!
         //public void DisplayOrEditEntitySingleIdentifierKeyValuePair(AnyUiStackPanel stack,
         //    List<Aas.ISpecificAssetId> pair,
@@ -1309,6 +1309,7 @@ namespace AasxPackageLogic
         //        }
         //    }
         //}
+        // dead-csharp on
 
         //
         // DataSpecificationIEC61360

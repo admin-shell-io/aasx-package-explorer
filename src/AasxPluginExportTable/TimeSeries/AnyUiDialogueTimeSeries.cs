@@ -126,7 +126,7 @@ namespace AasxPluginExportTable.TimeSeries
 
             log.Info($"Importing time series data from table {fn} finished.");
         }
-
+        // dead-csharp off
         //public static bool AutoGenerateUiFieldsFor(
         //    object data, AnyUiContextPlusDialogs displayContext, AnyUiSmallWidgetToolkit helper,
         //    AnyUiGrid grid, int startRow = 0)
@@ -263,5 +263,6 @@ namespace AasxPluginExportTable.TimeSeries
         //    // OK
         //    return true;
         //}
+        // dead-csharp on
     }
 }

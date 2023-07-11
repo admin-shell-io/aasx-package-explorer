@@ -610,10 +610,10 @@ namespace AasxPackageLogic
         {
             return ItemTypeNames[(int)t];
         }
-
+        // dead-csharp off
         // MIHO: not needed?
         // public IClass MainDataObject { set { _mainDataObject = value; } }
-
+        // dead-csharp on
         public override string GetFilterElementInfo()
         {
             var i = (int)theItemType;
@@ -1628,8 +1628,6 @@ namespace AasxPackageLogic
                 if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
                     && tism.CachedCD != null)
                 {
-                    //var tiCD = new VisualElementConceptDescription(ti, cache, env, ti.CachedCD);
-                    //ti.Members.Add(tiCD);
                     GenerateVisualElementsForSingleCD(cache, env, tism.CachedCD, tism);
                 }
             }
@@ -1820,7 +1818,7 @@ namespace AasxPackageLogic
                     if (tiSm != null)
                         tiAas.Members.Add(tiSm);
                 }
-
+            // dead-csharp off
             // have views?
             //Views no more supported in V3
             //if (aas.views != null && aas.views.views != null)
@@ -1840,7 +1838,7 @@ namespace AasxPackageLogic
             //        // add
             //        tiAas.Members.Add(tiVw);
             //    }
-
+            // dead-csharp on
             // ok
             return tiAas;
         }
@@ -1881,11 +1879,6 @@ namespace AasxPackageLogic
                 if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel
                     && _cdToSm.ContainsKey(cd))
                     continue;
-
-                //// item
-                //var tiCD = new VisualElementConceptDescription(tiCDs, cache, env, cd);
-                //// add
-                //root.Members.Add(tiCD);
 
                 GenerateVisualElementsForSingleCD(cache, env, cd, tiCDs);
             }
@@ -1944,10 +1937,6 @@ namespace AasxPackageLogic
                 foreach (var aas in env.AssetAdministrationShells)
                     if (aas != null)
                         aas.Parent = env;
-
-                //foreach (var asset in env.Assets)
-                //    if (asset != null)
-                //        asset.Parent = env;
 
                 foreach (var sm in env.Submodels)
                     if (sm != null)
@@ -2022,6 +2011,7 @@ namespace AasxPackageLogic
                 // if edit mode, then display further ..
                 if (editMode)
                 {
+                    // dead-csharp off
                     //
                     // over all assets
                     //
@@ -2031,7 +2021,7 @@ namespace AasxPackageLogic
                     //    var tiAsset = new VisualElementAsset(tiAssets, cache, env, asset);
                     //    tiAssets.Members.Add(tiAsset);
                     //}
-
+                    // dead-csharp on
                     //
                     // over all Submodels (not the refs)
                     //

@@ -496,8 +496,6 @@ namespace AasxPackageLogic
                             {
                                 ls = new LangStringDefinitionTypeIec61360(ni.Attributes["language_code"].InnerText, ni.InnerText);
                             }
-
-                            //var ls1 = new T { Language = ni.Attributes["language_code"].InnerText, Text = ni.InnerText };
                             action((T)ls);
                         }
             }

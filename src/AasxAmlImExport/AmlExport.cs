@@ -712,7 +712,7 @@ namespace AasxAmlImExport
             {
                 SetIdentification(ie.Attribute, asset.GlobalAssetId);
             }
-            //SetReferable(ie.Attribute, asset); // Asset is not referable anymore
+            
             SetAssetKind(ie.Attribute, asset.AssetKind, attributeRole: AmlConst.Attributes.Asset_Kind);
 
             // dead-csharp off

@@ -98,8 +98,6 @@ namespace AasxPackageExplorer
                     }
                     else
                     {
-                        //formJObject[_formElement.IdShort] =
-                        //    _tempformElement.GetAs<Aas.Property>().Value.ToString();
                         formJObject[_formElement.IdShort] = (_tempformElement as Aas.Property).Value.ToString();
                     }
                 }

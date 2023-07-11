@@ -427,12 +427,6 @@ namespace AasxPackageLogic.PackageCentral
 
             CleanIds();
 
-            //Env?.AasEnv?.Assets?.ForEach((x) =>
-            //{
-            //    if (true == x?.identification?.Id.HasContent())
-            //        _assetIds.Add(x?.identification.Id);
-            //});
-
             Env?.AasEnv?.AssetAdministrationShells?.ForEach((x) =>
             {
                 if (true == x?.Id.HasContent())
@@ -457,8 +451,6 @@ namespace AasxPackageLogic.PackageCentral
                 try
                 {
                     tag = "";
-                    //if (asset0 != null)
-                    //    tag = AdminShellUtil.ExtractPascalCasingLetters(asset0.IdShort).SubstringMax(0, 3);
                     if (tag == null || tag.Length < 2)
                         tag = AdminShellUtil.ExtractPascalCasingLetters(threeFn).SubstringMax(0, 3);
                     if ((tag == null || tag.Length < 2) && aas0 != null)
@@ -480,12 +472,6 @@ namespace AasxPackageLogic.PackageCentral
                 var desc = "";
                 if (aas0?.IdShort.HasContent() == true)
                     desc += $"{aas0.IdShort}";
-                //if (asset0?.IdShort.HasContent() == true)
-                //{
-                //    if (desc.HasContent())
-                //        desc += ",";
-                //    desc += $"{asset0.IdShort}";
-                //}
                 Description = desc;
             }
         }

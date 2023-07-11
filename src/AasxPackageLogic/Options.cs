@@ -601,7 +601,7 @@ namespace AasxPackageLogic
         public OptionsInformation()
         {
             // lightes blue to light: 0xFFf2f5ffu
-            // IDTA red to light: 0xFFFE4F10u; 
+            // IDTA red to light: 0xFFFE4F10u
             AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFDBE2FFu);
             AccentColors[ColorNames.DarkAccentColor] = new AnyUiColor(0xFFc0ccffu);
             AccentColors[ColorNames.DarkestAccentColor] = new AnyUiColor(0xFF0128CBu);

@@ -104,7 +104,7 @@ namespace AasxPackageLogic
                     name.Trim(), StringComparison.InvariantCultureIgnoreCase))
                     return qp;
 
-            // no :-(
+            // :-( no 
             return null;
         }
 
@@ -1042,6 +1042,7 @@ namespace AasxPackageLogic
                     //TODO (jtikekar, 0000-00-00): change
                     comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
                     comboBoxMinWidth: 190,
+                    // dead-csharp off
                     //new string[] {
                     //"anyURI", "base64Binary",
                     //"boolean", "date", "dateTime",
@@ -1051,6 +1052,7 @@ namespace AasxPackageLogic
                     //"nonPositiveInteger", "negativeInteger",
                     //"double", "duration",
                     //"dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" },
+                    // dead-csharp on
                     setValue: v =>
                     {
                         var vt = Aas.Stringification.DataTypeDefXsdFromString((string)v);
@@ -1468,8 +1470,6 @@ namespace AasxPackageLogic
                                     }
                                     break;
                                 case 3:
-                                    //var jsonStr = JsonConvert.SerializeObject(
-                                    //    valuePairs[storedI], Formatting.Indented);
 
                                     var jsonStr = Aas.Jsonization.Serialize.ToJsonObject(valuePairs[storedI])
                                             .ToJsonString(new System.Text.Json.JsonSerializerOptions()

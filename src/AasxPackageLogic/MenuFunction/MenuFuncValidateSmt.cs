@@ -134,7 +134,6 @@ namespace AasxPackageExplorer
         {
             Recs.AddComment("Statistics of semanticId use in: " + category + " " + name);
             foreach (var v in dict.Keys)
-                // Recs.AddComment(String.Format("SEM01 \t{0,-4}\tof\t{1}\tin\t{2}", dict[v], v, category));
                 Recs.AddTabbedCells("SEM01", "" + dict[v], "of", v, "in", category, name);
         }
 

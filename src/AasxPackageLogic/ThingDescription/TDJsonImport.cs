@@ -206,8 +206,6 @@ namespace AasxPackageExplorer
                     Aas.SubmodelElementCollection _properties = new Aas.SubmodelElementCollection();
                     _properties.IdShort = "properties";
                     _properties.Category = "PARAMETER";
-                    //_properties.ordered = false;
-                    //_properties.allowDuplicates = false;
                     _properties.SemanticId = createSemanticID("properties");
                     _properties.Qualifiers = new List<Aas.IQualifier>();
                     foreach (var temp1 in objectjObject["properties"])
@@ -277,8 +275,6 @@ namespace AasxPackageExplorer
             Aas.SubmodelElementCollection abstractDS = new Aas.SubmodelElementCollection();
             abstractDS.IdShort = idShort;
             abstractDS.Category = "PARAMETER";
-            //abstractDS.ordered = false;
-            //abstractDS.allowDuplicates = false;
             abstractDS.Qualifiers = new List<Aas.IQualifier>();
             abstractDS.SemanticId = createSemanticID(type);
             string[] qualList = { "const","default",
@@ -961,7 +957,6 @@ namespace AasxPackageExplorer
             _schemaDefinitions.AddDescription("en", "Set of named data schemas." +
                                 "To be used in a schema name-value pair inside an AdditionalExpectedResponse object.");
             _schemaDefinitions.Qualifiers = new List<Aas.IQualifier>();
-            //_schemaDefinitions.SemanticId = createSemanticID("schemaDefinitions");
             _schemaDefinitions.SemanticId = createSemanticID("schemaDefinitions");
             foreach (var sdKey in tdJObject["schemaDefinitions"])
             {

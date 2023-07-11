@@ -247,7 +247,6 @@ namespace AasxPackageLogic
                         bufferKey = new List<Aas.IKey>() { new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id) };
 
                     if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.SemanticId != null)
-                        //bufferKey = List<Key>.CreateNew(cpbsm.sm.GetReference()?.First);
                         bufferKey = new List<Aas.IKey>() { cpbsm.sm.GetReference().Keys.First() };
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null
@@ -372,9 +371,6 @@ namespace AasxPackageLogic
                     else
                     if (isArrayObject)
                     {
-                        // make array of object
-                        //var objarr = AdminShellSerializationHelper
-                        //    .DeserializePureObjectFromJSON<List<Aas.IReferable>>(cps);
                         var node = System.Text.Json.Nodes.JsonNode.Parse(cps);
                         var objarr = ExtendIReferable.ListOfIReferableFrom(node);
                         if (objarr != null)
@@ -462,7 +458,6 @@ namespace AasxPackageLogic
                 var placement = pcop.GetChildrenPlacement(item.sme) as
                     EnumerationPlacmentOperationVariable;
                 if (placement != null)
-                //pcop[placement.Direction].Remove(placement.OperationVariable);
                 {
                     if (placement.Direction == OperationVariableDirection.In)
                     {
@@ -525,7 +520,6 @@ namespace AasxPackageLogic
                         cpbInternal.Valid = true;
                         cpbInternal.Duplicate = buttonNdx == 1;
                         EnumerationPlacmentBase placement = null;
-                        //if (parentContainer is IEnumerateChildren enc) //No IEnumerateChildren in V3
                         placement = parentContainer.GetChildrenPlacement(sme);
                         cpbInternal.Items = new ListOfCopyPasteItem(
                             new CopyPasteItemSME(env, parentContainer, wrapper, sme, placement));
@@ -953,9 +947,6 @@ namespace AasxPackageLogic
                             // apply
                             var smw2 = item.sme.Copy();
                             nextBusObj = smw2;
-
-                            //if (sm is IEnumerateChildren smeec)
-                            //    smeec.AddChild(smw2);
 
                             sm.AddChild(smw2);
 

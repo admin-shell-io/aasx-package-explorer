@@ -433,8 +433,6 @@ namespace AasxAmlImExport
 
             private void AddToSubmodelOrSmec(IReferable parent, ISubmodelElement se)
             {
-                //if (parent is IManageSubmodelElements imse)
-                //    imse.Add(se);
                 if (parent is Submodel submodel)
                 {
                     submodel.Add(se);
@@ -1397,7 +1395,6 @@ namespace AasxAmlImExport
                                     ISubmodelElement wrapper = sme;
                                     var opv = new OperationVariable(wrapper);
                                     currentOperation.InputVariables.Add(opv);
-                                    //currentOperation[currentOperationDir].Add(opv);
                                 }
                             }
                             else
@@ -1622,7 +1619,7 @@ namespace AasxAmlImExport
                 foreach (var ieViewAmlTarget in this.latePopoulationViews)
                 {
                     // access
-                    if (ieViewAmlTarget.Ie == null /*|| ieViewAmlTarget.View == null*/ || ieViewAmlTarget.AmlTarget == null)
+                    if (ieViewAmlTarget.Ie == null || ieViewAmlTarget.AmlTarget == null)
                         continue;
 
                     // we need to identify the target with respect to the AAS

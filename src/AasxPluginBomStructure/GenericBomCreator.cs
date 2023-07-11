@@ -332,24 +332,6 @@ namespace AasxPluginBomStructure
             return sb.ToString();
         }
 
-        //public Microsoft.Msagl.Drawing.Color GetMsaglColor(string color)
-        //{
-        //    // ReSharper disable PossibleNullReferenceException
-        //    if (color != null)
-        //        try
-        //        {
-        //            var col = (System.Windows.Media.Color)ColorConverter.ConvertFromString(color);
-        //            return new Microsoft.Msagl.Drawing.Color(col.R, col.G, col.B);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-        //        }
-        //    // ReSharper enable PossibleNullReferenceException
-
-        //    return new Microsoft.Msagl.Drawing.Color(0, 0, 0);
-        //}
-
         public void ApplyNodeStyle(
             Microsoft.Msagl.Drawing.Node node,
             BomArguments ns)

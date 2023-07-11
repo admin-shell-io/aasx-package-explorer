@@ -18,11 +18,10 @@ using Extensions;
 using Newtonsoft.Json;
 using AasxIntegrationBase;
 
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnassignedField.Global
 
 namespace AasxPluginBomStructure
 {
+    // dead-csharp off
     //public enum BomLinkDirection { None, Forward, Backward, Both }
 
     //public class BomLinkStyle // : IReferable
@@ -78,7 +77,7 @@ namespace AasxPluginBomStructure
     //            Store.Index(ExtendReference.CreateFromKey(ls.Match), ls);
     //    }
     //}
-
+    // dead-csharp on
     public class BomStructureOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
         public int Layout;

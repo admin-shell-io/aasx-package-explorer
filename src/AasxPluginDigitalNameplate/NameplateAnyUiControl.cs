@@ -31,8 +31,6 @@ using QRCoder;
 using ImageMagick;
 using System.DirectoryServices.ActiveDirectory;
 
-// ReSharper disable InconsistentlySynchronizedField
-// ReSharper disable AccessToModifiedClosure
 
 namespace AasxPluginDigitalNameplate
 {
@@ -233,9 +231,6 @@ namespace AasxPluginDigitalNameplate
                     }
                     return new AnyUiLambdaActionNone();
                 });
-
-            // need panel to add inside
-            // var inner = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
 
             var stackGrid = uitk.AddSmallGrid(4, 1, colWidths: new[] { "*" });
             scroll.Content = stackGrid;

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright(c) 2018 - 2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright(c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -67,7 +67,6 @@ namespace AasxPackageLogic
                             {
                                 var sme = vesme.theWrapper;
                                 EnumerationPlacmentBase placement = null;
-                                //if (parentContainer is IEnumerateChildren enc)
                                 placement = pcref.GetChildrenPlacement(sme);
                                 cpb.Items.Add(new CopyPasteItemSME(env, pcref,
                                     vesme.theWrapper, sme, placement));
@@ -90,8 +89,6 @@ namespace AasxPackageLogic
                             if (el is VisualElementConceptDescription vecd)
                                 cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, vecd.theCD));
 
-                            //if (el is VisualElementAsset veass)
-                            //    cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, veass.theAsset));
 
                             if (el is VisualElementAdminShell veaas)
                                 cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, veaas.theAas));
@@ -317,7 +314,6 @@ namespace AasxPackageLogic
             if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.Description &&
                 el is Aas.IReferable rf2)
             {
-                //var input = (rf2.Description?.LangStrings == null) ? "" : rf2.Description.LangStrings[dia.AttributeLang];
                 var rf2LangString = rf2.Description.Where(s => s.Language.Equals(dia.AttributeLang)).First();
                 var input = (rf2.Description == null) ? "" : rf2LangString.Text;
                 var nd = PerformWildcardReplace(input, dia.Pattern);

@@ -79,7 +79,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     <AasxPluginGenericForms.GenericFormOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
                         _log, upgrades.ToArray());
-
+                // dead-csharp off
                 //// need special settings
                 //var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
                 //    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
@@ -94,6 +94,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 //// try find additional options
                 //this._options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
                 //    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, _log);
+                // dead-csharp on
             }
             catch (Exception ex)
             {

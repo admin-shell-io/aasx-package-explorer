@@ -455,9 +455,6 @@ namespace AasxPluginExportTable.Table
                         minHeight: 100,
                         horizontalAlignment: AnyUiHorizontalAlignment.Stretch);
 
-                    // Row 1..n : automatic generation
-                    // displayContext.AutoGenerateUiFieldsFor(record, helper, g, startRow: 2);
-
                     // give back
                     return panel;
                 });

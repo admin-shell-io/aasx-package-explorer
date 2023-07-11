@@ -76,7 +76,6 @@ namespace AasxPluginExportTable.Table
             Sme = new Aas.Property(Aas.DataTypeDefXsd.String);
             CD = new Aas.ConceptDescription("");
 
-            // CD.CreateDataSpecWithContentIec61360();
             CD.AddEmbeddedDataSpecification(
                 new Aas.EmbeddedDataSpecification(
                     new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey> {
@@ -235,11 +234,11 @@ namespace AasxPluginExportTable.Table
 
             if (preset == "category")
                 elem.Category = commit(cell);
-
+            // dead-csharp off
             // TODO (???, 0000-00-00): check remove
             //if (preset == "kind")
             //    elem.Kind = Aas.Stringification.ModelingKindFromString(commit(cell));
-
+            // dead-csharp on
             if (preset == "semanticId")
                 elem.SemanticId = CreateSemanticId(commit(cell));
 
@@ -263,7 +262,6 @@ namespace AasxPluginExportTable.Table
 
                 // exclude SMEs
                 foreach (var x in AdminShellUtil.GetEnumValues<Aas.AasSubmodelElements>())
-                    // .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
                     if (vt.Trim().ToString().ToLower() == x.ToString().ToLower())
                         return true;
 
@@ -338,7 +336,6 @@ namespace AasxPluginExportTable.Table
 
                 // exclude SMEs
                 foreach (var x in AdminShellUtil.GetEnumValues<Aas.AasSubmodelElements>())
-                    // .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
                     if (vt.Trim().ToLower() == x.ToString().ToLower())
                         return;
 

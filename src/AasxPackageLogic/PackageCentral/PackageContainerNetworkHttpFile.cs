@@ -195,12 +195,6 @@ namespace AasxPackageLogic.PackageCentral
                     string[] splitResult = redirectUrl.Split(new string[] { "?" },
                         StringSplitOptions.RemoveEmptyEntries);
                     splitResult[0] = splitResult[0].TrimEnd('/');
-                    //var queryString = ParseQueryString(splitResult[1]);
-                    //string authType = queryString["authType"];
-                    //if (authType == "keycloak")
-                    //{
-                    //    OpenIDClient.keycloak = splitResult[0];
-                    //}
 
                     if (splitResult.Length < 1)
                     {
@@ -209,7 +203,6 @@ namespace AasxPackageLogic.PackageCentral
                     }
 
                     runtimeOptions?.Log?.Info("Redirect to: " + splitResult[0]);
-                    //runtimeOptions?.Log?.Info("AuthType: " + authType);
 
                     if (oidc == null)
                     {

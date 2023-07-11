@@ -22,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
@@ -232,6 +233,7 @@ namespace AasxPackageLogic
                 // do
                 try
                 {
+                    // dead-csharp off
                     //// establish target filename
                     //if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
                     //{
@@ -278,6 +280,7 @@ namespace AasxPackageLogic
                     //
                     // ELSE .. already local
                     //
+                    // dead-csharp on
 
                     // preferred format
                     var prefFmt = AdminShellPackageEnv.SerializationFormat.None;

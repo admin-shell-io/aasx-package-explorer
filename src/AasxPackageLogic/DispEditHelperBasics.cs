@@ -813,6 +813,7 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
+                        // dead-csharp off
                         //TODO (jtikekar, 0000-00-00): need to test
                         //TODO (MIHO, 0000-00-00): refectored to extension method
                         //if (typeof(T) is ILangStringTextType)
@@ -837,6 +838,7 @@ namespace AasxPackageLogic
                         //}
                         //langStr?.Add(new T { Language = "", Text = "" });
                         // langStr.Add(ls);
+                        // dead-csharp on
 
                         langStr.Add<T>("", "");
 
@@ -1099,11 +1101,12 @@ namespace AasxPackageLogic
                 emitCustomEvent: emitCustomEvent,
                 addElemLambda: (o) =>
                 {
+                    // dead-csharp off
                     //if (o is Aas.IIdentifiable id)
                     //    keys.Add(new Identifier(id.Id));
                     //if (o is Key k)
                     //    keys.Add(k.Value);
-
+                    // dead-csharp on
                     //TODO (jtikekar, 0000-00-00): Test
                     if (o is Aas.IIdentifiable id)
                         keys.Add(id.Id);
@@ -1980,12 +1983,13 @@ namespace AasxPackageLogic
                                 keys[currentI] == this.highlightField.containingObject)
                             this.HighligtStateElement(cbType, true);
 
+                        // dead-csharp off
                         //// check here, if to hightlight
                         //if (cbIdType != null && this.highlightField != null && keys[currentI].idType != null &&
                         //        this.highlightField.fieldHash == keys[currentI].idType.GetHashCode() &&
                         //        keys[currentI] == this.highlightField.containingObject)
                         //    this.HighligtStateElement(cbIdType, true);
-
+                        // dead-csharp on
                         // value
                         var tbValue = AddSmallTextBoxTo(
                             g, 0 + i + rowOfs, 4,
@@ -2726,9 +2730,6 @@ namespace AasxPackageLogic
             if (idf == null)
                 return;
 
-            //if (idf == null)
-            //    idf.Id = new Identification(); //IF cannot be instatiated
-
             // random add
             var r = new Random();
             var addStr = "---" + r.Next(0, 0x7fffffff).ToString("X8");
@@ -2765,7 +2766,6 @@ namespace AasxPackageLogic
 
             public DiaryReference(Aas.IReferable rf)
             {
-                //OriginalPath = rf?.GetReference()?.Keys;
                 OriginalPath = rf?.GetReference()?.Keys;
             }
         }
