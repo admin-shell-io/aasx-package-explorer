@@ -4133,7 +4133,8 @@ namespace AasxPackageLogic
                         }))
                 {
                     this.AddKeyListKeys(stack, "observed", bev.Observed.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.Main, "",
+                        packages, PackageCentral.PackageCentral.Selector.Main, 
+                        addExistingEntities: "All",
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) =>

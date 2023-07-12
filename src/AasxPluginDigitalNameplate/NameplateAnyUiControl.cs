@@ -364,7 +364,7 @@ namespace AasxPluginDigitalNameplate
                 fontSize: 0.9f,
                 margin: new AnyUiThickness(0, 0, 6, 0),
                 background: (statement != null) ? BrushfromQuality(statement.Quality) : new AnyUiBrush(0x40ffffff),
-                verticalAlignment: AnyUiVerticalAlignment.Bottom,
+                verticalAlignment: AnyUiVerticalAlignment.Top,
                 verticalContentAlignment: AnyUiVerticalAlignment.Stretch,
                 horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
                 horizontalContentAlignment: AnyUiHorizontalAlignment.Center);
@@ -1226,6 +1226,15 @@ namespace AasxPluginDigitalNameplate
                     int row = i / MarkingsPerRow;
                     int col = i % MarkingsPerRow;
 
+                    // make a small grid and add this manually
+                    var oneMarkGrid = uitk.AddSmallGrid(2, 1, colWidths: new[] { "*" }, rowHeights: new[] { "*", "#" });
+                    oneMarkGrid.MaxHeight = 100;
+                    oneMarkGrid.MaxWidth = 100;
+                    wrapPanel.Add(oneMarkGrid);
+
+                    // very important for HTML rendering of WrapPanel!
+                    oneMarkGrid.HorizontalAlignment = AnyUiHorizontalAlignment.Left;
+
                     // render EITHER image or text
                     AnyUiBitmapInfo markImg = null;
                     if (_package != null)
@@ -1234,34 +1243,71 @@ namespace AasxPluginDigitalNameplate
                     if (markImg != null)
                     {
                         // render IMAGE
-                        var img = uitk.Set(
-                            new AnyUiImage() { Stretch = AnyUiStretch.Uniform, BitmapInfo = markImg },
-                            margin: new AnyUiThickness(0, 0, 4, 4),
-                            horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
-                            verticalAlignment: AnyUiVerticalAlignment.Stretch);
-                        wrapPanel.Add(img);
 
-                        img.MaxHeight = 70;
-                        img.MaxWidth = 100;
+                        //var img = uitk.Set(
+                        //    new AnyUiImage() { Stretch = AnyUiStretch.Uniform, BitmapInfo = markImg },
+                        //    margin: new AnyUiThickness(0, 0, 4, 4),
+                        //    horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
+                        //    verticalAlignment: AnyUiVerticalAlignment.Stretch);
+                        //wrapPanel.Add(img);
+
+                        //img.MaxHeight = 70;
+                        //img.MaxWidth = 100;
+                        var img = uitk.Set(
+                            uitk.AddSmallImageTo(oneMarkGrid, 0, 0,
+                                margin: new AnyUiThickness(0, 0, 4, 4),
+                                stretch: AnyUiStretch.Uniform,
+                                bitmap: markImg),
+                            horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
+                            verticalAlignment: AnyUiVerticalAlignment.Stretch,
+                            maxWidth: 100 /* for HTML it is required to state here! */);
                     }
                     else
                     {
                         // render TEXT
-                        var tb = new AnyUiTextBlock()
-                        {
-                            Text = "" + mark.Name,
-                            FontSize = 1.4,
-                            Margin = new AnyUiThickness(0, 0, 4, 4),
-                            Padding = new AnyUiThickness(4),
-                            Background = AnyUiBrushes.White,
-                            TextWrapping = AnyUiTextWrapping.Wrap,
-                            VerticalAlignment = AnyUiVerticalAlignment.Stretch,
-                            VerticalContentAlignment = AnyUiVerticalAlignment.Center
-                        };
-                        wrapPanel.Add(tb);
 
-                        tb.MaxHeight = 70;
-                        tb.MaxWidth = 100;
+                        //var tb = new AnyUiTextBlock()
+                        //{
+                        //    Text = "" + mark.Name,
+                        //    FontSize = 1.4,
+                        //    Margin = new AnyUiThickness(0, 0, 4, 4),
+                        //    Padding = new AnyUiThickness(4),
+                        //    Background = AnyUiBrushes.White,
+                        //    TextWrapping = AnyUiTextWrapping.Wrap,
+                        //    VerticalAlignment = AnyUiVerticalAlignment.Stretch,
+                        //    VerticalContentAlignment = AnyUiVerticalAlignment.Center
+                        //};
+                        //wrapPanel.Add(tb);
+
+                        //tb.MaxHeight = 70;
+                        //tb.MaxWidth = 100;
+
+                        var tb = uitk.Set(
+                            uitk.AddSmallBasicLabelTo(oneMarkGrid, 0, 0,
+                                content: "" + mark.Name,
+                                fontSize: 1.4,
+                                margin: new AnyUiThickness(0, 0, 4, 4),
+                                padding: new AnyUiThickness(4),
+                                background: AnyUiBrushes.White,
+                                textWrapping: AnyUiTextWrapping.Wrap,
+                                verticalAlignment: AnyUiVerticalAlignment.Stretch,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center));                            
+                    }
+
+                    // render (little) additional text
+                    if (mark.AddText != null && mark.AddText.Count > 0)
+                    {
+                        var markAddTxt = string.Join(" * ", mark.AddText);
+                        var at = uitk.Set(
+                                uitk.AddSmallBasicLabelTo(oneMarkGrid, 1, 0,
+                                    content: "" + markAddTxt,
+                                    fontSize: 0.8,
+                                    margin: new AnyUiThickness(0, 0, 4, 4),
+                                    background: AnyUiBrushes.Transparent,
+                                    textWrapping: AnyUiTextWrapping.Wrap,
+                                    horizontalAlignment: AnyUiHorizontalAlignment.Center,
+                                    horizontalContentAlignment: AnyUiHorizontalAlignment.Center),
+                                maxWidth: 100);
                     }
                 }
             }

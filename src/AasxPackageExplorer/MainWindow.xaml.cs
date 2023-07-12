@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Aas3_0;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
@@ -18,6 +19,7 @@ using AdminShellNS.DiaryData;
 using AnyUi;
 using Extensions;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1136,6 +1138,35 @@ namespace AasxPackageExplorer
                     Log.Singleton.Error(ex, $"when executing script file {Options.Curr.ScriptCmd}");
                 }
             }
+
+            //
+            // TEST
+            //
+
+            if (false) {
+                // in both cases, prepare list of events as string
+                var lev = new List<AasEventMsgEnvelope>();
+
+                lev.Add(new AasEventMsgEnvelope()
+                {
+                    Source = new Aas.Reference(ReferenceTypes.ExternalReference, 
+                        new List<IKey>(new[] { new Aas.Key(KeyTypes.Blob, "bb") }))
+                });
+
+                var settings = new JsonSerializerSettings
+                {
+                    // SerializationBinder = new DisplayNameSerializationBinder(new[] { typeof(AasEventMsgEnvelope) }),
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                    TypeNameHandling = TypeNameHandling.None,
+                    Formatting = Formatting.Indented
+                };
+                settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                settings.Converters.Add(new AdminShellConverters.AdaptiveAasIClassConverter(
+                    AdminShellConverters.AdaptiveAasIClassConverter.ConversionMode.AasCore));
+                var json = JsonConvert.SerializeObject(lev, settings);
+                ;
+            }
         }
 
         private void ToolFindReplace_ResultSelected(AasxSearchUtil.SearchResultItem resultItem)
@@ -2094,7 +2125,8 @@ namespace AasxPackageExplorer
                         sourceSemanticId: refEv.SemanticId,
                         observableReference: refEv.Observed,
                         //observableSemanticId: (observable as IGetSemanticId)?.GetSemanticId());
-                        observableSemanticId: null); // TODO:jtikekar IDiaryData support
+                        // TODO:jtikekar IDiaryData support
+                        observableSemanticId: (observable as IHasSemantics)?.SemanticId); 
 
                     if (plStruct.Changes.Count >= 1)
                         ev.PayloadItems.Add(plStruct);
@@ -2345,7 +2377,7 @@ namespace AasxPackageExplorer
                     _mainTimer_LastCheckForDiaryEvents,
                     PackageCentral.MainItem.Container.Env?.AasEnv,
                     PackageCentral.MainItem.Container.SignificantElements,
-                    directEmit: !MainMenu?.IsChecked("CompressEvents") != true);
+                    directEmit: MainMenu?.IsChecked("CompressEvents") != true);
                 _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
 
                 // do animation?

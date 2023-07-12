@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace AdminShellNS
@@ -211,6 +212,17 @@ namespace AdminShellNS
 
             public ConversionMode Mode = ConversionMode.Typecast;
 
+            public bool WriteRawAasCore = false;
+
+            /// <summary>
+            /// For **SERIALIZATION** and **JsonConverter attribute** a parameterless 
+            /// constructor is needed.
+            /// </summary>
+            public AdaptiveAasIClassConverter() : base()
+            {
+                Mode = ConversionMode.AasCore;
+            }
+
             public AdaptiveAasIClassConverter(ConversionMode mode) : base()
             {
                 Mode = mode;
@@ -226,7 +238,7 @@ namespace AdminShellNS
 
             public override bool CanWrite
             {
-                get { return false; }
+                get { return true; }
             }
 
             public override object ReadJson(JsonReader reader,
@@ -264,7 +276,46 @@ namespace AdminShellNS
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                throw new NotImplementedException();
+                if (value is IClass ic)
+                {
+                    // serialize by AAS core
+                    var jsonStr = Jsonization.Serialize.ToJsonObject(ic)
+                        .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                        {
+                            WriteIndented = true
+                        });
+
+                    // how to write
+                    if (WriteRawAasCore)
+                    {
+                        // directly write raw string into serializer
+                        // drawback: no indentation
+                        writer.WriteStartObject();
+                        jsonStr = jsonStr.TrimStart('{').TrimEnd('}');
+                        writer.WriteRaw(jsonStr);
+                        writer.WriteEndObject();
+                    } 
+                    else
+                    {
+                        // double-digest by a text reader and rewrite token stream
+                        // pro: indentation
+                        // con: run time performance, chance of de-serialization issues
+                        using (var reader = new JsonTextReader(new StringReader(jsonStr))
+                        {
+                            DateParseHandling = DateParseHandling.None,
+                            FloatParseHandling = FloatParseHandling.Decimal
+                        })
+                        {
+                            writer.WriteToken(reader);
+                        }
+                    }
+                }
+                else
+                {
+                    // normal serialization
+                    var jo = JObject.FromObject(value);
+                    jo.WriteTo(writer);
+                }
             }
         }
 

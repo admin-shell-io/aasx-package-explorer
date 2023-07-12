@@ -48,6 +48,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * ExportPreDef double exports CDs???
 
+* multiple SMC in SML marked -> no "delete!
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done

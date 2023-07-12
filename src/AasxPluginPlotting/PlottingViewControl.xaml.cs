@@ -1894,7 +1894,7 @@ namespace AasxPluginPlotting
                 // search for structural creation of portions of segments
                 // this is to trigger, if NEW SEGMENTS exist
 
-                if (!ev.IsWellInformed || ev.PayloadItems == null)
+                if (!ev.IsWellformed || ev.PayloadItems == null)
                     return;
 
                 foreach (var pl in ev.PayloadItems)
@@ -1929,7 +1929,7 @@ namespace AasxPluginPlotting
                 // search for structural creation of portions of segments
                 // this is to trigger, if NEW SEGMENTS exist
 
-                if (!ev.IsWellInformed || ev.PayloadItems == null)
+                if (!ev.IsWellformed || ev.PayloadItems == null)
                     return;
 
                 foreach (var pl in ev.PayloadItems)

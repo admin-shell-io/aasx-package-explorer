@@ -13,9 +13,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AasxIntegrationBase.MiniMarkup;
 using Extensions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using static AdminShellNS.AdminShellConverters;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxIntegrationBase.AdminShellEvents
@@ -101,7 +103,11 @@ namespace AasxIntegrationBase.AdminShellEvents
             }
         }
 
-        public bool IsWellInformed
+        /// <summary>
+        /// Overall check if a valid event.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsWellformed
         {
             get
             {
@@ -236,16 +242,16 @@ namespace AasxIntegrationBase.AdminShellEvents
                         $"AAS event message @ {ts}", fontSize: 16.0f)),
                     new MiniMarkupLine(
                         new MiniMarkupRun("Source:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun(Source?.ToString())),
+                        new MiniMarkupRun(Source?.ToStringExtended())),
                     new MiniMarkupLine(
                         new MiniMarkupRun("SourceSemantic:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun(SourceSemanticId?.ToString())),
+                        new MiniMarkupRun(SourceSemanticId?.ToStringExtended())),
                     new MiniMarkupLine(
                         new MiniMarkupRun("ObservableReference:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun(ObservableReference?.ToString())),
+                        new MiniMarkupRun(ObservableReference?.ToStringExtended())),
                     new MiniMarkupLine(
                         new MiniMarkupRun("ObservableSemanticId:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun(ObservableSemanticId?.ToString())),
+                        new MiniMarkupRun(ObservableSemanticId?.ToStringExtended())),
                     new MiniMarkupLine(
                         new MiniMarkupRun("Topic:", isMonospaced: true, padsize: w1),
                         new MiniMarkupRun(Topic)),
