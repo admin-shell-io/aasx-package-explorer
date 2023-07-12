@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,7 +14,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Aas = AasCore.Aas3_0; //TODO:jtikekar change to AAS
+using Aas = AasCore.Aas3_0;
+//TODO (jtikekar, 0000-00-00): change to AAS
 
 namespace AasxIntegrationBase
 {
@@ -237,7 +238,7 @@ namespace AasxIntegrationBase
                 yield return new EmulateAttribute("Value", textSearchable: true);
             }
 
-            //TODO:jtikekar support other forms of LangString 
+            //TODO (jtikekar, 0000-00-00): support other forms of LangString 
             if (obj is Aas.ILangStringTextType)
             {
                 yield return new EmulateAttribute("Language", textSearchable: true);
@@ -648,12 +649,6 @@ namespace AasxIntegrationBase
                 elName = "Environment";
                 businessObject = obj;
             }
-            //else
-            //if (obj is Aas.IClass objic2)
-            //{
-            //    elName = objic2.GetType().Name;
-            //    businessObject = obj;
-            //}
 
             // enrich qualified name, accordingly
             var qualifiedName = qualifiedNameHead;

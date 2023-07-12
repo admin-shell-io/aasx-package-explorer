@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -27,7 +27,7 @@ namespace AasxPackageExplorer
         private ListOfVisualElementBasic _theEntities = null;
         private DispEditHelperMultiElement _helper = new DispEditHelperMultiElement();
         private AnyUiUIElement _lastRenderedRootElement = null;
-        // private AnyUiDisplayContextWpf _displayContext = null;
+
 
         #region Public events and properties
         //

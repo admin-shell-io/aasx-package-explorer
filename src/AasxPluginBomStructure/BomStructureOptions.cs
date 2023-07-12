@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -18,11 +18,10 @@ using Extensions;
 using Newtonsoft.Json;
 using AasxIntegrationBase;
 
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnassignedField.Global
 
 namespace AasxPluginBomStructure
 {
+    // dead-csharp off
     //public enum BomLinkDirection { None, Forward, Backward, Both }
 
     //public class BomLinkStyle // : IReferable
@@ -78,7 +77,7 @@ namespace AasxPluginBomStructure
     //            Store.Index(ExtendReference.CreateFromKey(ls.Match), ls);
     //    }
     //}
-
+    // dead-csharp on
     public class BomStructureOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
         public int Layout;

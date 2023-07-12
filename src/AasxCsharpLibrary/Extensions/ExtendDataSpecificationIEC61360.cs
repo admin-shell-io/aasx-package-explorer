@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using System.Collections.Generic;
 
 namespace Extensions
 {
@@ -33,7 +41,7 @@ namespace Extensions
             if (src616360.definition != null)
                 ds61360.Definition = new List<ILangStringDefinitionTypeIec61360>().ConvertFromV20(src616360.definition);
 
-            //TODO:jtikekar check with Andreas
+            //TODO (jtikekar, 0000-00-00): check with Andreas
             ds61360.Value = "";
 
             return ds61360;

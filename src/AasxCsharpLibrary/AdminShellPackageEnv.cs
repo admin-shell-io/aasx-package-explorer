@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -152,7 +152,6 @@ namespace AdminShellNS
                     typeof(AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv),
                     "http://www.admin-shell.io/aas/1/0");
                 var v10 = serializer.Deserialize(s) as AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv;
-                //res = new AdministrationShellEnv(v10);
                 res = new AasCore.Aas3_0.Environment(new List<IAssetAdministrationShell>(), new List<ISubmodel>(), new List<IConceptDescription>());
                 res.ConvertFromV10(v10);
                 return res;
@@ -169,7 +168,6 @@ namespace AdminShellNS
                     typeof(AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv),
                     "http://www.admin-shell.io/aas/2/0");
                 var v20 = serializer.Deserialize(s) as AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv;
-                //res = new AdministrationShellEnv(v20);
                 res = new AasCore.Aas3_0.Environment(new List<IAssetAdministrationShell>(), new List<ISubmodel>(), new List<IConceptDescription>());
                 res.ConvertFromV20(v20);
                 return res;
@@ -181,10 +179,11 @@ namespace AdminShellNS
             // read V3.0?
             if (nsuri != null && nsuri.Trim() == Xmlization.NS)
             {
+                // dead-csharp off
                 //XmlSerializer serializer = new XmlSerializer(
                 //    typeof(AasCore.Aas3_0_RC02.Environment), "http://www.admin-shell.io/aas/3/0");
                 //res = serializer.Deserialize(s) as AasCore.Aas3_0_RC02.Environment;
-
+                // dead-csharp on
                 using (var xmlReader = XmlReader.Create(s))
                 {
                     // TODO (MIHO, 2022-12-26): check if could be feature of AAS core
@@ -197,7 +196,7 @@ namespace AdminShellNS
             // nope!
             return null;
         }
-
+        // dead-csharp off
         //public static JsonSerializer BuildDefaultAasxJsonSerializer()
         //{
         //    var serializer = new JsonSerializer();
@@ -206,7 +205,6 @@ namespace AdminShellNS
         //            "modelType", "name"));
         //    return serializer;
         //}
-
         public static T DeserializeFromJSON<T>(string data) where T : IReferable
         {
             //using (var tr = new StringReader(data))
@@ -242,6 +240,7 @@ namespace AdminShellNS
         //        return null;
         //    }
         //}
+        // dead-csharp on
     }
 
     /// <summary>
@@ -329,6 +328,7 @@ namespace AdminShellNS
             {
                 using (var file = System.IO.File.OpenRead(fn))
                 {
+                    // dead-csharp off
                     //// TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                     //var serializer = new JsonSerializer();
                     //serializer.Converters.Add(
@@ -337,7 +337,7 @@ namespace AdminShellNS
 
                     //var aasEnv = (AasCore.Aas3_0_RC02.Environment)serializer.Deserialize(
                     //    file, typeof(AasCore.Aas3_0_RC02.Environment));
-
+                    // dead-csharp on
                     var node = System.Text.Json.Nodes.JsonNode.Parse(file);
                     var aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
 
@@ -407,6 +407,7 @@ namespace AdminShellNS
                     {
                         using (var s = specPart.GetStream(FileMode.Open))
                         {
+                            // dead-csharp off
                             //using (var file = new StreamReader(s))
                             //{
                             //JsonSerializer serializer = new JsonSerializer();
@@ -420,6 +421,7 @@ namespace AdminShellNS
                             var node = System.Text.Json.Nodes.JsonNode.Parse(s);
                             aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
                             //}
+                            // dead-csharp on
                         }
                     }
                     else
@@ -535,6 +537,7 @@ namespace AdminShellNS
         {
             try
             {
+                // dead-csharp off
                 //using (var file = new StringReader(content))
                 //{
                 // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
@@ -546,6 +549,7 @@ namespace AdminShellNS
                 var node = System.Text.Json.Nodes.JsonNode.Parse(content);
                 _aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
                 //}
+                // dead-csharp on
             }
             catch (Exception ex)
             {
@@ -556,7 +560,7 @@ namespace AdminShellNS
         }
 
         public enum SerializationFormat { None, Xml, Json };
-
+        // dead-csharp off
         //public static XmlSerializerNamespaces GetXmlDefaultNamespaces()
         //{
         //    var nss = new XmlSerializerNamespaces();
@@ -566,7 +570,7 @@ namespace AdminShellNS
         //    nss.Add("abac", "http://www.admin-shell.io/aas/abac/2/0");
         //    return nss;
         //}
-
+        // dead-csharp on
         public bool SaveAs(string fn, bool writeFreshly = false, SerializationFormat prefFmt = SerializationFormat.None,
                 MemoryStream useMemoryStream = null, bool saveOnlyCopy = false)
         {
@@ -587,11 +591,12 @@ namespace AdminShellNS
 
                     try
                     {
+                        // dead-csharp off
                         // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                         //var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
                         //var nss = GetXmlDefaultNamespaces();
                         //serializer.Serialize(s, _aasEnv, nss);
-
+                        // dead-csharp on
                         var writer = XmlWriter.Create(s, new XmlWriterSettings()
                         {
                             Indent = true,
@@ -632,6 +637,7 @@ namespace AdminShellNS
 
                     try
                     {
+                        // dead-csharp off
                         //// TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                         //JsonSerializer serializer = new JsonSerializer()
                         //{
@@ -653,7 +659,7 @@ namespace AdminShellNS
                         //    writer.Close();
                         //    sw.Close();
                         //}
-
+                        // dead-csharp on
                         using (var wr = new System.Text.Json.Utf8JsonWriter(s))
                         {
                             Jsonization.Serialize.ToJsonObject(_aasEnv).WriteTo(wr,
@@ -834,9 +840,6 @@ namespace AdminShellNS
                     {
                         using (var s = specPart.GetStream(FileMode.Create))
                         {
-                            //var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
-                            //var nss = GetXmlDefaultNamespaces();
-                            //serializer.Serialize(s, _aasEnv, nss);
 
                             var writer = XmlWriter.Create(s, new XmlWriterSettings()
                             {
@@ -1081,13 +1084,14 @@ namespace AdminShellNS
                 // raw save
                 using (var s = new StreamWriter(bdfn))
                 {
+                    // dead-csharp off
                     //var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
                     //var nss = new XmlSerializerNamespaces();
                     //nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
                     //nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
                     //nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
                     //serializer.Serialize(s, _aasEnv, nss);
-
+                    // dead-csharp on
                     var writer = XmlWriter.Create(s, new XmlWriterSettings()
                     {
                         Indent = true,

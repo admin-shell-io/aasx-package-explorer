@@ -1,4 +1,12 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -23,11 +31,12 @@ namespace Extensions
 
         public static IEnumerable<LocatedReference> FindAllReferences(this IAssetAdministrationShell assetAdministrationShell)
         {
+            // dead-csharp off
             // Asset
-            //TODO:jtikekar support asset
+            //TODO (jtikekar, 0000-00-00): support asset
             //if (assetAdministrationShell.AssetInformation != null)
             //    yield return new LocatedReference(assetAdministrationShell, assetAdministrationShell.AssetInformation);
-
+            // dead-csharp on
             // Submodel references
             if (assetAdministrationShell.Submodels != null)
                 foreach (var r in assetAdministrationShell.Submodels)
@@ -65,7 +74,7 @@ namespace Extensions
             assetAdministrationShell.Submodels.Add(newSubmodelReference);
         }
 
-        //TODO:jtikekar: Change the name, currently based on older implementation
+        //TODO (jtikekar, 0000-00-00): Change the name, currently based on older implementation
         public static string GetFriendlyName(this IAssetAdministrationShell assetAdministrationShell)
         {
             if (string.IsNullOrEmpty(assetAdministrationShell.IdShort))
@@ -115,7 +124,6 @@ namespace Extensions
                     var keyList = new List<IKey>();
                     foreach (var refKey in submodelRef.Keys)
                     {
-                        //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
                         var keyType = Stringification.KeyTypesFromString(refKey.type);
                         if (keyType != null)
                         {
@@ -136,7 +144,7 @@ namespace Extensions
 
             if (sourceAas.hasDataSpecification != null)
             {
-                //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
                 if (assetAdministrationShell.EmbeddedDataSpecifications == null)
                 {
                     assetAdministrationShell.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
@@ -191,7 +199,6 @@ namespace Extensions
                     var keyList = new List<IKey>();
                     foreach (var refKey in submodelRef.Keys)
                     {
-                        //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
                         var keyType = Stringification.KeyTypesFromString(refKey.type);
                         if (keyType != null)
                         {
@@ -212,13 +219,13 @@ namespace Extensions
 
             if (sourceAas.hasDataSpecification != null && sourceAas.hasDataSpecification.Count > 0)
             {
-                //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
                 if (assetAdministrationShell.EmbeddedDataSpecifications == null)
                 {
                     assetAdministrationShell.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
                 }
 
-                //TODO: jtikekar: DataSpecificationContent?? (as per old implementation)
+                //TODO (jtikekar, 0000-00-00): DataSpecificationContent?? (as per old implementation)
                 foreach (var sourceDataSpec in sourceAas.hasDataSpecification)
                 {
                     if (sourceDataSpec.dataSpecification != null)

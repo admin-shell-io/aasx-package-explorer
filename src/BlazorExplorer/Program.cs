@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
@@ -162,7 +162,7 @@ namespace BlazorExplorer
                 MyLambda = lambda;
             }
         }
-
+        // dead-csharp off
         //public static void signalNewData(DataRedrawMode mode, int sessionNumber = 0,
         //    AnyUiLambdaActionBase newLambdaAction = null,
         //    AasxPluginResultEventBase newPluginResultEvent = null,
@@ -174,7 +174,7 @@ namespace BlazorExplorer
         //        newPluginResultEvent,
         //        onlyUpdatePanel: onlyUpdateAasxPanel));
         //}
-
+        // dead-csharp on
         public static void signalNewData(NewDataAvailableArgs args)
         {
             NewDataAvailable?.Invoke(null, args);
@@ -225,7 +225,7 @@ namespace BlazorExplorer
 
 
         // Copy of PackageExplorer
-        // TODO: Refactor
+        // TODO (??, 0000-00-00): Refactor
         public static OptionsInformation InferOptions(string exePath, string[] args)
         {
             var optionsInformation = new OptionsInformation();
@@ -274,7 +274,7 @@ namespace BlazorExplorer
         }
 
         // Copy of PackageExplorer
-        // TODO: Refactor
+        // TODO (??, 0000-00-00): Refactor
         public static Dictionary<string, Plugins.PluginInstance> LoadAndActivatePlugins(
             IReadOnlyList<OptionsInformation.PluginDllInfo> pluginDllInfos)
         {
@@ -291,7 +291,7 @@ namespace BlazorExplorer
         }
 
         // Almost copy of PackageExplorer
-        // TODO: Refactor
+        // TODO (??, 0000-00-00): Refactor
         public static void Main(string[] args)
         {
 
@@ -326,7 +326,7 @@ namespace BlazorExplorer
 
             Plugins.LoadedPlugins = LoadAndActivatePlugins(Options.Curr.PluginDll);
 
-            // TODO: Prefs required? Because of OSS?
+            // TODO (??, 0000-00-00): Prefs required? Because of OSS?
 
             // "Start" window
             CreateHostBuilder(args).Build().Run();

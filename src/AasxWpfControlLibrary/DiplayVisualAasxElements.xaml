@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600" Loaded="UserControl_Loaded">
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -17,7 +17,7 @@
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
 
-    <!-- TODO: Improve data binding? -->
+    <!-- TODO (??, 0000-00-00): Improve data binding? -->
     <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
     
     <Grid>

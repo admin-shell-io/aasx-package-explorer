@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -94,7 +94,7 @@ namespace AasxPluginExportTable.Table
                     workRowsBody = record.RowsBody;
                     workCols = record.Cols;
 
-                    // TODO: Put this into above function!
+                    // TODO (???, 0000-00-00): Put this into above function!
                     g.ColumnDefinitions[0].MinWidth = 120;
                     g.ColumnDefinitions[0].MaxWidth = 120;
 
@@ -454,9 +454,6 @@ namespace AasxPluginExportTable.Table
                             wrapping: AnyUiTextWrapping.Wrap),
                         minHeight: 100,
                         horizontalAlignment: AnyUiHorizontalAlignment.Stretch);
-
-                    // Row 1..n : automatic generation
-                    // displayContext.AutoGenerateUiFieldsFor(record, helper, g, startRow: 2);
 
                     // give back
                     return panel;

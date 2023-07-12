@@ -1,4 +1,12 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using AdminShellNS;
 using System;
 using System.Collections.Generic;
 
@@ -19,8 +27,10 @@ namespace Extensions
 
         public static string ValueAsText(this MultiLanguageProperty multiLanguageProperty, string defaultLang = null)
         {
-            //TODO: need to check/test again
+            // dead-csharp off
+            //TODO (jtikekar, 0000-00-00): need to check/test again
             //return "" + multiLanguageProperty.Value?.LangStrings.FirstOrDefault().Text;
+            // dead-csharp on
             return "" + multiLanguageProperty.Value?.GetDefaultString(defaultLang);
         }
 
@@ -36,7 +46,7 @@ namespace Extensions
                 var keyList = new List<IKey>();
                 foreach (var refKey in sourceProperty.valueId.Keys)
                 {
-                    //keyList.Add(new Key(ExtensionsUtil.GetKeyTypeFromString(refKey.type), refKey.value));
+
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
                     if (keyType != null)
                     {

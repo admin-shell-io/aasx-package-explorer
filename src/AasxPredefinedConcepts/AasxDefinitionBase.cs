@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -168,9 +168,10 @@ namespace AasxPredefinedConcepts
                     }
                 }
 #endif
+                // dead-csharp off
                 // TODO (MIHO, 2022-12-31): for V3.0, another method of deserialization is required!!
                 // res ??= JsonConvert.DeserializeObject<T>(entry.contents);
-
+                // dead-csharp on
                 var node = System.Text.Json.Nodes.JsonNode.Parse(entry.contents);
                 res ??= ExtendIClass.IClassFrom(typeof(T), node) as T;
 

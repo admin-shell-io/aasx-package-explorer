@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
@@ -241,7 +241,7 @@ namespace BlazorUI.Data
                 return;
             }
 
-            // REFACTOR: TODO
+            //TODO (??, 0000-00-00): REFACTOR
             if (cmd == "exportsmd")
             {
                 Logic.LogErrorToTicket(ticket, "ExportSmd not implemented, yet.");
@@ -249,7 +249,7 @@ namespace BlazorUI.Data
                 return;
             }
 
-            // REFACTOR: TODO
+            //TODO (??, 0000-00-00): REFACTOR
             if (cmd == "printasset")
             {
                 Logic.LogErrorToTicket(ticket, "PrintAsset not implemented, yet.");
@@ -293,7 +293,7 @@ namespace BlazorUI.Data
                 return;
             }
 
-
+            // dead-csharp off
             //// REFACTOR: WPF required
             //if (cmd == "exporttable"
             //    ||  cmd == "importtable"
@@ -304,7 +304,7 @@ namespace BlazorUI.Data
 
             //    return;
             //}
-
+            // dead-csharp on
             // REFACTOR: WPF required
             if (cmd == "serverpluginemptysample"
                 || cmd == "serverpluginopcua"

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -64,7 +64,6 @@ namespace AasxAmlImExport
             private class IeViewAmlTarget
             {
                 public InternalElementType Ie;
-                //public View View;
                 public CAEXObject AmlTarget;
 
                 public IeViewAmlTarget(InternalElementType ie, CAEXObject amlTarget)
@@ -111,7 +110,6 @@ namespace AasxAmlImExport
                     return null;
 
                 // build a Reference
-                //var res = new Reference();
                 var keyList = new List<IKey>();
 
                 // over all entries
@@ -409,8 +407,10 @@ namespace AasxAmlImExport
                         {
                             if (res == null)
                                 res = new List<Reference>(); //default initilization
-                            //TODO: jtikekar Temporarily removed, cannot be added, as it may reflect in the other places, like AssetAdministrationShell does not contain EmbeddedDS
+                            //TODO (jtikekar, 0000-00-00): Temporarily removed, cannot be added, as it may reflect in the other places, like AssetAdministrationShell does not contain EmbeddedDS
+                            // dead-csharp off
                             //res.Add(new EmbeddedDataSpecification(r));
+                            // dead-csharp on
                             res.Add(r);
                         }
                     }
@@ -433,8 +433,6 @@ namespace AasxAmlImExport
 
             private void AddToSubmodelOrSmec(IReferable parent, ISubmodelElement se)
             {
-                //if (parent is IManageSubmodelElements imse)
-                //    imse.Add(se);
                 if (parent is Submodel submodel)
                 {
                     submodel.Add(se);
@@ -518,8 +516,9 @@ namespace AasxAmlImExport
                 // we need to have some important information
                 if (id != null)
                 {
+                    // dead-csharp off
                     // set data
-                    //TODO: jtikekar Uncomment and Support
+                    //TODO (jtikekar, 0000-00-00): Uncomment and Support
                     //asset.identification = new Identification(idType, id);
 
                     //NO administrativeInformation, catagory or description in V3 AssetInformation
@@ -536,7 +535,7 @@ namespace AasxAmlImExport
                     //No DataSpecification asset
                     //if (ds != null)
                     //    asset.hasDataSpecification = ds;
-
+                    // dead-csharp on
                     // result
                     return asset;
                 }
@@ -566,7 +565,7 @@ namespace AasxAmlImExport
                     return null;
                 return idDict[ID];
             }
-
+            // dead-csharp off
             //private View TryParseViewFromIe(InstanceHierarchyType insthier, InternalElementType ie)
             //{
             //    // access
@@ -626,7 +625,7 @@ namespace AasxAmlImExport
             //        // uups!
             //        return null;
             //}
-
+            // dead-csharp on
             private ISubmodel TryParseSubmodelFromIe(SystemUnitClassType ie)
             {
                 // begin new (temporary) object
@@ -1118,12 +1117,12 @@ namespace AasxAmlImExport
 
                             // make temporary object official
                             currentAas.AssetInformation = asset;
-                            //matcher.AddMatch(asset, ie); //TODO jtikekar AssetInformation is not Referable
+                            //TODO (jtikekar, 0000-00-00): AssetInformation is not Referable
                         }
                         else
                             Debug(indentation, "  ASSET with insufficient attributes. Skipping");
                     }
-
+                    // dead-csharp off
                     //
                     // View
                     //
@@ -1143,6 +1142,7 @@ namespace AasxAmlImExport
                     //    else
                     //        Debug(indentation, "  VIEW with insufficient attributes. Skipping");
                     //}
+                    // dead-csharp on
 
                     //
                     // Submodel
@@ -1160,7 +1160,7 @@ namespace AasxAmlImExport
                             // there might be the case, that a submodel with the same identification is already
                             // existing.
                             // If so, that switch to it and ignore the newly parsed set of information
-                            // (TODO: check, if to merge information?)
+                            //TODO (?, 0000-00-00): check, if to merge information?
                             var existSm = this.package.AasEnv.FindSubmodelById(sm.Id);
                             if (existSm != null)
                                 sm = existSm;
@@ -1358,7 +1358,6 @@ namespace AasxAmlImExport
                         if (CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_Header + smeEnum.ToString()))
                         {
                             // begin new (temporary) object
-                            //var sme = SubmodelElementWrapper.CreateAdequateType(ae);
                             var sme = AdminShellUtil.CreateSubmodelElementFromEnum(smeEnum);
                             if (sme == null)
                                 continue;
@@ -1396,7 +1395,6 @@ namespace AasxAmlImExport
                                     ISubmodelElement wrapper = sme;
                                     var opv = new OperationVariable(wrapper);
                                     currentOperation.InputVariables.Add(opv);
-                                    //currentOperation[currentOperationDir].Add(opv);
                                 }
                             }
                             else
@@ -1444,7 +1442,7 @@ namespace AasxAmlImExport
 
                             // AAS might already exist by parsing instance, therefore check for existance
                             // If so, then switch to it and ignore the newly parsed set of information
-                            // (TODO: check, if to merge information?)
+                            //TODO (?, 0000-00-00): check, if to merge information?)
                             var existAas = this.package.AasEnv.FindAasById(aas.Id);
                             if (existAas != null)
                                 aas = existAas;
@@ -1474,7 +1472,7 @@ namespace AasxAmlImExport
 
                             // there might be the case, that a submodel with the same identification already exists.
                             // If so, that switch to it and ignore the newly parsed set of information
-                            // (TODO: check, if to merge information?)
+                            //TODO (?, 0000-00-00): check, if to merge information?)
                             var existSm = this.package.AasEnv.FindSubmodelById(sm.Id);
                             if (existSm != null)
                                 sm = existSm;
@@ -1621,7 +1619,7 @@ namespace AasxAmlImExport
                 foreach (var ieViewAmlTarget in this.latePopoulationViews)
                 {
                     // access
-                    if (ieViewAmlTarget.Ie == null /*|| ieViewAmlTarget.View == null*/ || ieViewAmlTarget.AmlTarget == null)
+                    if (ieViewAmlTarget.Ie == null || ieViewAmlTarget.AmlTarget == null)
                         continue;
 
                     // we need to identify the target with respect to the AAS
@@ -1634,7 +1632,6 @@ namespace AasxAmlImExport
                     aasTarget.CollectReferencesByParent(theref.Keys);
 
                     // add
-                    //ieViewAmlTarget.View.AddContainedElement(theref);
                 }
             }
 

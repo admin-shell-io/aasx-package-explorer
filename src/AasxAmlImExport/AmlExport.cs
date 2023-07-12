@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -90,7 +90,6 @@ namespace AasxAmlImExport
             if (id == null)
                 return;
             var a0 = AppendAttributeNameAndRole(aseq, "identification", AmlConst.Attributes.Identification);
-            //AppendAttributeNameAndRole(a0.Attribute, "idType", AmlConst.Attributes.Identification_idType, id.Id);
             AppendAttributeNameAndRole(a0.Attribute, "id", AmlConst.Attributes.Identification_id, id);
         }
 
@@ -424,9 +423,7 @@ namespace AasxAmlImExport
 
                     // make an InternalElement
                     var ie = AppendIeNameAndRole(
-                        //parent.InternalElement, name: sme.IdShort, altName: sme.GetElementName(),
                         parent.InternalElement, name: sme.IdShort, altName: sme.GetType().Name,
-                        //role: AmlConst.Roles.SubmodelElement_Header + sme.GetElementName());
                         role: AmlConst.Roles.SubmodelElement_Header + sme.GetType().Name);
                     matcher.AddMatch(sme, ie);
 
@@ -542,6 +539,7 @@ namespace AasxAmlImExport
                             break;
 
                         case SubmodelElementCollection smec:
+                            // dead-csharp off
                             // recurse
                             //ordered and allowDuplicates removed from SMEColl in V3
                             //AppendAttributeNameAndRole(
@@ -550,6 +548,7 @@ namespace AasxAmlImExport
                             //AppendAttributeNameAndRole(
                             //    ie.Attribute, "allowDuplicates", AmlConst.Attributes.SMEC_allowDuplicates,
                             //    smec.allowDuplicates ? "true" : "false", attributeDataType: "xs:boolean");
+                            // dead-csharp on
 
                             ExportListOfSme(matcher, internalLinksToCreate, ie, env, smec.Value);
                             break;
@@ -605,13 +604,15 @@ namespace AasxAmlImExport
                                 Stringification.ToString(ent.EntityType), attributeDataType: "xs:string");
 
                             // assetRef
-                            //TODO: jtikekar SpecficAssetId
+                            //TODO (jtikekar, 0000-00-00):  SpecficAssetId
                             if (!string.IsNullOrEmpty(ent.GlobalAssetId))
                             {
-                                //TODO:jtikekar uncomment and support
+                                // dead-csharp off
+                                //TODO (jtikekar, 0000-00-00): uncomment and support
                                 //ExportReferenceWithSme(env, internalLinksToCreate, ie, ent,
                                 //    ent.GlobalAssetId, "asset", AmlConst.Attributes.Entity_asset, "asset",
                                 //    aasStyleAttributes, amlStyleAttributes);
+                                // dead-csharp on
                             }
 
                             // Recurse
@@ -706,15 +707,15 @@ namespace AasxAmlImExport
             var ie = AppendIeNameAndRole(ieseq, name: asset.GlobalAssetId, altName: "AssetInformation", role: AmlConst.Roles.AssetInformation);
 
             // set some data
-            //SetIdentification(ie.Attribute, asset.identification);
-            //TODO: jtikekar what about specific asset Ids
+            //TODO (jtikekar, 0000-00-00): what about specific asset Ids
             if (!string.IsNullOrEmpty(asset.GlobalAssetId))
             {
                 SetIdentification(ie.Attribute, asset.GlobalAssetId);
             }
-            //SetReferable(ie.Attribute, asset); // Asset is not referable anymore
+
             SetAssetKind(ie.Attribute, asset.AssetKind, attributeRole: AmlConst.Attributes.Asset_Kind);
 
+            // dead-csharp off
             // do some data directly
             //No More assetIdentificationModelRef and BOM a part of Asset
             //if (asset.assetIdentificationModelRef != null)
@@ -772,7 +773,7 @@ namespace AasxAmlImExport
         //        iece.RefBaseSystemUnitPath = "" + targetAml.ID;
         //    }
         //}
-
+        // dead-csharp on
         private static void ExportAAS(
             AasAmlMatcher matcher, InstanceHierarchyType insthier, SystemUnitClassLibType suchier,
             AasCore.Aas3_0.Environment env, IAssetAdministrationShell aas,
@@ -957,7 +958,6 @@ namespace AasxAmlImExport
             {
                 // we will pack the attribute under an embedded data spec attribute branch
                 // now, to the embedded data spec
-                //if (cd.embeddedDataSpecification != null)
                 if (cd.EmbeddedDataSpecifications != null)
                 {
                     var eds = AppendAttributeNameAndRole(

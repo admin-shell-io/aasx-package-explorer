@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -901,9 +901,6 @@ namespace AasxPluginDocumentShelf
                                 if (smcVer == null || smcVer.Value == null || smcDoc == null || smcDoc.Value == null)
                                     continue;
 
-                                // wait a bit
-                                // await Task.Delay(1000);
-
                                 // ask back via display context
                                 if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
                                     "Delete DocumentEntity? This cannot be reverted!",
@@ -954,6 +951,7 @@ namespace AasxPluginDocumentShelf
             if (tag == null && menuItemHeader == "Save file .." && e.DigitalFile?.Path.HasContent() == true)
             {
                 DocumentEntity_DisplaySaveFile(e, true, true);
+                // dead-csharp off
                 //// make a file available
                 //var inputFn = e.DigitalFile.Path;
 
@@ -994,6 +992,7 @@ namespace AasxPluginDocumentShelf
                 //        }
                 //    }
                 //};
+                // dead-csharp on
             }
 
             // show digital file

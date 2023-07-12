@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -601,7 +601,7 @@ namespace AasxPackageLogic
         public OptionsInformation()
         {
             // lightes blue to light: 0xFFf2f5ffu
-            // IDTA red to light: 0xFFFE4F10u; 
+            // IDTA red to light: 0xFFFE4F10u
             AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFDBE2FFu);
             AccentColors[ColorNames.DarkAccentColor] = new AnyUiColor(0xFFc0ccffu);
             AccentColors[ColorNames.DarkestAccentColor] = new AnyUiColor(0xFF0128CBu);

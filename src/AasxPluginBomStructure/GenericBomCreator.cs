@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -331,24 +331,6 @@ namespace AasxPluginBomStructure
             // OK
             return sb.ToString();
         }
-
-        //public Microsoft.Msagl.Drawing.Color GetMsaglColor(string color)
-        //{
-        //    // ReSharper disable PossibleNullReferenceException
-        //    if (color != null)
-        //        try
-        //        {
-        //            var col = (System.Windows.Media.Color)ColorConverter.ConvertFromString(color);
-        //            return new Microsoft.Msagl.Drawing.Color(col.R, col.G, col.B);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-        //        }
-        //    // ReSharper enable PossibleNullReferenceException
-
-        //    return new Microsoft.Msagl.Drawing.Color(0, 0, 0);
-        //}
 
         public void ApplyNodeStyle(
             Microsoft.Msagl.Drawing.Node node,

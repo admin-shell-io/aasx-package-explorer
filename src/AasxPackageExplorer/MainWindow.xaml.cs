@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -74,7 +74,7 @@ namespace AasxPackageExplorer
         public PackageCentral PackageCentral
         {
             get => Logic?.PackageCentral;
-            // set { _logic ??= new MainWindowDispatch(); _logic.PackageCentral = value; }
+
         }
 
         public AasxMenuWpf MainMenu = new AasxMenuWpf();
@@ -159,8 +159,6 @@ namespace AasxPackageExplorer
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.FileName = url;
                 proc.Start();
-
-                // System.Diagnostics.Process.Start(url);
             }
         }
 
@@ -191,7 +189,8 @@ namespace AasxPackageExplorer
             // focus info
             var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
 
-            var t = "AASX Package Explorer V3.0";  //TODO:jtikekar remove V3RC02
+            var t = "AASX Package Explorer V3.0";
+            //TODO (jtikekar, 0000-00-00): remove V3RC02
             if (PackageCentral.MainAvailable)
                 t += " - " + PackageCentral.MainItem.ToString();
             if (PackageCentral.AuxAvailable)
@@ -465,7 +464,7 @@ namespace AasxPackageExplorer
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);
         }
-
+        // dead-csharp off
         //public PackageContainerListBase UiLoadFileRepository(string fn)
         //{
         //    try
@@ -505,7 +504,8 @@ namespace AasxPackageExplorer
         //    {
         //        // check for ReferenceElement
         //        var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
-        //            AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
+        //            AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  
+        //TODO (jtikekar, 0000-00-00): Test
         //            MatchMode.Relaxed);
         //        if (navTo?.Value == null)
         //            continue;
@@ -543,7 +543,7 @@ namespace AasxPackageExplorer
         //    // nothing found
         //    return false;
         //}
-
+        // dead-csharp on
 
         public void UiShowRepositories(bool visible)
         {
@@ -1343,7 +1343,8 @@ namespace AasxPackageExplorer
 
                 if (tempNavTo.translateAssetToAAS
                     && rf.Keys.Count == 1
-                    && rf.Keys.First().Type == Aas.KeyTypes.GlobalReference) //TODO:jtikekar KeyType.AssetInformation
+                    && rf.Keys.First().Type == Aas.KeyTypes.GlobalReference)
+                //TODO (jtikekar, 0000-00-00): KeyType.AssetInformation
                 {
                     // try to find possible environments containing the asset and try making
                     // replacement
@@ -1625,7 +1626,8 @@ namespace AasxPackageExplorer
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
-                        if (work.Keys[0].Type == Aas.KeyTypes.GlobalReference) //TODO: jtikekar KeyTypes.AssetInformation
+                        if (work.Keys[0].Type == Aas.KeyTypes.GlobalReference)
+                            //TODO (jtikekar, 0000-00-00): KeyTypes.AssetInformation
                             fi = PackageCentral.Repositories.FindByAssetId(work.Keys[0].Value.Trim());
                         if (work.Keys[0].Type == Aas.KeyTypes.AssetAdministrationShell)
                             fi = PackageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());
@@ -2013,7 +2015,6 @@ namespace AasxPackageExplorer
                         // closure logic
                         var storedI = i;
 
-                        //if (observable is IRecurseOnReferables recurse)
                         if (observable is Aas.IReferable referable)
                             referable.RecurseOnReferables(null,
                                 includeThis: true,
@@ -2490,7 +2491,7 @@ namespace AasxPackageExplorer
                         // show ve
                         DisplayElements?.TrySelectVisualElement(veFocus, wishExpanded: true);
                         // remember in history
-                        // TODO MIHO: this was a bug??
+                        //TODO (MIHO, 0000-00-00): this was a bug??
                         // ButtonHistory.Push(veFocus);
                         // fake selection
                         RedrawElementView();

@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="900" Loaded="UserControl_Loaded">
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).

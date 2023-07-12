@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -82,7 +82,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                //TODO:jtikekar check with Micha
+                //TODO (jtikekar, 0000-00-00): check with Micha
                 this.AddKeyValueExRef(stack, "globalAssetId", asset, asset.GlobalAssetId, null, repo,
                     setValue: v =>
                     {
@@ -199,7 +199,7 @@ namespace AasxPackageLogic
 
                         return new AnyUiLambdaActionNone();
                     });
-
+                // dead-csharp off
                 //this.AddKeyReference(
                 //    stack, "globalAssetId", asset.GlobalAssetId, repo,
                 //    packages, PackageCentral.PackageCentral.Selector.MainAux,
@@ -284,7 +284,7 @@ namespace AasxPackageLogic
                 //        }
                 //        return new AnyUiLambdaActionNone();
                 //    });
-
+                // dead-csharp on
                 // print code sheet
                 AddActionPanel(stack, "Actions:",
                 repo: repo,
@@ -335,7 +335,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                //TODO:jtikekar check with Micha
+                //TODO (jtikekar, 0000-00-00): check with Micha
                 this.AddKeyValueExRef(stack, "assetType", asset, asset.AssetType, null, repo,
                     setValue: v =>
                     {
@@ -382,12 +382,13 @@ namespace AasxPackageLogic
                 }))
             {
                 var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
-
+                // dead-csharp off
                 // Note: parentContainer = null effectively seems to disable "unwanted" functionality
                 // DisplayOrEditAasEntitySubmodelElement(
                 //    packages: packages, env: env, parentContainer: null, wrapper: null,
                 //    sme: (Aas.ISubmodelElement)asset.DefaultThumbnail,
                 //    editMode: editMode, repo: repo, stack: substack, hintMode: hintMode);
+                // dead-csharp on
                 DisplayOrEditEntityFileResource(
                     substack, aas, repo, superMenu,
                     asset.DefaultThumbnail.Path, asset.DefaultThumbnail.ContentType,
@@ -2007,7 +2008,7 @@ namespace AasxPackageLogic
                             }
                             return new AnyUiLambdaActionNone();
                         }));
-                //checkForIri: submodel.Kind != null && submodel.Kind == Aas.ModelingKind.Instance);
+
 
                 // HasKind
                 this.DisplayOrEditEntityModelingKind(
@@ -2184,7 +2185,6 @@ namespace AasxPackageLogic
                     }
                     return new AnyUiLambdaActionNone();
                 }));
-            //checkForIri: false);
 
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
@@ -2209,7 +2209,7 @@ namespace AasxPackageLogic
                         breakIfTrue: true),
                 });
 
-            //TODO:jtikekar cd.dataspecifications vs embeddedDS
+            //TODO (jtikekar, 0000-00-00): cd.dataspecifications vs embeddedDS
             // use the normal module to edit ALL data specifications
             this.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.EmbeddedDataSpecifications,
                 (ds) => { cd.EmbeddedDataSpecifications = ds; },
@@ -2304,7 +2304,7 @@ namespace AasxPackageLogic
             if (editMode)
             {
                 this.AddGroup(stack, "Editing of entities", this.levelColors.MainSection);
-
+                // dead-csharp off
                 //// entities
                 //if (parentContainer != null && parentContainer is Aas.Operation)
                 //    // hope is OK to refer to two lists!
@@ -2317,7 +2317,7 @@ namespace AasxPackageLogic
                 //                ov, env, "OperationVariable:");
                 //            break;
                 //        }
-
+                // dead-csharp on
                 // entities
                 if (parentContainer != null && parentContainer is Aas.Operation operation)
                 {
@@ -2570,7 +2570,7 @@ namespace AasxPackageLogic
 
                 // although SML is the ideal case for acceleration, the calculation/ display of
                 // the index position prevents us from this
-                // TODO (MIHO, 23-01-17): optimize also this important special case
+                // TODO (MIHO, 2023-01-17): optimize also this important special case
                 if (parentContainer != null && parentContainer is Aas.SubmodelElementList &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
@@ -2977,7 +2977,7 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0)
                             {
                                 // prepare
-                                //TODO: jtikekar not a good solution to add null SME
+                                //TODO (jtikekar, 0000-00-00): not a good solution to add null SME
                                 ovl ??= new List<Aas.IOperationVariable>();
                                 var ov = new Aas.OperationVariable(null);
                                 ovl.Add(ov);
@@ -3965,13 +3965,6 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionNone();
                         });
 
-
-                //DisplayOrEditEntitySemanticId(stack, sml.SemanticIdListElement,
-                //    (o) => { sml.semanticIdListElement = o; },
-                //    key: "semanticIdListElement",
-                //    groupHeader: null,
-                //    statement: "Semantic Id the submodel elements contained in the list match to.",
-                //    addExistingEntities: AdminShell.Key.AllElements);
             }
             else if (sme is Aas.Operation)
             {
@@ -3996,7 +3989,7 @@ namespace AasxPackageLogic
                         stack, "Statements", "Please add statements via editing of sub-ordinate entities");
 
                 // EntityType
-
+                // dead-csharp off
                 //is not nullable!
                 //this.AddHintBubble(
                 //    stack, hintMode,
@@ -4010,7 +4003,7 @@ namespace AasxPackageLogic
                 //                "or SelfManagedEntity (with assigned Aas.AssetInformation reference)",
                 //            severityLevel: HintCheck.Severity.High)
                 //    });
-
+                // dead-csharp on
                 AddKeyValueExRef(
                     stack, "entityType", ent, Aas.Stringification.ToString(ent.EntityType), null, repo,
                     v =>
@@ -4052,7 +4045,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNavigateTo(
                             new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>(kl)), translateAssetToAAS: true);
                     };
-                    //TODO:jtikekar check with Micha
+                    //TODO (jtikekar, 0000-00-00): check with Micha
+                    // dead-csharp off
                     this.AddKeyValueExRef(stack, "globalAssetId", ent, ent.GlobalAssetId, null, repo,
                         v =>
                         {
@@ -4097,7 +4091,7 @@ namespace AasxPackageLogic
                 //        }
                 //        return new AnyUiLambdaActionNone();
                 //    });
-
+                // dead-csharp on
                 this.DisplayOrEditEntityListOfSpecificAssetIds(stack, ent.SpecificAssetIds,
                                 (ico) => { ent.SpecificAssetIds = ico; },
                                 key: "specificAssetId",

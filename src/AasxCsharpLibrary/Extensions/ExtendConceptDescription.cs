@@ -1,4 +1,12 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +52,7 @@ namespace Extensions
                     ));
 
             conceptDescription.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification> { eds };
-
+            // dead-csharp off
             // TODO (MIHO, 2022-12-22): Check, but I think it makes no sense
             // conceptDescription.IsCaseOf ??= new List<Reference>();
             // conceptDescription.IsCaseOf.Add(new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, conceptDescription.Id) }));
@@ -63,6 +71,7 @@ namespace Extensions
         }
 
         */
+        // dead-csharp on
 
         public static Tuple<string, string> ToCaptionInfo(this IConceptDescription conceptDescription)
         {
@@ -89,7 +98,7 @@ namespace Extensions
             return conceptDescription.EmbeddedDataSpecifications?.GetIEC61360Content();
         }
 
-        //TODO:jtikekar DataSpecificationPhysicalUnit
+        //TODO (jtikekar, 0000-00-00): DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
         public static DataSpecificationPhysicalUnit GetPhysicalUnit(this ConceptDescription conceptDescription)
         {
@@ -134,13 +143,14 @@ namespace Extensions
             if (results == null)
                 return;
 
+            // dead-csharp off
             // check CD itself
             //Handled by BaseValidation Method
             //conceptDescription.Validate(results);
 
             // check IEC61360 spec
 
-            //TODO:jtikekar Temporarily Removed
+            //TODO (jtikekar, 0000-00-00): Temporarily Removed
             //var eds61360 = this.IEC61360DataSpec;
             //if (eds61360 != null)
             //{
@@ -177,6 +187,7 @@ namespace Extensions
             //        // validate
             //        eds61360.dataSpecificationContent.dataSpecificationIEC61360.Validate(results, this);
             //    }
+            // dead-csharp on
         }
 
         public static Key GetSingleKey(this IConceptDescription conceptDescription)

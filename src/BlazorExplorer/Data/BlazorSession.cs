@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
@@ -156,8 +156,9 @@ namespace BlazorUI.Data
         ///// Content of the status line. View model for a blazor component; therefore too frequent
         ///// updates to be avoided.
         ///// </summary>
+        // dead-csharp off
         //public string Message = "Initialized.";
-
+        // dead-csharp on
         // old stuff, to be refactored
 
         public AdminShellPackageEnv env = null;
@@ -223,10 +224,12 @@ namespace BlazorUI.Data
             if (Options.Curr.LogoFile != null)
                 try
                 {
+                    // dead-csharp off
                     //var fullfn = System.IO.Path.GetFullPath(Options.Curr.LogoFile);
                     //var bi = new BitmapImage(new Uri(fullfn, UriKind.RelativeOrAbsolute));
                     //this.LogoImage.Source = bi;
                     //this.LogoImage.UpdateLayout();
+                    // dead-csharp on
                 }
                 catch (Exception ex)
                 {
@@ -257,7 +260,6 @@ namespace BlazorUI.Data
                 var fr2 = Logic.UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
                 if (fr2 != null)
                 {
-                    // this.UiAssertFileRepository(visible: true);
                     PackageCentral.Repositories ??= new PackageContainerListOfList();
                     PackageCentral.Repositories.AddAtTop(fr2);
                 }
@@ -274,9 +276,7 @@ namespace BlazorUI.Data
             // the UI application might receive events from items in the package central
             PackageCentral.ChangeEventHandler = (data) =>
             {
-                // if (data.Reason == PackCntChangeEventReason.Exception)
                 Log.Singleton.Info("PackageCentral events: " + data.Info);
-                //DisplayElements.PushEvent(new AnyUiLambdaActionPackCntChange() { Change = data });
                 return false;
             };
 
@@ -286,10 +286,6 @@ namespace BlazorUI.Data
             // start with a new file
             PackageCentral.MainItem.New();
             RedrawAllAasxElements();
-
-            // pump all pending log messages(from plugins) into the
-            // log / status line, before setting the last information
-            // MainTimer_HandleLogMessages();
 
             // Try to load?            
             if (Options.Curr.AasxToLoad != null)
@@ -378,8 +374,6 @@ namespace BlazorUI.Data
             htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
             htmlDotnetThread.Start();
 
-            // Test
-            // var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(this.PackageCentral.Main, "/aasx/icon.bmp");
         }
 
         /// <summary>
@@ -640,7 +634,7 @@ namespace BlazorUI.Data
         /// </summary>
         public void MainTimerTick()
         {
-            //            MainTimer_HandleLogMessages();
+
         }
 
         /// <summary>
@@ -721,8 +715,6 @@ namespace BlazorUI.Data
 
                         Log.Singleton.Info($"Successfully loaded AASX {location}");
 
-                        //if (senderList is PackageContainerListControl pclc)
-                        //    pclc.RedrawStatus();
                     }
                     catch (Exception ex)
                     {

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -25,7 +25,6 @@ namespace AasxPackageLogic
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
     /// editing disting modules of the GUI, such as the different (re-usable) Interfaces of the AAS entities
     /// </summary>
-    //public class DispEditHelperModules : DispEditHelperCopyPaste
     public class DispEditHelperModules : DispEditHelperMiniModules
     {
         //
@@ -266,7 +265,8 @@ namespace AasxPackageLogic
                 {
                     if (i == 0)
                     {
-                         //checksum= referable.ComputeHashcode();  //TODO:jtikekar support attributes
+                         //checksum= referable.ComputeHashcode();  
+                         //TODO (jtikekar, 0000-00-00): support attributes
                         this.AddDiaryEntry(referable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }
@@ -610,7 +610,8 @@ namespace AasxPackageLogic
                 // now use the normal mechanism to deal with editMode or not ..
                 if (hasDataSpecification != null && hasDataSpecification.Count > 0)
                 {
-                    //TODO:jtikekar: refactor
+                    // dead-csharp off
+                    //TODO (jtikekar, 0000-00-00): refactor
                     // MIHO: is this at all required?
                     //List<string>[] presetKeys = new List<string>[addPresetKeyLists.Length];
                     //for (int j = 0; j < addPresetKeyLists.Length; j++)
@@ -631,7 +632,7 @@ namespace AasxPackageLogic
                         //    keys.Add(key.Value);
                         //}
                         // if (hasDataSpecification[i].DataSpecification != null)
-
+                        // dead-csharp on
                         int currentI = i;
                         if (this.SafeguardAccess(
                             stack, this.repo, hasDataSpecification[i].DataSpecification,
@@ -845,7 +846,7 @@ namespace AasxPackageLogic
                                             as Aas.DataSpecificationIec61360,
                                         relatedReferable: relatedReferable, superMenu: superMenu);
 
-                                //TODO:jtikekar support DataSpecificationPhysicalUnit
+                                //TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
                                 if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.PhysicalUnit)
                                     this.DisplayOrEditEntityDataSpecificationPhysicalUnit(
@@ -1272,7 +1273,7 @@ namespace AasxPackageLogic
             }
 
         }
-
+        // dead-csharp off
         //not anymore required?!
         //public void DisplayOrEditEntitySingleIdentifierKeyValuePair(AnyUiStackPanel stack,
         //    List<Aas.ISpecificAssetId> pair,
@@ -1299,7 +1300,7 @@ namespace AasxPackageLogic
         //            return new AnyUiLambdaActionRedrawEntity();
         //        }))
         //    {
-        //        //TODO:jtikekar need to test
+        //        //TODO (jtikekar, 0000-00-00): need to test
         //        foreach (var specificAssetId in pair)
         //        {
         //            this.IdentifierKeyValueSinglePairHelper(
@@ -1308,6 +1309,7 @@ namespace AasxPackageLogic
         //        }
         //    }
         //}
+        // dead-csharp on
 
         //
         // DataSpecificationIEC61360
@@ -1662,7 +1664,7 @@ namespace AasxPackageLogic
         // DataSpecificationIEC61360
         //
 
-        //TODO:jtikekar support DataSpecificationPhysicalUnit
+        //TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
         public void DisplayOrEditEntityDataSpecificationPhysicalUnit(
     AnyUiStackPanel stack,

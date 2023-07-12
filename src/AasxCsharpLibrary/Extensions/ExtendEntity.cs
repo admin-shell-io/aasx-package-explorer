@@ -1,4 +1,12 @@
-﻿using AdminShellNS.Display;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +77,7 @@ namespace Extensions
 
             if (sourceEntity.assetRef != null)
             {
-                //TODO:jtikekar whether to convert to Global or specific asset id
+                //TODO (jtikekar, 0000-00-00): whether to convert to Global or specific asset id
                 var assetRef = ExtensionsUtil.ConvertReferenceFromV20(sourceEntity.assetRef, ReferenceTypes.ExternalReference);
                 entity.GlobalAssetId = assetRef.GetAsIdentifier();
             }

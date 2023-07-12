@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -44,8 +44,8 @@ namespace AasxPluginDigitalNameplate
         public string CountryOfOrigin = "";
 
         public string ExplSafetyStr = "(not analyzed)";
-		
-		public Aas.IFile CompanyLogo = null;
+
+        public Aas.IFile CompanyLogo = null;
 
         public class MarkingInfo
         {

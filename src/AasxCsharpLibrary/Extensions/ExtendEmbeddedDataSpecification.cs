@@ -1,5 +1,12 @@
-﻿using System.Collections.Generic;
-// using DataSpecificationContent = HasDataSpecification.DataSpecificationContent;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using System.Collections.Generic;
 
 namespace Extensions
 {
@@ -26,7 +33,7 @@ namespace Extensions
             return null;
         }
 
-        //TODO:jtikekar DataSpecificationPhysicalUnit
+        //TODO (jtikekar, 0000-00-00): DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
         public static DataSpecificationPhysicalUnit GetPhysicalUnitContent(this List<EmbeddedDataSpecification> list)
         {

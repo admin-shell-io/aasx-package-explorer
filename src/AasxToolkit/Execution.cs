@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -355,7 +355,6 @@ namespace AasxToolkit
                                 fil.Parent = fil;
 
                                 var so = new AdminShellUtil.SearchOptions();
-                                //so.allowedAssemblies = new[] { typeof(AdminShell).Assembly };
                                 so.allowedAssemblies = new[] { typeof(IClass).Assembly };
                                 var sr = new AdminShellUtil.SearchResults();
 

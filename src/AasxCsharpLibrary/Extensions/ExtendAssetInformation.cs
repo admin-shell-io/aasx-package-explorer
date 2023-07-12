@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using System;
 
 namespace Extensions
 {
@@ -8,8 +16,10 @@ namespace Extensions
 
         public static Tuple<string, string> ToCaptionInfo(this IAssetInformation assetInformation)
         {
-            //TODO:jtikekar support KeyType.AssetInformation
+            // dead-csharp off
+            //TODO (jtikekar, 0000-00-00): support KeyType.AssetInformation
             //var caption = Key.AssetInformation;
+            // dead-csharp on
             var caption = "AssetInformation";
             var info = "" + assetInformation.GlobalAssetId;
             return Tuple.Create(caption, info);

@@ -1,4 +1,12 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using AdminShellNS;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -275,9 +283,9 @@ namespace Extensions
 
 #endif
 
-        //TODO:jtikekar to test
-        public static AasCore.Aas3_0.Environment CreateFromExistingEnvironment(this AasCore.Aas3_0.Environment environment, 
-            AasCore.Aas3_0.Environment sourceEnvironment, List<IAssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<ISubmodel> filterForSubmodel = null, 
+        //TODO (jtikekar, 0000-00-00): to test
+        public static AasCore.Aas3_0.Environment CreateFromExistingEnvironment(this AasCore.Aas3_0.Environment environment,
+            AasCore.Aas3_0.Environment sourceEnvironment, List<IAssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<ISubmodel> filterForSubmodel = null,
             List<IConceptDescription> filterForConceptDescriptions = null)
         {
             if (filterForAas == null)
@@ -299,8 +307,6 @@ namespace Extensions
             {
                 filterForConceptDescriptions = new List<IConceptDescription>();
             }
-
-            //var outputEnvironment = new AasCore.Aas3_0_RC02.Environment();  
 
             //Copy AssetAdministrationShells
             foreach (var aas in sourceEnvironment.AssetAdministrationShells)
@@ -348,7 +354,7 @@ namespace Extensions
 
         }
 
-        public static void CreateFromExistingEnvRecurseForCDs(this AasCore.Aas3_0.Environment environment, AasCore.Aas3_0.Environment sourceEnvironment, 
+        public static void CreateFromExistingEnvRecurseForCDs(this AasCore.Aas3_0.Environment environment, AasCore.Aas3_0.Environment sourceEnvironment,
             List<ISubmodelElement> submodelElements, ref List<IConceptDescription> filterForConceptDescription)
         {
             if (submodelElements == null || submodelElements.Count == 0 || filterForConceptDescription == null || filterForConceptDescription.Count == 0)
@@ -635,7 +641,7 @@ namespace Extensions
             }
         }
 
-        //TODO: jtikekar Need to test
+        //TODO (jtikekar, 0000-00-00): Need to test
         public static IReferable FindReferableByReference(
             this AasCore.Aas3_0.Environment environment,
             IReference reference,
@@ -674,7 +680,7 @@ namespace Extensions
 
                         return environment.FindReferableByReference(reference, ++keyIndex);
                     }
-
+                // dead-csharp off
                 // TODO (MIHO, 2023-01-01): stupid generalization :-(
                 case KeyTypes.GlobalReference:
                 case KeyTypes.ConceptDescription:
@@ -683,6 +689,7 @@ namespace Extensions
                         // by a flat GlobalReference :-(
 
                         // find an Asset by that id?
+
                         var keyedAas = environment.FindAasWithAssetInformation(firstKeyId);
                         if (keyedAas?.AssetInformation != null)
                         {
@@ -718,7 +725,7 @@ namespace Extensions
                         // Nope
                         return null;
                     }
-
+                // dead-csharp on
                 case KeyTypes.Submodel:
                     {
                         var submodel = environment.FindSubmodelById(firstKeyId);
@@ -821,12 +828,6 @@ namespace Extensions
                         foreach (var r in aas.FindAllReferences())
                             yield return r;
 
-            //if (this.Assets != null)
-            //    foreach (var asset in this.Assets)
-            //        if (asset != null)
-            //            foreach (var r in asset.FindAllReferences())
-            //                yield return new LocatedReference(asset, r);
-
             if (environment.Submodels != null)
                 foreach (var sm in environment.Submodels)
                     if (sm != null)
@@ -925,7 +926,7 @@ namespace Extensions
                 return res;
             }
             else
-            //TODO:jtikekar support asset
+            //TODO (jtikekar, 0000-00-00): support asset
             if (typeof(T) == typeof(AssetInformation))
             {
                 // check, if exist or not exist

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -496,8 +496,6 @@ namespace AasxPackageLogic
                             {
                                 ls = new LangStringDefinitionTypeIec61360(ni.Attributes["language_code"].InnerText, ni.InnerText);
                             }
-
-                            //var ls1 = new T { Language = ni.Attributes["language_code"].InnerText, Text = ni.InnerText };
                             action((T)ls);
                         }
             }

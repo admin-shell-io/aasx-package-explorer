@@ -22,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
@@ -232,6 +233,7 @@ namespace AasxPackageLogic
                 // do
                 try
                 {
+                    // dead-csharp off
                     //// establish target filename
                     //if (ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)
                     //{
@@ -278,6 +280,7 @@ namespace AasxPackageLogic
                     //
                     // ELSE .. already local
                     //
+                    // dead-csharp on
 
                     // preferred format
                     var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
@@ -1555,8 +1558,8 @@ namespace AasxPackageLogic
                 // execute
                 await DisplayContext.StartFlyoverModalAsync(uc);
 
-                // HACK: wait for modal window to close
-                // TODO: remove
+                // HACK (??, 0000-00-00): wait for modal window to close
+                // TODO (???, 0000-00-00): remove
                 await Task.Delay(1000);
 
                 // always remember script
@@ -1679,7 +1682,8 @@ namespace AasxPackageLogic
             {
                 // check for ReferenceElement
                 var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
-                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
+                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),
+                    //TODO (jtikekar, 0000-00-00): Test
                     MatchMode.Relaxed);
                 if (navTo?.Value == null)
                     continue;

@@ -1,4 +1,12 @@
-﻿using Extensions;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using Extensions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,7 +24,7 @@ namespace AdminShellNS.Extensions
             if (specificAssetId.Value != other.Value) return false;
             if (!specificAssetId.ExternalSubjectId.Matches(other.ExternalSubjectId)) return false;
 
-            //TODO: jtikekar Check optional parameter i.e., Semantic Id and supplementatry semantic id
+            //TODO (jtikekar, 0000-00-00): Check optional parameter i.e., Semantic Id and supplementatry semantic id
 
             return true;
         }

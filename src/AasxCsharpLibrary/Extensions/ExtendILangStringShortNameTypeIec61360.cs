@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using System;
 using System.Collections.Generic;
 
 namespace Extensions
@@ -13,6 +21,7 @@ namespace Extensions
         public static string GetDefaultString(this List<ILangStringShortNameTypeIec61360> langStringSet, string defaultLang = null)
         {
             return ExtendLangString.GetDefaultStringGen(langStringSet, defaultLang);
+            // dead-csharp off
             //// start
             //if (defaultLang == null)
             //    defaultLang = "en"; //Default Lang in old implementation is en
@@ -29,6 +38,7 @@ namespace Extensions
 
             //// found?
             //return res;
+            // dead-csharp on
         }
 
         public static List<ILangStringShortNameTypeIec61360> ConvertFromV20(
@@ -36,7 +46,6 @@ namespace Extensions
             AasxCompatibilityModels.AdminShellV20.LangStringSetIEC61360 src)
         {
             lss = new List<ILangStringShortNameTypeIec61360>();
-            //if (!sourceLangStrings.langString.IsNullOrEmpty())
             if (src != null && src.Count != 0)
             {
                 foreach (var sourceLangString in src)

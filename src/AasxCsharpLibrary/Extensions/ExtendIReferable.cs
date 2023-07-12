@@ -1,4 +1,12 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using AdminShellNS;
 using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
@@ -310,8 +318,6 @@ namespace Extensions
                 var idf = referable as IIdentifiable;
                 if (idf != null)
                 {
-                    //var k = Key.CreateNew(
-                    //    idf.GetElementName(), true, idf.identification?.idType, idf.identification?.id);
 
                     var key = new Key((KeyTypes)Stringification.KeyTypesFromString(idf.GetType().Name), idf.Id);
                     refs.Insert(0, key);
@@ -319,7 +325,6 @@ namespace Extensions
             }
             else
             {
-                //var k = Key.CreateNew(this.GetElementName(), true, "IdShort", referable.IdShort);
                 var key = new Key((KeyTypes)Stringification.KeyTypesFromString(referable.GetType().Name), referable.IdShort);
                 refs.Insert(0, key);
                 // recurse upwards!

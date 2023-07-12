@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
@@ -65,7 +65,6 @@ namespace BlazorUI
                     _selectedItems.Add(value);
             }
         }
-        // private VisualElementGeneric _selectedItem = null;
 
         /// <summary>
         /// If it boils down to one item, which is the selected item.
@@ -84,7 +83,6 @@ namespace BlazorUI
         }
         private ListOfVisualElementBasic _selectedItems = new ListOfVisualElementBasic();
 
-        // public IList<VisualElementGeneric> ExpandedItems = new List<VisualElementGeneric>();
 
         /// <summary>
         /// Clears tree and selection, but not cache.
@@ -317,8 +315,6 @@ namespace BlazorUI
             ve.IsSelected = true;
             _selectedItems.Clear();
             _selectedItems.Add(ve);
-            //if (!preventFireItem)
-            //    FireSelectedItem();
         }
 
 
@@ -337,17 +333,12 @@ namespace BlazorUI
                 var sii = ve;
                 while (sii != null)
                 {
-                    //if (!(ExpandedItems.Contains(sii)))
-                    //    ExpandedItems.Add(sii);
                     sii.IsExpanded = true;
                     sii = sii.Parent;
                 }
             }
 
-            //if (wishExpanded == false && ExpandedItems.Contains(ve))
-            //    ExpandedItems.Remove(ve);
-
-            // OK
+            // OK 
             return true;
         }
 
@@ -370,11 +361,6 @@ namespace BlazorUI
         {
             ;
         }
-
-        //public void NotifyExpansionState(VisualElementGeneric ve, bool expanded)
-        //{
-
-        //}
 
         // this is bascially a copy from DiplayVisualAasxElements.xaml.cs
         private void SetSelectedState(VisualElementGeneric ve, bool newState)
@@ -461,6 +447,7 @@ namespace BlazorUI
             if (toogleActiveItem)
             {
                 SetSelectedState(ve, !_selectedItems.Contains(ve));
+                // dead-csharp off
                 //if (!_selectedItems.Contains(ve))
                 //{
                 //    _selectedItems.Add(ve);
@@ -472,6 +459,7 @@ namespace BlazorUI
                 //    ve.IsSelected = false;
                 //    _selectedItems.Remove(ve);
                 //}
+                // dead-csharp on
             }
         }
     }

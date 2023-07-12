@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -31,8 +31,6 @@ using QRCoder;
 using ImageMagick;
 using System.DirectoryServices.ActiveDirectory;
 
-// ReSharper disable InconsistentlySynchronizedField
-// ReSharper disable AccessToModifiedClosure
 
 namespace AasxPluginDigitalNameplate
 {
@@ -234,9 +232,6 @@ namespace AasxPluginDigitalNameplate
                     return new AnyUiLambdaActionNone();
                 });
 
-            // need panel to add inside
-            // var inner = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
-
             var stackGrid = uitk.AddSmallGrid(4, 1, colWidths: new[] { "*" });
             scroll.Content = stackGrid;
 
@@ -386,7 +381,7 @@ namespace AasxPluginDigitalNameplate
             double? fontSize = null,
             int? rowSpan = null, int? colSpan = null,
             IndexStatement statement = null,
-            double ?lineHeight = null)
+            double? lineHeight = null)
         {
             // make a outer grid
             var g2 = AddGridWithIndex(
@@ -516,7 +511,7 @@ namespace AasxPluginDigitalNameplate
             AnyUiBitmapInfo bitmapInfo = null;
             try
             {
-                bitmapInfo = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package,aasFile.Value);
+                bitmapInfo = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, aasFile.Value);
             }
             catch (Exception ex)
             {
@@ -1419,9 +1414,9 @@ namespace AasxPluginDigitalNameplate
             }
         }
 
-#endregion
+        #endregion
 
-#region Update
+        #region Update
         //=============
 
         public void Update(params object[] args)
@@ -1441,16 +1436,16 @@ namespace AasxPluginDigitalNameplate
             RenderFullNameplate(_panel, _uitk);
         }
 
-#endregion
+        #endregion
 
-#region Callbacks
+        #region Callbacks
         //===============
 
-#endregion
+        #endregion
 
-#region Utilities
+        #region Utilities
         //===============
 
-#endregion
+        #endregion
     }
 }

@@ -283,7 +283,7 @@ namespace AasxOpenIdClient
             UiLambdaSet.MesssageBoxShow(uiLambda, disco.Raw, "", "Discovery JSON", MessageBoxButtons.OK);
 
             List<string> rootCertSubject = new List<string>();
-            dynamic discoObject = null;// Json.Decode(disco.Raw);
+            dynamic discoObject = null;
             if (discoObject.rootCertSubjects != null)
             {
                 int i = 0;

@@ -35,7 +35,20 @@ function Main
     dotnet format $checkswitch --report $reportPath --exclude "**/DocTest*.cs"
     
     $formatReport = Get-Content $reportPath |ConvertFrom-Json
-    if ($formatReport.Count -ge 1)
+    $warn_count = 0
+    $error_count = 0
+    for($i=0 ; $i -lt $formatReport.Count; $i++) { 
+        if($formatReport[$i].FileChanges[0].FormatDescription -like "*warning*"){
+            $warn_count++
+        }else{
+            $error_count++
+        }
+    }
+
+    Write-Host "found $warn_count warnings!"
+    Write-Host "found $error_count errors!"
+
+    if ($error_count -ge 1)
     {
         throw (
             "There are $( $formatReport.Count ) dotnet-format issue(s). " +

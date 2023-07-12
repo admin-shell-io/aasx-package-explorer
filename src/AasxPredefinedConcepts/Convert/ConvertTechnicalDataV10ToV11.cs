@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -74,7 +74,7 @@ namespace AasxPredefinedConcepts.Convert
                     if (smcSectSrc.SemanticId?.MatchesExactlyOneKey(defsV10.CD_SubSection.GetSingleKey()) == true)
                         smcSectDst = smcDest.Value.CreateSMEForCD<Aas.SubmodelElementCollection>(
                             defsV11.CD_SubSection, addSme: false);
-
+                    // dead-csharp off
                     //smcSectDst ??= new Aas.SubmodelElementCollection(smcSectSrc, shallowCopy: true);
                     smcSectDst ??= smcSectSrc.Copy();
 
@@ -84,7 +84,7 @@ namespace AasxPredefinedConcepts.Convert
                     //smcSectDst.Category = smcSectSrc.Category;
                     //if (smcSectSrc.Description != null)
                     //    smcSectDst.Description = smcSectSrc.Description;
-
+                    // dead-csharp on
                     smcDest.Value.Add(smcSectDst);
 
                     // recurse

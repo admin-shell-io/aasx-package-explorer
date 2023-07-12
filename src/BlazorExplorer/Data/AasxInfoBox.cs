@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
@@ -96,8 +96,8 @@ namespace BlazorUI.Data
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
-
-            // TODO: missng for WPF refactoring
+            // dead-csharp off
+            // TODO (??, 0000-00-00): missng for WPF refactoring
             // asset thumbnail
             //        try
             //        {
@@ -126,6 +126,7 @@ namespace BlazorUI.Data
             //                {
             //                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             //                }
+            // dead-csharp on
         }
     }
 }

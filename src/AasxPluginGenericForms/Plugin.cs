@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -79,7 +79,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     <AasxPluginGenericForms.GenericFormOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
                         _log, upgrades.ToArray());
-
+                // dead-csharp off
                 //// need special settings
                 //var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
                 //    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
@@ -94,6 +94,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 //// try find additional options
                 //this._options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
                 //    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, _log);
+                // dead-csharp on
             }
             catch (Exception ex)
             {

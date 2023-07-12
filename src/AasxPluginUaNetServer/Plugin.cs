@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -135,7 +135,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // init
                 this.stop = false;
                 logger.Info("Starting OPC UA AASX Server. Based on the OPC Foundation UA Net Standard stack.");
-                logger.Info("Copyright (c) 2018-2021 Festo AG & Co. KG " +
+                logger.Info("Copyright (c) 2018-2023 Festo AG & Co. KG " +
                     "<https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister.");
                 logger.Info("Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal "
                     + "Community License (RCL).");
@@ -210,7 +210,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         break;
                     }
 
-                    // MICHA TODO : Temporary disabled
+                    //TODO (MIHO, 0000-00-00): Temporary disabled
                     // seems not to work anymore
                     ////if (this.server != null && this.server.IsNotRunningAnymore())
                     ////    break;

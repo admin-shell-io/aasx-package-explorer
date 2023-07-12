@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -813,8 +813,9 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        //TODO:jtikekar need to test
-                        //TODO:MIHO refectored to extension method
+                        // dead-csharp off
+                        //TODO (jtikekar, 0000-00-00): need to test
+                        //TODO (MIHO, 0000-00-00): refectored to extension method
                         //if (typeof(T) is ILangStringTextType)
                         //{
                         //    langStr?.Add(new LangStringTextType("", ""));
@@ -837,6 +838,7 @@ namespace AasxPackageLogic
                         //}
                         //langStr?.Add(new T { Language = "", Text = "" });
                         // langStr.Add(ls);
+                        // dead-csharp on
 
                         langStr.Add<T>("", "");
 
@@ -895,7 +897,7 @@ namespace AasxPackageLogic
                         if (tbLang != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].Language.GetHashCode() &&
                                 //(this.highlightField.containingObject == langStr[currentI]))
-                                //TODO:jtikekar need to test
+                                //TODO (jtikekar, 0000-00-00): need to test
                                 CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
                             this.HighligtStateElement(tbLang, true);
 
@@ -920,7 +922,7 @@ namespace AasxPackageLogic
                         if (tbStr != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].Text.GetHashCode() &&
                                 //(this.highlightField.containingObject == langStr[currentI]))
-                                //TODO:jtikekar need to test
+                                //TODO (jtikekar, 0000-00-00): need to test
                                 CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
                             this.HighligtStateElement(tbStr, true);
 
@@ -1099,12 +1101,13 @@ namespace AasxPackageLogic
                 emitCustomEvent: emitCustomEvent,
                 addElemLambda: (o) =>
                 {
+                    // dead-csharp off
                     //if (o is Aas.IIdentifiable id)
                     //    keys.Add(new Identifier(id.Id));
                     //if (o is Key k)
                     //    keys.Add(k.Value);
-
-                    //TODO: jtikekar Test
+                    // dead-csharp on
+                    //TODO (jtikekar, 0000-00-00): Test
                     if (o is Aas.IIdentifiable id)
                         keys.Add(id.Id);
                     if (o is Aas.Key k)
@@ -1777,7 +1780,7 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        var k = new Aas.Key(Aas.KeyTypes.GlobalReference, ""); //TODO:jtikekar default key
+                        var k = new Aas.Key(Aas.KeyTypes.GlobalReference, ""); //TODO (jtikekar, 0000-00-00): default key
                         keys.Add(k);
 
                         emitCustomEvent?.Invoke(relatedReferable);
@@ -1980,12 +1983,13 @@ namespace AasxPackageLogic
                                 keys[currentI] == this.highlightField.containingObject)
                             this.HighligtStateElement(cbType, true);
 
+                        // dead-csharp off
                         //// check here, if to hightlight
                         //if (cbIdType != null && this.highlightField != null && keys[currentI].idType != null &&
                         //        this.highlightField.fieldHash == keys[currentI].idType.GetHashCode() &&
                         //        keys[currentI] == this.highlightField.containingObject)
                         //    this.HighligtStateElement(cbIdType, true);
-
+                        // dead-csharp on
                         // value
                         var tbValue = AddSmallTextBoxTo(
                             g, 0 + i + rowOfs, 4,
@@ -2726,9 +2730,6 @@ namespace AasxPackageLogic
             if (idf == null)
                 return;
 
-            //if (idf == null)
-            //    idf.Id = new Identification(); //IF cannot be instatiated
-
             // random add
             var r = new Random();
             var addStr = "---" + r.Next(0, 0x7fffffff).ToString("X8");
@@ -2765,7 +2766,6 @@ namespace AasxPackageLogic
 
             public DiaryReference(Aas.IReferable rf)
             {
-                //OriginalPath = rf?.GetReference()?.Keys;
                 OriginalPath = rf?.GetReference()?.Keys;
             }
         }

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -40,7 +40,7 @@ namespace AasxPackageExplorer
         {
             // HEADER
             this.HeaderText.Text = "AASX Package Explorer\n" +
-                "Copyright (c) 2018-2021 Festo AG & Co. KG and further (see below)\n" +
+                "Copyright (c) 2018-2023 Festo AG & Co. KG and further (see below)\n" +
                 "Authors: " + _pref.Authors + " (see below)\n" +
                 "This software is licensed under the Apache License 2.0 (see below)" + "\n" +
                 "Version: " + _pref.Version + "\n" +

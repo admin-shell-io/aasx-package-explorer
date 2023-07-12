@@ -1,4 +1,12 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using AdminShellNS;
 using System.Collections.Generic;
 
 namespace Extensions
@@ -38,7 +46,7 @@ namespace Extensions
             if (ct == ContentTypes.Iec61360)
                 return new DataSpecificationIec61360(
                     new List<ILangStringPreferredNameTypeIec61360>());
-            //TODO:jtikekar DataSpecificationPhysicalUnit
+            //TODO (jtikekar, 0000-00-00): DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
             if (ct == ContentTypes.PhysicalUnit)
                 return new DataSpecificationPhysicalUnit("", "", null); 
@@ -58,7 +66,7 @@ namespace Extensions
         {
             if (content is DataSpecificationIec61360)
                 return ContentTypes.Iec61360;
-            //TODO:jtikekar DataSpecificationPhysicalUnit
+            //TODO (jtikekar, 0000-00-00): DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
             if (content is DataSpecificationPhysicalUnit)
                 return ContentTypes.PhysicalUnit; 

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 see: Blazor.CountryFlag
+Copyright (c) 2018-2023 see: Blazor.CountryFlag
 Author: see: Blazor.CountryFlag
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).

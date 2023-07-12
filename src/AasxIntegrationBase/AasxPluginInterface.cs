@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -272,7 +272,9 @@ namespace AasxIntegrationBase
         /// <param name="action">Name of the action as describe in AasxPluginActionDescriptionBase record</param>
         /// <param name="args">Array of arguments. Will be checked and type-casted by the plugin</param>
         /// <returns>Any result to be derived from AasxPluginResultBase</returns>
+        // dead-csharp off
         // Task<object> ActivateActionAsync(string action, params object[] args);
+        // dead-csharp on
     }
 
     /// <summary>

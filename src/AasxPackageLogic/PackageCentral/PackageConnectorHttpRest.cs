@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -184,13 +184,14 @@ namespace AasxPackageLogic.PackageCentral
             Aas.AssetInformation asset = null;
 
             if (frame.ContainsKey("AAS"))
-                //TODO:jtikekar TEST
+                // dead-csharp off
+                //TODO (jtikekar, 0000-00-00): TEST
                 //aas = AdminShellSerializationHelper.DeserializeFromJSON<AssetAdministrationShell>(frame["AAS"]);
                 aas = Aas.Jsonization.Deserialize.AssetAdministrationShellFrom(jsonNode["AAS"]);
             if (frame.ContainsKey("AssetInformation"))
                 //asset = AdminShellSerializationHelper.DeserializeFromJSON<AssetInformation>(frame["AssetInformation"]);
                 asset = Aas.Jsonization.Deserialize.AssetInformationFrom(jsonNode["AssetInformation"]);
-
+            // dead-csharp on
             // result
             return new Tuple<Aas.AssetAdministrationShell, Aas.AssetInformation>(aas, asset);
         }
@@ -283,7 +284,7 @@ namespace AasxPackageLogic.PackageCentral
             if (!response.IsSuccessStatusCode)
                 throw new PackageConnectorException($"PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
                     $"server did not respond correctly on query {qst} !");
-
+            // dead-csharp off
             // prepare basic event message (without sending it)
             var pluv = new AasPayloadUpdateValue();
             var ev = new AasEventMsgEnvelope(
@@ -302,13 +303,14 @@ namespace AasxPackageLogic.PackageCentral
             // in order to serve goal (2), a wrapper-root is required from the observableReference,
             // that is: requestedElement!
             //var wrappers = ((requestedElement as IEnumerateChildren)?.EnumerateChildren())?.ToList();
-            //TODO: jtikekar test for other than submodel
+            //TODO (jtikekar, 0000-00-00): test for other than submodel
             var wrappers = ((requestedElement as Aas.IReferable)?.EnumerateChildren())?.ToList();
 
             // parse dynamic response object
             // Note: currently only updating Properties
             // TODO (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue
             // TODO (MIHO, 2021-01-04): ValueIds still missing ..
+            // dead-csharp on
             var frame = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
             if (frame.ContainsKey("values"))
             {
@@ -607,7 +609,6 @@ namespace AasxPackageLogic.PackageCentral
                 targetKl.AddRange(change.Path);
 
                 if (targetKl.First().IsAbsolute())
-                    //target = Env?.AasEnv?.FindReferableByReference(targetKl);
                     target = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, targetKl));
             }
 
@@ -617,7 +618,6 @@ namespace AasxPackageLogic.PackageCentral
             if (parentKl.Count > 1)
             {
                 parentKl.RemoveAt(parentKl.Count - 1);
-                //parent = Env?.AasEnv?.FindReferableByReference(parentKl);
                 parent = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, parentKl));
             }
 
@@ -657,7 +657,6 @@ namespace AasxPackageLogic.PackageCentral
                 if (dataRef is Aas.Submodel drsm)
                     drsm.SetAllParents();
                 if (dataRef is Aas.ISubmodelElement drsme)
-                    //Submodel.SetParentsForSME(parent, drsme);
                     ExtendSubmodel.SetParentsForSME(parent, drsme);
 
                 // paranoiac: make sure, that dataRef.IdShort matches last key of target (in case of SME)
@@ -892,7 +891,6 @@ namespace AasxPackageLogic.PackageCentral
                 targetKl.AddRange(value.Path);
 
                 if (targetKl.First().IsAbsolute())
-                    //target = Env?.AasEnv?.FindReferableByReference(targetKl);
                     target = Env?.AasEnv?.FindReferableByReference(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, targetKl));
             }
 

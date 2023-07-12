@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -99,8 +99,11 @@ namespace AdminShellNS
             public static IReferable CreateAdequateType(string elementName)
             {
                 if (elementName == KeyTypes.AssetAdministrationShell.ToString())
-                    return new AssetAdministrationShell("", null);   //TODO: jtikekar: refactor default
-                //if (elementName == "Asset")  //TODO: jtikekar Change
+                    return new AssetAdministrationShell("", null);
+                // dead-csharp off
+                //TODO (jtikekar, 0000-00-00): refactor default
+                //if (elementName == "Asset")  
+                //TODO (jtikekar, 0000-00-00): Change
                 //    return new AssetInformation(AssetKind.Instance);
                 if (elementName == KeyTypes.ConceptDescription.ToString())
                     return new ConceptDescription("");
@@ -108,12 +111,13 @@ namespace AdminShellNS
                     return new Submodel("");
                 //if (elementName == KeyTypes.View)
                 //    return new View();
+                // dead-csharp on
                 return CreateSubmodelElementIstance(elementName);
             }
 
             private static ISubmodelElement CreateSubmodelElementIstance(string typeName)
             {
-                //TODO: jtikekar Need to test
+                //TODO (jtikekar, 0000-00-00): Need to test
                 Type type = Type.GetType(typeName);
                 if (type == null || !type.IsSubclassOf(typeof(ISubmodelElement)))
                     return null;

@@ -283,7 +283,7 @@ namespace AasxPackageExplorer
             if (!(firstRf is Aas.IHasSemantics hs1 && secondRf is Aas.IHasSemantics hs2))
                 return 0;
 
-            // TODO: need to be the same SME kind??
+            //TODO (??, 0000-00-00): need to be the same SME kind??
 
             // check semanticId
             var si1 = hs1.SemanticId?.ToStringExtended(1);

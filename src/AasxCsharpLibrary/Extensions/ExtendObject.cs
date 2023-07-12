@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Extensions.ArrayExtensions;
@@ -53,8 +61,8 @@ namespace Extensions
             }
         }
 
-        private static void CopyFields(object originalObject, IDictionary<object, object> visited, object cloneObject, Type typeToReflect, 
-            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy, 
+        private static void CopyFields(object originalObject, IDictionary<object, object> visited, object cloneObject, Type typeToReflect,
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy,
             Func<FieldInfo, bool> filter = null)
         {
             foreach (FieldInfo fieldInfo in typeToReflect.GetFields(bindingFlags))

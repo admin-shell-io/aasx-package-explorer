@@ -1,7 +1,9 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
+
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
@@ -137,8 +139,6 @@ namespace AasxPackageExplorer
                                 if (attribute_label_id != "" && attribute_value != "")
                                 {
                                     sw.WriteLine(attribute_label_id + " | " + attribute_value);
-                                    //using (var cd = Aas.ConceptDescription.CreateNew(
-                                    //    "" + attribute_label_id, Identification.IRDI, FT_ID))
                                     var cd = new Aas.ConceptDescription(FT_ID, idShort: "" + attribute_label_id);
                                     {
                                         env.ConceptDescriptions.Add(cd);
@@ -150,10 +150,7 @@ namespace AasxPackageExplorer
                                             definition: new[] { "EN", attribute_label_id }
                                         );
 
-                                        //var p = Aas.Property.CreateNew(
-                                        //    cd.GetDefaultShortName(), "PARAMETER",
-                                        //    Key.GetFromRef(cd.GetCdReference()));
-                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference, 
+                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference,
                                             new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                         if (is_subheadline)
                                         {
@@ -312,8 +309,6 @@ namespace AasxPackageExplorer
                                                 extendedname += " " + names_LEVELTYPE[k]; // MIN, MAX, ...
                                             }
 
-                                            //using (var cd = Aas.ConceptDescription.CreateNew(
-                                            //   "" + extendedname, Identification.IRDI, FT_ID))
                                             var cd = new Aas.ConceptDescription(FT_ID, idShort: "" + extendedname);
                                             {
                                                 env.ConceptDescriptions.Add(cd);
@@ -325,10 +320,7 @@ namespace AasxPackageExplorer
                                                     definition: new[] { "DE", extendedname, "EN", extendedname }
                                                 );
 
-                                                //var p = Aas.Property.CreateNew(
-                                                //    cd.GetDefaultShortName(), "PARAMETER",
-                                                //    Key.GetFromRef(cd.GetCdReference()));
-                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", 
+                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER",
                                                     semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                                 p.Value = FVALUE[k];
 
