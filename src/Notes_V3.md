@@ -50,6 +50,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * multiple SMC in SML marked -> no "delete!
 
+* AAS event compressor for just update value events does obviously not work ?!!
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done

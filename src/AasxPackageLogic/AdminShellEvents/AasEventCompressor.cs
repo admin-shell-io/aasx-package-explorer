@@ -110,7 +110,11 @@ namespace AasxIntegrationBase.AdminShellEvents
             // result
             var res = new List<AasEventMsgEnvelope>();
             if (_events.Count < 2)
+            {
+                res.AddRange(_events);
+                _events.Clear();
                 return res;
+            }
 
             // split into parts of compressable items
 

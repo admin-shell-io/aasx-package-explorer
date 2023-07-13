@@ -1157,12 +1157,12 @@ namespace AasxPluginDigitalNameplate
                 text: "" + plate.ManufacturerProductDesignation,
                 lineHeight: 120,
                 statement: ((plate.ManufacturerProductDesignation?.HasContent() == true
-                             && plate.ManufacturerProductDesignation.Length < 50)
+                             && plate.ManufacturerProductDesignation.Length < 100)
                     ? new IndexStatement(Quality.Good, statement: "Is given.")
                     : new IndexStatement(Quality.Warn, statement: "Should be given and concise."))
                     .Set(description: "ManufacturerProductDesignation:\n" +
                         "Short description of the product (short text). Ideally not longer than " +
-                        "50 characters."));
+                        "100 characters."));
 
             // Contact information
 

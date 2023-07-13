@@ -1955,7 +1955,7 @@ namespace AasxPackageExplorer
             DateTime lastTime,
             Aas.Environment env,
             IndexOfSignificantAasElements significantElems,
-            bool directEmit)
+            bool emitCompressed)
         {
             // trivial
             if (env == null || significantElems == null || MainMenu?.IsChecked("ObserveEvents") != true)
@@ -2136,10 +2136,10 @@ namespace AasxPackageExplorer
                         ev.PayloadItems.Add(plUpdate);
 
                     // emit it to PackageCentral or to buffer?
-                    if (directEmit)
-                        PackageCentral?.PushEvent(ev);
-                    else
+                    if (emitCompressed)
                         _eventCompressor?.Push(ev);
+                    else
+                        PackageCentral?.PushEvent(ev);
                 }
             }
         }
@@ -2378,7 +2378,7 @@ namespace AasxPackageExplorer
                     _mainTimer_LastCheckForDiaryEvents,
                     PackageCentral.MainItem.Container.Env?.AasEnv,
                     PackageCentral.MainItem.Container.SignificantElements,
-                    directEmit: MainMenu?.IsChecked("CompressEvents") != true);
+                    emitCompressed: MainMenu?.IsChecked("CompressEvents") == true);
                 _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
 
                 // do animation?
