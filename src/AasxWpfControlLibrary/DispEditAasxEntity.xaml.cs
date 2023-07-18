@@ -131,6 +131,22 @@ namespace AasxPackageExplorer
             return sp;
         }
 
+        public Panel GetMasterPanel()
+        {
+            return theMasterPanel;
+        }
+
+        public void SetDisplayExternalControl(System.Windows.FrameworkElement fe)
+        {
+            theMasterPanel.Children.Clear();
+            if (fe != null)
+            {
+                theMasterPanel.Children.Add(fe);
+                theMasterPanel.InvalidateVisual();
+            }
+            _lastRenderedRootElement = null;
+        }
+
         public void ClearHighlight()
         {
             if (this._helper != null)

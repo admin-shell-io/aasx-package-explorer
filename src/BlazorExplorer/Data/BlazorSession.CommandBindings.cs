@@ -53,7 +53,8 @@ namespace BlazorUI.Data
             if (cmd == null || ticket == null)
                 return;
 
-            Logic?.FillSelectedItem(DisplayElements.SelectedItem, ticket);
+            Logic?.FillSelectedItem(
+                DisplayElements.SelectedItem, DisplayElements.SelectedItems, ticket);
 
             // change of edit field display
 

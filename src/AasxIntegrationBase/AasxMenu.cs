@@ -390,6 +390,8 @@ namespace AasxIntegrationBase
 
         public void Add(AasxMenuItemBase item)
         {
+            if (Childs == null)
+                Childs = new AasxMenu();
             Childs.Add(item);
         }
     }
@@ -820,6 +822,18 @@ namespace AasxIntegrationBase
         /// Pair of main data and dereferenced main data view.
         /// </summary>
         public object DereferencedMainDataObject = null;
+
+        /// <summary>
+        /// Additionally, all selected main data objects (not de-referenced)
+        /// Note: IEnumerable; realize only if required!
+        /// </summary>
+        public IEnumerable<object> SelectedMainDataObjects = null;
+
+        /// <summary>
+        /// Additionally, all selected main data objects (de-referenced)
+        /// Note: IEnumerable; realize only if required!
+        /// </summary>
+        public IEnumerable<object> SelectedDereferencedMainDataObjects = null;
 
         /// <summary>
         /// Filled by the currently selected element.

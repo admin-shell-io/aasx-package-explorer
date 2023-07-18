@@ -128,30 +128,60 @@ namespace AasxPluginExportTable.Uml
             var stereotype = EvalFeatureType(rf);
             if (stereotype.HasContent())
                 stereotype = "<<" + stereotype + ">>";
-            Writeln($"class {FormatAs(visIdShort, classId)} {stereotype} {{");
 
-            if (!_options.Outline)
+            if (true)
             {
-                int idx = 0;
-                foreach (var sme in features)
+
+                Writeln($"class {FormatAs(visIdShort, classId)} {stereotype} {{");
+
+                if (!_options.Outline)
                 {
-                    var type = EvalFeatureType(sme);
-                    var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
-                    var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
+                    int idx = 0;
+                    foreach (var sme in features)
+                    {
+                        var type = EvalFeatureType(sme);
+                        var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
+                        var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
 
-                    var ln = $"  +{ViusalIdShort(rf, idx++, sme)}";
-                    if (type.HasContent())
-                        ln += $" : {type}";
-                    if (multiplicity.HasContent())
-                        ln += $" [{multiplicity}]";
-                    if (initialValue.HasContent())
-                        ln += $" = \"{initialValue}\"";
-                    Writeln(ln);
+                        var ln = $"  +{ViusalIdShort(rf, idx++, sme)}";
+                        if (type.HasContent())
+                            ln += $" : {type}";
+                        if (multiplicity.HasContent())
+                            ln += $" [{multiplicity}]";
+                        if (initialValue.HasContent())
+                            ln += $" = \"{initialValue}\"";
+                        Writeln(ln);
+                    }
                 }
-            }
 
-            Writeln($"}}");
-            Writeln("");
+                Writeln($"}}");
+                Writeln("");
+
+            } 
+            else
+            {
+                // see "not_promising"
+                // attempt to produce object / map diagram
+
+                Writeln($"map {FormatAs(visIdShort, classId)} {{");
+
+                if (!_options.Outline)
+                {
+                    int idx = 0;
+                    foreach (var sme in features)
+                    {
+                        var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
+
+                        var ln = $"  {ViusalIdShort(rf, idx++, sme)} => ";
+                        if (initialValue.HasContent())
+                            ln += $" => \"{initialValue}\"";
+                        Writeln(ln);
+                    }
+                }
+
+                Writeln($"}}");
+                Writeln("");
+            }
 
             return new UmlHandle() { Id = classId };
         }
@@ -164,7 +194,7 @@ namespace AasxPluginExportTable.Uml
                 return null;
 
             // act flexible                
-            var dstTuple = AddClass(rf, visIdShort);
+            var rfTuple = AddClass(rf, visIdShort);
 
             // recurse?
             if (remainDepth > 1)
@@ -178,10 +208,10 @@ namespace AasxPluginExportTable.Uml
                         var smeIdShort = ViusalIdShort(rf, idx++, sme);
 
                         // create further entities
-                        var srcTuple = ProcessEntity(rf, sme, smeIdShort, remainDepth - 1);
+                        var childTuple = ProcessEntity(rf, sme, smeIdShort, remainDepth - 1);
 
                         // make associations (often, srcTuple will be null, because not a class!)
-                        if (srcTuple?.Valid == true && dstTuple?.Valid == true)
+                        if (childTuple?.Valid == true && rfTuple?.Valid == true)
                         {
                             var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
                             if (multiplicity.HasContent())
@@ -191,14 +221,15 @@ namespace AasxPluginExportTable.Uml
                             if (_options.Outline)
                                 smeIdS = "";
 
+                            // make an "composition" arrow to the class
                             Writeln(post: true,
-                                line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} " +
+                                line: $"{rfTuple.Id} *-- {multiplicity} {childTuple.Id} " +
                                         $": \"{smeIdS}\"");
                         }
                     }
             }
 
-            return dstTuple;
+            return rfTuple;
         }
 
         public void ProcessTopElement(
@@ -211,7 +242,7 @@ namespace AasxPluginExportTable.Uml
 
             // frame
             var info = " " + rf.IdShort;
-            if (rf is Aas.ISubmodel rfsm)
+            if (rf is Aas.ISubmodel rfsm && rfsm.Kind != null)
                 info = AdminShellUtil.MapIntToStringArray((int)rfsm.Kind, "SM", new[] { "SMT", "SM" })
                     + info;
 

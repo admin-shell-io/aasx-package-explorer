@@ -22,6 +22,9 @@ using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using System.Windows;
+using System.Diagnostics.Metrics;
+using System.Drawing.Drawing2D;
+using Microsoft.Msagl.Core.Geometry.Curves;
 
 namespace AasxPluginBomStructure
 {
@@ -55,47 +58,12 @@ namespace AasxPluginBomStructure
             this.eventStack = es;
         }
 
-        public object FillWithWpfControls(
-            BomStructureOptions bomOptions,
-            object opackage, object osm, object masterDockPanel)
+        protected StackPanel CreateTopPanel()
         {
-            // access
-            _package = opackage as AdminShellPackageEnv;
-            _submodel = osm as Aas.Submodel;
-            _bomOptions = bomOptions;
-            var master = masterDockPanel as DockPanel;
-            if (_bomOptions == null || _package == null || _submodel == null || master == null)
-                return null;
-
-            // set of records helping layouting
-            _bomRecords = new BomStructureOptionsRecordList(
-                _bomOptions.LookupAllIndexKey<BomStructureOptionsRecord>(
-                    _submodel.SemanticId?.GetAsExactlyOneKey()));
-
-            // clear some other members (GenericBomControl is not allways created new)
-            _creatorOptions = new GenericBomCreatorOptions();
-
-            // apply some global options?
-            foreach (var br in _bomRecords)
-            {
-                if (br.Layout >= 1 && br.Layout <= PresetSettingNames.Length)
-                    _creatorOptions.LayoutIndex = br.Layout - 1;
-                if (br.Compact.HasValue)
-                    _creatorOptions.CompactLabels = br.Compact.Value;
-            }
-
-            // already user defined?
-            if (preferredPreset != null && preferredPreset.ContainsKey(_submodel))
-                _creatorOptions = preferredPreset[_submodel].Copy();
-
-            // the Submodel elements need to have parents
-            _submodel.SetAllParents();
-
             // create TOP controls
             var spTop = new StackPanel();
             spTop.Orientation = Orientation.Horizontal;
-            DockPanel.SetDock(spTop, Dock.Top);
-            master.Children.Add(spTop);
+            
 
             spTop.Children.Add(new Label() { Content = "Layout style: " });
 
@@ -150,6 +118,50 @@ namespace AasxPluginBomStructure
             cbcomp.Unchecked += cbcomb_changed;
             spTop.Children.Add(cbcomp);
 
+            return spTop;
+        }
+
+        public object FillWithWpfControls(
+            BomStructureOptions bomOptions,
+            object opackage, object osm, object masterDockPanel)
+        {
+            // access
+            _package = opackage as AdminShellPackageEnv;
+            _submodel = osm as Aas.Submodel;
+            _bomOptions = bomOptions;
+            var master = masterDockPanel as DockPanel;
+            if (_bomOptions == null || _package == null || _submodel == null || master == null)
+                return null;
+
+            // set of records helping layouting
+            _bomRecords = new BomStructureOptionsRecordList(
+                _bomOptions.LookupAllIndexKey<BomStructureOptionsRecord>(
+                    _submodel.SemanticId?.GetAsExactlyOneKey()));
+
+            // clear some other members (GenericBomControl is not allways created new)
+            _creatorOptions = new GenericBomCreatorOptions();
+
+            // apply some global options?
+            foreach (var br in _bomRecords)
+            {
+                if (br.Layout >= 1 && br.Layout <= PresetSettingNames.Length)
+                    _creatorOptions.LayoutIndex = br.Layout - 1;
+                if (br.Compact.HasValue)
+                    _creatorOptions.CompactLabels = br.Compact.Value;
+            }
+
+            // already user defined?
+            if (preferredPreset != null && preferredPreset.ContainsKey(_submodel))
+                _creatorOptions = preferredPreset[_submodel].Copy();
+
+            // the Submodel elements need to have parents
+            _submodel.SetAllParents();
+
+            // create controls
+            var spTop = CreateTopPanel();
+            DockPanel.SetDock(spTop, Dock.Top);
+            master.Children.Add(spTop);
+
             // create BOTTOM controls
             var legend = GenericBomCreator.GenerateWrapLegend();
             DockPanel.SetDock(legend, Dock.Bottom);
@@ -184,17 +196,86 @@ namespace AasxPluginBomStructure
             theViewer = viewer;
             theReferable = _submodel;
 
-            // return viewer for advanced manilulation
+            // return viewer for advanced manipulation
             return viewer;
+        }
+
+        public object CreateViewPackageReleations(
+            BomStructureOptions bomOptions,
+            object opackage,
+            DockPanel master)
+        {
+            // access
+            _package = opackage as AdminShellPackageEnv;
+            _submodel = null;
+            _bomOptions = bomOptions;
+            if (_bomOptions == null || _package?.AasEnv == null)
+                return null;
+
+            // new master panel
+            // var master = new DockPanel();
+
+            // clear some other members (GenericBomControl is not allways created new)
+            _creatorOptions = new GenericBomCreatorOptions();
+
+            // index all submodels
+            foreach (var sm in _package.AasEnv.OverSubmodelsOrEmpty())
+                sm.SetAllParents();
+
+            // create controls
+            var spTop = CreateTopPanel();
+            DockPanel.SetDock(spTop, Dock.Top);
+            master.Children.Add(spTop);
+
+            // create BOTTOM controls
+            var legend = GenericBomCreator.GenerateWrapLegend();
+            DockPanel.SetDock(legend, Dock.Bottom);
+            master.Children.Add(legend);
+
+            // set default for very small edge label size
+            Microsoft.Msagl.Drawing.Label.DefaultFontSize = 6;
+
+            // make a Dock panel (within)
+            var dp = new DockPanel();
+            dp.ClipToBounds = true;
+            dp.MinWidth = 10;
+            dp.MinHeight = 10;
+
+            // very important: add first the panel, then add graph
+            master.Children.Add(dp);
+
+            // graph
+            var graph = CreateGraph(_package, null, _creatorOptions, createOnPackage: true);
+
+            // very important: first bind it, then add graph
+            var viewer = new Microsoft.Msagl.WpfGraphControl.GraphViewer();
+            viewer.BindToPanel(dp);
+            viewer.MouseDown += Viewer_MouseDown;
+            viewer.MouseMove += Viewer_MouseMove;
+            viewer.MouseUp += Viewer_MouseUp;
+            viewer.ObjectUnderMouseCursorChanged += Viewer_ObjectUnderMouseCursorChanged;
+            viewer.Graph = graph;
+
+            // make it re-callable
+            theGraph = graph;
+            theViewer = viewer;
+            theReferable = _submodel;
+
+            // return viewer for advanced manipulation
+            // return viewer;
+
+            // return master
+            return master;
         }
 
         private Microsoft.Msagl.Drawing.Graph CreateGraph(
             AdminShellPackageEnv env,
             Aas.Submodel sm,
-            GenericBomCreatorOptions options)
+            GenericBomCreatorOptions options,
+            bool createOnPackage = false)
         {
             // access   
-            if (env == null || sm == null || options == null)
+            if (env?.AasEnv == null || (sm == null && !createOnPackage) || options == null)
                 return null;
 
             //create a graph object
@@ -230,14 +311,29 @@ namespace AasxPluginBomStructure
             // Turn on logging if required
             //// using (var tw = new StreamWriter("bomgraph.log"))
             {
-                creator.RecurseOnLayout(1, graph, null, sm.SubmodelElements, 1, null);
-                creator.RecurseOnLayout(2, graph, null, sm.SubmodelElements, 1, null);
-                creator.RecurseOnLayout(3, graph, null, sm.SubmodelElements, 1, null);
+                if (!createOnPackage)
+                {
+                    // just one Submodel
+                    creator.RecurseOnLayout(1, graph, null, sm.SubmodelElements, 1, null);
+                    creator.RecurseOnLayout(2, graph, null, sm.SubmodelElements, 1, null);
+                    creator.RecurseOnLayout(3, graph, null, sm.SubmodelElements, 1, null);
+                }
+                else
+                {
+                    for (int pass=1; pass <= 3; pass++)
+                        foreach (var sm2 in env.AasEnv.OverSubmodelsOrEmpty())
+                        {
+
+                            // graph itself
+                            creator.RecurseOnLayout(pass, graph, null, sm2.SubmodelElements, 1, null);
+                        }
+                }
             }
 
             // make default or (already) preferred settings
             var settings = GivePresetSettings(options, graph.NodeCount);
-            if (this.preferredPreset != null && this.preferredPreset.ContainsKey(sm))
+            if (this.preferredPreset != null && sm != null 
+                && this.preferredPreset.ContainsKey(sm))
                 settings = GivePresetSettings(this.preferredPreset[sm], graph.NodeCount);
             if (settings != null)
                 graph.LayoutAlgorithmSettings = settings;

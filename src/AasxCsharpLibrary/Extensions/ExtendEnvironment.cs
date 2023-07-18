@@ -646,7 +646,7 @@ namespace Extensions
             this AasCore.Aas3_0.Environment environment,
             IReference reference,
             int keyIndex = 0,
-            List<ISubmodelElement> submodelElementList = null,
+            IEnumerable<ISubmodelElement> submodelElems = null,
             ReferableRootInfo rootInfo = null)
         {
             // access
@@ -762,9 +762,9 @@ namespace Extensions
                     }
             }
 
-            if (firstKeyType.IsSME() && submodelElementList != null)
+            if (firstKeyType.IsSME() && submodelElems != null)
             {
-                var submodelElement = submodelElementList.Where(
+                var submodelElement = submodelElems.Where(
                     sme => sme.IdShort.Equals(keyList[keyIndex].Value,
                         StringComparison.OrdinalIgnoreCase)).First();
 
@@ -775,15 +775,8 @@ namespace Extensions
                 }
 
                 //Recurse again
-                if (submodelElement != null && submodelElement is SubmodelElementCollection smeColl)
-                {
-                    return environment.FindReferableByReference(reference, ++keyIndex, smeColl.Value);
-                }
-
-                if (submodelElement != null && submodelElement is SubmodelElementList smeList)
-                {
-                    return environment.FindReferableByReference(reference, ++keyIndex, smeList.Value);
-                }
+                if (submodelElement?.EnumeratesChildren() == true)
+                    return environment.FindReferableByReference(reference, ++keyIndex, submodelElement.EnumerateChildren());
             }
 
             //Nothing in this environment

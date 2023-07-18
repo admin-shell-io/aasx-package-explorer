@@ -10,7 +10,7 @@
   // "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json",
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\Festo_Demo_Box\\Festo-DemoBox-repo-CPX_E.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\new-aasx-repo.json", */
-  "AasxRepositoryFn": "C:\\HOMI\\Develop\\Aasx\\repo_demo_case\\Festo-DemoCase-repo-local.json",
+  // "AasxRepositoryFn": "C:\\HOMI\\Develop\\Aasx\\repo_demo_case\\Festo-DemoCase-repo-local.json",
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
@@ -20,10 +20,10 @@
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\00_FestoDemoBox-Module-2-Kopie2.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02003-1-2_Template_TechnicalData.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_B.aasx",
-  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02006-2-1_Template_Digital Nameplate_V3_lang.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02006-2-1_Template_Digital Nameplate_V3_lang.aasx",
   // "AuxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_A.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_V3new_spiel1.aasx",
-  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_DPPV2.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_DPPV2.aasx",
   "WindowLeft": 100,
   "WindowTop": -1,
   "WindowWidth": 900,

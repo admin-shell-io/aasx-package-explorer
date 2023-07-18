@@ -354,8 +354,19 @@ namespace Extensions
             return (num > 0);
         }
 
-        public static IEnumerable<ISubmodelElement> EnumerateChildren(this IReferable referable)
+        public static IEnumerable<ISubmodelElement> EnumerateChildren(this IReferable rf)
         {
+            // the code below was done by Jui
+            // MIHO: I think, we should now use the methods of AAS core
+
+            if (rf == null)
+                yield break;
+
+            foreach (var desc in rf.DescendOnce())
+                if (desc is ISubmodelElement sme)
+                    yield return sme;
+
+#if __old
             if (referable is Submodel submodel && submodel.SubmodelElements != null)
             {
                 if (submodel.SubmodelElements != null)
@@ -430,6 +441,7 @@ namespace Extensions
             {
                 yield break;
             }
+#endif
         }
 
 

@@ -1,0 +1,102 @@
+﻿/* official Submodel Template Spec Hierarchical Structures V1.0 from April 2023 */
+{
+  "SM_HierarchicalStructures": {
+    "idShort": "HierarchicalStructures",
+    "description": [
+      {
+        "language": "en",
+        "text": "The Submodel HierarchicalStructures identified by its semanticId. The Submodel idShort can be picked freely."
+      }
+    ],
+    "id": "https://admin-shell.io/idta/HierarchicalStructures/Template/1/0/Submodel",
+    "kind": "Template",
+    "semanticId": {
+      "type": "ExternalReference",
+      "keys": [
+        {
+          "type": "Submodel",
+          "value": "https://admin-shell.io/idta/HierarchicalStructures/1/0/Submodel"
+        }
+      ]
+    },
+    "qualifiers": [],
+    "modelType": "Submodel"
+  },
+  "CD_EntryNode": {
+    "idShort": "EntryNode",
+    "description": [
+      {
+        "language": "en",
+        "text": "Base entry point for the Entity tree in this Submodel, this must be a Self-managed Entity reflecting the Assets administrated in the AAS this Submodel is part of."
+      }
+    ],
+    "id": "https://admin-shell.io/idta/HierarchicalStructures/EntryNode/1/0",
+    "modelType": "ConceptDescription"
+  },
+  "CD_Node": {
+    "idShort": "Node",
+    "description": [
+      {
+        "language": "en",
+        "text": "Base entry point for the Entity tree in this Submodel, this must be a Self-managed Entity reflecting the Assets administrated in the Asset Administration Shell this Submodel is part of. The idShort of the EntryNode can be picked freely and may reflect a name of the asset."
+      }
+    ],
+    "id": "https://admin-shell.io/idta/HierarchicalStructures/Node/1/0",
+    "modelType": "ConceptDescription"
+  },
+  "CD_SameAs": {
+    "idShort": "SameAs",
+    "description": [
+      {
+        "language": "en",
+        "text": "Reference between two Entities in the same Submodel or across Submodels."
+      }
+    ],
+    "id": "https://admin-shell.io/idta/HierarchicalStructures/SameAs/1/0",
+    "modelType": "ConceptDescription"
+  },
+  "CD_IsPartOf": {
+    "idShort": "IsPartOf",
+    "description": [
+      {
+        "language": "en",
+        "text": "Modeling of logical connections between components and sub-components. Either this or \u0022HasPart\u0022 must be used, not both."
+      }
+    ],
+    "id": "https://admin-shell.io/idta/HierarchicalStructures/IsPartOf/1/0",
+    "modelType": "ConceptDescription"
+  },
+  "CD_HasPart": {
+    "idShort": "HasPart",
+    "description": [
+      {
+        "language": "en",
+        "text": "Modeling of logical connections between components and sub-components. Either this or \u0022IsPartOf\u0022 must be used, not both."
+      }
+    ],
+    "id": "https://admin-shell.io/idta/HierarchicalStructures/HasPart/1/0",
+    "modelType": "ConceptDescription"
+  },
+  "CD_BulkCount": {
+    "idShort": "BulkCount",
+    "description": [
+      {
+        "language": "en",
+        "text": "To be used if bulk components are referenced, e.g., a 10x M4x30 screw."
+      }
+    ],
+    "id": "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0",
+    "modelType": "ConceptDescription"
+  },
+  "CD_ArcheType": {
+    "idShort": "ArcheType",
+    "description": [
+      {
+        "language": "en",
+        "text": "ArcheType of the Submodel, there are three allowed enumeration entries: 1. \u201CFull\u201D, 2. \u201COneDown\u201D and 3. \u201COneUp\u201D. "
+      }
+    ],
+    "id": "https://admin-shell.io/idta/HierarchicalStructures/ArcheType/1/0",
+    "modelType": "ConceptDescription"
+  }
+}

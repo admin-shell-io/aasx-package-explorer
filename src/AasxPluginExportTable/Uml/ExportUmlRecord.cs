@@ -36,14 +36,30 @@ namespace AasxPluginExportTable.Uml
 
         public ExportFormat Format = ExportFormat.PlantUml;
 
-        [AasxMenuArgument(help: "Strings delimted by spaces will matched against class names and on " +
+#if __not_promising
+
+        public static string[] PlantFormatNames =
+        {
+            "(0) PlantUML with classes and attributes",
+            "(1) PlantUML with key/values maps",
+            "(2) PlantUML with key/values maps (Entity elements only)"
+        };
+
+        public enum PlantUmlFormat { Classes = 0, Maps = 1, Entities = 2 }
+
+        [AasxMenuArgument(help: "PlantUMP sub format (0..)")]
+        public PlantUmlFormat PlantFormat = 0;
+
+#endif
+
+        [AasxMenuArgument(help: "Strings delimited by spaces will matched against class names and on " +
             "positive match will suppress rendering of such class.")]
         public string Suppress = null;
 
         [AasxMenuArgument(help: "If greater or equal zero, limits the number of characters for inital values.")]
         public int LimitInitialValue = 15;
 
-        [AasxMenuArgument(help: "If set, no members are rendered inside a class.")]
+        [AasxMenuArgument(help: "If set, no members are rendered inside a class (PlantUML).")]
         public bool Outline = false;
 
         [AasxMenuArgument(help: "If set, changes the direction of adding graphical elements (PlantUML).")]

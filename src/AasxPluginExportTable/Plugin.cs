@@ -62,26 +62,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            _log.Info("ListActions() called");
-            var res = new List<AasxPluginActionDescriptionBase>();
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "set-json-options", "Sets plugin-options according to provided JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase(
-                "get-json-options", "Gets plugin-options as a JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-events", "Pops and returns the earliest event from the event stack."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-presets", "Provides options/ preset data of plugin to caller."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-menu-items", "Provides a list of menu items of the plugin to the caller."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "call-menu-item", "Caller activates a named menu item.", useAsync: true));
+            var res = ListActionsBasicHelper(
+                enableOptions: true,
+                enableEventsGet: true,
+                enablePresetsGet: true,
+                enableMenuItems: true,
+                enableCheckVisualExt: false);
+
+#if __not_needed_anymore
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("export-uml", "Exports a Submodel to an UML file."));
@@ -90,8 +78,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 useAsync: true));
             res.Add(new AasxPluginActionDescriptionBase(
                 "import-time-series", "Import time series data from a table file."));
+#endif
+
             res.Add(new AasxPluginActionDescriptionBase(
                 "interop-export", "Provides service to export a interop table into specific formats."));
+
             return res.ToArray();
         }
 

@@ -1172,6 +1172,10 @@ namespace AasxPackageLogic
             string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             string[] auxContextHeader = null, Func<int, AnyUiLambdaActionBase> auxContextLambda = null)
         {
+            // default
+            if (emitCustomEvent == null)
+                emitCustomEvent = (rf) => { this.AddDiaryEntry(rf, new DiaryEntryStructChange()); };
+
             //
             // extended Front panel
             //
@@ -1259,6 +1263,8 @@ namespace AasxPackageLogic
                         showRefSemId: false,
                         addEclassIrdi: true,
                         addFromKnown: true,
+                        relatedReferable: relatedReferable,
+                        emitCustomEvent: emitCustomEvent,
                         auxContextHeader: new[] { "\u2573", "Delete referredSemanticId" },
                         auxContextLambda: (i) =>
                         {

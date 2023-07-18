@@ -19,6 +19,8 @@ using AdminShellNS;
 using Extensions;
 using JetBrains.Annotations;
 using AasxPluginBomStructure;
+using AnyUi;
+using System.Windows.Controls;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -64,7 +66,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             _log.Info("ListActions() called");
             return ListActionsBasicHelper(
                 enableCheckVisualExt: true,
-                enablePanelWpf: true).ToArray();
+                enablePanelWpf: true,
+                enableMenuItems: true).ToArray();
         }
 
         public new AasxPluginResultBase ActivateAction(string action, params object[] args)
@@ -133,6 +136,73 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var res = new AasxPluginResultBaseObject();
                 res.obj = resobj;
                 return res;
+            }
+
+            if (action == "get-menu-items")
+            {
+                // result list 
+                var res = new List<AasxPluginResultSingleMenuItem>();
+
+                // view package relations
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Visualize",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ViewPackageRelations",
+                        Header = "Visualize package relations …",
+                        HelpText = "Visualize all relations of SME elements in a package."
+                    }
+                });
+
+                // return
+                return new AasxPluginResultProvideMenuItems()
+                {
+                    MenuItems = res
+                };
+            }
+
+            // default
+            return null;
+        }
+
+        /// <summary>
+        /// Async variant of <c>ActivateAction</c>.
+        /// Note: for some reason of type conversion, it has to return <c>Task<object></c>.
+        /// </summary>
+        public new async Task<object> ActivateActionAsync(string action, params object[] args)
+        {
+            if (action == "call-menu-item")
+            {
+                if (args != null && args.Length >= 3
+                    && args[0] is string cmd
+                    && args[1] is AasxMenuActionTicket ticket
+                    && args[2] is AnyUiContextPlusDialogs displayContext
+                    && args[3] is DockPanel masterPanel)
+                {
+                    try
+                    {
+                        if (cmd == "viewpackagerelations")
+                        {
+                            await Task.Yield();
+
+                            // call
+                            this._bomControl.SetEventStack(this._eventStack);
+                            masterPanel?.Children?.Clear();
+                            var resobj = this._bomControl.CreateViewPackageReleations(_options, ticket.Package, masterPanel);
+
+                            // give object back
+                            var res = new AasxPluginResultCallMenuItem();
+                            res.RenderWpfContent = resobj;
+                            return res;
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        _log?.Error(ex, "when executing plugin menu item " + cmd);
+                    }
+                }
             }
 
             // default

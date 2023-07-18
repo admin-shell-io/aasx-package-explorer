@@ -2819,12 +2819,24 @@ namespace AasxPackageLogic
             if (de is DiaryEntryStructChange desc)
             {
                 // create
+                var dataStr = "";
+                try
+                {
+                    dataStr = Jsonization.Serialize.ToJsonObject(rf)
+                        .ToJsonString(new System.Text.Json.JsonSerializerOptions());
+                } 
+                catch (Exception ex)
+                {
+                    LogInternally.That.SilentlyIgnoredError(ex);
+                }
+
                 var evi = new AasPayloadStructuralChangeItem(
                     DateTime.UtcNow, desc.Reason,
                     path: (rf as Aas.IReferable)?.GetReference()?.Keys,
                     createAtIndex: desc.CreateAtIndex,
                     // Assumption: models will be serialized correctly
-                    data: JsonConvert.SerializeObject(rf));
+                    // data: JsonConvert.SerializeObject(rf));
+                    data: dataStr);
 
                 if (diaryReference?.OriginalPath != null)
                     evi.Path = diaryReference.OriginalPath;

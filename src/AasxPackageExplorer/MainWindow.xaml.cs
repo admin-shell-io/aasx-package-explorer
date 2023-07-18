@@ -274,6 +274,17 @@ namespace AasxPackageExplorer
             ContentTakeOver.IsEnabled = enabled;
         }
 
+        public void DisplayExternalEntity(object control)
+        {
+            if (control is System.Windows.FrameworkElement fe)
+                DispEditEntityPanel.SetDisplayExternalControl(fe);
+        }
+
+        public object GetEntityMasterPanel()
+        {
+            return DispEditEntityPanel?.GetMasterPanel();
+        }
+
         /// <summary>
         /// Triggers update of display
         /// </summary>

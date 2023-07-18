@@ -362,7 +362,10 @@ namespace AdminShellNS
                     }
                 case AasSubmodelElements.ReferenceElement:
                     {
-                        return new ReferenceElement().UpdateFrom(sourceSme);
+                        // TODO: AAS core crashes without this
+                        return new ReferenceElement(
+                            value: new Reference(ReferenceTypes.ExternalReference, new List<IKey>())
+                            ).UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.RelationshipElement:
                     {

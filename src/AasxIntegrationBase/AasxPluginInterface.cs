@@ -74,6 +74,11 @@ namespace AasxIntegrationBase
         }
     }
 
+    public class AasxPluginResultCallMenuItem : AasxPluginResultBase
+    {
+        public object RenderWpfContent = null;
+    }
+
     public class AasxPluginResultGenerateSubmodel : AasxPluginResultBase
     {
         public Aas.Submodel sm;
@@ -365,6 +370,8 @@ namespace AasxIntegrationBase
             bool enableLicenses = true,
             bool enableEventsGet = false,
             bool enableEventReturn = false,
+            bool enablePresetsGet = false,
+            bool enableMenuItems = false,
             bool enablePanelWpf = false,
             bool enablePanelAnyUi = false,
             bool enableNewSubmodel = false)
@@ -393,6 +400,16 @@ namespace AasxIntegrationBase
             if (enableEventReturn)
                 res.Add(new AasxPluginActionDescriptionBase(
                     "event-return", "Called to return a result evaluated by the host for a certain event."));
+            if (enablePresetsGet)
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "get-presets", "Provides options/ preset data of plugin to caller."));
+            if (enableMenuItems)
+            {
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "get-menu-items", "Provides a list of menu items of the plugin to the caller."));
+                res.Add(new AasxPluginActionDescriptionBase(
+                    "call-menu-item", "Caller activates a named menu item.", useAsync: true));
+            }
             if (enableCheckVisualExt)
                 res.Add(new AasxPluginActionDescriptionBase(
                 "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));

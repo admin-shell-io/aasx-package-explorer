@@ -19,6 +19,7 @@ using AasxIntegrationBase;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
+using Microsoft.Msagl.Drawing;
 
 namespace AasxPluginBomStructure
 {
@@ -34,6 +35,11 @@ namespace AasxPluginBomStructure
         public static int WrapMaxColumn = 20;
 
         public static Microsoft.Msagl.Drawing.Color DefaultBorderColor = new Microsoft.Msagl.Drawing.Color(0, 0, 0);
+
+        public static Microsoft.Msagl.Drawing.Color SubmodelFillColor =
+            new Microsoft.Msagl.Drawing.Color(1, 40, 203);
+        public static Microsoft.Msagl.Drawing.Color SubmodelBorderColor =
+            new Microsoft.Msagl.Drawing.Color(192, 204, 255);
 
         public static Microsoft.Msagl.Drawing.Color PropertyFillColor =
             new Microsoft.Msagl.Drawing.Color(89, 139, 209);
@@ -52,8 +58,8 @@ namespace AasxPluginBomStructure
 
         private Dictionary<Aas.IReferable, Microsoft.Msagl.Drawing.Node> referableToNode =
             new Dictionary<Aas.IReferable, Microsoft.Msagl.Drawing.Node>();
-        private Dictionary<Aas.IReferable, Aas.RelationshipElement> referableByRelation =
-            new Dictionary<Aas.IReferable, Aas.RelationshipElement>();
+        private Dictionary<Aas.IReferable, Aas.ISubmodelElement> referableByRelation =
+            new Dictionary<Aas.IReferable, Aas.ISubmodelElement>();
 
         private Aas.Environment _env;
         private BomStructureOptionsRecordList _bomRecords;
@@ -257,7 +263,7 @@ namespace AasxPluginBomStructure
         {
             // create panel
             var wrap = new WrapPanel();
-            wrap.Orientation = Orientation.Horizontal;
+            wrap.Orientation = System.Windows.Controls.Orientation.Horizontal;
             wrap.Margin = new System.Windows.Thickness(2);
 
             // Populate
@@ -265,7 +271,7 @@ namespace AasxPluginBomStructure
             {
                 // inside make a stack panel
                 var sp = new StackPanel();
-                sp.Orientation = Orientation.Horizontal;
+                sp.Orientation = System.Windows.Controls.Orientation.Horizontal;
                 for (int c = 0; c < 2; c++)
                 {
                     var part = GenerateLegendPart(1 + type, 1 + c);
@@ -403,6 +409,48 @@ namespace AasxPluginBomStructure
                 e.LabelText = ls.Title;
         }
 
+        public void CreateAasAndSubmodelNodes(
+            Microsoft.Msagl.Drawing.Graph graph, 
+            Aas.ISubmodel sm)
+        {
+            // access
+            if (sm == null)
+                return;
+
+            // Submodel node?
+            var smNode = referableToNode.ContainsKey(sm) ? referableToNode[sm] : null;
+            if (smNode == null)
+            {
+                // can get an link style?
+                var ns = _bomRecords?.FindFirstNodeStyle(sm.SemanticId);
+
+                // skip?
+                if (ns?.Skip == true)
+                    return;
+
+                // this gives nodes!
+                var node = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
+                node.UserData = sm;
+                node.LabelText = "" + sm.ToIdShortString();
+                node.Attr.Shape = Microsoft.Msagl.Drawing.Shape.DoubleCircle;
+                node.Attr.FillColor = PropertyFillColor;
+                node.Attr.Color = PropertyBorderColor;
+                node.Attr.XRadius = 0;
+                node.Attr.YRadius = 0;
+                node.Label.FontSize = 8;
+
+                // more style based on semantic id?
+                ApplyNodeStyle(node, ns);
+
+                // add
+                graph.AddNode(node);
+                referableToNode[sm] = node;
+            }
+
+            // AAS?
+
+        }
+
         public void RecurseOnLayout(
             int pass,
             Microsoft.Msagl.Drawing.Graph graph,
@@ -425,18 +473,30 @@ namespace AasxPluginBomStructure
                         "{0} Recurse pass {1} SME {2}",
                         new String(' ', depth), pass, "" + sme.IdShort);
 
-                if (sme is Aas.RelationshipElement rel)
+                if (sme is Aas.RelationshipElement || sme is Aas.ReferenceElement)
                 {
+                    Aas.IReferable x1 = null, x2 = null;
+
+                    if (sme is Aas.RelationshipElement rel)
+                    {
+                        x1 = this.FindReferableByReference(rel.First);
+                        x2 = this.FindReferableByReference(rel.Second);
+                    }
+
+                    if (sme is Aas.ReferenceElement rfe)
+                    {
+                        x1 = sme.Parent as Aas.IReferable;
+                        x2 = this.FindReferableByReference(rfe.Value);
+                    }
+
                     // for adding Nodes to the graph, we need in advance the knowledge, if a property
                     // is connected by a BOM relationship ..
                     if (pass == 1)
-                    {
-                        var x1 = this.FindReferableByReference(rel.First);
-                        var x2 = this.FindReferableByReference(rel.Second);
+                    {                        
                         if (x1 != null)
-                            referableByRelation[x1] = rel;
+                            referableByRelation[x1] = sme;
                         if (x2 != null)
-                            referableByRelation[x2] = rel;
+                            referableByRelation[x2] = sme;
                     }
 
                     // now, try to finally draw relationships
@@ -445,19 +505,19 @@ namespace AasxPluginBomStructure
                         try
                         {
                             // build label text
-                            var labelText = rel.ToIdShortString();
-                            if (rel.SemanticId != null && rel.SemanticId.Count() == 1)
-                                labelText += " : " + rel.SemanticId.Keys[0].Value;
-                            if (rel.SemanticId != null && rel.SemanticId.Count() > 1)
-                                labelText += " : " + rel.SemanticId.ToString();
+                            var labelText = sme.ToIdShortString();
+                            if (sme.SemanticId != null && sme.SemanticId.Count() == 1)
+                                labelText += " : " + sme.SemanticId.Keys[0].Value;
+                            if (sme.SemanticId != null && sme.SemanticId.Count() > 1)
+                                labelText += " : " + sme.SemanticId.ToString();
 
                             // find BOM display arguments?
-                            var args = BomArguments.Parse(rel.HasExtensionOfName("BOM.Args")?.Value);
+                            var args = BomArguments.Parse(sme.HasExtensionOfName("BOM.Args")?.Value);
 
                             // even CD?
-                            if (rel.SemanticId != null && rel.SemanticId.Count() > 0)
+                            if (sme.SemanticId != null && sme.SemanticId.Count() > 0)
                             {
-                                var cd = this.FindReferableByReference(rel.SemanticId.Copy()) as Aas.ConceptDescription;
+                                var cd = this.FindReferableByReference(sme.SemanticId.Copy()) as Aas.ConceptDescription;
 
                                 if (cd != null)
                                 {
@@ -477,16 +537,13 @@ namespace AasxPluginBomStructure
                             labelText = WrapOnMaxColumn(labelText, WrapMaxColumn);
 
                             // can get an link style?
-                            var ls = _bomRecords?.FindFirstLinkStyle(rel.SemanticId);
+                            var ls = _bomRecords?.FindFirstLinkStyle(sme.SemanticId);
 
                             // skip?
                             if (ls?.Skip == true)
                                 continue;
 
                             // now add
-                            var x1 = this.FindReferableByReference(rel.First);
-                            var x2 = this.FindReferableByReference(rel.Second);
-
                             if (x1 == null || x2 == null)
                                 continue;
 
@@ -494,7 +551,7 @@ namespace AasxPluginBomStructure
                             var n2 = referableToNode[x2];
 
                             var e = graph.AddEdge(n1.Id, labelText, n2.Id);
-                            e.UserData = rel;
+                            e.UserData = sme;
                             e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.LineWidth = 1;

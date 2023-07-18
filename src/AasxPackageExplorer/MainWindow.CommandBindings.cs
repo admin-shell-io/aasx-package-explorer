@@ -110,7 +110,8 @@ namespace AasxPackageExplorer
 
             var scriptmode = ticket.ScriptMode;
 
-            Logic?.FillSelectedItem(DisplayElements.SelectedItem, ticket);
+            Logic?.FillSelectedItem(
+                DisplayElements.SelectedItem, DisplayElements.SelectedItems, ticket);
 
             //
             // Dispatch

@@ -286,6 +286,7 @@ namespace AasxPackageExplorer
                             args: new AasxMenuListOfArgDefs()
                                 .Add("Domain", "Domain of knowledge/ name of the Submodel (partially)")
                                 .Add("SmRef", "Return: Submodel generated", hidden: true)))
+                .AddMenu(header: "Visualize …", attachPoint: "Visualize")
                 .AddSeparator()
                 .AddWpfBlazor(name: "ConvertElement", header: "Convert …",
                         help: "Asks plugins if these could make offers to convert the current elements and " +

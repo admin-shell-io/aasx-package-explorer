@@ -106,6 +106,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   - AAS core crashes without AssetInformation
   - AAS core crashes without EmbeddedDataSpecification.DataSpecificationContent
   - AAS core crashes without EmbeddedDataSpecification.DataSpecificationContent.PreferredName
+  - AAS core crashes when ReferenceElement.value = null is serialized
 
 
 ## Todo (old RC02)
@@ -193,6 +194,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * places which deserve a factory/ mapping approach:
   GetKeyType()
+
+* AAs core / ISubmodelElement shall have an optimized DescendOnceSme()
+  (idea: DescendOnce() may yield first all SMEs and then all other IClass .. then it could done by breaking)
 
 ## Decisions
 

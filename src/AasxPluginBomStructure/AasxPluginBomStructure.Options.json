@@ -64,7 +64,7 @@
         },
         {
           "type": "Submodel",
-          "value": "https://admin-shell.io/idta/HierachicalStructures/1/0/Submodel"
+          "value": "https://admin-shell.io/idta/HierarchicalStructures/1/0/Submodel"
         }
       ],
       "Layout": 3,
@@ -80,13 +80,62 @@
           "Stroke": "DarkGreen",
           "Width": 1.0,
           "Title": "isPartOf"
+        },
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/SameAs/1/0"
+          },
+          "Start": "Normal",
+          "End": "None",
+          "Stroke": "Black",
+          "Width": 1.0,
+          "Title": "sameAs"
+        },
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/HasPart/1/0"
+          },
+          "Start": "None",
+          "End": "Normal",
+          "Stroke": "Black",
+          "Width": 1.0,
+          "Title": "hasPart"
+        },
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/IsPartOf/1/0"
+          },
+          "Start": "Normal",
+          "End": "None",
+          "Stroke": "Black",
+          "Width": 1.0,
+          "Title": "isPartOf"
         }
       ],
       "NodeStyles": [
         {
           "Match": {
             "type": "ConceptDescription",
-            "value": "https://admin-shell.io/idta/HierachicalStructures/EntryNode/1/0"
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/EntryNode/1/0"
+          },
+          "Skip": false,
+          "Shape": "Circle",
+          "Background": "LightBlue",
+          "Stroke": "DarkBlue",
+          "LineWidth": 2.0,
+          "Radius": 0.0,
+          "FontSize": 8.0,
+          "Dashed": true,
+          "FontBold": false,
+          "Dotted": false
+        },
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "value": "https://admin-shell.io/idta/HierarchicalStructures/Node/1/0"
           },
           "Skip": false,
           "Shape": "Circle",

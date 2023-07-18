@@ -152,7 +152,7 @@ namespace Microsoft.Msagl.WpfGraphControl
 
         GeometryGraph GeomGraph
         {
-            get { return _drawingGraph.GeometryGraph; }
+            get { return _drawingGraph?.GeometryGraph; }
         }
 
         /// <summary>

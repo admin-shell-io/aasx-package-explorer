@@ -153,5 +153,23 @@ namespace AasxPackageExplorer
         /// If a button is provided to take over just edited fields, enable/ disable it.
         /// </summary>
         void TakeOverContentEnable(bool enabled);
+
+        /// <summary>
+        /// Will check, if <c>control</c> could be displayed in the display context on 
+        /// right hand side.
+        /// </summary>
+        /// <param name="o"></param>
+        public void DisplayExternalEntity(object control)
+        {
+        }
+
+        /// <summary>
+        /// Get the master widget for UI rendering in the entity area.
+        /// </summary>
+        /// <returns></returns>
+        public object GetEntityMasterPanel()
+        {
+            return null;
+        }
     }
 }

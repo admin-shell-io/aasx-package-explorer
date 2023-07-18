@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\DigitalNameplateV20.json" />
+    <None Remove="Resources\IdtaHierarchicalStructV10.json" />
     <None Remove="Resources\ZveiContactInformationV10.json" />
     <None Remove="Resources\ZveiDigitalTypeplate.json" />
     <None Remove="Resources\ZveiTimeSeriesDataV10.json" />
@@ -17,6 +18,7 @@
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\IdtaHierarchicalStructV10.json" />
     <EmbeddedResource Include="Resources\ZveiContactInformationV10.json" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate.json" />
     <EmbeddedResource Include="Resources\DigitalNameplateV20.json" />

@@ -53,7 +53,9 @@ namespace AasxPackageLogic
         }
 
         public void FillSelectedItem(
-            VisualElementGeneric selectedItem, AasxMenuActionTicket ticket = null)
+            VisualElementGeneric selectedItem,
+            ListOfVisualElementBasic selectedItems,
+            AasxMenuActionTicket ticket = null)
         {
             // access
             if (ticket == null || selectedItem == null)
@@ -66,6 +68,12 @@ namespace AasxPackageLogic
                 ticket.MainDataObject = ve.GetMainDataObject();
                 ticket.DereferencedMainDataObject = ve.GetDereferencedMainDataObject();
             }
+
+            // more (only if requested)
+            ticket.SelectedMainDataObjects = 
+                selectedItems?.Select((ve) => ve.GetMainDataObject());
+            ticket.SelectedDereferencedMainDataObjects = 
+                selectedItems?.Select((ve) => ve.GetDereferencedMainDataObject());
 
             // set
             if (selectedItem is VisualElementEnvironmentItem veei)
@@ -1223,8 +1231,16 @@ namespace AasxPackageLogic
                 try
                 {
                     var plugin = Plugins.FindPluginInstance(mi.PluginToAction);
+                    object res = null;
                     if (plugin != null && plugin.HasAction("call-menu-item", useAsync: true))
-                        await plugin.InvokeActionAsync("call-menu-item", cmd, ticket, DisplayContext);
+                        res = await plugin.InvokeActionAsync("call-menu-item", cmd, ticket, DisplayContext, MainWindow?.GetEntityMasterPanel());
+
+                    if (res is AasxPluginResultCallMenuItem aprcmi
+                        && aprcmi.RenderWpfContent != null)
+                    {
+                        Log.Singleton.Info("Try displaying external entity control from plugin command..");
+                        // MainWindow?.DisplayExternalEntity(aprcmi.RenderWpfContent);
+                    }
                 }
                 catch (Exception ex)
                 {
