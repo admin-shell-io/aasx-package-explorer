@@ -13,6 +13,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
@@ -224,7 +225,7 @@ namespace AasxPackageLogic
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
                         (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
                         "All files (*.*)|*.*",
-                    "Save AASX: No valid filename.", 
+                    "Save AASX: No valid filename.",
                     reworkSpecialFn: true);
                 if (ucsf?.Result != true)
                     return;
@@ -308,7 +309,7 @@ namespace AasxPackageLogic
                     {
                         var lru = PackageCentral?.Repositories?.FindLRU();
                         if (lru != null && ucsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Local)
-                            lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem, 
+                            lru.Push(PackageCentral?.MainItem?.Container as PackageContainerRepoItem,
                                 ucsf.TargetFileName);
                     }
                     catch (Exception ex)
@@ -708,12 +709,11 @@ namespace AasxPackageLogic
                 // ok
                 if (endpoint.Contains("asp.net"))
                 {
-#if TODO
                     var fileRepository = new PackageContainerAasxFileRepository(endpoint);
                     fileRepository.GeneratePackageRepository();
-                    this.UiAssertFileRepository(visible: true);
-                    _packageCentral.Repositories.AddAtTop(fileRepository);
-#endif
+                    //this.UiAssertFileRepository(visible: true);
+                    MainWindow.UiShowRepositories(visible: true);
+                    PackageCentral.Repositories.AddAtTop(fileRepository);
                 }
                 else
                 {

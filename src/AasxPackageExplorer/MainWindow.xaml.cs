@@ -11,6 +11,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
@@ -765,7 +766,8 @@ namespace AasxPackageExplorer
                 {
                     _logWriter = new StreamWriter(Options.Curr.LogFile);
                     Log.Singleton.Info("Starting writing log information to {0} ..", Options.Curr.LogFile);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, "creating log file: " + Options.Curr.LogFile);
                 }
@@ -901,15 +903,14 @@ namespace AasxPackageExplorer
                     copts = fi.ContainerOptions;
 
                 // try load ..
-#if TODO
                 if (repo is PackageContainerAasxFileRepository restRepository)
                 {
                     if (restRepository.IsAspNetConnection)
                     {
-                        var container = await restRepository.LoadAasxFileFromServer(fi.PackageId, _packageCentral.CentralRuntimeOptions);
+                        var container = await restRepository.LoadAasxFileFromServer(fi.PackageId, PackageCentral.CentralRuntimeOptions);
                         if (container != null)
                         {
-                            UiLoadPackageWithNew(_packageCentral.MainItem,
+                            UiLoadPackageWithNew(PackageCentral.MainItem,
                             takeOverContainer: container, onlyAuxiliary: false,
                             storeFnToLRU: fi.PackageId);
                         }
@@ -921,7 +922,6 @@ namespace AasxPackageExplorer
                     }
                 }
                 else
-#endif
                 {
                     var location = repo.GetFullItemLocation(fi.Location);
                     if (location == null)
@@ -1219,7 +1219,8 @@ namespace AasxPackageExplorer
                     {
                         _logWriter.WriteLine(sp.ToString());
                         _logWriter.Flush();
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         LogInternally.That.SilentlyIgnoredError(ex);
                     }
@@ -2654,7 +2655,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            var positiveQuestion = ScriptModeShutdown || 
+            var positiveQuestion = ScriptModeShutdown ||
                 (Options.Curr.UseFlyovers &&
                 AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
                     "Do you want to proceed closing the application? Make sure, that you have saved your data before.",

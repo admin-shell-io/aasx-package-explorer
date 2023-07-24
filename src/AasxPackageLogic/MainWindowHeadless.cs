@@ -18,7 +18,6 @@ using AasxSignature;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -316,7 +315,11 @@ namespace AasxPackageLogic
                 {
                     using (var s = new StreamWriter(fn))
                     {
-                        var json = JsonConvert.SerializeObject(ticket.Submodel, Formatting.Indented);
+                        //var json = JsonConvert.SerializeObject(ticket.Submodel, Formatting.Indented);
+                        var json = Jsonization.Serialize.ToJsonObject(ticket.Submodel).ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                        {
+                            WriteIndented = true
+                        });
                         s.WriteLine(json);
                     }
                 }
