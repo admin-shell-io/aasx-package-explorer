@@ -52,12 +52,11 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             }
 
             //Upload File to Server
-#if TODO
             if (ContainerList != null && ContainerList is PackageContainerAasxFileRepository fileRepository)
             {
-                await fileRepository.UpdateFileOnServerAsync(copyFileName, PackageId, runtimeOptions);
+                var fileContent = System.IO.File.ReadAllBytes(copyFileName);
+                await fileRepository.UpdateFileOnServerAsync(Env.Filename, fileContent, PackageId, runtimeOptions);
             }
-#endif
 
             //Delete Temp file
 

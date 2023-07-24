@@ -117,7 +117,7 @@ namespace IO.Swagger.Client
         {
             if (proxy == null)
             {
-                string proxyFile = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "/proxy.dat";
+                string proxyFile = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/proxy.dat";
                 string proxyAddress = "";
                 string username = "";
                 string password = "";
@@ -376,7 +376,7 @@ namespace IO.Swagger.Client
                         if (match.Success)
                         {
                             string fileName = filePath + SanitizeFilename(match.Groups[1].Value.Replace("\"", "").Replace("'", ""));
-                            File.WriteAllBytes(fileName, response.RawBytes);
+                            System.IO.File.WriteAllBytes(fileName, response.RawBytes);
                             return new FileStream(fileName, FileMode.Open);
                         }
                     }

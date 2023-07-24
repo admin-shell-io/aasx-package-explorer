@@ -12,6 +12,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
@@ -920,15 +921,14 @@ namespace AasxPackageExplorer
                     copts = fi.ContainerOptions;
 
                 // try load ..
-#if TODO
                 if (repo is PackageContainerAasxFileRepository restRepository)
                 {
                     if (restRepository.IsAspNetConnection)
                     {
-                        var container = await restRepository.LoadAasxFileFromServer(fi.PackageId, _packageCentral.CentralRuntimeOptions);
+                        var container = await restRepository.LoadAasxFileFromServer(fi.PackageId, PackageCentral.CentralRuntimeOptions);
                         if (container != null)
                         {
-                            UiLoadPackageWithNew(_packageCentral.MainItem,
+                            UiLoadPackageWithNew(PackageCentral.MainItem,
                             takeOverContainer: container, onlyAuxiliary: false,
                             storeFnToLRU: fi.PackageId);
                         }
@@ -940,7 +940,6 @@ namespace AasxPackageExplorer
                     }
                 }
                 else
-#endif
                 {
                     var location = repo.GetFullItemLocation(fi.Location);
                     if (location == null)

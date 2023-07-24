@@ -6,10 +6,16 @@
     <AssemblyName>IO.Swagger</AssemblyName>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
+	<ItemGroup>
+		<Using Include="AasCore.Aas3_0" />
+	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="JsonSubTypes" Version="1.9.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="RestSharp" Version="108.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AasCore.Aas3_0\AasCore.Aas3_0.csproj" />
   </ItemGroup>
 </Project>

@@ -6,42 +6,21 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-#if TODO
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AasxIntegrationBase;
-using AdminShellNS;
-using Extensions;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
-using RestSharp;
-
 namespace AasxPackageLogic.PackageCentral
 {
     public class AasxFileServerInterfaceService
     {
         private AASXFileServerInterfaceApi _fileApiInstance;
-        private AssetAdministrationShellRepositoryApi _aasApiInstace;
+        //private AssetAdministrationShellRepositoryApi _aasApiInstace;
+        private object _aasApiInstace;
+        private AasxServerService _aasxServerService;
 
         public AasxFileServerInterfaceService(string basePath)
         {
             try
             {
                 var _basePath = basePath;
-
-                Configuration configuration = new Configuration
-                {
-                    BasePath = _basePath
-                };
-                _fileApiInstance = new AASXFileServerInterfaceApi(configuration);
-                _aasApiInstace = new AssetAdministrationShellRepositoryApi(configuration);
+                _aasxServerService = new AasxServerService(basePath);
             }
             catch (Exception e)
             {
@@ -55,7 +34,8 @@ namespace AasxPackageLogic.PackageCentral
             var output = new List<PackageContainerRepoItem>();
             try
             {
-                var response = _fileApiInstance.GetAllAASXPackageIds();
+                //var response = _fileApiInstance.GetAllAASXPackageIds();
+                var response = _aasxServerService.GetAllAASXPackageIds();
 
                 foreach (var packageDescription in response)
                 {
@@ -64,29 +44,25 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         try
                         {
-                            var aasAndAsset = _fileApiInstance.GetAssetAdministrationShellAndAssetByPackageId(Base64UrlEncoder.Encode(packageDescription.PackageId), Base64UrlEncoder.Encode(aasId));
-                            //var aas = _aasApiInstace.GetAssetAdministrationShellById(Base64UrlEncoder.Encode(aasId))
-                            var aas = aasAndAsset.aas;
+                            var aas = _aasxServerService.GetAssetAdministrationShellById(Base64UrlEncoder.Encode(aasId));
                             if (aas != null)
                             {
                                 //Get Aas.AssetInformation
                                 try
                                 {
-                                    var asset = aasAndAsset.asset;
+                                    var asset = aas.AssetInformation;
                                     //var asset = _aasApiInstace.GetAssetInformation(Base64UrlEncoder.Encode(aasId))
                                     if (asset != null)
                                     {
                                         var packageContainer = new PackageContainerRepoItem()
                                         {
                                             ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
-                                            //Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,"server", "getaasx", aasi.Index),
-                                            //Description = $"\"{"" + aas.IdShort}\",\"{"" + asset.IdShort}\"",
                                             Description = $"\"{"" + aas.IdShort}\"", //No more IdShort in asset
                                             Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(aas.IdShort).SubstringMax(0, 3),
                                             PackageId = packageDescription.PackageId
                                         };
                                         packageContainer.AasIds.Add("" + aas?.Id);
-                                        packageContainer.AssetIds.Add("" + asset.GlobalAssetId.GetAsExactlyOneKey().Value);
+                                        packageContainer.AssetIds.Add("" + asset.GlobalAssetId);
                                         output.Add(packageContainer);
                                     }
                                 }
@@ -115,28 +91,15 @@ namespace AasxPackageLogic.PackageCentral
         {
             var aasiIds = new List<string>();
 
-            var response = _fileApiInstance.PostAASXPackageWithHttpInfo(aasiIds, fileContent, fileName);
-            if (response.StatusCode == 201)
-            {
-                return response.Data;
-            }
-            else
-            {
-                Log.Singleton.Error($"Uploading AASX File in file repository failed with error {response.StatusCode}");
-                return -1;
-            }
-
+            var packageId = _aasxServerService.PostAASXPackage(fileContent, fileName);
+            return packageId;
         }
 
         internal void DeleteAasxFileFromServer(string packageId)
         {
             try
             {
-                var response = _fileApiInstance.DeleteAASXByPackageIdWithHttpInfo(Base64UrlEncoder.Encode(packageId));
-                if (response.StatusCode != 204)
-                {
-                    Log.Singleton.Error($"Delete AASX file from file repository failed with error {response.StatusCode}");
-                }
+                _aasxServerService.DeleteAASXByPackageId(Base64UrlEncoder.Encode(packageId));
             }
             catch (Exception ex)
             {
@@ -144,18 +107,13 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
-        internal Task PutAasxFileOnServerAsync(string copyFileName, string packageId)
+        internal Task PutAasxFileOnServerAsync(string fileName, byte[] fileContent, string packageId)
         {
             try
             {
                 //TODO (jtikekar, 2022-04-04): aasIds?
                 var aasIds = new List<string>();
-                var fileContent = File.ReadAllBytes(copyFileName);
-                var response = _fileApiInstance.PutAASXByPackageIdWithHttpInfo(aasIds, fileContent, copyFileName, Base64UrlEncoder.Encode(packageId));
-                if (response.StatusCode != 204)
-                {
-                    Log.Singleton.Error($"Update AASX file in file repository failed with error {response.StatusCode}");
-                }
+                _aasxServerService.PutAASXPackageById(Base64UrlEncoder.Encode(packageId), fileContent, fileName);
             }
             catch (Exception e)
             {
@@ -169,20 +127,46 @@ namespace AasxPackageLogic.PackageCentral
         {
             try
             {
-                var delegateInstance = new SaveAasxPackageToFile(runtimeOptions);
-                var response = await _fileApiInstance.GetAASXByPackageIdWithHttpInfo(Base64UrlEncoder.Encode(packageId), delegateInstance.Action);
-                if (response != null)
+                var response = _aasxServerService.GetAASXByPackageId(Base64UrlEncoder.Encode(packageId));
+                var contentLength = response.Content.Headers.ContentLength;
+                response.Headers.TryGetValues("X-FileName", out IEnumerable<string> headerValues);
+                var fileName = headerValues.FirstOrDefault();
+                var contentStream = await response?.Content?.ReadAsStreamAsync();
+                if (contentStream == null)
+                    throw new PackageContainerException(
+                    $"While getting data bytes from XXX via HttpClient " +
+                    $"no data-content was responded!");
+                var fileSize = contentLength;
+
+                using (var file = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
-                    if (response.StatusCode == 200)
+                    var buffer = new byte[100000];
+                    long totalBytes = 0;
+                    int currentBlockSize = 0;
+
+                    while ((currentBlockSize = contentStream.Read(buffer, 0, buffer.Length)) > 0)
                     {
-                        return delegateInstance.FileName;
+                        totalBytes += currentBlockSize;
+
+                        file.Write(buffer, 0, currentBlockSize);
+
+                        if (fileSize > totalBytes)
+                        {
+                            runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
+                            fileSize, totalBytes);
+                        }
+                        else
+                        {
+                            runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final, fileSize, totalBytes);
+                            runtimeOptions?.Log?.Info($".. download done with {totalBytes} bytes read!");
+                        }
+
                     }
-                    else
-                    {
-                        Log.Singleton.Error($"Doanload AASX File from the server failed with error code: {response.StatusCode}");
-                        throw new PackageContainerException($"Server operation not allowed!");
-                    }
+
+                    file.Close();
+                    contentStream.Close();
                 }
+                return fileName;
             }
             catch (Exception ex)
             {
@@ -192,57 +176,5 @@ namespace AasxPackageLogic.PackageCentral
             //TODO (jtikekar, 2022-04-04): Change
             return null;
         }
-
-        class SaveAasxPackageToFile
-        {
-            private PackCntRuntimeOptions runtimeOptions;
-            public string FileName { get; set; }
-            internal SaveAasxPackageToFile(PackCntRuntimeOptions runtimeOptions)
-            {
-                this.runtimeOptions = runtimeOptions;
-            }
-
-            internal void Action(Stream str, HttpResponse httpResp)
-            {
-                if (httpResp.StatusCode == (int)System.Net.HttpStatusCode.OK)
-                {
-                    var headerDict = httpResp.Headers.ToDictionary(x => x.Aas.Key, x => string.Join(",", x.Value));
-                    headerDict.TryGetValue("X-FileName", out string fileName);
-                    headerDict.TryGetValue("Content-Length", out string contentLength);
-                    long.TryParse(contentLength, out long fileSize);
-
-                    using (var file = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        var buffer = new byte[100000];
-                        long totalBytes = 0;
-                        int currentBlockSize = 0;
-
-                        while ((currentBlockSize = str.Read(buffer, 0, buffer.Length)) > 0)
-                        {
-                            totalBytes += currentBlockSize;
-
-                            file.Write(buffer, 0, currentBlockSize);
-
-                            if (fileSize > totalBytes)
-                            {
-                                runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
-                                fileSize, totalBytes);
-                            }
-                            else
-                            {
-                                runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final, fileSize, totalBytes);
-                                runtimeOptions?.Log?.Info($".. download done with {totalBytes} bytes read!");
-                            }
-
-                        }
-
-                        file.Close();
-                        str.Close();
-                    }
-                    this.FileName = fileName;
-                }
-            }
-        }
     }
 }
-#endif

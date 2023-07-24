@@ -7,21 +7,6 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using AasxIntegrationBase;
 using AasxIntegrationBaseWpf;
 using AasxPackageExplorer;
@@ -29,6 +14,13 @@ using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AnyUi;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -330,14 +322,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // dead-csharp on
                     //Add file to package explorer's unnamed repo
 
-#if TODO
+                    var fileName = uc.OriginalFileName;
                     if (fr is PackageContainerAasxFileRepository fileRepo)
                     {
                         //Add the file to File Server
-                        int packageId = fileRepo.AddPackageToServer(inputDialog.FileNames[0]);
-                        fileRepo.LoadAasxFile(_packageCentral, inputDialog.FileNames[0], packageId);
+                        int packageId = fileRepo.AddPackageToServer(fileName);
+                        fileRepo.LoadAasxFile(_packageCentral, fileName, packageId);
                     }
-#endif
                 }
 
                 if (cmd == "filerepomultiadd")

@@ -13,6 +13,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
@@ -711,12 +712,11 @@ namespace AasxPackageLogic
                 // ok
                 if (endpoint.Contains("asp.net"))
                 {
-#if TODO
                     var fileRepository = new PackageContainerAasxFileRepository(endpoint);
                     fileRepository.GeneratePackageRepository();
-                    this.UiAssertFileRepository(visible: true);
-                    _packageCentral.Repositories.AddAtTop(fileRepository);
-#endif
+                    //this.UiAssertFileRepository(visible: true);
+                    MainWindow.UiShowRepositories(visible: true);
+                    PackageCentral.Repositories.AddAtTop(fileRepository);
                 }
                 else
                 {
