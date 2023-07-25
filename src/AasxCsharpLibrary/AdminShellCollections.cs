@@ -11,6 +11,21 @@ using System.Collections.Generic;
 
 namespace AdminShellNS
 {
+    /// <summary>
+    /// Just add some convenience methods to <c>Dictionary</c>
+    /// Note: Not an extension class in order to not interfere with really 
+    /// commonly used standard class.
+    /// </summary>
+    public class ConvenientDictionary<K, V> : Dictionary<K, V>
+    {
+        public V GetValueOrDefault(K key)
+        {
+            if (key != null && this.ContainsKey(key))
+                return this[key];
+            return default(V);
+        }
+    }
+
     public class MultiValueDictionary<K, V>
     {
         private Dictionary<K, List<V>> dict = new Dictionary<K, List<V>>();

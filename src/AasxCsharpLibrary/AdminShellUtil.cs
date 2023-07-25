@@ -369,11 +369,17 @@ namespace AdminShellNS
                     }
                 case AasSubmodelElements.RelationshipElement:
                     {
-                        return new RelationshipElement(null, null).UpdateFrom(sourceSme);
+                        return new RelationshipElement(
+                            new Reference(ReferenceTypes.ExternalReference, new List<IKey>()),
+                            new Reference(ReferenceTypes.ExternalReference, new List<IKey>()))
+                            .UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.AnnotatedRelationshipElement:
                     {
-                        return new AnnotatedRelationshipElement(null, null).UpdateFrom(sourceSme);
+                        return new AnnotatedRelationshipElement(
+                            new Reference(ReferenceTypes.ExternalReference, new List<IKey>()),
+                            new Reference(ReferenceTypes.ExternalReference, new List<IKey>()))
+                            .UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.Capability:
                     {

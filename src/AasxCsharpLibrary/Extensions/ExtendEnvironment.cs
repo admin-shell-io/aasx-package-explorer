@@ -576,7 +576,7 @@ namespace Extensions
                 return null;
             }
 
-            var aas = environment.AssetAdministrationShells.Where(a => (a.Submodels?.Where(s => s.Matches(submodelId)).First()) != null).First();
+            var aas = environment.AssetAdministrationShells.Where(a => (a.Submodels?.Where(s => s.Matches(submodelId)).FirstOrDefault()) != null).FirstOrDefault();
 
             return aas;
         }

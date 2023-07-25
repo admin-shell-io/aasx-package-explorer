@@ -20,14 +20,22 @@ using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using Microsoft.Msagl.Drawing;
+using System.Runtime.Intrinsics.X86;
 
 namespace AasxPluginBomStructure
 {
     public class GenericBomCreatorOptions
     {
         public bool CompactLabels = true;
+        public bool ShowAssetIds = true;
         public int LayoutIndex = 0;
         public double LayoutSpacing = 10;
+    }
+
+    public class GenericBomEntityStyle
+    {
+        public Microsoft.Msagl.Drawing.Color
+            FillColor, BorderColor, FontColor;
     }
 
     public class GenericBomCreator
@@ -36,30 +44,41 @@ namespace AasxPluginBomStructure
 
         public static Microsoft.Msagl.Drawing.Color DefaultBorderColor = new Microsoft.Msagl.Drawing.Color(0, 0, 0);
 
-        public static Microsoft.Msagl.Drawing.Color SubmodelFillColor =
-            new Microsoft.Msagl.Drawing.Color(1, 40, 203);
-        public static Microsoft.Msagl.Drawing.Color SubmodelBorderColor =
-            new Microsoft.Msagl.Drawing.Color(192, 204, 255);
+        public static GenericBomEntityStyle EntityStyleAAS = new GenericBomEntityStyle()
+        {
+            FillColor = new Microsoft.Msagl.Drawing.Color(1, 40, 203),
+            BorderColor = new Microsoft.Msagl.Drawing.Color(192, 204, 255),
+            FontColor = new Microsoft.Msagl.Drawing.Color(0, 0, 0)
+        };
 
-        public static Microsoft.Msagl.Drawing.Color PropertyFillColor =
-            new Microsoft.Msagl.Drawing.Color(89, 139, 209);
-        public static Microsoft.Msagl.Drawing.Color PropertyBorderColor =
-            new Microsoft.Msagl.Drawing.Color(12, 94, 209);
+        public static GenericBomEntityStyle EntityStyleSubmodel = new GenericBomEntityStyle()
+        {
+            FillColor = new Microsoft.Msagl.Drawing.Color(1, 40, 203),
+            BorderColor = new Microsoft.Msagl.Drawing.Color(192, 204, 255),
+            FontColor = new Microsoft.Msagl.Drawing.Color(255, 255, 255)
+        };
+
+        public static GenericBomEntityStyle EntityStyleDataElement = new GenericBomEntityStyle()
+        {
+            FillColor = new Microsoft.Msagl.Drawing.Color(219, 226, 255),
+            BorderColor = new Microsoft.Msagl.Drawing.Color(1, 40, 203),
+            FontColor = new Microsoft.Msagl.Drawing.Color(0, 0, 0)
+        };
 
         public static Microsoft.Msagl.Drawing.Color AssetCoManagedColor =
-            new Microsoft.Msagl.Drawing.Color(184, 194, 209);
+            new Microsoft.Msagl.Drawing.Color(158, 179, 255);
         public static Microsoft.Msagl.Drawing.Color AssetSelfManagedColor =
-            new Microsoft.Msagl.Drawing.Color(136, 166, 210);
+            new Microsoft.Msagl.Drawing.Color(104, 137, 255);
 
         public static Microsoft.Msagl.Drawing.Color AssetFillColor =
             new Microsoft.Msagl.Drawing.Color(192, 192, 192);
         public static Microsoft.Msagl.Drawing.Color AssetBorderColor =
             new Microsoft.Msagl.Drawing.Color(128, 128, 128);
 
-        private Dictionary<Aas.IReferable, Microsoft.Msagl.Drawing.Node> referableToNode =
-            new Dictionary<Aas.IReferable, Microsoft.Msagl.Drawing.Node>();
-        private Dictionary<Aas.IReferable, Aas.ISubmodelElement> referableByRelation =
-            new Dictionary<Aas.IReferable, Aas.ISubmodelElement>();
+        private ConvenientDictionary<Aas.IReferable, Microsoft.Msagl.Drawing.Node> referableToNode =
+            new ConvenientDictionary<Aas.IReferable, Microsoft.Msagl.Drawing.Node>();
+        private ConvenientDictionary<Aas.IReferable, Aas.ISubmodelElement> referableByRelation =
+            new ConvenientDictionary<Aas.IReferable, Aas.ISubmodelElement>();
 
         private Aas.Environment _env;
         private BomStructureOptionsRecordList _bomRecords;
@@ -79,6 +98,11 @@ namespace AasxPluginBomStructure
             _options = options;
             _refStore = new AasReferableStore();
             _refStore.Index(env);
+        }
+
+        public void SetRecods(BomStructureOptionsRecordList bomRecords)
+        {
+            _bomRecords = bomRecords;
         }
 
         public Aas.IReferable FindReferableByReference(Aas.IReference r)
@@ -183,8 +207,8 @@ namespace AasxPluginBomStructure
                 r.Height = 20;
                 r.MinWidth = 20;
                 r.MinHeight = 20;
-                r.Fill = ColorToBrush(PropertyFillColor);
-                r.Stroke = ColorToBrush(PropertyBorderColor);
+                r.Fill = ColorToBrush(EntityStyleDataElement.FillColor);
+                r.Stroke = ColorToBrush(EntityStyleDataElement.BorderColor);
                 r.Width = 2.0;
                 r.RadiusX = 0;
                 r.RadiusY = 0;
@@ -227,7 +251,7 @@ namespace AasxPluginBomStructure
                 line.Y1 = 15;
                 line.X2 = 28;
                 line.Y2 = 15;
-                line.Stroke = ColorToBrush(PropertyBorderColor);
+                line.Stroke = ColorToBrush(EntityStyleDataElement.BorderColor);
                 line.StrokeThickness = 2.0;
                 c.Children.Add(line);
             }
@@ -418,37 +442,136 @@ namespace AasxPluginBomStructure
                 return;
 
             // Submodel node?
-            var smNode = referableToNode.ContainsKey(sm) ? referableToNode[sm] : null;
+            var smNode = referableToNode.GetValueOrDefault(sm);
             if (smNode == null)
             {
-                // can get an link style?
-                var ns = _bomRecords?.FindFirstNodeStyle(sm.SemanticId);
+                smNode = CreateNode(graph,
+                    sm,
+                    sm.ToIdShortString(),
+                    Microsoft.Msagl.Drawing.Shape.Hexagon,
+                    EntityStyleSubmodel.FillColor, EntityStyleSubmodel.BorderColor, 
+                    EntityStyleSubmodel.FontColor,
+                    xRadius: 0, yRadius: 0,
+                    fontSize: 12,
+                    ns1: _bomRecords?.FindFirstNodeStyle(sm.SemanticId),
+                    ns2: BomArguments.Parse(sm.HasExtensionOfName("BOM.Args")?.Value));
 
-                // skip?
-                if (ns?.Skip == true)
-                    return;
-
-                // this gives nodes!
-                var node = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
-                node.UserData = sm;
-                node.LabelText = "" + sm.ToIdShortString();
-                node.Attr.Shape = Microsoft.Msagl.Drawing.Shape.DoubleCircle;
-                node.Attr.FillColor = PropertyFillColor;
-                node.Attr.Color = PropertyBorderColor;
-                node.Attr.XRadius = 0;
-                node.Attr.YRadius = 0;
-                node.Label.FontSize = 8;
-
-                // more style based on semantic id?
-                ApplyNodeStyle(node, ns);
-
-                // add
-                graph.AddNode(node);
-                referableToNode[sm] = node;
+                // link will be formed later be the recursion, starting with the individual
+                // Submodel
             }
 
             // AAS?
+            var aas = _env?.FindAasWithSubmodelId(sm?.Id);
+            var aasNode = referableToNode.GetValueOrDefault(aas);
+            if (aas != null && aasNode == null)
+            {
+                aasNode = CreateNode(graph,
+                    aas,
+                    aas.ToIdShortString(),
+                    Microsoft.Msagl.Drawing.Shape.DoubleCircle,
+                    EntityStyleAAS.FillColor, EntityStyleAAS.BorderColor, 
+                    EntityStyleAAS.FontColor,
+                    xRadius: 0, yRadius: 0,
+                    fontSize: 12,
+                    ns1: BomArguments.Parse(aas.HasExtensionOfName("BOM.Args")?.Value));
+            }
 
+            // make a link?
+            if (smNode != null && aasNode != null)
+            {
+                CreateLink(
+                    graph, smNode, aasNode,
+                    "(listed in)", 1.0,
+                    ArrowStyle.None, ArrowStyle.Normal);
+            }
+        }
+
+        protected Node CreateNode(
+            Microsoft.Msagl.Drawing.Graph graph,
+            Aas.IReferable rf,
+            string nodeText,
+            Microsoft.Msagl.Drawing.Shape shape,
+            Microsoft.Msagl.Drawing.Color fillColor,
+            Microsoft.Msagl.Drawing.Color borderColor,
+            Microsoft.Msagl.Drawing.Color fontColor,
+            double xRadius, double yRadius,
+            double fontSize,
+            BomArguments ns1 = null,
+            BomArguments ns2 = null)
+        {
+            // skip?
+            if (ns1?.Skip == true || ns2?.Skip == true)
+                return null;
+
+            // this gives nodes!
+            var node = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
+            node.UserData = rf;
+            node.LabelText = "" + nodeText;
+            node.Attr.Shape = shape;
+            node.Attr.FillColor = fillColor;
+            node.Attr.Color = borderColor;
+            node.Attr.XRadius = xRadius;
+            node.Attr.YRadius = yRadius;
+            node.Label.FontSize = fontSize;
+            node.Label.FontColor = fontColor;
+
+            // more style based?
+            ApplyNodeStyle(node, ns1);
+            ApplyNodeStyle(node, ns2);
+
+            // add
+            graph.AddNode(node);
+            referableToNode[rf] = node;
+
+            // okey
+            return node;
+        }
+
+        protected Edge CreateLink(
+            Microsoft.Msagl.Drawing.Graph graph,
+            Node n1,
+            Node n2,
+            string linkText,
+            double lineWidth,
+            ArrowStyle arrowheadAtSource,
+            ArrowStyle arrowheadAtTarget,
+            bool isDashed = false, bool isDotted = false,
+            object userData = null,
+            BomArguments ls1 = null,
+            BomArguments ls2 = null,
+            int? weight = null)
+        {
+            // format text it
+            var labelText = WrapOnMaxColumn(linkText, WrapMaxColumn);
+
+            // skip?
+            if (ls1?.Skip == true || ls2?.Skip == true)
+                return null;
+
+            // enough nodes?
+            if (n1 == null || n2 == null)
+                return null;
+
+            var edge = graph.AddEdge(n1.Id, labelText, n2.Id);
+            edge.UserData = userData;
+            edge.Attr.ArrowheadAtSource = arrowheadAtSource;
+            edge.Attr.ArrowheadAtTarget = arrowheadAtTarget;
+            edge.Attr.LineWidth = lineWidth;
+
+            if (isDashed)
+                edge.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dashed);
+            if (isDotted)
+                edge.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dotted);
+
+            if (weight.HasValue)
+                edge.Attr.Weight = weight.Value;
+
+            // more style based on semantic id?
+            ApplyLinkStyle(edge, ls1);
+            ApplyLinkStyle(edge, ls2);
+
+            // okay
+            return edge;
         }
 
         public void RecurseOnLayout(
@@ -456,7 +579,8 @@ namespace AasxPluginBomStructure
             Microsoft.Msagl.Drawing.Graph graph,
             Aas.IReferable parentRef,
             List<Aas.ISubmodelElement> smec,
-            int depth = 1, TextWriter textWriter = null)
+            int depth = 1, TextWriter textWriter = null,
+            Aas.IReferable entityParentRef = null)
         {
             // access
             if (graph == null || smec == null)
@@ -473,17 +597,19 @@ namespace AasxPluginBomStructure
                         "{0} Recurse pass {1} SME {2}",
                         new String(' ', depth), pass, "" + sme.IdShort);
 
-                if (sme is Aas.RelationshipElement || sme is Aas.ReferenceElement)
+                if (sme is Aas.IReferenceElement
+                    || sme is Aas.IRelationshipElement)
                 {
                     Aas.IReferable x1 = null, x2 = null;
 
-                    if (sme is Aas.RelationshipElement rel)
+                    if (sme is Aas.IRelationshipElement rel)
                     {
+                        // includes AnnotatedRelationshipElement
                         x1 = this.FindReferableByReference(rel.First);
                         x2 = this.FindReferableByReference(rel.Second);
                     }
 
-                    if (sme is Aas.ReferenceElement rfe)
+                    if (sme is Aas.IReferenceElement rfe)
                     {
                         x1 = sme.Parent as Aas.IReferable;
                         x2 = this.FindReferableByReference(rfe.Value);
@@ -506,10 +632,13 @@ namespace AasxPluginBomStructure
                         {
                             // build label text
                             var labelText = sme.ToIdShortString();
-                            if (sme.SemanticId != null && sme.SemanticId.Count() == 1)
-                                labelText += " : " + sme.SemanticId.Keys[0].Value;
-                            if (sme.SemanticId != null && sme.SemanticId.Count() > 1)
-                                labelText += " : " + sme.SemanticId.ToString();
+                            if (_options?.CompactLabels != true)
+                            {
+                                if (sme.SemanticId != null && sme.SemanticId.Count() == 1)
+                                    labelText += " : " + sme.SemanticId.Keys[0].Value;
+                                if (sme.SemanticId != null && sme.SemanticId.Count() > 1)
+                                    labelText += " : " + sme.SemanticId.ToString();
+                            }
 
                             // find BOM display arguments?
                             var args = BomArguments.Parse(sme.HasExtensionOfName("BOM.Args")?.Value);
@@ -533,35 +662,14 @@ namespace AasxPluginBomStructure
                                 }
                             }
 
-                            // format text it
-                            labelText = WrapOnMaxColumn(labelText, WrapMaxColumn);
-
-                            // can get an link style?
-                            var ls = _bomRecords?.FindFirstLinkStyle(sme.SemanticId);
-
-                            // skip?
-                            if (ls?.Skip == true)
-                                continue;
-
-                            // now add
-                            if (x1 == null || x2 == null)
-                                continue;
-
-                            var n1 = referableToNode[x1];
-                            var n2 = referableToNode[x2];
-
-                            var e = graph.AddEdge(n1.Id, labelText, n2.Id);
-                            e.UserData = sme;
-                            e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
-                            e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
-                            e.Attr.LineWidth = 1;
-
-                            // more style based on semantic id?
-                            ApplyLinkStyle(e, ls);
-
-                            // user arguments
-                            if (args != null)
-                                ApplyLinkStyle(e, args);
+                            CreateLink(graph,
+                                referableToNode.GetValueOrDefault(x1),
+                                referableToNode.GetValueOrDefault(x2),
+                                labelText,
+                                1.0, ArrowStyle.Normal, ArrowStyle.Normal,
+                                userData: sme,
+                                ls1: _bomRecords?.FindFirstLinkStyle(sme.SemanticId, sme.SupplementalSemanticIds),
+                                ls2: args);
                         }
                         catch (Exception ex)
                         {
@@ -570,60 +678,33 @@ namespace AasxPluginBomStructure
                     }
                 }
 
-                if (sme is Aas.Property prop)
+                if (sme is Aas.IDataElement)
                 {
                     // add as a Node to the graph?
-                    if (pass == 2 && referableByRelation.ContainsKey(prop))
+                    if (pass == 2 && referableByRelation.ContainsKey(sme))
                     {
-                        // can get an link style?
-                        var ns = _bomRecords?.FindFirstNodeStyle(prop.SemanticId);
-
-                        // skip?
-                        if (ns?.Skip == true)
-                            continue;
-
-                        // this gives nodes!
-                        var node = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
-                        node.UserData = prop;
-                        node.LabelText = "" + prop.ToIdShortString();
-                        node.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Box;
-                        node.Attr.FillColor = PropertyFillColor;
-                        node.Attr.Color = PropertyBorderColor;
-                        node.Attr.XRadius = 0;
-                        node.Attr.YRadius = 0;
-                        node.Label.FontSize = 8;
-
-                        // more style based on semantic id?
-                        ApplyNodeStyle(node, ns);
-
-                        // add
-                        graph.AddNode(node);
-                        referableToNode[prop] = node;
+                        var node = CreateNode(graph, sme,
+                            "" + sme.ToIdShortString(),
+                            Microsoft.Msagl.Drawing.Shape.Box,
+                            EntityStyleDataElement.FillColor,
+                            EntityStyleDataElement.BorderColor,
+                            EntityStyleDataElement.FontColor,
+                            0, 0, fontSize: 8,
+                            ns1: _bomRecords?.FindFirstNodeStyle(sme.SemanticId, sme.SupplementalSemanticIds),
+                            ns2: BomArguments.Parse(sme.HasExtensionOfName("BOM.Args")?.Value));
                     }
 
                     // draw a link from the parent (Entity or SMC) to this node
                     if (pass == 3 && parentRef != null)
                     {
-                        // get nodes
-                        try
-                        {
-                            if (!referableToNode.ContainsKey(parentRef) || !referableToNode.ContainsKey(prop))
-                                continue;
-
-                            var parentNode = referableToNode[parentRef];
-                            var propNode = referableToNode[prop];
-
-                            var e = graph.AddEdge(parentNode.Id, propNode.Id);
-                            e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.None;
-                            e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
-                            e.Attr.Color = PropertyBorderColor;
-                            e.Attr.LineWidth = 2;
-                            e.Attr.Weight = 10000;
-                        }
-                        catch (Exception ex)
-                        {
-                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                        }
+                        CreateLink(graph,
+                            referableToNode.GetValueOrDefault(parentRef),
+                            referableToNode.GetValueOrDefault(sme),
+                            "has",
+                            lineWidth: 1,
+                            arrowheadAtSource: ArrowStyle.None,
+                            arrowheadAtTarget: ArrowStyle.Normal,
+                            weight: 10000);
                     }
                 }
 
@@ -633,7 +714,7 @@ namespace AasxPluginBomStructure
                     if (pass == 2)
                     {
                         // can get an link style?
-                        var ns = _bomRecords?.FindFirstNodeStyle(ent.SemanticId);
+                        var ns = _bomRecords?.FindFirstNodeStyle(ent.SemanticId, ent.SupplementalSemanticIds);
                         if (ns?.Skip == true)
                             continue;
 
@@ -662,7 +743,8 @@ namespace AasxPluginBomStructure
                         referableToNode[sme] = node1;
 
                         // add asset label
-                        if (ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
+                        if (_options?.ShowAssetIds == true 
+                            && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
                         {
                             // another node
                             var node2 = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
@@ -686,6 +768,20 @@ namespace AasxPluginBomStructure
                             e.Attr.Color = AssetBorderColor;
                             e.Attr.LineWidth = 0.5;
                         }
+                    }
+
+                    // draw a link from the parent (Entity or SMC) to this node
+                    if (pass == 3 && entityParentRef != null)
+                    {
+                        CreateLink(graph,
+                            referableToNode.GetValueOrDefault(entityParentRef),
+                            referableToNode.GetValueOrDefault(ent),
+                            "(in)",
+                            lineWidth: 0.75,
+                            arrowheadAtSource: ArrowStyle.Normal,
+                            arrowheadAtTarget: ArrowStyle.None,
+                            isDotted: true,
+                            weight: 10000);
                     }
 
                     // might have statements

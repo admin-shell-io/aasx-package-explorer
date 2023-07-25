@@ -1868,6 +1868,8 @@ namespace AasxPackageLogic
                 if (topContextMenu)
                 {
                     List<string> contextHeaders = new();
+                    contextHeaders.AddRange(new[] { "\u2702", "Delete all" });
+
                     if (addEclassIrdi)
                         contextHeaders.AddRange(new[] { "\U0001f517", "Add ECLASS" });
                     if (jumpLambda != null)
@@ -1901,6 +1903,21 @@ namespace AasxPackageLogic
 
                                 if (contextHeaders[2 * oi + 1].Contains("clipboard"))
                                     return lambdaClipboard(o);
+
+                                if (contextHeaders[2 * oi + 1].Contains("Delete"))
+                                {
+                                    // re-init
+                                    keys.Clear();
+
+                                    // change to the outside
+                                    emitCustomEvent?.Invoke(relatedReferable);
+
+                                    // visualize
+                                    if (takeOverLambdaAction != null)
+                                        return takeOverLambdaAction;
+                                    else
+                                        return new AnyUiLambdaActionRedrawEntity();
+                                }
                             }
                             return new AnyUiLambdaActionNone();
                         });

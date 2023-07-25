@@ -58,7 +58,7 @@ namespace AasxPackageLogic
             AasxMenuActionTicket ticket = null)
         {
             // access
-            if (ticket == null || selectedItem == null)
+            if (ticket == null)
                 return;
 
             // basics
@@ -75,48 +75,67 @@ namespace AasxPackageLogic
             ticket.SelectedDereferencedMainDataObjects = 
                 selectedItems?.Select((ve) => ve.GetDereferencedMainDataObject());
 
+            // selectedItem is null, if multiple selected items
+            // Note: looks cumbersome, but intention is: specific ticket-Members for SME..
+            // are only set, if selected items count == 1.
+            var firstItem = selectedItems?.FirstOrDefault();
+
             // set
-            if (selectedItem is VisualElementEnvironmentItem veei)
+            if (firstItem is VisualElementEnvironmentItem veei)
             {
                 ticket.Package = veei.thePackage;
                 ticket.Env = veei.theEnv;
             }
 
-            if (selectedItem is VisualElementAdminShell veaas)
+            if (firstItem is VisualElementAdminShell veaas)
             {
                 ticket.Package = veaas.thePackage;
                 ticket.Env = veaas.theEnv;
-                ticket.AAS = veaas.theAas;
+                if (selectedItem != null)
+                {
+                    ticket.AAS = veaas.theAas;
+                }
             }
 
-            if (selectedItem is VisualElementAsset veasset)
+            if (firstItem is VisualElementAsset veasset)
             {
                 ticket.Env = veasset.theEnv;
-                ticket.AssetInfo = veasset.theAsset;
+                if (selectedItem != null)
+                {
+                    ticket.AssetInfo = veasset.theAsset;
+                }
             }
 
-            if (selectedItem is VisualElementSubmodelRef vesmr)
+            if (firstItem is VisualElementSubmodelRef vesmr)
             {
                 ticket.Package = vesmr.thePackage;
                 ticket.Env = vesmr.theEnv;
-                ticket.Submodel = vesmr.theSubmodel;
-                ticket.SubmodelRef = vesmr.theSubmodelRef;
+                if (selectedItem != null)
+                {
+                    ticket.Submodel = vesmr.theSubmodel;
+                    ticket.SubmodelRef = vesmr.theSubmodelRef;
+                }
             }
 
-            if (selectedItem is VisualElementSubmodel vesm)
+            if (firstItem is VisualElementSubmodel vesm)
             {
                 ticket.Package = PackageCentral?.Main;
                 ticket.Env = vesm.theEnv;
-                ticket.Submodel = vesm.theSubmodel;
+                if (selectedItem != null)
+                {
+                    ticket.Submodel = vesm.theSubmodel;
+                }
             }
 
-            if (selectedItem is VisualElementSubmodelElement vesme)
+            if (firstItem is VisualElementSubmodelElement vesme)
             {
                 ticket.Package = PackageCentral?.Main;
                 ticket.Env = vesme.theEnv;
-                ticket.SubmodelElement = vesme.theWrapper;
+                if (selectedItem != null)
+                {
+                    ticket.SubmodelElement = vesme.theWrapper;
+                }
             }
-
         }
 
 #pragma warning disable CS1998

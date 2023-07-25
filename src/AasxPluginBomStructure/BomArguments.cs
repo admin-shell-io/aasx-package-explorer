@@ -150,7 +150,7 @@ namespace AasxPluginBomStructure
 
         public static BomArguments Parse(string json)
         {
-            if (!json.HasContent())
+            if (json?.HasContent() != true)
                 return null;
 
             try

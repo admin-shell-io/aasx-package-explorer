@@ -87,7 +87,7 @@
             "value": "https://admin-shell.io/idta/HierarchicalStructures/SameAs/1/0"
           },
           "Start": "Normal",
-          "End": "None",
+          "End": "Normal",
           "Stroke": "Black",
           "Width": 1.0,
           "Title": "sameAs"
@@ -108,8 +108,8 @@
             "type": "ConceptDescription",
             "value": "https://admin-shell.io/idta/HierarchicalStructures/IsPartOf/1/0"
           },
-          "Start": "Normal",
-          "End": "None",
+          "Start": "None",
+          "End": "Normal",
           "Stroke": "Black",
           "Width": 1.0,
           "Title": "isPartOf"
@@ -123,8 +123,8 @@
           },
           "Skip": false,
           "Shape": "Circle",
-          "Background": "LightBlue",
-          "Stroke": "DarkBlue",
+          "Background": "#7F99FF",
+          "Stroke": "#0128CB",
           "LineWidth": 2.0,
           "Radius": 0.0,
           "FontSize": 8.0,
@@ -139,8 +139,8 @@
           },
           "Skip": false,
           "Shape": "Circle",
-          "Background": "LightBlue",
-          "Stroke": "DarkBlue",
+          "Background": "#DBE2FF",
+          "Stroke": "#0128CB",
           "LineWidth": 1.0,
           "Radius": 0.0,
           "FontSize": 8.0,

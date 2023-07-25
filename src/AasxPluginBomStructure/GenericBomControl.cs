@@ -37,6 +37,7 @@ namespace AasxPluginBomStructure
     {
         private AdminShellPackageEnv _package;
         private Aas.Submodel _submodel;
+        private bool _createOnPackage = false;
 
         private Microsoft.Msagl.Drawing.Graph theGraph = null;
         private Microsoft.Msagl.WpfGraphControl.GraphViewer theViewer = null;
@@ -64,6 +65,7 @@ namespace AasxPluginBomStructure
             var spTop = new StackPanel();
             spTop.Orientation = Orientation.Horizontal;
             
+            // style
 
             spTop.Children.Add(new Label() { Content = "Layout style: " });
 
@@ -79,6 +81,8 @@ namespace AasxPluginBomStructure
             };
             spTop.Children.Add(cbli);
 
+            // spacing
+
             spTop.Children.Add(new Label() { Content = "Spacing: " });
 
             var sli = new Slider()
@@ -86,7 +90,7 @@ namespace AasxPluginBomStructure
                 Orientation = Orientation.Horizontal,
                 Width = 150,
                 Minimum = 1,
-                Maximum = 100,
+                Maximum = 300,
                 TickFrequency = 10,
                 IsSnapToTickEnabled = true,
                 Value = _creatorOptions.LayoutSpacing,
@@ -100,6 +104,8 @@ namespace AasxPluginBomStructure
                 RedrawGraph();
             };
             spTop.Children.Add(sli);
+
+            // Compact labels
 
             var cbcomp = new CheckBox()
             {
@@ -118,6 +124,25 @@ namespace AasxPluginBomStructure
             cbcomp.Unchecked += cbcomb_changed;
             spTop.Children.Add(cbcomp);
 
+            // show asset ids
+
+            var cbaid = new CheckBox()
+            {
+                Content = "Show Asset ids",
+                Margin = new System.Windows.Thickness(10, 0, 10, 0),
+                VerticalContentAlignment = System.Windows.VerticalAlignment.Center,
+                IsChecked = _creatorOptions.CompactLabels,
+            };
+            RoutedEventHandler cbaid_changed = (s2, e2) =>
+            {
+                _creatorOptions.ShowAssetIds = cbaid.IsChecked == true;
+                RememberSettings();
+                RedrawGraph();
+            };
+            cbaid.Checked += cbaid_changed;
+            cbaid.Unchecked += cbaid_changed;
+            spTop.Children.Add(cbaid);
+
             return spTop;
         }
 
@@ -128,6 +153,7 @@ namespace AasxPluginBomStructure
             // access
             _package = opackage as AdminShellPackageEnv;
             _submodel = osm as Aas.Submodel;
+            _createOnPackage = false;
             _bomOptions = bomOptions;
             var master = masterDockPanel as DockPanel;
             if (_bomOptions == null || _package == null || _submodel == null || master == null)
@@ -208,6 +234,7 @@ namespace AasxPluginBomStructure
             // access
             _package = opackage as AdminShellPackageEnv;
             _submodel = null;
+            _createOnPackage = true;
             _bomOptions = bomOptions;
             if (_bomOptions == null || _package?.AasEnv == null)
                 return null;
@@ -245,7 +272,7 @@ namespace AasxPluginBomStructure
             master.Children.Add(dp);
 
             // graph
-            var graph = CreateGraph(_package, null, _creatorOptions, createOnPackage: true);
+            var graph = CreateGraph(_package, null, _creatorOptions, createOnPackage: _createOnPackage);
 
             // very important: first bind it, then add graph
             var viewer = new Microsoft.Msagl.WpfGraphControl.GraphViewer();
@@ -323,9 +350,19 @@ namespace AasxPluginBomStructure
                     for (int pass=1; pass <= 3; pass++)
                         foreach (var sm2 in env.AasEnv.OverSubmodelsOrEmpty())
                         {
+                            // create AAS and SM
+                            if (pass == 1)
+                                creator.CreateAasAndSubmodelNodes(graph, sm2);
+
+                            // modify creator's bomRecords on the fly
+                            var recs = new BomStructureOptionsRecordList(
+                                _bomOptions.LookupAllIndexKey<BomStructureOptionsRecord>(
+                                    sm2.SemanticId?.GetAsExactlyOneKey()));
+                            creator.SetRecods(recs);
 
                             // graph itself
-                            creator.RecurseOnLayout(pass, graph, null, sm2.SubmodelElements, 1, null);
+                            creator.RecurseOnLayout(pass, graph, null, sm2.SubmodelElements, 1, null, 
+                                entityParentRef: sm2);
                         }
                 }
             }
@@ -432,7 +469,8 @@ namespace AasxPluginBomStructure
             try
             {
                 // re-draw (brutally)
-                theGraph = CreateGraph(_package, _submodel, _creatorOptions);
+                theGraph = CreateGraph(_package, _submodel, _creatorOptions, createOnPackage: _createOnPackage);
+
                 theViewer.Graph = null;
                 theViewer.Graph = theGraph;
             }
