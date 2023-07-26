@@ -92,7 +92,7 @@ Check the version of dotnet-format so that the code is always formatted in the s
 #>
 function AssertDotnetFormatVersion
 {
-    AssertDotnetToolVersion -packageID "dotnet-format" -expectedVersion "5.1.250801"
+    AssertDotnetToolVersion -packageID "dotnet-format" -expectedVersion "7.0.360101"
 }
 
 <#
