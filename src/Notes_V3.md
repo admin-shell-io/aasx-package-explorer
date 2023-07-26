@@ -52,6 +52,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * AAS event compressor for just update value events does obviously not work ?!!
 
+* change "Ctrl-C, Ctrl-V" to more exotic shortcuts (often interfering with WPF/ Browser
+  default behaviour) -- done
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done
@@ -97,6 +100,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * specificAssetId: name/value not key/value!! Wording "IdentifierKeyValue" not 
   longer existing. -- Done
 * when Find/ Replace: before invoke "Replace all", "Start" needs to be invoked! -- Done
+* "add known" .. alphabetic sorting of domains and individual names of semanticIds.
+  Done for WPF and Blazor (WPF keeps also last selected).
 
 ## Notes (influencing todos)
 
@@ -174,6 +179,13 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * Difficult to handle mixed (de-) serializations. CLARIFY WITH AAS CORE teal.
   Currently, AdaptiveAasIClassConverter is being used.
+
+## Discussion topics for handling AAS
+
+* how to handle "derivedFrom"; how does "cloning" information work
+* how two handle 2++ Submodels with different versions?
+  - same idShort?
+
 
 ## Feature Requests to AAS core
 

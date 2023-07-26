@@ -35,7 +35,7 @@ namespace AasxPredefinedConcepts
         public AsciiDoc()
         {
             // info
-            this.DomainInfo = "Definitions for exporting AsciiDoc formats";
+            this.DomainInfo = "AASX PackageExplorer - Plugin exporting of AsciiDoc formats";
 
             // IReferable
             SEM_AsciiDocSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() {

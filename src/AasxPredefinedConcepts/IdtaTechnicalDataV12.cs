@@ -16,11 +16,12 @@ using Aas = AasCore.Aas3_0;
 namespace AasxPredefinedConcepts
 {
     /// <summary>
-    /// Definitions of Submodel VDI2770 according to new alignment with VDI
+    /// Definitions of Submodel Generic Frame for Technical Data for Industrial Equipment
+    /// in Manufacturing (IDTA 02003-1-2) from Aug 2022
     /// </summary>
-    public class ZveiTechnicalDataV11 : AasxDefinitionBase
+    public class IdtaTechnicalDataV12 : AasxDefinitionBase
     {
-        public static ZveiTechnicalDataV11 Static = new ZveiTechnicalDataV11();
+        public static IdtaTechnicalDataV12 Static = new IdtaTechnicalDataV12();
 
         public Aas.Submodel
             SM_TechnicalData;
@@ -30,7 +31,7 @@ namespace AasxPredefinedConcepts
             CD_ManufacturerName,
             CD_ManufacturerLogo,
             CD_ManufacturerProductDesignation,
-            CD_ManufacturerPartNumber,
+            CD_ManufacturerArticleNumber,
             CD_ManufacturerOrderCode,
             CD_ProductImage,
             CD_ProductClassifications,
@@ -46,15 +47,15 @@ namespace AasxPredefinedConcepts
             CD_TextStatement,
             CD_ValidDate;
 
-        public ZveiTechnicalDataV11()
+        public IdtaTechnicalDataV12()
         {
             // info
-            this.DomainInfo = "Generic Frame for Technical Data for Industrial Equipment (ZVEI) V1.1";
+            this.DomainInfo = "Generic Frame for Technical Data for Industrial Equipment (IDTA) V1.2";
 
             // IReferable
             this.ReadLibrary(
-                Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiTechnicalDataV11.json");
-            this.RetrieveEntriesFromLibraryByReflection(typeof(ZveiTechnicalDataV11), useFieldNames: true);
+                Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "IdtaTechnicalDataV12.json");
+            this.RetrieveEntriesFromLibraryByReflection(typeof(IdtaTechnicalDataV12), useFieldNames: true);
         }
     }
 }

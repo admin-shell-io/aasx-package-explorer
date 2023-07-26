@@ -30,7 +30,7 @@ namespace AasxPredefinedConcepts
         public AasEvents()
         {
             // info
-            this.DomainInfo = "AAS Events";
+            this.DomainInfo = "AASX PackageExplorer - AAS Events";
 
             // definitons
             CD_StructureChangeOutwards = CreateSparseConceptDescription("en", "IRI",

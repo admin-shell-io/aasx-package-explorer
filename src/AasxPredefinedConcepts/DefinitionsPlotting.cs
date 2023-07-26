@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts
         public Plotting()
         {
             // info
-            this.DomainInfo = "Plugin Plotting";
+            this.DomainInfo = "AASX PackageExplorer - Plugin Plotting";
 
             // IReferable
             SEM_PlottingSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/Plotting/Submodel/1/0") });

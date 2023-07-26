@@ -1809,10 +1809,24 @@ namespace AasxPackageLogic
                         if (buttonNdx == 1)
                         {
                             // from SMEs
-                            var res = this.ImportCDsFromSmSme(env, submodel, recurseChilds: true, repairSemIds: true);
+
+                            var adaptive61360 = 
+                                this.context?.MessageBoxFlyoutShow(
+                                    "Create IEC61360 data specifications and adaptively fill preferredName " +
+                                    "and definition by idShort and description attributes?",
+                                    "Create CDs from SMEs",
+                                    AnyUiMessageBoxButton.YesNoCancel, AnyUiMessageBoxImage.Information);
+
+                            if (adaptive61360 == AnyUiMessageBoxResult.Cancel)
+                                return new AnyUiLambdaActionNone();
+
+                            var res = this.ImportCDsFromSmSme(env, submodel, recurseChilds: true, repairSemIds: true,
+                                adaptive61360: adaptive61360 == AnyUiMessageBoxResult.Yes);
+
                             Log.Singleton.Info(StoredPrint.Color.Blue, $"Added {res.Item3} CDs to the environment, " +
                                 $"while {res.Item1} invalid semanticIds were present and " +
                                 $"{res.Item2} CDs were already existing.");
+                            
                             return new AnyUiLambdaActionRedrawAllElements(
                                         submodel, isExpanded: true);
                         }
@@ -2712,7 +2726,6 @@ namespace AasxPackageLogic
                             var cd = new Aas.ConceptDescription(AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription));
 
-
                             // store in AAS enviroment
                             env.ConceptDescriptions.Add(cd);
 
@@ -2778,6 +2791,7 @@ namespace AasxPackageLogic
                         if (buttonNdx == 3)
                         {
                             var res = this.ImportCDsFromSmSme(env, sme, recurseChilds: false, repairSemIds: true);
+                            
                             if (res.Item1 > 0)
                             {
                                 Log.Singleton.Error("Cannot create CD because no valid semanticId is present " +
@@ -2798,7 +2812,16 @@ namespace AasxPackageLogic
 
                         if (buttonNdx == 4)
                         {
-                            var res = this.ImportCDsFromSmSme(env, sme, recurseChilds: true, repairSemIds: true);
+                            var adaptive61360 = AnyUiMessageBoxResult.Yes ==
+                                this.context?.MessageBoxFlyoutShow(
+                                    "Create IEC61360 data specification and adaptively fill preferredName " +
+                                    "and definition by idShort and description attributes.",
+                                    "Create CDs from SMEs",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Information);
+
+                            var res = this.ImportCDsFromSmSme(env, sme, recurseChilds: true, repairSemIds: true, 
+                                adaptive61360: adaptive61360);
+                            
                             Log.Singleton.Info(StoredPrint.Color.Blue, $"Added {res.Item3} CDs to the environment, " +
                                 $"while {res.Item1} invalid semanticIds were present and " +
                                 $"{res.Item2} CDs were already existing.");

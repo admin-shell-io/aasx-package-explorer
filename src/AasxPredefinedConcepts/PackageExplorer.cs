@@ -24,7 +24,7 @@ namespace AasxPredefinedConcepts
         public PackageExplorer()
         {
             // info
-            this.DomainInfo = "AASX Package Explorer";
+            this.DomainInfo = "AASX PackageExplorer - General";
 
             // IReferable
             CD_AasxLoadedNavigateTo = CreateSparseConceptDescription("en", "IRI",

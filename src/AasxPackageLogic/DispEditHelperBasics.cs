@@ -2342,9 +2342,10 @@ namespace AasxPackageLogic
                         if (buttonNdx == 3) newndx = MoveElementToBottomOfList<T>(list, entity);
                         if (newndx >= 0)
                         {
-                            this.AddDiaryEntry(entityRf,
-                                new DiaryEntryStructChange(StructuralChangeReason.Modify, createAtIndex: newndx),
-                                explicitParent: explicitParent);
+                            if (entityRf != null)
+                                this.AddDiaryEntry(entityRf,
+                                    new DiaryEntryStructChange(StructuralChangeReason.Modify, createAtIndex: newndx),
+                                    explicitParent: explicitParent);
 
                             if (sendUpdateEvent != null)
                             {
@@ -2514,7 +2515,8 @@ namespace AasxPackageLogic
             Aas.Environment env,
             Aas.IReferable root,
             bool recurseChilds = false,
-            bool repairSemIds = false)
+            bool repairSemIds = false,
+            bool adaptive61360 = false)
         {
             // access
             var noValidId = 0;
@@ -2574,6 +2576,14 @@ namespace AasxPackageLogic
                             cd.IdShort = rf.IdShort;
                             if (rf.Description != null)
                                 cd.Description = rf.Description.Copy();
+                        }
+
+                        // add more data?
+                        if (adaptive61360)
+                        {
+                            cd.SetIEC61360Spec(
+                                preferredNames: new[] { "en", "" + rf.IdShort },
+                                definition: new[] { "en", "" + rf.Description?.GetDefaultString("en") });
                         }
 
                         // store in AAS enviroment

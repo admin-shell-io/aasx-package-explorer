@@ -95,7 +95,9 @@
 		_domainNames.Clear();
 		if (DataSourcePools != null)
 		{
-			foreach (var d in DataSourcePools.GetDomains())
+			var domains = DataSourcePools.GetDomains().ToList();
+			domains.Sort();
+			foreach (var d in domains)
 				_domainNames.Add(d);
 		}
 
@@ -120,9 +122,10 @@
 		_selectedEntity = null;
 
 		// display
-		var ld = this.DataSourcePools?.GetEntitiesForDomain(domain);
+		var ld = this.DataSourcePools?.GetEntitiesForDomain(domain)?.ToList();
 		if (ld != null)
 		{
+			ld.Sort((x1, x2) => x1.DisplayName.CompareTo(x2.DisplayName));
 			_domainEntities.Clear();
 			foreach (var ent in ld)
 				_domainEntities.Add(ent);

@@ -66,7 +66,7 @@ namespace AasxPredefinedConcepts
         public ZveiNameplateV10()
         {
             // info
-            this.DomainInfo = "ZVEI Digital Nameplate (V1.0)";
+            this.DomainInfo = "Digital Nameplate (ZVE) V1.0 (deprecated)";
 
             // IReferable
             this.ReadLibrary(

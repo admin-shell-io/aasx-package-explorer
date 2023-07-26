@@ -45,7 +45,7 @@ namespace AasxPredefinedConcepts
             public InteropRelations()
             {
                 // info
-                this.DomainInfo = "Interoperable Relations (experimental)";
+                this.DomainInfo = "Composite assets, interoperable Relations (experimental)";
 
                 // IReferable
                 CD_FileToNavigateElement = CreateSparseConceptDescription("en", "IRI",

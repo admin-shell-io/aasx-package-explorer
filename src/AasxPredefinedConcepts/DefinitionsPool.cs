@@ -95,7 +95,7 @@ namespace AasxPredefinedConcepts
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.VDI2770v11.Static);
 
-            thePool.IndexReferables("ZVEI Digital Typeplate v1.0 (deprecated)",
+            thePool.IndexReferables("Digital Typeplate (ZVEI) v1.0 (deprecated)",
                 new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate()).GetAllReferables());
 
@@ -104,14 +104,17 @@ namespace AasxPredefinedConcepts
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.HierarchStructV10.Static);
 
-            thePool.IndexReferables("ZVEI Digital Identification v1.0",
+            thePool.IndexReferables("Digital Identification (ZVEI) V1.0 (deprecated)",
                 new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfIdentification(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate()).GetAllReferables());
 
-            thePool.IndexReferables("ZVEI TechnicalData v1.0",
+            thePool.IndexReferables(
+                "Generic Frame for Technical Data for Industrial Equipment (ZVEI) V1.0 (deprecated)",
                 new DefinitionsZveiTechnicalData.SetOfDefs(new DefinitionsZveiTechnicalData()).GetAllReferables());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTechnicalDataV11.Static);
+
+            thePool.IndexDefinitions(AasxPredefinedConcepts.IdtaTechnicalDataV12.Static);
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.AasEvents.Static);
 

@@ -498,19 +498,19 @@ namespace AasxPackageLogic
                 ticketMenu: new AasxMenu()
                     .AddAction("aas-elem-cut", "Cut",
                         "Removes the currently selected element and places it in the paste buffer.",
-                        inputGesture: "Ctrl+X")
+                        inputGesture: "Ctrl+Shift+X")
                     .AddAction("aas-elem-copy", "Copy",
                         "Places the currently selected element in the paste buffer.",
-                        inputGesture: "Ctrl+C")
+                        inputGesture: "Ctrl+Shift+C")
                     .AddAction("aas-elem-paste-above", "Paste above",
                         "Adds the content of the paste buffer before (above) the currently selected element.",
-                        inputGesture: "Ctrl+Shift+V")
+                        inputGesture: "Ctrl+Alt+V")
                     .AddAction("aas-elem-paste-below", "Paste below",
                         "Adds the content of the paste buffer after (below) the currently selected element.",
-                        inputGesture: "Ctrl+V")
+                        inputGesture: "Ctrl+Shift+V")
                     .AddAction("aas-elem-paste-into", "Paste into",
                         "Adds the content of the paste buffer into the currently selected collection-like element.",
-                        inputGesture: "Ctrl+Alt+V"),
+                        inputGesture: "Ctrl+Shift+Alt+V"),
                 ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
@@ -763,16 +763,16 @@ namespace AasxPackageLogic
                         inputGesture: "Ctrl+X")
                     .AddAction("aas-elem-copy", "Copy",
                         "Places the currently selected element in the paste buffer.",
-                        inputGesture: "Ctrl+C")
+                        inputGesture: "Ctrl+Shift+C")
                     .AddAction("aas-elem-paste-above", "Paste above",
                         "Adds the content of the paste buffer before (above) the currently selected element.",
-                        inputGesture: "Ctrl+Shift+V")
+                        inputGesture: "Ctrl+Alt+V")
                     .AddAction("aas-elem-paste-below", "Paste below",
                         "Adds the content of the paste buffer after (below) the currently selected element.",
-                        inputGesture: "Ctrl+V")
+                        inputGesture: "Ctrl+Shift+V")
                     .AddAction("aas-elem-paste-into", "Paste into",
                         "Adds the content of the paste buffer into the currently selected collection-like element.",
-                        inputGesture: "Ctrl+Alt+V"),
+                        inputGesture: "Ctrl+Shift+Alt+V"),
                 ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
@@ -1004,16 +1004,16 @@ namespace AasxPackageLogic
                         inputGesture: "Ctrl+X")
                     .AddAction("aas-elem-copy", "Copy",
                         "Places the currently selected element in the paste buffer.",
-                        inputGesture: "Ctrl+C")
+                        inputGesture: "Ctrl+Shift+C")
                     .AddAction("aas-elem-paste-above", "Paste above",
                         "Adds the content of the paste buffer before (above) the currently selected element.",
-                        inputGesture: "Ctrl+Shift+V")
+                        inputGesture: "Ctrl+Alt+V")
                     .AddAction("aas-elem-paste-below", "Paste below",
                         "Adds the content of the paste buffer after (below) the currently selected element.",
-                        inputGesture: "Ctrl+V")
+                        inputGesture: "Ctrl+Shift+V")
                     .AddAction("aas-elem-paste-into", "Paste into",
                         "Adds the content of the paste buffer into the currently selected collection-like element.",
-                        inputGesture: "Ctrl+Alt+V"),
+                        inputGesture: "Ctrl+Shift+Alt+V"),
                 ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)

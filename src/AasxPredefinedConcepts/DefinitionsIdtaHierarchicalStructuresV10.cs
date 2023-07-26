@@ -37,7 +37,7 @@ namespace AasxPredefinedConcepts
         public HierarchStructV10()
         {
             // info
-            this.DomainInfo = "IDTA Hierarchical Structures (V1.0)";
+            this.DomainInfo = "Hierarchical Structures (IDTA) V1.0";
 
             // IReferable
             this.ReadLibrary(

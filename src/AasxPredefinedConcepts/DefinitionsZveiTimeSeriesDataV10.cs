@@ -48,7 +48,7 @@ namespace AasxPredefinedConcepts
         public ZveiTimeSeriesDataV10()
         {
             // info
-            this.DomainInfo = "Basic model for the modeling of time series data (ZVEI) v1.0";
+            this.DomainInfo = "Basic model for the modeling of time series data (ZVEI) V1.0";
 
             // IReferable
             this.ReadLibrary(

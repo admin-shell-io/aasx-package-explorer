@@ -130,7 +130,7 @@ namespace AasxPredefinedConcepts
         public DigitalNameplateV20()
         {
             // info
-            this.DomainInfo = "IDTA Digital Nameplate (V2.0)";
+            this.DomainInfo = "Digital Nameplate (IDTA) V2.0";
 
             // IReferable
             this.ReadLibrary(

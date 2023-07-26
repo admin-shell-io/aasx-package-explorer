@@ -37,7 +37,7 @@ namespace AasxPredefinedConcepts
         public ImageMap()
         {
             // info
-            this.DomainInfo = "Plugin ImageMap";
+            this.DomainInfo = "AASX PackageExplorer - Plugin ImageMap";
 
             // IReferable
             SEM_ImageMapSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0") });
