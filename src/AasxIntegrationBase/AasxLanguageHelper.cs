@@ -25,8 +25,10 @@ namespace AasxIntegrationBase
         public static string[] LangEnumToISO3166String = {
                 "All", "GB", "DE", "CN", "JP", "KR", "FR", "ES" }; // ISO 3166 -> List of countries
 
-        public static string GetLangCodeFromEnum(LangEnum le)
+        public static string GetLangCodeFromEnum(LangEnum le, bool nullForDefault = false)
         {
+            if (nullForDefault && le == LangEnum.Any)
+                return null;
             return "" + LangEnumToISO639String[(int)le];
         }
 

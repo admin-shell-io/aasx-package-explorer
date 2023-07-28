@@ -55,6 +55,18 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * change "Ctrl-C, Ctrl-V" to more exotic shortcuts (often interfering with WPF/ Browser
   default behaviour) -- done
 
+  mir ist gerade ein Bug in „AasxCsharpLibrary/Extensions/ExtendedReference.cs“ aufgefallen. In der Methode
+public static bool Matches(this IReference reference, IReference otherReference, MatchMode matchMode = MatchMode.Strict)
+werden  die Keys miteinander verglichen. Wenn die Anzahl der Keys der ‚otherReference‘ allerdings größer als die Anzahl der Keys der ‚reference‘ sind, wird trotzdem ein passender Match zurückgegeben, solange nur die ersten Keys zusammen passen.
+
+Hier müsste in Zeile 167 statt nur
+if (reference.Keys == null || reference.Keys.Count == 0 || otherReference?.Keys == null || otherReference.Keys.Count == 0)
+auch noch auf die Länge der Keys verglichen werden:
+if (reference.Keys == null || reference.Keys.Count == 0 || otherReference?.Keys == null || otherReference.Keys.Count == 0 || reference.Keys.Count != otherReference.Keys.Count)
+
+Soll ich den Bug im Repository eintragen bzw. ein PullRequest starten? Oder pflegst du so etwas „auf dem kurzen Dienstweg“ ein?
+
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done
@@ -102,6 +114,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * when Find/ Replace: before invoke "Replace all", "Start" needs to be invoked! -- Done
 * "add known" .. alphabetic sorting of domains and individual names of semanticIds.
   Done for WPF and Blazor (WPF keeps also last selected).
+* Submodel "move up" (fast re-ordering) show other order than real (slow) ordering!
 
 ## Notes (influencing todos)
 
@@ -112,6 +125,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   - AAS core crashes without EmbeddedDataSpecification.DataSpecificationContent
   - AAS core crashes without EmbeddedDataSpecification.DataSpecificationContent.PreferredName
   - AAS core crashes when ReferenceElement.value = null is serialized
+  - AAS core crashes when RelationshipElement.first/second = null is serialized
 
 
 ## Todo (old RC02)

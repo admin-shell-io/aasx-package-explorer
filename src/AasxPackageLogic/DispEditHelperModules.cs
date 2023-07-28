@@ -713,10 +713,19 @@ namespace AasxPackageLogic
                 {
                     // let the user control the number of references
                     this.AddActionPanel(
-                        stack, "Spec. records:",
-                        new[] { "Add record", "Add IEC61360", "Delete last record" }, repo,
-                        (buttonNdx) =>
-                        {
+                        stack, "Spec. records:", repo: repo,
+						superMenu: superMenu,
+				        ticketMenu: new AasxMenu()
+					        .AddAction("add-record", "Add record",
+						        "Adds a record for data specification reference and content.")
+							.AddAction("add-iec61360", "Add IEC61360",
+								"Adds a record initialized for IEC 61360 content.")
+							.AddAction("auto-detect", "Auto detect content",
+								"Auto dectects known data specification contents and sets valid references.")
+							.AddAction("delete-last", "Delete last record",
+								"Deletes last record (data specification reference and content)."),
+						ticketAction: (buttonNdx, ticket) =>
+						{
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
                                     new Aas.EmbeddedDataSpecification(
@@ -735,6 +744,15 @@ namespace AasxPackageLogic
                                         })));
 
                             if (buttonNdx == 2)
+                            {
+                                var fix = 0;
+                                foreach (var eds in hasDataSpecification)
+                                    if (eds != null && eds.FixReferenceWrtContent())
+                                        fix++;
+                                Log.Singleton.Info($"Fixed {fix} records of embedded data specification.");
+                            }
+
+                            if (buttonNdx == 3)
                             {
                                 if (hasDataSpecification.Count > 0)
                                     hasDataSpecification.RemoveAt(hasDataSpecification.Count - 1);

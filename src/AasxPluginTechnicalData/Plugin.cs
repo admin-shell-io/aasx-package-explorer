@@ -114,7 +114,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (!found)
                     return null;
 
-                // success prepare record
+                // success; prepare record
                 var cve = new AasxPluginResultVisualExtension("TED", "Technical Data Viewer");
 
                 // ok

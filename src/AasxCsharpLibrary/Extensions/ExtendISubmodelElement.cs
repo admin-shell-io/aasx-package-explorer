@@ -1015,7 +1015,37 @@ namespace Extensions
             return submodelElements.FindAllSemanticIdAs<T>(semId, matchMode).FirstOrDefault<T>();
         }
 
-        public static IEnumerable<ISubmodelElement> Join(params IEnumerable<ISubmodelElement>[] lists)
+		public static List<ISubmodelElement> GetChildListFromFirstSemanticId(
+            this List<ISubmodelElement> submodelElements,
+			IKey semKey, MatchMode matchMode = MatchMode.Strict)
+		{
+            return FindFirstSemanticIdAs<ISubmodelElement>(submodelElements, semKey, matchMode)?.GetChildsAsList();
+		}
+
+		public static List<ISubmodelElement> GetChildListFromFirstSemanticId(
+            this List<ISubmodelElement> submodelElements,
+			IReference semId, MatchMode matchMode = MatchMode.Strict)
+        {
+			return FindFirstSemanticIdAs<ISubmodelElement>(submodelElements, semId, matchMode)?.GetChildsAsList();
+		}
+
+		public static IEnumerable<List<ISubmodelElement>> GetChildListsFromAllSemanticId(
+            this List<ISubmodelElement> submodelElements,
+			IKey semKey, MatchMode matchMode = MatchMode.Strict)
+		{
+            foreach (var child in FindAllSemanticIdAs<ISubmodelElement>(submodelElements, semKey, matchMode))
+                yield return child.GetChildsAsList()?.ToList();
+		}
+
+		public static IEnumerable<List<ISubmodelElement>> GetChildListsFromAllSemanticId(
+            this List<ISubmodelElement> submodelElements,
+			IReference semId, MatchMode matchMode = MatchMode.Strict)
+		{
+			foreach (var child in FindAllSemanticIdAs<ISubmodelElement>(submodelElements, semId, matchMode))
+				yield return child.GetChildsAsList()?.ToList();
+		}
+
+		public static IEnumerable<ISubmodelElement> Join(params IEnumerable<ISubmodelElement>[] lists)
         {
             if (lists == null || lists.Length < 1)
                 yield break;

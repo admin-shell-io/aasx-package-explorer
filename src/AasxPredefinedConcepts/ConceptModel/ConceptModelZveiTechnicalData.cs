@@ -18,7 +18,7 @@ namespace AasxPredefinedConcepts.ConceptModel
     /// </summary>
     public class ConceptModelZveiTechnicalData
     {
-        public enum Version { Unknown, V1_0, V1_1 }
+        public enum Version { Unknown, V1_0, V1_1, V1_2 }
 
         public Version ActiveVersion = Version.Unknown;
 
@@ -31,7 +31,8 @@ namespace AasxPredefinedConcepts.ConceptModel
             CD_ManufacturerLogo,
             CD_ManufacturerProductDesignation,
             CD_ManufacturerPartNumber,
-            CD_ManufacturerOrderCode,
+			CD_ManufacturerArticleNumber,
+			CD_ManufacturerOrderCode,
             CD_ProductImage,
             CD_ProductClassifications,
             CD_ProductClassificationItem,
@@ -119,9 +120,42 @@ namespace AasxPredefinedConcepts.ConceptModel
                 CD_TextStatement = defsV11.CD_TextStatement;
                 CD_ValidDate = defsV11.CD_ValidDate;
             }
-        }
 
-        public void InitFromSubmodel(Aas.Submodel sm)
+			//
+			// V1.2
+			//
+
+			if (ver == Version.V1_2)
+			{
+				var defsV12 = AasxPredefinedConcepts.IdtaTechnicalDataV12.Static;
+
+				ActiveVersion = Version.V1_2;
+
+				SM_TechnicalData = defsV12.SM_TechnicalData;
+
+				CD_GeneralInformation = defsV12.CD_GeneralInformation;
+				CD_ManufacturerName = defsV12.CD_ManufacturerName;
+				CD_ManufacturerLogo = defsV12.CD_ManufacturerLogo;
+				CD_ManufacturerProductDesignation = defsV12.CD_ManufacturerProductDesignation;
+				CD_ManufacturerArticleNumber = defsV12.CD_ManufacturerArticleNumber;
+				CD_ManufacturerOrderCode = defsV12.CD_ManufacturerOrderCode;
+				CD_ProductImage = defsV12.CD_ProductImage;
+				CD_ProductClassifications = defsV12.CD_ProductClassifications;
+				CD_ProductClassificationItem = defsV12.CD_ProductClassificationItem;
+				CD_ProductClassificationSystem = defsV12.CD_ProductClassificationSystem;
+				CD_ClassificationSystemVersion = defsV12.CD_ClassificationSystemVersion;
+				CD_ProductClassId = defsV12.CD_ProductClassId;
+				CD_TechnicalProperties = defsV12.CD_TechnicalProperties;
+				CD_SemanticIdNotAvailable = defsV12.CD_SemanticIdNotAvailable;
+				CD_MainSection = defsV12.CD_MainSection;
+				CD_SubSection = defsV12.CD_SubSection;
+				CD_FurtherInformation = defsV12.CD_FurtherInformation;
+				CD_TextStatement = defsV12.CD_TextStatement;
+				CD_ValidDate = defsV12.CD_ValidDate;
+			}
+		}
+
+		public void InitFromSubmodel(Aas.Submodel sm)
         {
             var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
@@ -133,6 +167,11 @@ namespace AasxPredefinedConcepts.ConceptModel
             if (sm.SemanticId.MatchesExactlyOneKey(
                     defsV11.SM_TechnicalData.SemanticId.GetAsExactlyOneKey(), MatchMode.Relaxed))
                 InitFromVersion(Version.V1_1);
-        }
+
+			var defsV12 = AasxPredefinedConcepts.IdtaTechnicalDataV12.Static;
+			if (sm.SemanticId.MatchesExactlyOneKey(
+					defsV12.SM_TechnicalData.SemanticId.GetAsExactlyOneKey(), MatchMode.Relaxed))
+				InitFromVersion(Version.V1_2);
+		}
     }
 }

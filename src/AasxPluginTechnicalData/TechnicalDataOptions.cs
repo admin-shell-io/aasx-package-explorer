@@ -37,10 +37,11 @@ namespace AasxPluginTechnicalData
             var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
             var defsV11 = AasxPredefinedConcepts.ZveiTechnicalDataV11.Static;
+			var defsV12 = AasxPredefinedConcepts.IdtaTechnicalDataV12.Static;
 
-            // records
+			// records
 
-            var opt = new TechnicalDataOptions();
+			var opt = new TechnicalDataOptions();
 
             var rec10 = new TechnicalDataOptionsRecord();
             rec10.AllowSubmodelSemanticId.Add(defsV10.SM_TechnicalData.GetSemanticKey());
@@ -50,7 +51,11 @@ namespace AasxPluginTechnicalData
             rec11.AllowSubmodelSemanticId.Add(defsV11.SM_TechnicalData.GetSemanticKey());
             opt.Records.Add(rec11);
 
-            return opt;
+			var rec12 = new TechnicalDataOptionsRecord();
+			rec11.AllowSubmodelSemanticId.Add(defsV12.SM_TechnicalData.GetSemanticKey());
+			opt.Records.Add(rec12);
+
+			return opt;
         }
     }
 }

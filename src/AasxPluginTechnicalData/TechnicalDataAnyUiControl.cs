@@ -190,7 +190,8 @@ namespace AasxPluginTechnicalData
                     if (!(cbLang?.SelectedIndex.HasValue == true))
                         return new AnyUiLambdaActionNone();
                     _selectedLangIndex = cbLang.SelectedIndex.Value;
-                    _selectedLangStr = AasxLanguageHelper.LangEnumToISO639String[_selectedLangIndex];
+                    _selectedLangStr = AasxLanguageHelper.GetLangCodeFromEnum(
+                        (AasxLanguageHelper.LangEnum)_selectedLangIndex, nullForDefault: true);
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
                     {
                         PluginName = _plugin?.GetPluginName(),
@@ -315,9 +316,15 @@ namespace AasxPluginTechnicalData
 
                 var partNumber = "" +
                     smcGeneral.Value.FindFirstSemanticIdAs<Aas.Property>(
-                        theDefs.CD_ManufacturerPartNumber.GetSingleKey(), MatchMode.Relaxed)?.Value;
+                        theDefs.CD_ManufacturerPartNumber?.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
-                var manuName = "" +
+				var artNumber = "" +
+                	smcGeneral.Value.FindFirstSemanticIdAs<Aas.Property>(
+		                theDefs.CD_ManufacturerArticleNumber?.GetSingleKey(), MatchMode.Relaxed)?.Value;
+                if (!partNumber.HasContent())
+                    partNumber = artNumber;
+
+				var manuName = "" +
                     smcGeneral.Value.FindFirstSemanticIdAs<Aas.Property>(
                         theDefs.CD_ManufacturerName.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
@@ -343,6 +350,7 @@ namespace AasxPluginTechnicalData
 
                 uitk.AddSmallBasicLabelTo(outer, 0, 0, margin: new AnyUiThickness(1),
                     fontSize: 1.2f,
+                    textWrapping: AnyUiTextWrapping.Wrap,
                     setBold: true,
                     content: prodDesig);
 
@@ -421,33 +429,34 @@ namespace AasxPluginTechnicalData
             // also Section: Product Classifications
             //
 
-            var smcClassifications =
-                sm.SubmodelElements.FindFirstSemanticIdAs<Aas.SubmodelElementCollection>(
-                    theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed);
-            if (smcClassifications != null)
+            //var smcClassifications =
+            //    sm.SubmodelElements.FindFirstSemanticIdAs<Aas.SubmodelElementCollection>(
+            //        theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed);
+            //if (smcClassifications != null)
+            
+            foreach (var childProdClass in sm.SubmodelElements.GetChildListsFromAllSemanticId(
+				theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed))            
             {
                 // gather
 
                 var clr = new List<ClassificationRecord>();
                 foreach (var smc in
-                        smcClassifications.Value.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
-                            theDefs.CD_ProductClassificationItem.GetSingleKey(),
-                            MatchMode.Relaxed))
+                    childProdClass.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
+                        theDefs.CD_ProductClassificationItem.GetSingleKey(),
+                        MatchMode.Relaxed))
                 {
                     var sys = (
                         "" +
                         smc.Value.FindFirstSemanticIdAs<Aas.Property>(
-                            theDefs.CD_ProductClassificationSystem.GetSingleKey(),
-                            MatchMode.Relaxed)?.Value).Trim();
+                            theDefs.CD_ProductClassificationSystem.GetSingleKey(), MatchMode.Relaxed)?.Value).Trim();
                     var ver = (
                         "" +
                         smc.Value.FindFirstSemanticIdAs<Aas.Property>(
-                            theDefs.CD_ClassificationSystemVersion.GetSingleKey(),
-                            MatchMode.Relaxed)?.Value).Trim();
+                            theDefs.CD_ClassificationSystemVersion.GetSingleKey(), MatchMode.Relaxed)?.Value).Trim();
                     var cls = (
                         "" +
                         smc.Value.FindFirstSemanticIdAs<Aas.Property>(
-                            theDefs.CD_ProductClassId.GetSingleKey())?.Value).Trim();
+                            theDefs.CD_ProductClassId.GetSingleKey(), MatchMode.Relaxed)?.Value).Trim();
 
                     if (sys != "" && cls != "")
                         clr.Add(new ClassificationRecord() { System = sys, Version = ver, ClassTxt = cls });
@@ -665,6 +674,35 @@ namespace AasxPluginTechnicalData
                         Value = "" + sme.ValueAsText(defaultLang) + " " + unit
                     });
                 }
+                else 
+                if (sme is Aas.SubmodelElementCollection smc)
+                {
+                    // SMC which is not dedicated main/ sub-section
+                    // as specific in SMT spec, only allow SMC for that
+                    // decide automatically about main/ sub section
+
+                    if (depth == 0)
+                        // Main Section
+                        rows.Add(new TripleRowData()
+                        {
+                            Heading = "" + dispName,
+                            HeadMargin = new AnyUiThickness(-2 + 4 * depth, 6, 0, 4),
+                            FontSize = 1.4f,
+                            FontWeight = AnyUiFontWeight.Bold
+                        });
+                    else
+                        rows.Add(new TripleRowData()
+                        {
+                            Heading = "" + dispName,
+                            HeadMargin = new AnyUiThickness(-2 + 4 * depth, 4, 0, 2),
+                            FontSize = 1.2f,
+                            FontWeight = AnyUiFontWeight.Bold
+                        });
+
+					// recurse into that
+					TableAddPropertyRows_Recurse(
+						theDefs, defaultLang, package, rows, smc.Value, depth + 1);
+				}
             }
         }
 

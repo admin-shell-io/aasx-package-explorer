@@ -1064,19 +1064,23 @@ namespace Extensions
             // access
             if (srcEnv == null || src == null || src.SemanticId == null)
                 return;
+            
             // check for this SubmodelElement in Source
             var cdSrc = srcEnv.FindConceptDescriptionByReference(src.SemanticId);
             if (cdSrc == null)
                 return;
+            
             // check for this SubmodelElement in Destnation (this!)
             var cdDest = environment.FindConceptDescriptionByReference(src.SemanticId);
-            if (cdDest != null)
-                return;
-            // copy new
-            environment.ConceptDescriptions.Add(cdSrc.Copy());
+            if (cdDest == null)
+            {
+                // copy new
+                environment.ConceptDescriptions.Add(cdSrc.Copy());
+            }
+            
             // recurse?
-            if (!shallowCopy && src is SubmodelElementCollection)
-                foreach (var m in (src as SubmodelElementCollection).Value)
+            if (!shallowCopy)
+                foreach (var m in src.EnumerateChildren())
                     environment.CopyConceptDescriptionsFrom(srcEnv, m, shallowCopy: false);
 
         }

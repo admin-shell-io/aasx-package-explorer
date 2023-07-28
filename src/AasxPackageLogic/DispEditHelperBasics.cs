@@ -813,33 +813,6 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        // dead-csharp off
-                        //TODO (jtikekar, 0000-00-00): need to test
-                        //TODO (MIHO, 0000-00-00): refectored to extension method
-                        //if (typeof(T) is ILangStringTextType)
-                        //{
-                        //    langStr?.Add(new LangStringTextType("", ""));
-                        //}
-                        //else if (typeof(T) is ILangStringNameType)
-                        //{
-                        //    langStr?.Add(new LangStringNameType("", ""));
-                        //}
-                        //else if (typeof(T) is ILangStringPreferredNameTypeIec61360)
-                        //{
-                        //    langStr?.Add(new LangStringPreferredNameTypeIec61360("", ""));
-                        //}
-                        //else if (typeof(T) is ILangStringShortNameTypeIec61360)
-                        //{
-                        //    langStr?.Add(new LangStringShortNameTypeIec61360("", ""));
-                        //}
-                        //else if (typeof(T) is ILangStringDefinitionTypeIec61360)
-                        //{
-                        //    langStr?.Add(new LangStringDefinitionTypeIec61360("", ""));
-                        //}
-                        //langStr?.Add(new T { Language = "", Text = "" });
-                        // langStr.Add(ls);
-                        // dead-csharp on
-
                         langStr.Add<T>("", "");
 
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());

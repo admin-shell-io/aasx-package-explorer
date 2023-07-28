@@ -54,21 +54,20 @@ namespace Extensions
                 embeddedDataSpecification.DataSpecification = ExtensionsUtil.ConvertReferenceFromV20(sourceEmbeddedSpec.dataSpecification, ReferenceTypes.ExternalReference);
 
                 // TODO (MIHO, 2022-19-12): check again, see questions
-                var o2id = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360";
-                var oldid = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0";
+                var oldid = new[] {
+                    "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+					"http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+					"www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"
+				};
                 var newid = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0";
 
-                if (sourceEmbeddedSpec.dataSpecification?.Matches("", false, "IRI", oldid,
-                    AasxCompatibilityModels.AdminShellV20.Key.MatchMode.Identification) == true)
-                {
-                    embeddedDataSpecification.DataSpecification.Keys[0].Value = newid;
-                }
-
-                if (sourceEmbeddedSpec.dataSpecification?.Matches("", false, "IRI", o2id,
-                    AasxCompatibilityModels.AdminShellV20.Key.MatchMode.Identification) == true)
-                {
-                    embeddedDataSpecification.DataSpecification.Keys[0].Value = newid;
-                }
+                // map all "usable" old ids to new one ..
+                foreach (var oi in oldid)
+                    if (sourceEmbeddedSpec.dataSpecification?.Matches("", false, "IRI", oi,
+                        AasxCompatibilityModels.AdminShellV20.Key.MatchMode.Identification) == true)
+                    {
+                        embeddedDataSpecification.DataSpecification.Keys[0].Value = newid;
+                    }
             }
 
             if (sourceEmbeddedSpec.dataSpecificationContent?.dataSpecificationIEC61360 != null)

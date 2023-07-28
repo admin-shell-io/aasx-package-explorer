@@ -3415,7 +3415,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
 
-                    this.AddKeyListLangStr<Aas.ILangStringTextType>(stack, "value", mlp.Value, repo);
+                    this.AddKeyListLangStr<Aas.ILangStringTextType>(stack, "value", mlp.Value, repo, relatedReferable: mlp);
 
                 // ValueId
 
