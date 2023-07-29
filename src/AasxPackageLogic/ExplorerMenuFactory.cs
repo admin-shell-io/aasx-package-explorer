@@ -285,7 +285,10 @@ namespace AasxPackageExplorer
                             help: "Creates a new Submodel based on defintions provided by a pool of known definitions.",
                             args: new AasxMenuListOfArgDefs()
                                 .Add("Domain", "Domain of knowledge/ name of the Submodel (partially)")
-                                .Add("SmRef", "Return: Submodel generated", hidden: true)))
+                                .Add("SmRef", "Return: Submodel generated", hidden: true))
+					.AddWpfBlazor(name: "MissingCdsFromKnown", header: "Missing ConceptDescriptions from pool of known",
+							help: "For the selected element: checks which SME refer to missing " +
+                                  "ConceptDescriptions, which can be created from pool of known definitions."))
                 .AddMenu(header: "Visualize …", attachPoint: "Visualize")
                 .AddSeparator()
                 .AddWpfBlazor(name: "ConvertElement", header: "Convert …",

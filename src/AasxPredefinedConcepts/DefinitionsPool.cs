@@ -187,5 +187,19 @@ namespace AasxPredefinedConcepts
                 return;
             IndexReferables(bs.DomainInfo, bs.GetAllReferables());
         }
+
+        public IEnumerable<Aas.IReferable> FindReferableByReference(string id)
+        {
+            if (id?.HasContent() != true)
+                yield break;
+
+            foreach (var ldp in pool.Values)
+                foreach (var dpeb in ldp)
+                    if (dpeb is DefinitionsPoolReferableEntity dpre
+                        && dpre.Ref is Aas.IIdentifiable dpreid
+                        && dpreid.Id == id)
+                        yield return dpre.Ref;
+
+		}
     }
 }

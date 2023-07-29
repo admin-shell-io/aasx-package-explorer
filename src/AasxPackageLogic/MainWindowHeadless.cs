@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
@@ -1098,6 +1099,105 @@ namespace AasxPackageLogic
                 }
 #endif
             }
+
+            if (cmd == "missingcdsfromknown")
+            {
+                //
+                // Step 1: analyze selected entity
+                //
+
+                var rfToCheck = new List<Aas.IReferable>();
+                if (ticket.SelectedDereferencedMainDataObjects != null)
+                    foreach (var mdo in ticket.SelectedDereferencedMainDataObjects)
+                        if (mdo is Aas.AssetAdministrationShell mdoAas)
+                            foreach (var sm in ticket.Env.FindAllSubmodelGroupedByAAS((aas, sm) => aas == mdoAas))
+                                rfToCheck.Add(sm);
+                        else if (mdo is Aas.Submodel mdoSm)
+                            rfToCheck.Add(mdoSm);
+                        else if (mdo is Aas.ISubmodelElement mdoSme)
+                            rfToCheck.Add(mdoSme);
+
+                if (rfToCheck.Count < 1)
+                {
+                    LogErrorToTicket(ticket, "No valid element selected to be checked for missing CDs.");
+                    return;
+                }
+
+                //
+                // Step 2: collect missing CDs
+                //
+
+                var cdsMissing = new List<string>();
+                foreach (var rf in rfToCheck)
+                    foreach (var x in rf.Descend())
+                        if (x is Aas.ISubmodelElement sme && sme.SemanticId != null
+                            && ticket.Env.FindConceptDescriptionByReference(sme.SemanticId) == null
+                            && sme.SemanticId.IsValid() && sme.SemanticId.Count() == 1
+                            && !cdsMissing.Contains(sme.SemanticId.Keys[0].Value))
+                            cdsMissing.Add(sme.SemanticId.Keys[0].Value);
+
+				if (cdsMissing.Count < 1)
+				{
+					LogErrorToTicket(ticket, "No missing CDs could be found for selected element. Aborting!");
+					return;
+				}
+
+                //
+                // Step 3: check, which CDs could be provided by pool
+                //
+
+                var cdsAvail = new List<Aas.ConceptDescription>();
+                var duplicates = false;
+                foreach (var cdm in cdsMissing)
+                {
+                    int count = 0;
+                    foreach (var frf in AasxPredefinedConcepts.DefinitionsPool.Static
+                                        .FindReferableByReference(cdm))
+                        if (frf is Aas.ConceptDescription fcd)
+                        {
+                            var cpy = fcd.Copy();
+                            count++;
+                            if (count > 1)
+                            {
+                                cpy.Id += $"__{count:000}";
+                                Log.Singleton.Error(
+                                    $"Multiple CDs found for Id={cdm}. CD added with altered Id={cpy.Id}.");
+                                duplicates = true;
+                            }
+                            cdsAvail.Add(cpy);
+                        }
+                }
+
+				if (cdsAvail.Count < 1)
+				{
+					LogErrorToTicket(ticket, "No missing CDs could be found in pool of known. Aborting!");
+					return;
+				}
+
+                //
+                // Step 4: Ask
+                //
+
+                if (AnyUiMessageBoxResult.Yes != await DisplayContext.MessageBoxFlyoutShowAsync(
+                    $"{cdsMissing.Count} CDs missing. {cdsAvail.Count} CDs available in pool of knonw. " +
+                    "Add these available CDs to Environment?",
+                    "Add CDs from pool of known",
+                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                    return;
+
+                //
+                // Step 5: Go, add
+                //
+
+                foreach (var cd in cdsAvail)
+                    ticket.Env.Add(cd);
+
+                Log.Singleton.Info($"Added {cdsAvail.Count} missing CDs from pool of known.");
+                if (duplicates)
+                    Log.Singleton.Error("Duplicated CDs found while adding missing CDs from pool of known. " +
+                        "See log.");
+                ticket.Success = true;
+			}
 
             if (cmd == "convertelement")
             {

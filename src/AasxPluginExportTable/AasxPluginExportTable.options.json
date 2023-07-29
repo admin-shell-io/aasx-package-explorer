@@ -635,6 +635,34 @@
         "null",
         "%SME.multiplicity%"
       ]
+    },
+    {
+      "Name": "Export scratch info",
+      "Format": 2,
+      "RowsTop": 1,
+      "RowsBody": 1,
+      "RowsGap": 2,
+      "Cols": 2,
+      "ReplaceFailedMatches": true,
+      "FailText": "-",
+      "ActInHierarchy": true,
+      "NoHeadings": false,
+      "Top": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "Body": [
+        "",
+        "",
+        "",
+        "",
+        "[%SME.elementShort%]\r\n%SME.idShort%",
+        "idShort: %SME.idShort%\r\nsemanticId: %SME.semanticId[0].value%"
+      ]
     }
   ]
 }

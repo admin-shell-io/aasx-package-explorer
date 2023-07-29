@@ -539,22 +539,22 @@ namespace Extensions
             return null;
         }
 
-        public static IEnumerable<ISubmodel> FindAllSubmodelsGroupedByAAS(this AasCore.Aas3_0.Environment environment, Func<IAssetAdministrationShell, ISubmodel, bool> p = null)
-        {
-            if (environment.AssetAdministrationShells == null || environment.Submodels == null)
-                yield break;
-            foreach (var aas in environment.AssetAdministrationShells)
-            {
-                if (aas?.Submodels == null)
-                    continue;
-                foreach (var submodelReference in aas.Submodels)
-                {
-                    var submodel = environment.FindSubmodel(submodelReference);
-                    if (submodel != null && (p == null || p(aas, submodel)))
-                        yield return submodel;
-                }
-            }
-        }
+        //public static IEnumerable<ISubmodel> FindAllSubmodelsGroupedByAAS(this AasCore.Aas3_0.Environment environment, Func<IAssetAdministrationShell, ISubmodel, bool> p = null)
+        //{
+        //    if (environment.AssetAdministrationShells == null || environment.Submodels == null)
+        //        yield break;
+        //    foreach (var aas in environment.AssetAdministrationShells)
+        //    {
+        //        if (aas?.Submodels == null)
+        //            continue;
+        //        foreach (var submodelReference in aas.Submodels)
+        //        {
+        //            var submodel = environment.FindSubmodel(submodelReference);
+        //            if (submodel != null && (p == null || p(aas, submodel)))
+        //                yield return submodel;
+        //        }
+        //    }
+        //}
 
         public static IEnumerable<ISubmodel> FindAllSubmodelBySemanticId(this AasCore.Aas3_0.Environment environment, string semanticId)
         {

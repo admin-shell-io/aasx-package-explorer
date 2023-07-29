@@ -66,6 +66,7 @@ if (reference.Keys == null || reference.Keys.Count == 0 || otherReference?.Keys 
 
 Soll ich den Bug im Repository eintragen bzw. ein PullRequest starten? Oder pflegst du so etwas „auf dem kurzen Dienstweg“ ein?
 
+* Export table / cells / allow return
 
 ## Done (w.r.t. recently V3.0)
 
