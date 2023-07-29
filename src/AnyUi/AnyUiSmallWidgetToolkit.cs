@@ -245,13 +245,15 @@ namespace AnyUi
                 tb.VerticalContentAlignment = verticalContentAlignment.Value;
             if (textWrap.HasValue)
                 tb.TextWrapping = textWrap.Value;
-            if (multiLine.HasValue)
-                tb.MultiLine = multiLine.Value;
-
-            // (MIHO, 2020-11-13): constrain to one line
-            tb.AcceptsReturn = false;
+            
+            // (MIHO, 2020-11-13): be default constrain to one line
+            tb.MultiLine = false;
             tb.MaxLines = 3;
-            tb.VerticalScrollBarVisibility = AnyUiScrollBarVisibility.Auto;
+
+			if (multiLine.HasValue)
+				tb.MultiLine = multiLine.Value;
+
+			tb.VerticalScrollBarVisibility = AnyUiScrollBarVisibility.Auto;
 
             AnyUiGrid.SetRow(tb, row);
             AnyUiGrid.SetColumn(tb, col);

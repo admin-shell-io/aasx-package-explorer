@@ -66,7 +66,7 @@ if (reference.Keys == null || reference.Keys.Count == 0 || otherReference?.Keys 
 
 Soll ich den Bug im Repository eintragen bzw. ein PullRequest starten? Oder pflegst du so etwas „auf dem kurzen Dienstweg“ ein?
 
-* Export table / cells / allow return
+* Submodel "move up" (fast re-ordering) show other order than real (slow) ordering!
 
 ## Done (w.r.t. recently V3.0)
 
@@ -115,7 +115,7 @@ Soll ich den Bug im Repository eintragen bzw. ein PullRequest starten? Oder pfle
 * when Find/ Replace: before invoke "Replace all", "Start" needs to be invoked! -- Done
 * "add known" .. alphabetic sorting of domains and individual names of semanticIds.
   Done for WPF and Blazor (WPF keeps also last selected).
-* Submodel "move up" (fast re-ordering) show other order than real (slow) ordering!
+* Export table / cells / allow return -- done (re-structed TextBox / MultiLine)
 
 ## Notes (influencing todos)
 

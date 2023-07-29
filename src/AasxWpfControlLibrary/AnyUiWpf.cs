@@ -906,12 +906,13 @@ namespace AnyUi
                                 wpf.Padding = GetWpfTickness(cntl.Padding);
                             if (cntl.TextWrapping.HasValue)
                                 wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
+                            if (cntl.MultiLine)
+                                wpf.AcceptsReturn = true;
                             if (cntl.IsReadOnly)
                                 wpf.IsReadOnly = cntl.IsReadOnly;
 
                             wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)
                                 ((int) cntl.VerticalScrollBarVisibility);
-                            wpf.AcceptsReturn = cntl.AcceptsReturn;
                             if (cntl.MaxLines != null)
                                 wpf.MaxLines = cntl.MaxLines.Value;
                             wpf.Text = cntl.Text;

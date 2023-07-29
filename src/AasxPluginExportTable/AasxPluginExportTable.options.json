@@ -638,8 +638,8 @@
     },
     {
       "Name": "Export scratch info",
-      "Format": 2,
-      "RowsTop": 1,
+      "Format": 3,
+      "RowsTop": 3,
       "RowsBody": 1,
       "RowsGap": 2,
       "Cols": 2,
@@ -650,6 +650,12 @@
       "Top": [
         "",
         "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "%Parent.idShort%",
         "",
         "",
         "",

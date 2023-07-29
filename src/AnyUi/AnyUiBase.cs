@@ -1282,7 +1282,6 @@ namespace AnyUi
 
         public AnyUiScrollBarVisibility VerticalScrollBarVisibility;
 
-        public bool AcceptsReturn;
         public bool MultiLine;
         public Nullable<int> MaxLines;
         public bool IsReadOnly = false;
