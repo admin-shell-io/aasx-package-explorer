@@ -59,7 +59,9 @@
   <ServerConfiguration>
     <BaseAddresses>
       <ua:String>opc.tcp://localhost:51210/UA/SampleServer</ua:String>
+      <!--
       <ua:String>https://localhost:51212/UA/SampleServer/</ua:String>
+      -->
     </BaseAddresses>
 
     <!-- 
@@ -145,7 +147,7 @@
         <ua:ApplicationUri>opc.tcp://localhost:4840</ua:ApplicationUri>
         <ua:ApplicationType>DiscoveryServer_3</ua:ApplicationType>
         <ua:DiscoveryUrls>
-          <ua:String>opc.tcp://localhost:4840</ua:String>
+          <ua:String>opc.tcp://localhost:48400</ua:String>
         </ua:DiscoveryUrls>
       </ua:Server>
       <ua:SecurityMode>SignAndEncrypt_3</ua:SecurityMode>
@@ -167,7 +169,7 @@
       <ua:String>Data Access Server Facet</ua:String>
       <ua:String>Method Server Facet</ua:String>
     </ServerProfileArray>
-    <ShutdownDelay>5</ShutdownDelay>
+    <ShutdownDelay>2</ShutdownDelay>
     <ServerCapabilities>
       <ua:String>DA</ua:String>
     </ServerCapabilities>

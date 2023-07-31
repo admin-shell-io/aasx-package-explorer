@@ -13,7 +13,9 @@ using System.Linq;
 using AasxDictionaryImport.Model;
 using AasxDictionaryImport.Tests;
 using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 using NUnit.Framework;
+using Extensions;
 
 namespace AasxDictionaryImport.Cdd.Tests
 {
@@ -50,13 +52,13 @@ namespace AasxDictionaryImport.Cdd.Tests
                 new[] { "P4", "Test property 2" },
             }));
 
-            var env = new AdminShellV20.AdministrationShellEnv();
+            var env = new Aas.Environment();
             var adminShell = CreateAdminShell(env);
 
             var p3 = submodelElements.First(e => e.Id == "P3");
             p3.IsSelected = true;
             Assert.That(!p3.ImportSubmodelInto(env, adminShell));
-            Assert.That(adminShell.submodelRefs, Has.Count.Zero);
+            Assert.That(adminShell.Submodels, Has.Count.Zero);
 
             var c1 = submodels.First(e => e.Id == "C1");
             var children = c1.Children;
@@ -64,38 +66,38 @@ namespace AasxDictionaryImport.Cdd.Tests
 
             SetSelected(c1, true);
             Assert.That(c1.ImportSubmodelInto(env, adminShell));
-            Assert.That(adminShell.submodelRefs, Has.Count.EqualTo(1));
-            var submodel = env.FindSubmodel(adminShell.submodelRefs[0]);
-            Assert.That(submodel.idShort, Is.EqualTo("MainTestClass"));
-            Assert.That(submodel.submodelElements, Is.Not.Null);
-            Assert.That(submodel.submodelElements, Has.Count.EqualTo(2));
+            Assert.That(adminShell.Submodels, Has.Count.EqualTo(1));
+            var submodel = env.FindSubmodel(adminShell.Submodels[0]);
+            Assert.That(submodel.IdShort, Is.EqualTo("MainTestClass"));
+            Assert.That(submodel.SubmodelElements, Is.Not.Null);
+            Assert.That(submodel.SubmodelElements, Has.Count.EqualTo(2));
 
-            var c2 = submodel.submodelElements[0].submodelElement;
-            Assert.That(c2, Is.TypeOf<AdminShellV20.SubmodelElementCollection>());
-            Assert.That(c2.idShort, Is.EqualTo("Block1"));
-            if (!(c2 is AdminShellV20.SubmodelElementCollection c2Coll))
+            var c2 = submodel.SubmodelElements[0];
+            Assert.That(c2, Is.TypeOf<Aas.SubmodelElementCollection>());
+            Assert.That(c2.IdShort, Is.EqualTo("Block1"));
+            if (!(c2 is Aas.ISubmodelElementCollection c2Coll))
                 return;
-            Assert.That(c2Coll.value, Has.Count.EqualTo(1));
+            Assert.That(c2Coll.Value, Has.Count.EqualTo(1));
 
-            var p3Element = c2Coll.value[0].submodelElement;
-            Assert.That(p3Element, Is.TypeOf<AdminShellV20.Property>());
-            Assert.That(p3Element.idShort, Is.EqualTo("TestProperty1"));
+            var p3Element = c2Coll.Value[0];
+            Assert.That(p3Element, Is.TypeOf<Aas.IProperty>());
+            Assert.That(p3Element.IdShort, Is.EqualTo("TestProperty1"));
             // TODO (Robin, 2020-09-03): please check
             // dead-csharp off
             // Assert.That(p3Element.hasDataSpecification, Is.Not.Null);
             // Assert.That(p3Element.hasDataSpecification, Has.Count.EqualTo(1));
             // dead-csharp on
 
-            var c3 = submodel.submodelElements[1].submodelElement;
-            Assert.That(c3, Is.TypeOf<AdminShellV20.SubmodelElementCollection>());
-            Assert.That(c3.idShort, Is.EqualTo("Block2"));
-            if (!(c3 is AdminShellV20.SubmodelElementCollection c3Coll))
+            var c3 = submodel.SubmodelElements[1];
+            Assert.That(c3, Is.TypeOf<Aas.SubmodelElementCollection>());
+            Assert.That(c3.IdShort, Is.EqualTo("Block2"));
+            if (!(c3 is Aas.ISubmodelElementCollection c3Coll))
                 return;
-            Assert.That(c3Coll.value, Has.Count.EqualTo(1));
+            Assert.That(c3Coll.Value, Has.Count.EqualTo(1));
 
-            var p4Element = c3Coll.value[0].submodelElement;
-            Assert.That(p4Element, Is.TypeOf<AdminShellV20.Property>());
-            Assert.That(p4Element.idShort, Is.EqualTo("TestProperty2"));
+            var p4Element = c3Coll.Value[0];
+            Assert.That(p4Element, Is.TypeOf<Aas.Property>());
+            Assert.That(p4Element.IdShort, Is.EqualTo("TestProperty2"));
             // TODO (Robin, 2020-09-03): please check
             // dead-csharp off
             // Assert.That(p4Element.hasDataSpecification, Is.Not.Null);

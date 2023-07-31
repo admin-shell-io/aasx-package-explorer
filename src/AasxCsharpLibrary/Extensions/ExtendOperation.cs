@@ -6,7 +6,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
 */
-using AdminShellNS.Display;
+using AdminShellNS;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,7 +16,7 @@ namespace Extensions
     {
         #region AasxPackageExplorer
 
-        public static object AddChild(this Operation operation, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
+        public static object AddChild(this IOperation operation, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
         {
             // not enough information to select list of children?
             var pl = placement as EnumerationPlacmentOperationVariable;
@@ -50,7 +50,7 @@ namespace Extensions
             return ov;
         }
 
-        public static EnumerationPlacmentBase GetChildrenPlacement(this Operation operation, ISubmodelElement child)
+        public static EnumerationPlacmentBase GetChildrenPlacement(this IOperation operation, ISubmodelElement child)
         {
             // trivial
             if (child == null)
@@ -93,7 +93,7 @@ namespace Extensions
             };
         }
 
-        public static List<IOperationVariable> GetVars(this Operation op, OperationVariableDirection dir)
+        public static List<IOperationVariable> GetVars(this IOperation op, OperationVariableDirection dir)
         {
             if (dir == OperationVariableDirection.In)
                 return op.InputVariables;
@@ -103,7 +103,7 @@ namespace Extensions
         }
 
         public static List<IOperationVariable> SetVars(
-            this Operation op, OperationVariableDirection dir, List<IOperationVariable> value)
+            this IOperation op, OperationVariableDirection dir, List<IOperationVariable> value)
         {
             if (dir == OperationVariableDirection.In)
             {
@@ -122,8 +122,8 @@ namespace Extensions
 
         #endregion
 
-        public static Operation UpdateFrom(
-            this Operation elem, ISubmodelElement source)
+        public static IOperation UpdateFrom(
+            this IOperation elem, ISubmodelElement source)
         {
             if (source == null)
                 return elem;

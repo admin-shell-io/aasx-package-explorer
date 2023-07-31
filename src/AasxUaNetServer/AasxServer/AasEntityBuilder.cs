@@ -15,9 +15,8 @@ using System.Threading.Tasks;
 using AdminShellNS;
 using AdminShell_V20;
 using Opc.Ua;
-using AasxCompatibilityModels;
 using Extensions;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0;
 
 namespace AasOpcUaServer
 {
@@ -69,24 +68,24 @@ namespace AasOpcUaServer
         public class NodeRecord
         {
             public NodeState uanode = null;
-            public AdminShellV20.Referable referable = null;
-            public AdminShellV20.Identification identification = null;
+            public Aas.IReferable referable = null;
+            public string id = "";
 
             public NodeRecord() { }
-            public NodeRecord(NodeState uanode, AdminShell.Referable referable)
+            public NodeRecord(NodeState uanode, Aas.IReferable referable)
             {
                 this.uanode = uanode;
                 this.referable = referable;
             }
-            public NodeRecord(NodeState uanode, AdminShell.Identification identification)
+            public NodeRecord(NodeState uanode, string id)
             {
                 this.uanode = uanode;
-                this.identification = identification;
+                this.id = id;
             }
         }
 
-        private Dictionary<AdminShell.Referable, NodeRecord> NodeRecordFromReferable
-            = new Dictionary<AdminShell.Referable, NodeRecord>();
+        private Dictionary<Aas.IReferable, NodeRecord> NodeRecordFromReferable
+            = new Dictionary<Aas.IReferable, NodeRecord>();
         private Dictionary<string, NodeRecord> NodeRecordFromIdentificationHash
             = new Dictionary<string, NodeRecord>();
 
@@ -99,9 +98,9 @@ namespace AasOpcUaServer
             if (nr.referable != null && !NodeRecordFromReferable.ContainsKey(nr.referable))
                 NodeRecordFromReferable.Add(nr.referable, nr);
 
-            if (nr.identification != null && nr.identification.idType != null && nr.identification.id != null)
+            if (nr.id != null)
             {
-                var hash = nr.identification.idType.Trim().ToUpper() + "|" + nr.identification.id.Trim().ToUpper();
+                var hash = "" + nr.id.Trim().ToUpper();
                 if (!NodeRecordFromIdentificationHash.ContainsKey(hash))
                     NodeRecordFromIdentificationHash.Add(hash, nr);
             }
@@ -112,7 +111,7 @@ namespace AasOpcUaServer
         /// </summary>
         /// <param name="referable"></param>
         /// <returns></returns>
-        public NodeRecord LookupNodeRecordFromReferable(AdminShell.Referable referable)
+        public NodeRecord LookupNodeRecordFromReferable(Aas.IReferable referable)
         {
             if (NodeRecordFromReferable == null || !NodeRecordFromReferable.ContainsKey(referable))
                 return null;
@@ -124,18 +123,31 @@ namespace AasOpcUaServer
         /// </summary>
         /// <param name="identification"></param>
         /// <returns></returns>
-        public NodeRecord LookupNodeRecordFromIdentification(AdminShell.Identification identification)
+        public NodeRecord LookupNodeRecordFromIdentification(Aas.IIdentifiable identification)
         {
-            var hash = identification.idType.Trim().ToUpper() + "|" + identification.id.Trim().ToUpper();
+            var hash = "" + identification.Id.Trim().ToUpper();
             if (NodeRecordFromReferable == null || !NodeRecordFromIdentificationHash.ContainsKey(hash))
                 return null;
             return NodeRecordFromIdentificationHash[hash];
         }
 
-        /// <summary>
-        /// Base class for actions, which shall be done on the 2nd pass of the information model building
-        /// </summary>
-        public class NodeLateAction
+		/// <summary>
+		/// Use this always to lookup node records from Indentifiable
+		/// </summary>
+		/// <param name="identification"></param>
+		/// <returns></returns>
+		public NodeRecord LookupNodeRecordFromId(string id)
+		{
+			var hash = "" + id?.Trim().ToUpper();
+			if (NodeRecordFromReferable == null || !NodeRecordFromIdentificationHash.ContainsKey(hash))
+				return null;
+			return NodeRecordFromIdentificationHash[hash];
+		}
+
+		/// <summary>
+		/// Base class for actions, which shall be done on the 2nd pass of the information model building
+		/// </summary>
+		public class NodeLateAction
         {
             public NodeState uanode = null;
         }
@@ -147,10 +159,10 @@ namespace AasOpcUaServer
         {
             public enum ActionType { None, SetAasReference, SetDictionaryEntry }
 
-            public AdminShell.Reference targetReference = null;
+            public Aas.IReference targetReference = null;
             public ActionType actionType = ActionType.None;
 
-            public NodeLateActionLinkToReference(NodeState uanode, AdminShell.Reference targetReference,
+            public NodeLateActionLinkToReference(NodeState uanode, Aas.IReference targetReference,
                 ActionType actionType)
             {
                 this.uanode = uanode;
@@ -174,7 +186,7 @@ namespace AasOpcUaServer
         /// Top level creation functions. Uses the definitions of RootAAS, RootConceptDescriptions, 
         /// RootDataSpecifications to synthesize information model
         /// </summary>
-        public void CreateAddInstanceObjects(AdminShell.AdministrationShellEnv env)
+        public void CreateAddInstanceObjects(Aas.Environment env)
         {
             if (RootAAS == null)
                 return;
@@ -188,8 +200,8 @@ namespace AasOpcUaServer
                 }
 
             // AAS
-            if (env.AdministrationShells != null)
-                foreach (var aas in env.AdministrationShells)
+            if (env.AssetAdministrationShells != null)
+                foreach (var aas in env.AssetAdministrationShells)
                     this.AasTypes.AAS.CreateAddInstanceObject(RootAAS, env, aas);
 
             // go through late actions
@@ -247,11 +259,10 @@ namespace AasOpcUaServer
                     if (!foundAtAll && lax.targetReference.Keys.Count == 1)
                     {
                         // can turn the targetReference to a simple identification
-                        var targetId = new AdminShell.Identification(lax.targetReference.Keys[0].idType,
-                            lax.targetReference.Keys[0].value);
+                        var targetId = "" + lax.targetReference.Keys[0].Value;
 
                         // we might have such an (empty) target already available as uanode
-                        var nr = this.LookupNodeRecordFromIdentification(targetId);
+                        var nr = this.LookupNodeRecordFromId(targetId);
                         if (nr != null)
                         {
                             // just create the missing link
@@ -267,7 +278,7 @@ namespace AasOpcUaServer
                                 var miss = this.CreateAddObject(
                                     this.RootMissingDictionaryEntries,
                                     AasUaBaseEntity.CreateMode.Instance,
-                                    targetId.id,
+                                    targetId,
                                     ReferenceTypeIds.HasComponent,
                                     this.AasTypes.ConceptDescription.GetTypeObjectFor(targetId)?.NodeId);
 
@@ -282,7 +293,7 @@ namespace AasOpcUaServer
                             {
                                 // just create the missing link
                                 // TODO (MIHO, 2020-08-06): check, which namespace shall be used
-                                var missingTarget = new ExpandedNodeId("" + targetId.id, 99);
+                                var missingTarget = new ExpandedNodeId("" + targetId, 99);
                                 lax.uanode.AddReference(this.AasTypes.HasDictionaryEntry.GetTypeNodeId(), false,
                                     missingTarget);
                             }
@@ -573,7 +584,8 @@ namespace AasOpcUaServer
             public AasUaEntitySubmodel Submodel;
             public AasUaEntityProperty Property;
             public AasUaEntityCollection Collection;
-            public AasUaEntitySubmodelElement SubmodelElement;
+			public AasUaEntitySmeList SmeList;
+			public AasUaEntitySubmodelElement SubmodelElement;
             public AasUaEntitySubmodelWrapper SubmodelWrapper;
             public AasUaEntityFile File;
             public AasUaEntityFileType FileType;
@@ -582,9 +594,7 @@ namespace AasOpcUaServer
             public AasUaEntityRelationshipElement RelationshipElement;
             public AasUaEntityOperationVariable OperationVariable;
             public AasUaEntityOperation Operation;
-            public AasUaEntityConceptDictionary ConceptDictionary;
             public AasUaEntityConceptDescription ConceptDescription;
-            public AasUaEntityView View;
             public AasUaEntityAsset Asset;
             public AasUaEntityAAS AAS;
 
@@ -652,16 +662,15 @@ namespace AasOpcUaServer
                 Submodel = new AasUaEntitySubmodel(builder, 1007); // dependencies: SubmodelWrapper
                 Property = new AasUaEntityProperty(builder, 1009);
                 Collection = new AasUaEntityCollection(builder, 1010); // needs 2 ids!
-                FileType = new AasUaEntityFileType(builder, 1014);
+				SmeList = new AasUaEntitySmeList(builder, 1028); // needs 2 ids!
+				FileType = new AasUaEntityFileType(builder, 1014);
                 File = new AasUaEntityFile(builder, 1013); // dependencies: FileType
                 Blob = new AasUaEntityBlob(builder, 1015);
                 ReferenceElement = new AasUaEntityReferenceElement(builder, 1016);
                 RelationshipElement = new AasUaEntityRelationshipElement(builder, 1017);
                 OperationVariable = new AasUaEntityOperationVariable(builder, 1018);
                 Operation = new AasUaEntityOperation(builder, 1019);
-                ConceptDictionary = new AasUaEntityConceptDictionary(builder, 1020);
                 ConceptDescription = new AasUaEntityConceptDescription(builder, 1021);
-                View = new AasUaEntityView(builder, 1022);
                 Asset = new AasUaEntityAsset(builder, 1023);
                 AAS = new AasUaEntityAAS(builder, 1024);
             }

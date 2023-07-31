@@ -75,7 +75,6 @@ namespace Extensions
             return false;
         }
 
-
         public static AasValidationAction Validate(this IKey key, AasValidationRecordList results, IReferable container)
         {
             // access
@@ -128,8 +127,6 @@ namespace Extensions
             // may give result "to be deleted"
             return res;
         }
-
-
 
         public static string ToStringExtended(this IKey key, int format = 1)
         {
@@ -189,45 +186,73 @@ namespace Extensions
             // no
             return null;
         }
-        // dead-csharp off
-        // -------------------------------------------------------------------------------------------------------------
-        #region Handling with enums for KeyTypes
 
-        // see: https://stackoverflow.com/questions/27372816/how-to-read-the-value-for-an-enummember-attribute
-        //public static string? GetEnumMemberValue<T>(this T value)
-        //    where T : Enum
-        //{
-        //    return typeof(T)
-        //        .GetTypeInfo()
-        //        .DeclaredMembers
-        //        .SingleOrDefault(x => x.Name == value.ToString())
-        //        ?.GetCustomAttribute<EnumMemberAttribute>(false)
-        //        ?.Value;
-        //}
+		#region Guess identification types
 
-        //public static KeyTypes? MapFrom(AasReferables input)
-        //{
-        //    var st = input.GetEnumMemberValue();
-        //    var res = Stringification.KeyTypesFromString(st);
-        //    return res;
-        //}
+        public enum IdType { Unknown = 0, IRI, IRDI };
 
-        //public static List<KeyTypes> MapFrom(IEnumerable<AasReferables> input)
-        //{
-        //    List<KeyTypes> res = new();
-        //    foreach (var i in input)
-        //    {
-        //        var x = MapFrom(i);
-        //        if (x.HasValue)
-        //            res.Add(x.Value);
-        //    }
-        //    return res;
-        //}
+        public static IdType GuessIdType(string id)
+        {
+            // start
+            if (id == null)
+                return IdType.Unknown;
+            id = id.Trim().ToLower();
 
-        //public static List<KeyTypes> GetAllKeyTypesForAasReferables()
-        //    => ExtendKey.MapFrom(Enum.GetValues(typeof(AasReferables)).OfType<AasReferables>());
+            // IRDI?
+            if (Regex.IsMatch(id, @"(\d{3,4})\W+"))
+                return IdType.IRDI;
 
-        #endregion
-        // dead-csharp on
-    }
+            // IRI?
+            // TODO: check for escaping
+            if (Regex.IsMatch(id, @"(\w{3,5})://"))
+                return IdType.IRI;
+
+            // unsure
+            return IdType.Unknown;
+        }
+
+		#endregion
+
+		// dead-csharp off
+		// -------------------------------------------------------------------------------------------------------------
+		#region Handling with enums for KeyTypes
+
+		// see: https://stackoverflow.com/questions/27372816/how-to-read-the-value-for-an-enummember-attribute
+		//public static string? GetEnumMemberValue<T>(this T value)
+		//    where T : Enum
+		//{
+		//    return typeof(T)
+		//        .GetTypeInfo()
+		//        .DeclaredMembers
+		//        .SingleOrDefault(x => x.Name == value.ToString())
+		//        ?.GetCustomAttribute<EnumMemberAttribute>(false)
+		//        ?.Value;
+		//}
+
+		//public static KeyTypes? MapFrom(AasReferables input)
+		//{
+		//    var st = input.GetEnumMemberValue();
+		//    var res = Stringification.KeyTypesFromString(st);
+		//    return res;
+		//}
+
+		//public static List<KeyTypes> MapFrom(IEnumerable<AasReferables> input)
+		//{
+		//    List<KeyTypes> res = new();
+		//    foreach (var i in input)
+		//    {
+		//        var x = MapFrom(i);
+		//        if (x.HasValue)
+		//            res.Add(x.Value);
+		//    }
+		//    return res;
+		//}
+
+		//public static List<KeyTypes> GetAllKeyTypesForAasReferables()
+		//    => ExtendKey.MapFrom(Enum.GetValues(typeof(AasReferables)).OfType<AasReferables>());
+
+		#endregion
+		// dead-csharp on
+
+	}
 }

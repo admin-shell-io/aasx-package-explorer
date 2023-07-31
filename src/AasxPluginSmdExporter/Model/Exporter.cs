@@ -14,9 +14,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using AasxCompatibilityModels;
 using AasxPluginSmdExporter.Model;
 using Newtonsoft.Json.Linq;
+using Aas = AasCore.Aas3_0;
+using AdminShellNS;
 
 namespace AasxPluginSmdExporter
 {
@@ -555,16 +556,14 @@ namespace AasxPluginSmdExporter
         /// Creates a new semantic id for the summing points
         /// </summary>
         /// <returns></returns>
-        private AdminShellV20.SemanticId createSemanticIdSummingPoint()
+        private Aas.IReference createSemanticIdSummingPoint()
         {
-            AdminShellV20.SemanticId semanticId = new AdminShellV20.SemanticId();
-            AdminShellV20.Key key = new AdminShellV20.Key();
-            key.value = SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Sum");
-            key.type = "ConceptDescription";
-            key.local = true;
-            key.index = 0;
-            key.idType = "IRI";
-            semanticId.Keys.Add(key);
+            var semanticId = new Aas.Reference(
+                type: Aas.ReferenceTypes.ModelReference, 
+                keys: (new[] { 
+                    new Aas.Key(Aas.KeyTypes.ConceptDescription,
+                        SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Sum")) } 
+                ).Cast<Aas.IKey>().ToList());
             return semanticId;
         }
 
@@ -658,15 +657,12 @@ namespace AasxPluginSmdExporter
             int multCount = 0;
             List<SimulationModel> newSimMod = new List<SimulationModel>();
 
-
-            AdminShellV20.SemanticId semanticId = new AdminShellV20.SemanticId();
-            AdminShellV20.Key key = new AdminShellV20.Key();
-            key.value = SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Mult");
-            key.type = "ConceptDescription";
-            key.local = true;
-            key.index = 0;
-            key.idType = "IRI";
-            semanticId.Keys.Add(key);
+			var semanticId = new Aas.Reference(
+				type: Aas.ReferenceTypes.ModelReference,
+				keys: (new[] {
+					new Aas.Key(Aas.KeyTypes.ConceptDescription,
+						SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Mult")) }
+				).Cast<Aas.IKey>().ToList());
 
             foreach (var simmod in SimulationsModels.Values)
             {
@@ -830,15 +826,12 @@ namespace AasxPluginSmdExporter
             int nodeCount = 0;
             List<SimulationModel> newSimMod = new List<SimulationModel>();
 
-
-            AdminShellV20.SemanticId semanticId = new AdminShellV20.SemanticId();
-            AdminShellV20.Key key = new AdminShellV20.Key();
-            key.value = "www.tedz.itsowl.com/ids/cd/1132_9030_2102_4033";
-            key.type = "ConceptDescription";
-            key.local = true;
-            key.index = 0;
-            key.idType = "IRI";
-            semanticId.Keys.Add(key);
+			var semanticId = new Aas.Reference(
+				type: Aas.ReferenceTypes.ModelReference,
+				keys: (new[] {
+					new Aas.Key(Aas.KeyTypes.ConceptDescription,
+						"www.tedz.itsowl.com/ids/cd/1132_9030_2102_4033") }
+				).Cast<Aas.IKey>().ToList());
 
             List<List<IOput>> nodeLists = new List<List<IOput>>();
 
@@ -882,7 +875,7 @@ namespace AasxPluginSmdExporter
         /// <param name="list"></param>
         /// <returns></returns>
         private static SimulationModel createNode(int nodeCount,
-            AdminShellV20.SemanticId semanticId,
+            Aas.IReference semanticId,
             List<IOput> list)
         {
             SimulationModel nodeModel = new SimulationModel();

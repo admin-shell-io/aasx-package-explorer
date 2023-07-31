@@ -30,7 +30,7 @@
         bei AasxPackageExplorer.Plugins.CompileAllLicenses()
   -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <IsPublishable>false</IsPublishable>
+    <IsPublishable>true</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -49,12 +49,12 @@
     <Resource Include="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Content Include="Net46AasxServerPlugin.Config.xml">
+    <Content Include="AasxPluginUaNetServer.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.370.12" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.371.96" />
   </ItemGroup>
 </Project>

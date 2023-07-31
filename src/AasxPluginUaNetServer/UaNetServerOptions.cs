@@ -12,20 +12,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using AasxIntegrationBase;
 
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnassignedField.Global
 
 namespace AasxUaNetServer
 {
-    public class UaNetServerOptionsRecord
-    {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+    public class UaNetServerOptionsRecord : AasxPluginOptionsLookupRecordBase
+	{
     }
 
-    public class UaNetServerOptions : AasxIntegrationBase.AasxPluginOptionsBase
-    {
+    public class UaNetServerOptions : AasxPluginLookupOptionsBase
+	{
         public string[] Args;
 
         public List<UaNetServerOptionsRecord> Records = new List<UaNetServerOptionsRecord>();

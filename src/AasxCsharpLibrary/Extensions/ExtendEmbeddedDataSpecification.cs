@@ -13,8 +13,6 @@ namespace Extensions
     // TODO (Jui, 2022-12-21): I do not know, if to put the List<> extension here or in a separate file
     public static class ExtendListOfEmbeddedDataSpecification
     {
-
-
         public static IEmbeddedDataSpecification FindFirstIEC61360Spec(this List<IEmbeddedDataSpecification> list)
         {
             foreach (var eds in list)

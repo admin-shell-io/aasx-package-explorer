@@ -137,9 +137,9 @@ namespace AasxUaNetServer
         {
             ApplicationInstance application = new ApplicationInstance();
 
-            application.ApplicationName = "OPC UA AASX Server";
+            application.ApplicationName = "OPC UA AASX Server plugin";
             application.ApplicationType = ApplicationType.Server;
-            application.ConfigSectionName = Utils.IsRunningOnMono() ? "MonoAasxServerPlugin" : "Net46AasxServerPlugin";
+            application.ConfigSectionName = Utils.IsRunningOnMono() ? "MonoAasxServerPlugin" : "AasxPluginUaNetServer";
 
             // modify ConfigSectionName with absoluet file?
             if (true)
@@ -158,7 +158,10 @@ namespace AasxUaNetServer
             }
 
             // Important: set appropriate trace mask
-            Utils.SetTraceMask(Utils.TraceMasks.Error | Utils.TraceMasks.Information | Utils.TraceMasks.StartStop | Utils.TraceMasks.StackTrace);
+            Utils.SetTraceMask(Utils.TraceMasks.Error 
+                | Utils.TraceMasks.Information 
+                | Utils.TraceMasks.StartStop 
+                | Utils.TraceMasks.StackTrace);
 
             // attach tracing?
             if (!_traceHandleAttached)

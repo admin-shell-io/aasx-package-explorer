@@ -10,7 +10,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
-using AdminShellNS.Display;
 using AnyUi;
 using Extensions;
 using System;

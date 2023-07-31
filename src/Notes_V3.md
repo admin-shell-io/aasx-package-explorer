@@ -68,6 +68,8 @@ Soll ich den Bug im Repository eintragen bzw. ein PullRequest starten? Oder pfle
 
 * Submodel "move up" (fast re-ordering) show other order than real (slow) ordering!
 
+* switch from Aas.Environmet to Aas.IEnvironment
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done

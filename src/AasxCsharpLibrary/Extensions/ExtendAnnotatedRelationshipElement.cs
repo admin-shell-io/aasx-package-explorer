@@ -6,7 +6,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
 */
-using AdminShellNS.Display;
+using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +40,10 @@ namespace Extensions
             }
         }
 
-        public static object AddChild(this AnnotatedRelationshipElement annotatedRelationshipElement, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
+        public static object AddChild(
+            this AnnotatedRelationshipElement annotatedRelationshipElement, 
+            ISubmodelElement childSubmodelElement, 
+            EnumerationPlacmentBase placement = null)
         {
             if (childSubmodelElement == null || childSubmodelElement is not IDataElement)
                 return null;

@@ -10,6 +10,7 @@
 
 using System.IO;
 using AasxPackageLogic;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using NUnit.Framework;
 
@@ -78,15 +79,15 @@ namespace AasxDictionaryImport.Cdd.Tests
             return dict;
         }
 
-        protected static AdminShellV20.AdministrationShell CreateAdminShell(AdminShellV20.AdministrationShellEnv env)
+        protected static Aas.IAssetAdministrationShell CreateAdminShell(Aas.IEnvironment env)
         {
-            var adminShell = new AdminShellV20.AdministrationShell()
+            var adminShell = new Aas.AssetAdministrationShell(
+                id: AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas),
+                assetInformation: new Aas.AssetInformation(Aas.AssetKind.Instance))
             {
-                identification = new AdminShellV20.Identification(
-                        AdminShellV20.Identification.IRI,
-                        AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas)),
             };
-            env.AdministrationShells.Add(adminShell);
+            if (env.AssetAdministrationShells != null)
+                env.AssetAdministrationShells.Add(adminShell);
             return adminShell;
         }
     }

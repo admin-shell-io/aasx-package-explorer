@@ -9,7 +9,7 @@
     <DefineConstants>TRACE;UseAasxCompatibilityModels</DefineConstants>
   </PropertyGroup>
 	<ItemGroup>
-		<Using Include="AasCore.Aas3_0"/>
+		<Using Include="AasCore.Aas3_0" />
 	</ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LICENSE.txt">
@@ -34,7 +34,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
     <PackageReference Include="Namotion.Reflection" Version="2.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NJsonSchema" Version="10.8.0" />
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
     <PackageReference Include="System.IO.Packaging" Version="6.0.0" />

@@ -63,7 +63,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            _log.Info("ListActions() called");
             return ListActionsBasicHelper(
                 enableCheckVisualExt: true,
                 enablePanelWpf: true,

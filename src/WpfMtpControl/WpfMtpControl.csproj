@@ -17,7 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Aml.Engine" Version="2.0.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.370.12" />
   </ItemGroup>
 </Project>

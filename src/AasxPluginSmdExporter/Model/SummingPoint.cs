@@ -8,12 +8,13 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasxCompatibilityModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
+using AdminShellNS;
 
 namespace AasxPluginSmdExporter
 {
@@ -26,13 +27,13 @@ namespace AasxPluginSmdExporter
 
         public string Name { get; set; }
 
-        public AdminShellV20.SemanticId SemanticId { get; set; }
+        public Aas.IReference SemanticId { get; set; }
         public SummingPoint()
         {
             inputs = new List<IOput>();
         }
 
-        public SummingPoint(IOput output, string name, AdminShellV20.SemanticId semanticId)
+        public SummingPoint(IOput output, string name, Aas.IReference semanticId)
         {
             this.output = output;
             this.Name = name;

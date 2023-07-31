@@ -8,7 +8,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 using AasxCompatibilityModels;
 using AdminShellNS;
-using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
