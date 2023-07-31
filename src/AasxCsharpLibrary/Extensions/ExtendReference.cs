@@ -164,7 +164,9 @@ namespace Extensions
 
         public static bool Matches(this IReference reference, IReference otherReference, MatchMode matchMode = MatchMode.Strict)
         {
-            if (reference.Keys == null || reference.Keys.Count == 0 || otherReference?.Keys == null || otherReference.Keys.Count == 0)
+            if (reference.Keys == null || reference.Keys.Count == 0 
+                || otherReference?.Keys == null || otherReference.Keys.Count == 0
+                || reference.Keys.Count != otherReference.Keys.Count)
             {
                 return false;
             }
