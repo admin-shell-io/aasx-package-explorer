@@ -487,7 +487,7 @@ namespace Extensions
                 head = parentReferable.CollectIdShortByParent() + "/";
             // add own
             var myid = "<no id-Short!>";
-            if (string.IsNullOrEmpty(referable.IdShort))
+            if (!string.IsNullOrEmpty(referable.IdShort))
                 myid = referable.IdShort.Trim();
             // together
             return head + myid;
