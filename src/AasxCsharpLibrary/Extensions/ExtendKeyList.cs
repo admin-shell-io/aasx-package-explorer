@@ -6,10 +6,11 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
 */
-using AdminShellNS;
 using Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace Extensions
 {
@@ -143,7 +144,7 @@ namespace Extensions
         }
 
         /// <summary>
-        /// Take only idShort, ignore all other key-types and create a '/'-separated list
+        /// Take only idShort from Referables, ignore all other key-types and create a '/'-separated list
         /// </summary>
         /// <returns>Empty string or list of idShorts</returns>
         public static string BuildIdShortPath(this List<IKey> keyList,
@@ -157,6 +158,7 @@ namespace Extensions
             {
                 nr++;
                 //// if (keyList[i].Type.Trim().ToLower() == Key.IdShort.Trim().ToLower())
+                if (Aas.Constants.AasReferableNonIdentifiables.Contains(keyList[i].Type))
                 {
                     if (res != "")
                         res += "/";

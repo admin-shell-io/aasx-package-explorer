@@ -227,7 +227,8 @@ namespace AnyUi
             AnyUiVerticalAlignment? verticalContentAlignment = null,
             double? fontSize = null,
             AnyUiTextWrapping? textWrap = null,
-            bool? multiLine = null)
+            bool? multiLine = null,
+			bool verticalCenter = false)
         {
             var tb = new AnyUiTextBox();
             tb.Margin = margin;
@@ -243,7 +244,12 @@ namespace AnyUi
                 tb.VerticalAlignment = verticalAlignment;
             if (verticalContentAlignment != null)
                 tb.VerticalContentAlignment = verticalContentAlignment.Value;
-            if (textWrap.HasValue)
+			if (verticalCenter)
+			{
+				tb.VerticalAlignment = AnyUiVerticalAlignment.Center;
+				tb.VerticalContentAlignment = AnyUiVerticalAlignment.Center;
+			}
+			if (textWrap.HasValue)
                 tb.TextWrapping = textWrap.Value;
             
             // (MIHO, 2020-11-13): be default constrain to one line
@@ -585,7 +591,23 @@ namespace AnyUi
             view.Add(space);
         }
 
-        public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrushTuple colors,
+		public AnyUiBorder AddVerticalSpaceTo(
+			AnyUiGrid g, int row, double height = 5)
+		{
+			var space = new AnyUiBorder()
+			{
+				BorderBrush = AnyUiBrushes.Transparent,
+				BorderThickness = new AnyUiThickness(height),
+				Height = height
+			};
+
+			AnyUiGrid.SetRow(space, row);
+			AnyUiGrid.SetColumn(space, 0);
+			g.Children.Add(space);
+			return (space);
+		}
+
+		public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrushTuple colors,
             bool requestAuxButton = false,
             string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null,
             string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
@@ -690,7 +712,8 @@ namespace AnyUi
             AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
             double? fontSize = null,
-            AnyUiTextWrapping? wrapping = null)
+            AnyUiTextWrapping? wrapping = null,
+            bool verticalCenter = false)
         {
             var lab = new AnyUiSelectableTextBlock();
 
@@ -700,6 +723,11 @@ namespace AnyUi
                 lab.VerticalAlignment = verticalAlignment;
             if (verticalContentAlignment != null)
                 lab.VerticalContentAlignment = verticalContentAlignment.Value;
+            if (verticalCenter)
+            {
+                lab.VerticalAlignment = AnyUiVerticalAlignment.Center;
+				lab.VerticalContentAlignment = AnyUiVerticalAlignment.Center;
+			}
             if (foreground != null)
                 lab.Foreground = foreground;
             if (background != null)

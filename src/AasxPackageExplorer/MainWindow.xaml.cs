@@ -408,6 +408,11 @@ namespace AasxPackageExplorer
                 return;
             }
 
+            // establish parents (only for main)
+            if (!onlyAuxiliary)
+                foreach (var sm in PackageCentral.Main?.AasEnv?.OverSubmodelsOrEmpty())
+                    sm?.SetAllParents();
+
             // displaying
             try
             {
@@ -1926,6 +1931,8 @@ namespace AasxPackageExplorer
             if (env == null || significantElems == null || MainMenu?.IsChecked("AnimateElements") != true)
                 return;
 
+            var animated = false;
+
             // find elements?
             foreach (var rec in significantElems.Retrieve(env, SignificantAasElement.ValueAnimation))
             {
@@ -1955,11 +1962,14 @@ namespace AasxPackageExplorer
                                     Info = "Animated value update"
                                 }
                             });
+                            animated = true;
                         });
                 }
-
-
             }
+
+            // if any ..
+            if (animated)
+                CheckIfToFlushEvents();
         }
 
         private void MainTimer_CheckDiaryDateToEmitEvents(
@@ -3082,48 +3092,48 @@ namespace AasxPackageExplorer
 
             // agent behaviour
             var preventClosingAction = false;
-            // dead-csharp off
-            //  if (uc is IFlyoutAgent ucag)
-            // {
-            //    // register for minimize
-            //   ucag.ControlMinimize += () =>
-            //{
-            // only execute if preconditions are well
-            // if (ucag.GetAgent() != null && ucag.GetAgent().GenerateFlyoutMini != null)
-            //{
-            // do not execute directly
-            // preventClosingAction = true;
 
-            // make a mini
-            // var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();
+            if (uc is IFlyoutAgent ucag)
+            {
+                // register for minimize
+                ucag.ControlMinimize += () =>
+                {
+                    // only execute if preconditions are well
+                    if (ucag.GetAgent() != null && ucag.GetAgent().GenerateFlyoutMini != null)
+                    {
+                        // do not execute directly
+                        preventClosingAction = true;
 
-            // be careful
-            // if (mini is UserControl miniUc)
-            // {
-            // push the agent
-            //    UserControlAgentsView.Add(miniUc);
+                        // make a mini
+                        var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();
 
-            // wrap provided closing action in own closing action
-            //    if (ucag.GetAgent() != null)
-            //        ucag.GetAgent().ClosingAction = () =>
-            //   {
-            // 1st delete agent
-            //         UserControlAgentsView.Remove(miniUc);
+                        // be careful
+                        if (mini is UserControl miniUc)
+                        {
+                            // push the agent
+                            UserControlAgentsView.Add(miniUc);
 
-            // finally, call user provided closing action
-            //           closingAction?.Invoke();
-            //         };
+                            // wrap provided closing action in own closing action
+                            if (ucag.GetAgent() != null)
+                                ucag.GetAgent().ClosingAction = () =>
+                            {
+                                // 1st delete agent
+                                UserControlAgentsView.Remove(miniUc);
 
-            // show the panel
-            //       PanelConcurrentSetVisibleIfRequired(true, targetAgents: true);
+                                // finally, call user provided closing action
+                                closingAction?.Invoke();
+                            };
 
-            // remove the flyover
-            //         frame.Continue = false; // stops the frame
-            //       }
-            //     }
-            //   };
-            //} */
-            // dead-csharp on
+                            // show the panel
+                            PanelConcurrentSetVisibleIfRequired(true, targetAgents: true);
+
+                            // remove the flyover
+                            frame.Continue = false; // stops the frame
+                        }
+                    }
+                 };
+            }
+                 
             // start (focus)
             ucfoc.ControlStart();
 

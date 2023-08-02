@@ -11,6 +11,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using AasxIntegrationBase;
+using AasxMqttClient;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -279,7 +280,7 @@ namespace AasxPackageExplorer
 
             // stays in WPF
             if (cmd == "mqttpub")
-                CommandBinding_MQTTPub();
+                await CommandBinding_MQTTPub(ticket);
 
             // stays in WPF
             if (cmd == "connectintegrated")
@@ -660,22 +661,169 @@ namespace AasxPackageExplorer
             public BackgroundWorker Worker;
         }
 
-        public void CommandBinding_MQTTPub()
+        public async Task CommandBinding_MQTTPub(AasxMenuActionTicket ticket)
         {
 
             // make an agent
             var agent = new FlyoutAgentMqttPublisher();
 
-            // ask for preferences
-            agent.DiaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASQ MQTT publisher ..",
+			// ask for preferences
+#if __WPF_based
+            agent.DiaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASX MQTT publisher ..",
                         jtoken: Options.Curr.MqttPublisherOptions);
             var uc1 = new MqttPublisherFlyout(agent.DiaData);
             this.StartFlyoverModal(uc1);
             if (!uc1.Result)
                 return;
+#else
+			agent.DiaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASX MQTT publisher ..",
+						jtoken: Options.Curr.MqttPublisherOptions);
+			var uc1 = new AnyUiDialogueDataModalPanel(agent.DiaData.Caption);
+            uc1.DisableScrollArea = true;
+			uc1.ActivateRenderPanel(agent.DiaData,
+				(uci) =>
+				{
+                    // create panel
+					var panel = new AnyUiStackPanel();
+					var helper = new AnyUiSmallWidgetToolkit();
 
-            // make a logger
-            agent.Logger = new AasxMqttClient.GrapevineLoggerToStoredPrints();
+                    var data = uci.Data as AnyUiDialogueDataMqttPublisher;
+                    if (data == null)
+                        return panel;
+
+                    // outer grid
+					var g = helper.AddSmallGrid(13, 3, new[] { "#", "5:", "*" },
+								padding: new AnyUiThickness(0, 5, 0, 5));
+
+                    int row = 0;
+
+                    // Row : MQTT broker
+                    helper.AddSmallLabelTo(g, row, 0, content: "Format:", verticalCenter: true);
+					AnyUiUIElement.SetStringFromControl(
+						helper.AddSmallTextBoxTo(g, row, 2,
+							margin: new AnyUiThickness(0, 2, 2, 2),
+							text: "" + data.BrokerUrl,
+							verticalCenter: true),
+						(str) => { data.BrokerUrl = str; });
+
+					// Row : retain
+					AnyUiUIElement.SetBoolFromControl(
+						helper.Set(
+							helper.AddSmallCheckBoxTo(g, ++row, 2,
+								content: "Set retain flag in MQTT messages",
+								isChecked: data.MqttRetain,
+								verticalContentAlignment: AnyUiVerticalAlignment.Center)),
+							(b) => { data.MqttRetain = b; });
+
+                    // VSpace
+                    helper.AddVerticalSpaceTo(g, ++row);
+
+					// Row : first time publish
+					helper.AddSmallLabelTo(g, ++row, 0, content: "First time publish:", verticalCenter: true);
+					AnyUiUIElement.SetBoolFromControl(
+						helper.AddSmallCheckBoxTo(g, row, 2,
+							content: "Enable publishing",
+							isChecked: data.EnableFirstPublish,
+							verticalContentAlignment: AnyUiVerticalAlignment.Center),
+						(b) => { data.EnableFirstPublish = b; });
+
+                    // Row : Topic AAS
+                    helper.Set(
+                        helper.AddSmallLabelTo(g, ++row, 0, content: "Topic AAS:", verticalCenter: true),
+                        horizontalAlignment: AnyUiHorizontalAlignment.Right,
+                        horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
+					AnyUiUIElement.SetStringFromControl(
+						helper.AddSmallTextBoxTo(g, row, 2,
+							margin: new AnyUiThickness(0, 2, 2, 2),
+							text: "" + data.FirstTopicAAS,
+							verticalCenter: true),
+						(str) => { data.FirstTopicAAS = str; });
+
+					// Row : Topic Submodel
+					helper.Set(
+						helper.AddSmallLabelTo(g, ++row, 0, content: "Topic Submodel:", verticalCenter: true),
+						horizontalAlignment: AnyUiHorizontalAlignment.Right,
+						horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
+					AnyUiUIElement.SetStringFromControl(
+						helper.AddSmallTextBoxTo(g, row, 2,
+							margin: new AnyUiThickness(0, 2, 2, 2),
+							text: "" + data.FirstTopicSubmodel,
+							verticalCenter: true),
+						(str) => { data.FirstTopicSubmodel = str; });
+
+					// VSpace
+					helper.AddVerticalSpaceTo(g, ++row);
+
+					// Row : continous event time publish
+					helper.AddSmallLabelTo(g, ++row, 0, content: "Continous event publish:", verticalCenter: true);
+					AnyUiUIElement.SetBoolFromControl(
+						helper.AddSmallCheckBoxTo(g, row, 2,
+							content: "Enable publishing",
+							isChecked: data.EnableEventPublish,
+							verticalContentAlignment: AnyUiVerticalAlignment.Center),
+						(b) => { data.EnableEventPublish = b; });
+
+					// Row : Topic event publish
+					helper.Set(
+						helper.AddSmallLabelTo(g, ++row, 0, content: "Topic:", verticalCenter: true),
+						horizontalAlignment: AnyUiHorizontalAlignment.Right,
+						horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
+					AnyUiUIElement.SetStringFromControl(
+						helper.AddSmallTextBoxTo(g, row, 2,
+							margin: new AnyUiThickness(0, 2, 2, 2),
+							text: "" + data.EventTopic,
+							verticalCenter: true),
+						(str) => { data.EventTopic = str; });
+
+					// VSpace
+					helper.AddVerticalSpaceTo(g, ++row);
+
+					// Row : single value publish
+					helper.AddSmallLabelTo(g, ++row, 0, content: "Single value publish:", verticalCenter: true);
+					AnyUiUIElement.SetBoolFromControl(
+						helper.AddSmallCheckBoxTo(g, row, 2,
+							content: "Enable publishing",
+							isChecked: data.SingleValuePublish,
+							verticalContentAlignment: AnyUiVerticalAlignment.Center),
+						(b) => { data.SingleValuePublish = b; });
+					
+                    // Row : single value first time
+                    AnyUiUIElement.SetBoolFromControl(
+						helper.AddSmallCheckBoxTo(g, ++row, 2,
+							content: "First time",
+							isChecked: data.SingleValueFirstTime,
+							verticalContentAlignment: AnyUiVerticalAlignment.Center),
+						(b) => { data.SingleValueFirstTime = b; });
+
+					// Row : Topic single value publish
+					helper.Set(
+						helper.AddSmallLabelTo(g, ++row, 0, content: "Topic:", verticalCenter: true),
+						horizontalAlignment: AnyUiHorizontalAlignment.Right,
+						horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
+					AnyUiUIElement.SetStringFromControl(
+						helper.AddSmallTextBoxTo(g, row, 2,
+							margin: new AnyUiThickness(0, 2, 2, 2),
+							text: "" + data.SingleValueTopic,
+							verticalCenter: true),
+						(str) => { data.SingleValueTopic = str; });
+
+					// give back
+					return g;
+				});
+
+			if (!ticket.ScriptMode)
+			{
+				// do the dialogue
+				if (!(await DisplayContext.StartFlyoverModalAsync(uc1)))
+					return;
+
+				// stop
+				await Task.Delay(2000);
+			}
+#endif
+
+			// make a logger
+			agent.Logger = new AasxMqttClient.GrapevineLoggerToStoredPrints();
 
             // make listing flyout
             var uc2 = new LogMessageFlyout("AASX MQTT Publisher", "Starting MQTT Client ..", () =>

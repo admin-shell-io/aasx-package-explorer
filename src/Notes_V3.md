@@ -42,18 +42,13 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * plugin known submodels does not render correctly for Blazor
 
- move up/down of SM does not work always
+* move up/down of SM does not work always
 
 * "Adds known" / for SM (DPP v20) there is Id not SemanticId!
 
 * ExportPreDef double exports CDs???
 
-* multiple SMC in SML marked -> no "delete!
-
-* AAS event compressor for just update value events does obviously not work ?!!
-
-* change "Ctrl-C, Ctrl-V" to more exotic shortcuts (often interfering with WPF/ Browser
-  default behaviour) -- done
+* multiple SMC in SML marked -> no "delete"!
 
 * Submodel "move up" (fast re-ordering) show other order than real (slow) ordering!
 
@@ -108,6 +103,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   Done for WPF and Blazor (WPF keeps also last selected).
 * Export table / cells / allow return -- done (re-structed TextBox / MultiLine)
 
+* AAS event compressor for just update value events does obviously not work ?!!
+  -- done (complete re-write)
+
 * Bug from Matthias Freund:  mir ist gerade ein Bug in „AasxCsharpLibrary/Extensions/ExtendedReference.cs“ aufgefallen. In der Methode
 public static bool Matches(this IReference reference, IReference otherReference, MatchMode matchMode = MatchMode.Strict)
 werden  die Keys miteinander verglichen. Wenn die Anzahl der Keys der ‚otherReference‘ allerdings größer als die Anzahl der Keys der ‚reference‘ sind, wird trotzdem ein passender Match zurückgegeben, solange nur die ersten Keys zusammen passen.
@@ -116,8 +114,11 @@ Hier müsste in Zeile 167 statt nur
 if (reference.Keys == null || reference.Keys.Count == 0 || otherReference?.Keys == null || otherReference.Keys.Count == 0)
 auch noch auf die Länge der Keys verglichen werden:
 if (reference.Keys == null || reference.Keys.Count == 0 || otherReference?.Keys == null || otherReference.Keys.Count == 0 || reference.Keys.Count != otherReference.Keys.Count)
-
 -- done
+
+* change "Ctrl-C, Ctrl-V" to more exotic shortcuts (often interfering with WPF/ Browser
+  default behaviour) -- done
+
 
 ## Notes (influencing todos)
 
