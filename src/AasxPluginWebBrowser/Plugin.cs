@@ -146,7 +146,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
             }
 
-            if (action == "gset-zoom-level" && args != null && args.Length >= 1 && args[0] is double)
+            if (action == "set-zoom-level" && args != null && args.Length >= 1 && args[0] is double)
             {
                 // args
                 var zoom = (double)args[0];

@@ -13,8 +13,9 @@
 	        * Dotnet CLI will only recognize "Platform",
 			* Visual Studio will only recognize "Platforms".
 	-->
-	<Platforms>x64;AnyCPU</Platforms>
+	<Platforms>x64</Platforms>
 	<Platform>x64</Platform>
+  <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>aasx.ico</ApplicationIcon>

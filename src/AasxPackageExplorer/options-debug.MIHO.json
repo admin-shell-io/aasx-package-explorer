@@ -85,7 +85,7 @@
   "PluginPrefer": "ANYUI",
   "PluginDll": [
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net6.0-windows\\AasxPluginUaNetServer.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net6.0-windows\\AasxPluginUaNetServer.dll",
       "Args": [
         "-single-nodeids",
         "-single-keys",
@@ -108,51 +108,51 @@
     },
     */
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginDigitalNameplate\\bin\\Debug\\net6.0-windows\\AasxPluginDigitalNameplate.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginDigitalNameplate\\bin\\Debug\\net6.0-windows\\AasxPluginDigitalNameplate.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net6.0-windows\\AasxPluginAdvancedTextEditor.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net6.0-windows\\AasxPluginAdvancedTextEditor.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net6.0-windows\\AasxPluginTechnicalData.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net6.0-windows\\AasxPluginTechnicalData.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net6.0-windows\\AasxPluginBomStructure.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net6.0-windows\\AasxPluginBomStructure.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net6.0-windows\\AasxPluginPlotting.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net6.0-windows\\AasxPluginPlotting.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net6.0-windows\\AasxPluginImageMap.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net6.0-windows\\AasxPluginImageMap.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net6.0-windows\\AasxPluginMtpViewer.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net6.0-windows\\AasxPluginMtpViewer.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net6.0-windows\\AasxPluginExportTable.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net6.0-windows\\AasxPluginExportTable.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
       "Args": []
     }
 

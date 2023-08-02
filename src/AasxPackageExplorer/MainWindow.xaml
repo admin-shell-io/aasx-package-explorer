@@ -588,7 +588,7 @@
                         </TabItem>
                         <TabItem Header="Agents" x:Name="TabItemConcurrentAgents" BorderThickness="0.0" 
                                  Background="{DynamicResource LightAccentColor}">
-                            <main:MainWindowAgentsView x:Name="UserControlAgentsView" Background="#c0000977"/>
+                            <main:MainWindowAgentsView x:Name="UserControlAgentsView" Background="#0035D5"/>
                         </TabItem>
                     </TabControl>
                 </Grid>
