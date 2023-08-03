@@ -59,17 +59,20 @@ namespace AasxPluginBomStructure
             this.eventStack = es;
         }
 
-        protected StackPanel CreateTopPanel()
+        protected WrapPanel CreateTopPanel()
         {
             // create TOP controls
-            var spTop = new StackPanel();
-            spTop.Orientation = Orientation.Horizontal;
+            var wpTop = new WrapPanel();
+            wpTop.Orientation = Orientation.Horizontal;
             
             // style
 
-            spTop.Children.Add(new Label() { Content = "Layout style: " });
+            wpTop.Children.Add(new Label() { Content = "Layout style: " });
 
-            var cbli = new ComboBox();
+            var cbli = new ComboBox()
+            {
+				Margin = new Thickness(0, 0, 0, 5)
+			};
             foreach (var psn in this.PresetSettingNames)
                 cbli.Items.Add(psn);
             cbli.SelectedIndex = _creatorOptions.LayoutIndex;
@@ -79,11 +82,11 @@ namespace AasxPluginBomStructure
                 RememberSettings();
                 RedrawGraph();
             };
-            spTop.Children.Add(cbli);
+            wpTop.Children.Add(cbli);
 
             // spacing
 
-            spTop.Children.Add(new Label() { Content = "Spacing: " });
+            wpTop.Children.Add(new Label() { Content = "Spacing: " });
 
             var sli = new Slider()
             {
@@ -94,7 +97,7 @@ namespace AasxPluginBomStructure
                 TickFrequency = 10,
                 IsSnapToTickEnabled = true,
                 Value = _creatorOptions.LayoutSpacing,
-                Margin = new System.Windows.Thickness(10, 0, 10, 0),
+                Margin = new System.Windows.Thickness(10, 0, 10, 5),
                 VerticalAlignment = System.Windows.VerticalAlignment.Center
             };
             sli.ValueChanged += (s, e) =>
@@ -103,14 +106,14 @@ namespace AasxPluginBomStructure
                 RememberSettings();
                 RedrawGraph();
             };
-            spTop.Children.Add(sli);
+            wpTop.Children.Add(sli);
 
             // Compact labels
 
             var cbcomp = new CheckBox()
             {
                 Content = "Compact labels",
-                Margin = new System.Windows.Thickness(10, 0, 10, 0),
+                Margin = new System.Windows.Thickness(10, 0, 10, 5),
                 VerticalContentAlignment = System.Windows.VerticalAlignment.Center,
                 IsChecked = _creatorOptions.CompactLabels,
             };
@@ -122,14 +125,14 @@ namespace AasxPluginBomStructure
             };
             cbcomp.Checked += cbcomb_changed;
             cbcomp.Unchecked += cbcomb_changed;
-            spTop.Children.Add(cbcomp);
+            wpTop.Children.Add(cbcomp);
 
             // show asset ids
 
             var cbaid = new CheckBox()
             {
                 Content = "Show Asset ids",
-                Margin = new System.Windows.Thickness(10, 0, 10, 0),
+                Margin = new System.Windows.Thickness(10, 0, 10, 5),
                 VerticalContentAlignment = System.Windows.VerticalAlignment.Center,
                 IsChecked = _creatorOptions.CompactLabels,
             };
@@ -141,9 +144,41 @@ namespace AasxPluginBomStructure
             };
             cbaid.Checked += cbaid_changed;
             cbaid.Unchecked += cbaid_changed;
-            spTop.Children.Add(cbaid);
+            wpTop.Children.Add(cbaid);
 
-            return spTop;
+            // "select" button
+
+            var btnSelect = new Button()
+            {
+                Content = "Selection \U0001f846 tree",
+				Margin = new Thickness(0, 0, 0, 5),
+				Padding = new Thickness(4, 0, 4, 0)
+            };
+            btnSelect.Click += (s3, e3) =>
+            {
+                // check for marked entities
+                var markedRf = new List<Aas.IReferable>();
+
+                if (theViewer != null)
+                    foreach (var vn in theViewer.GetViewerNodes())
+                        if (vn.MarkedForDragging && vn.Node?.UserData is Aas.IReferable rf)
+							markedRf.Add(rf);
+
+                if (markedRf.Count < 1)
+                    return;
+
+                // send event to main application
+                var evt = new AasxPluginResultEventVisualSelectEntities()
+                {
+                    Referables = markedRf
+                };
+                this.eventStack.PushEvent(evt);
+            };
+            wpTop.Children.Add(btnSelect);
+
+            // return
+
+            return wpTop;
         }
 
         public object FillWithWpfControls(

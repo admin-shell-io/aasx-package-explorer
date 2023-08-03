@@ -1719,10 +1719,38 @@ namespace AasxPackageExplorer
                     await UiHandleNavigateTo(evtNavTo.targetReference);
                 }
 
-                // Display Content Url
-                //====================
+				// Visually select referables in the tree
+				//=======================================
 
-                if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+				if (evt is AasxIntegrationBase.AasxPluginResultEventVisualSelectEntities evtVisSel
+					&& evtVisSel.Referables != null && evtVisSel.Referables.Count > 0)
+				{
+                    // quite EXPERIMENTAL!
+                    // info
+                    Log.Singleton.Info($"Plugin request to select {evtVisSel.Referables.Count} Referables.");
+
+					// set all parents required?
+					foreach (var sm in PackageCentral.Main?.AasEnv?.OverSubmodelsOrEmpty())
+						sm?.SetAllParents();
+
+                    // ugly 3 step approach
+
+                    // step 1 : expand all nodes in order to search them ..
+                    DisplayElements.ExpandAllItems();
+					await Task.Delay(1000);
+
+					// step 2 : wait for expand events to be internally digested by treeview
+					DisplayElements.TryExpandMainDataObjects(evtVisSel.Referables);
+					await Task.Delay(1000);                    
+
+                    // step 3 : now select
+                    DisplayElements.TrySelectMainDataObjects(evtVisSel.Referables);
+				}
+
+				// Display Content Url
+				//====================
+
+				if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
                     && evtDispCont.fn != null)
                     try
                     {

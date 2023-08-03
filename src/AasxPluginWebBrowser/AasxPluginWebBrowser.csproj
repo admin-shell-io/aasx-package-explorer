@@ -4,6 +4,9 @@
     <OutputType>library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
+	  <Platforms>x64</Platforms>
+	  <Platform>x64</Platform>
+    <PlatformTarget>x64</PlatformTarget>
     <RuntimeIdentifiers>win7-x64</RuntimeIdentifiers>
     
     <!-- force NuGet / Build to put required.dll and more to bin folder -->
@@ -15,9 +18,6 @@
 	        * Dotnet CLI will only recognize "Platform",
 			* Visual Studio will only recognize "Platforms". 
 	-->
-	  <Platforms>x64</Platforms>
-	  <Platform>x64</Platform>
-    <PlatformTarget>x64</PlatformTarget>
 
     <CefSharpBuildAction>Content</CefSharpBuildAction>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>

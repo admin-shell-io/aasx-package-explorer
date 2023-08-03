@@ -1158,6 +1158,15 @@ namespace Microsoft.Msagl.WpfGraphControl
             }
         }
 
+        // MIHO added this
+        public IEnumerable<IViewerNode> GetViewerNodes()
+        {
+            if (drawingObjectsToIViewerObjects != null)
+                foreach (var x in drawingObjectsToIViewerObjects.Values)
+                    if (x is IViewerNode vn)
+                        yield return vn;
+        }
+
         public WFrameworkElement CreateAndRegisterFrameworkElementOfDrawingNode(Drawing.Node node)
         {
             lock (this)

@@ -18,7 +18,7 @@
   <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>aasx.ico</ApplicationIcon>
+    <ApplicationIcon>aasx-icon-blue-zipper.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
@@ -112,12 +112,12 @@
     <None Update="qualifier-presets.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Resource Include="icon-set-blue-zipper\aasx-icon-blue-zipper.ico" />
     <Resource Include="Resources\IDTA_AAS-Logo_312x281_RGB.png" />
     <Resource Include="Resources\USB_Hexagon_offen.jpeg" />
     <Resource Include="Resources\Festo_t.png" />
     <Resource Include="Resources\round_down.png" />
     <Resource Include="Resources\round_right.png" />
-    <Resource Include="Resources\thumb-aasxplore.ico" />
     <None Update="SpecPI40_t.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -132,7 +132,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Remove="i4AASCS.xml" />
+    <None Remove="icon-set-blue-zipper\aasx-icon-blue-zipper.ico" />
     <None Remove="Resources\IDTA_AAS-Logo_312x281_RGB.png" />
+    <Content Include="aasx-icon-blue-zipper.ico" />
     <None Update="Opc.Ua.SampleClient.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

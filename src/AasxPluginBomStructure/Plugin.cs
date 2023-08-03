@@ -66,7 +66,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return ListActionsBasicHelper(
                 enableCheckVisualExt: true,
                 enablePanelWpf: true,
-                enableMenuItems: true).ToArray();
+                enableMenuItems: true,
+                enableEventsGet: true).ToArray();
         }
 
         public new AasxPluginResultBase ActivateAction(string action, params object[] args)

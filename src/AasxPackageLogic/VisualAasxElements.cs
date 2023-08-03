@@ -217,6 +217,12 @@ namespace AasxPackageLogic
                 _isExpanded = isExpanded;
         }
 
+        public bool HiddenSelected
+        {
+            get { return _isSelected; }
+            set { _isSelected = value;  }
+        }
+
         /// <summary>
         /// Gets/sets whether the TreeViewItem
         /// associated with this object is selected.

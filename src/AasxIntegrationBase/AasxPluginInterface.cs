@@ -122,7 +122,12 @@ namespace AasxIntegrationBase
         public Aas.IReference targetReference = null;
     }
 
-    public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase
+	public class AasxPluginResultEventVisualSelectEntities : AasxPluginResultEventBase
+	{
+		public List<Aas.IReferable> Referables = null;
+	}
+
+	public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase
     {
         public string fn = null;
         public string mimeType = null;

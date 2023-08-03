@@ -10,6 +10,8 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\aasx-icon-blue-zipper.png" />
+    <None Remove="Resources\aasx-icon-blue-zipper_72x72.png" />
     <None Remove="Resources\IDTA_AAS-Logo_80x72_RGB.png" />
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +30,8 @@
     <EmbeddedResource Include="Resources\LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Resource Include="Resources\aasx-icon-blue-zipper.png" />
+    <Resource Include="Resources\aasx-icon-blue-zipper_72x72.png" />
     <Resource Include="Resources\Icon_AASX_32x32_2_W.bmp" />
     <Resource Include="Resources\Icon_AASX_40x40_W.bmp" />
     <Resource Include="Resources\IDTA_AAS-Logo_80x72_RGB.png" />
