@@ -1697,8 +1697,9 @@ namespace AasxPackageExplorer
 
                     // ok, give hints
                     Log.Singleton.Info(StoredPrint.Color.Blue, "Click windows start menu, type regedit.exe " +
-                        "and right-click and select 'Run as Administrator'. Import written file. Note: " +
-                        "You might point Regedit.exe to desktop of your current user.");
+                        "and right-click and select 'Run as Administrator'. Import this written file. Note: " +
+                        "You might point Regedit.exe to desktop of your current user, instead of " +
+                        "Administrator.");
                 }
                 catch (Exception ex)
                 {
