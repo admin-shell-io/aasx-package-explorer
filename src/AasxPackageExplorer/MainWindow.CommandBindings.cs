@@ -23,6 +23,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -353,8 +354,12 @@ namespace AasxPackageExplorer
                 PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
             }
 
-            // pass dispatch on to next (lower) level of menu functions
-            await Logic.CommandBinding_GeneralDispatchAnyUiDialogs(cmd, menuItem, ticket);
+            // REFACTOR: STAYS
+            if (cmd == "attachfileassoc" || cmd == "removefileassoc")
+                await CommandBinding_RegistryTools(cmd, ticket);
+
+			// pass dispatch on to next (lower) level of menu functions
+			await Logic.CommandBinding_GeneralDispatchAnyUiDialogs(cmd, menuItem, ticket);
         }
 
         public bool PanelConcurrentCheckIsVisible()
@@ -1639,6 +1644,68 @@ namespace AasxPackageExplorer
             //-----------------------------------
 #endif
         }
+
+        public async Task CommandBinding_RegistryTools(
+            string cmd,
+            AasxMenuActionTicket ticket)
+        {
+            var regtxt = "";
+            var propFn = "";
+
+			// see: https://learn.microsoft.com/de-de/windows/win32/shell/
+            // how-to-assign-a-custom-icon-to-a-file-type?redirectedfrom=MSDN
+
+			if (cmd == "attachfileassoc")
+            {
+                regtxt = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"Windows Registry Editor Version 5.00
+
+                    [HKEY_CLASSES_ROOT\.aasx\DefaultIcon]
+                    @ = ""%EXE%""");
+                propFn = "attach_aasx.reg";
+            }
+
+			if (cmd == "removefileassoc")
+			{
+				regtxt = AdminShellUtil.CleanHereStringWithNewlines(
+					@"Windows Registry Editor Version 5.00
+
+                    [-HKEY_CLASSES_ROOT\.aasx\DefaultIcon]
+                    [-HKEY_CLASSES_ROOT\.aasx]");
+				propFn = "remove_aasx.reg";
+			}
+
+			if (cmd.HasContent() && propFn.HasContent())
+            {
+				if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+                        ticket, "File",
+                        "Create regedit for for .aasx file associations",
+                        propFn,
+						"RegEdit files (*.reg)|*.reg",
+                        "No valid filename.", 
+                        reworkSpecialFn: true)))
+                    return;
+
+                try
+                {
+                    var exepath = "" + Assembly.GetExecutingAssembly()?.Location;
+                    exepath = exepath.Replace(@"\", @"\\");
+
+                    regtxt = regtxt.Replace(@"%EXE%", exepath);
+
+					File.WriteAllText(ticket["File"] as string, regtxt);
+
+                    // ok, give hints
+                    Log.Singleton.Info(StoredPrint.Color.Blue, "Click windows start menu, type regedit.exe " +
+                        "and right-click and select 'Run as Administrator'. Import written file. Note: " +
+                        "You might point Regedit.exe to desktop of your current user.");
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "when creating regedit file");
+                }
+            }
+		}
 
     }
 }

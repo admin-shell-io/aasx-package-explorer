@@ -3414,7 +3414,10 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
 
-                    this.AddKeyListLangStr<Aas.ILangStringTextType>(stack, "value", mlp.Value, repo, relatedReferable: mlp);
+                    this.AddKeyListLangStr<Aas.ILangStringTextType>(
+                        stack, "value", mlp.Value, repo, 
+                        relatedReferable: mlp,
+						emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
 
                 // ValueId
 
@@ -3485,8 +3488,8 @@ namespace AasxPackageLogic
                     v =>
                     {
                         rng.Min = v as string;
-                        this.AddDiaryEntry(rng, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
+						this.AddDiaryEntry(rng, new DiaryEntryUpdateValue());
+						return new AnyUiLambdaActionNone();
                     });
 
                 this.AddHintBubble(
@@ -3506,8 +3509,8 @@ namespace AasxPackageLogic
                     v =>
                     {
                         rng.Max = v as string;
-                        this.AddDiaryEntry(rng, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
+						this.AddDiaryEntry(rng, new DiaryEntryUpdateValue());
+						return new AnyUiLambdaActionNone();
                     });
             }
             else if (sme is Aas.File fl)

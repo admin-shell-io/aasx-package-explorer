@@ -235,7 +235,17 @@ namespace AasxPackageExplorer
                     .AddWpf(name: "ServerPluginOPCUA", header: "Plugin: OPC UA …")
                     .AddWpf(name: "ServerPluginMQTT", header: "Plugin: MQTT …"))
                 .AddSeparator(filter: AasxMenuFilter.NotBlazor)
-                .AddWpfBlazor(name: "Exit", header: "_Exit", inputGesture: "Alt+F4"));
+				.AddMenu(header: "System …", filter: AasxMenuFilter.NotBlazor,
+						 attachPoint: "System", childs: (new AasxMenu())
+					.AddWpf(name: "AttachFileAssoc", header: "Attach .aasx file associations",
+					    args: new AasxMenuListOfArgDefs()
+							.Add("File", "Windows RegEdit file to write.")
+							.Add("Location", "Location selection", hidden: true))
+					.AddWpf(name: "RemoveFileAssoc", header: "Remove .aasx file associations",
+						args: new AasxMenuListOfArgDefs()
+							.Add("File", "Windows RegEdit file to write.")
+							.Add("Location", "Location selection", hidden: true)))
+				.AddWpfBlazor(name: "Exit", header: "_Exit", inputGesture: "Alt+F4"));
 
             //
             // Workspace
