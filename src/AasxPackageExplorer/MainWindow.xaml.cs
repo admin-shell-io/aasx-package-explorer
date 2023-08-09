@@ -1883,10 +1883,40 @@ namespace AasxPackageExplorer
                         AnyUiDisplayContextWpf.SessionSingletonWpf);
                 }
 
-                // Re-render Any UI Panels
-                //========================
+				// Invoke other plugin
+				//====================
 
-                if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
+				if (evt is AasxIntegrationBase.AasxPluginResultEventInvokeOtherPlugin evInvOth)
+				{
+                    // result
+                    object res = null ;
+
+                    // find plugin
+                    var pi = Plugins.FindPluginInstance(evInvOth.PluginName);
+
+                    // invoke?
+                    if (pi != null && pi.HasAction(evInvOth.Action, evInvOth.UseAsync))
+                    {
+                        if (evInvOth.UseAsync)
+                            res = await pi.InvokeActionAsync(evInvOth.Action, evInvOth.Args);
+                        else
+                            res = pi.InvokeAction(evInvOth.Action, evInvOth.Args);
+					}
+
+					// fire back
+					pluginInstance?.InvokeAction("event-return",
+						new AasxIntegrationBase.AasxPluginEventReturnInvokeOther()
+						{
+							sourceEvent = evt,
+							ResultData = res
+						},
+						AnyUiDisplayContextWpf.SessionSingletonWpf);
+				}
+
+				// Re-render Any UI Panels
+				//========================
+
+				if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
                 {
                     UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }

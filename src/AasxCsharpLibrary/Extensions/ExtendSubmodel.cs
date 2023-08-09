@@ -346,7 +346,20 @@ namespace Extensions
                 return new Key(KeyTypes.Submodel, submodel.Id);
         }
 
-        public static List<ISubmodelElement> SmeForWrite(this Submodel submodel)
+		/// <summary>
+		///  If instance, return semanticId as one key.
+		///  If template, return identification as key.
+		/// </summary>
+		public static IReference GetSemanticRef(this Submodel submodel)
+		{
+			if (submodel.Kind == ModellingKind.Instance)
+				return submodel.SemanticId;
+			else
+				return new Reference(ReferenceTypes.ModelReference, new[] {
+                    new Key(KeyTypes.Submodel, submodel.Id) }.Cast<IKey>().ToList());
+		}
+
+		public static List<ISubmodelElement> SmeForWrite(this Submodel submodel)
         {
             if (submodel.SubmodelElements == null)
                 submodel.SubmodelElements = new();

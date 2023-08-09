@@ -9,9 +9,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\DigitalNameplateV20.json" />
+    <None Remove="Resources\IdtaContactInformationV10.json" />
     <None Remove="Resources\IdtaHierarchicalStructV10.json" />
     <None Remove="Resources\IdtaTechnicalDataV12.json" />
-    <None Remove="Resources\ZveiContactInformationV10.json" />
     <None Remove="Resources\ZveiDigitalTypeplate.json" />
     <None Remove="Resources\ZveiTimeSeriesDataV10.json" />
   </ItemGroup>
@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\IdtaHierarchicalStructV10.json" />
-    <EmbeddedResource Include="Resources\ZveiContactInformationV10.json" />
+    <EmbeddedResource Include="Resources\IdtaContactInformationV10.json" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate.json" />
     <EmbeddedResource Include="Resources\DigitalNameplateV20.json" />
     <EmbeddedResource Include="Resources\ZveiNameplateV10.json" />

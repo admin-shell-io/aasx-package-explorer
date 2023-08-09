@@ -121,6 +121,10 @@
       "Args": []
     },
     {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginContactInformation\\bin\\Debug\\net6.0-windows\\AasxPluginContactInformation.dll",
+      "Args": []
+    },
+    {
       "Path": "..\\..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
       "Args": []
     },
@@ -151,13 +155,13 @@
     {
       "Path": "..\\..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net6.0-windows\\AasxPluginExportTable.dll",
       "Args": []
-    },
+    } /* ,    
+,
     {
       "Path": "..\\..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
       "Args": []
     }
 
-    /* ,    
     // Festo specific from here on
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\net6.0-windows\\AasxPluginFluiddrawViewer.dll",

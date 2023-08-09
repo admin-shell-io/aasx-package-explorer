@@ -28,8 +28,8 @@ namespace AasxPackageExplorer
 
             FlowDocViewer.Document = new FlowDocument();
 
-            ButtonToggleWrap.IsChecked = false;
-            SetWordWrapping(false);
+            ButtonToggleWrap.IsChecked = true;
+            SetWordWrapping(true);
 
             foreach (var sp in storedPrints)
             {

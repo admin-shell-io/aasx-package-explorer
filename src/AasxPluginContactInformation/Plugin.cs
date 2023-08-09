@@ -14,7 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AasxPluginDocumentShelf;
+using AasxPluginContactInformation;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
@@ -27,28 +27,28 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     public class AasxPlugin : AasxPluginBase
     {
-        private DocumentShelfOptions _options =
-            new DocumentShelfOptions();
+        private ContactInformationOptions _options =
+            new ContactInformationOptions();
 
         public class Session : PluginSessionBase
         {
-            public AasxPluginDocumentShelf.ShelfAnyUiControl AnyUiControl = null;
+            public AasxPluginContactInformation.ShelfAnyUiControl AnyUiControl = null;
         }
 
         public new void InitPlugin(string[] args)
         {
             // start ..
-            PluginName = "AasxPluginDocumentShelf";
+            PluginName = "AasxPluginContactInformation";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            _options = DocumentShelfOptions.CreateDefault();
+            _options = ContactInformationOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
             {
                 var newOpt =
-                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<DocumentShelfOptions>(
+                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<ContactInformationOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
                     _options = newOpt;
@@ -70,7 +70,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 				enableLicenses: true,
 				enableEventsGet: true,
                 enableEventReturn: true,
-                enableNewSubmodel: true,
 				enablePanelAnyUi: true);
             return res.ToArray();
         }
@@ -92,14 +91,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // check for a record in options, that matches Submodel
                 var found = false;
                 // ReSharper disable once UnusedVariable
-                foreach (var rec in _options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
+                foreach (var rec in _options.LookupAllIndexKey<ContactInformationOptionsRecord>(
                     sm.SemanticId?.GetAsExactlyOneKey()))
                     found = true;
                 if (!found)
                     return null;
 
                 // success prepare record
-                var cve = new AasxPluginResultVisualExtension("DOC", "Document Shelf");
+                var cve = new AasxPluginResultVisualExtension("CTI", "Contact information");
 
                 // ok
                 return cve;
@@ -155,7 +154,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // create session and call
                 var session = _sessions.CreateNewSession<Session>(args[4]);
                 var opContext = args[5] as PluginOperationContextBase;
-                session.AnyUiControl = AasxPluginDocumentShelf.ShelfAnyUiControl.FillWithAnyUiControls(
+                session.AnyUiControl = AasxPluginContactInformation.ShelfAnyUiControl.FillWithAnyUiControls(
                     _log, args[0], args[1], _options, _eventStack, session, args[2], opContext,
                     args[3] as AnyUiContextPlusDialogs, this);
 
@@ -214,35 +213,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var res = new AasxPluginResultBaseObject();
                 res.obj = list;
                 return res;
-            }
-
-            if (action == "generate-submodel" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                // get arguments
-                var smName = args[0] as string;
-                if (smName == null)
-                    return null;
-
-                // generate (by hand)
-                var sm = new Aas.Submodel("");
-                if (smName.Contains("V1.1"))
-                {
-                    sm.SemanticId = ExtendReference.CreateFromKey(
-                        AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
-                    sm.IdShort = "ManufacturerDocumentation";
-                }
-                else
-                {
-                    sm.SemanticId = ExtendReference.CreateFromKey(DocuShelfSemanticConfig.Singleton.SemIdDocumentation);
-                    sm.IdShort = "Documentation";
-                }
-
-                // make result
-                var res = new AasxPluginResultBaseObject();
-                res.strType = "OK";
-                res.obj = sm;
-                return res;
-            }
+            }            
 
             // default
             return null;

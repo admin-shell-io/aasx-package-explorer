@@ -25,7 +25,7 @@ using Newtonsoft.Json;
 
 namespace AasxCompatibilityModels.AasxPluginGenericForms
 {
-    [DisplayName("Record")]
+    [DisplayName("Record_V20")]
     public class GenericFormsOptionsRecordV20
     {
         /// <summary>
@@ -49,7 +49,7 @@ namespace AasxCompatibilityModels.AasxPluginGenericForms
         public AdminShellV20.ListOfConceptDescriptions ConceptDescriptions = null;
     }
 
-    [DisplayName("Options")]
+    [DisplayName("Options_V20")]
     public class GenericFormOptionsV20
     {
         //

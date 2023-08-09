@@ -34,7 +34,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
         public static string[] FormMultiplicityAsUmlCardinality = new string[] { "0..1", "1", "0..*", "1..*" };
     }
 
-    [DisplayName("FormBase")]
+    [DisplayName("FormBase_V20")]
     public class FormDescBaseV20
     {
     }
@@ -43,7 +43,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
     /// Aim: provide a (abstract) communality for Submodel und SubmodelElement.
     /// Host FormTitle, Info, Presets and Semantic Id
     /// </summary>
-    [DisplayName("FormSubmodelReferable")]
+    [DisplayName("FormSubmodelReferable_V20")]
     public class FormDescReferableV20 : FormDescBaseV20
     {
         /// <summary>
@@ -108,7 +108,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
     /// the <c>SemanticId</c> of the
     /// Submodel, therefore it has to be present.
     /// </summary>
-    [DisplayName("FormSubmodel")]
+    [DisplayName("FormSubmodel_V20")]
     public class FormDescSubmodelV20 : FormDescReferableV20
     {
         [JsonProperty(Order = 800)]
@@ -120,12 +120,12 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
     /// <summary>
     /// An extension of List(FormDescSubmodelElement), in order to unify the lists of Root and SMC
     /// </summary>
-    [DisplayName("FormListOfElement")]
+    [DisplayName("FormListOfElement_V20")]
     public class FormDescListOfElementV20 : List<FormDescSubmodelElementV20>
     {
     }
 
-    [DisplayName("FormSubmodelElement")]
+    [DisplayName("FormSubmodelElement_V20")]
     public class FormDescSubmodelElementV20 : FormDescReferableV20
     {
         /// <summary>
@@ -149,7 +149,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 
     }
 
-    [DisplayName("FormSubmodelElementCollection")]
+    [DisplayName("FormSubmodelElementCollection_V20")]
     public class FormDescSubmodelElementCollectionV20 : FormDescSubmodelElementV20
     {
         /// <summary>
@@ -160,7 +160,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 
     }
 
-    [DisplayName("FormProperty")]
+    [DisplayName("FormProperty_V20")]
     public class FormDescPropertyV20 : FormDescSubmodelElementV20
     {
         /// <summary>
@@ -198,7 +198,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 
     }
 
-    [DisplayName("FormMultiLangProp")]
+    [DisplayName("FormMultiLangProp_V20")]
     public class FormDescMultiLangPropV20 : FormDescSubmodelElementV20
     {
         public static string[] DefaultLanguages = new string[] { "de", "en", "fr", "es", "it", "cn", "kr" };
@@ -207,7 +207,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 
     }
 
-    [DisplayName("FormFile")]
+    [DisplayName("FormFile_V20")]
     public class FormDescFileV20 : FormDescSubmodelElementV20
     {
         /// <summary>
@@ -220,7 +220,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 
     }
 
-    [DisplayName("FormReferenceElement")]
+    [DisplayName("FormReferenceElement_V20")]
     public class FormDescReferenceElementV20 : FormDescSubmodelElementV20
     {
         /// <summary>

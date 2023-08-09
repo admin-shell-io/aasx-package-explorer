@@ -46,7 +46,7 @@ namespace Extensions
         /// </summary>
         /// <param name="k">Given single Key</param>
         /// <returns>Reference with guessed type</returns>
-        public static Reference CreateFromKey(Key k)
+        public static Reference CreateFromKey(IKey k)
         {
             var res = new Reference(ReferenceTypes.ExternalReference, new List<IKey> { k });
             res.Type = res.GuessType();

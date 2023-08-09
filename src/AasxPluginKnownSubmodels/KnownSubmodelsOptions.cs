@@ -40,7 +40,7 @@ namespace AasxPluginKnownSubmodels
 
             opt.Records.Add(new KnownSubmodelsOptionsRecord()
             {
-                Header = "ZVEI Contact Information (Version 1.0)",
+                Header = "Contact Information (IDTA) V1.0",
                 Content = "This Submodel template aims at interoperable provision of contact information in regard " +
                     "to the asset of the respective Asset Administration Shell. " +
                     "The intended use-case is the provision of a standardized property structure for contact " +
@@ -48,7 +48,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_ZveiContactInformation10.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new Aas.Key[] {
-                    AasxPredefinedConcepts.ZveiContactInformationV10.Static.SM_ContactInformation.GetSemanticKey()
+                    AasxPredefinedConcepts.IdtaContactInformationV10.Static.SM_ContactInformations.GetSemanticKey()
                 }.ToList())
             });
 

@@ -19,7 +19,6 @@ using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Newtonsoft.Json;
 using Extensions;
-using AasxCompatibilityModels;
 
 namespace AasxPluginGenericForms
 {

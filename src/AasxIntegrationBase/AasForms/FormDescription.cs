@@ -92,7 +92,7 @@ namespace AasxIntegrationBase.AasForms
         /// SemanticId of the SubmodelElement. Always required.
         /// </summary>
         [JsonProperty(Order = 8)]
-        public Aas.Key KeySemanticId = new Aas.Key(Aas.KeyTypes.GlobalReference, "");
+        public Aas.IKey KeySemanticId = new Aas.Key(Aas.KeyTypes.GlobalReference, "");
 
         // Constructors
         //=============
@@ -484,8 +484,6 @@ namespace AasxIntegrationBase.AasForms
 
             return res;
         }
-
-
     }
 
     [DisplayName("FormProperty")]
