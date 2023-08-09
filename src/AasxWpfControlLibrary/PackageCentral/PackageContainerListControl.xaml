@@ -27,7 +27,7 @@
             <anyui:AnyUiColorToWpfBrushConverter x:Key="AnyUiColorToWpfBrushConverter" />
             <anyui:AnyUiBrushToWpfBrushConverter x:Key="AnyUiBrushToWpfBrushConverter" />
 
-            <BitmapImage x:Key="Icon_AASX" UriSource="pack://application:,,,/AasxWpfControlLibrary;component/Resources/aasx-icon-blue-zipper_72x72_v2.png" />
+            <BitmapImage x:Key="Icon_AASX" UriSource="pack://application:,,,/AasxWpfControlLibrary;component/Resources/aasx-icon-blue-zipper_72x72_v3.png" />
 
             <ContextMenu x:Key="ContextMenuFileItem">
                 <MenuItem Name="MenuItemDelete" Header="Delete" Click="MenuItem_Click">
