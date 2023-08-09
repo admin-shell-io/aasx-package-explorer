@@ -9,7 +9,7 @@
         Title="AASX Package Explorer Splash Screen" Width="550" Height="350" Background="White" WindowStyle="None"
         WindowStartupLocation="CenterScreen" Topmost="True" MouseDown="Window_MouseDown">
     <!--
-    Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
