@@ -552,11 +552,11 @@ namespace AasxPluginContactInformation
             var hds = new List<string>();
             if (_opContext?.IsDisplayModeEditOrAdd == true)
             {
-                hds.AddRange(new[] { "\u270e", "Edit metadata" });
+                hds.AddRange(new[] { "\u270e", "Edit contact data" });
                 hds.AddRange(new[] { "\u2702", "Delete" });
             }
             else
-                hds.AddRange(new[] { "\u270e", "View metadata" });
+                hds.AddRange(new[] { "\u270e", "View contact data" });
 
             // context menu
             uitk.AddSmallContextMenuItemTo(g, 2, 2,
@@ -672,8 +672,7 @@ namespace AasxPluginContactInformation
         private List<Aas.ISubmodelElement> _updateSourceElements = null;
 
         private async Task GetFormDescForSingleContact(
-			List<Aas.ISubmodelElement> sourceElems,
-            Action<FormDescBase> lambdaFormDescFound)
+			List<Aas.ISubmodelElement> sourceElems)
         {
             // ask the plugin generic forms for information via event stack
             _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventInvokeOtherPlugin()
@@ -710,9 +709,27 @@ namespace AasxPluginContactInformation
                                 descSmc = desc2;
                             }
 
-                    if (descSmc != null)
-                        lambdaFormDescFound?.Invoke(descSmc);
-                }
+                    if (descSmc == null)
+                        return;
+
+                    // build up outer frame
+					var fi = new FormInstanceSubmodelElementCollection(null, descSmc)
+					{
+						outerEventStack = _eventStack,
+						OuterPluginName = _plugin?.GetPluginName(),
+						OuterPluginSession = _session,
+					};
+
+                    // if present, create link to existing data
+                    // -> update instead of add
+					fi.PresetInstancesBasedOnSource(_updateSourceElements);
+
+					// initialize form and start editing
+					_formDoc = new AnyUiRenderForm(
+						fi,
+						updateMode: sourceElems != null);
+					PushUpdateEvent();
+				}
             };
         }
 
@@ -724,30 +741,12 @@ namespace AasxPluginContactInformation
 
             // what to do?
             if (tag == null
-                && (menuItemHeader == "Edit metadata" || menuItemHeader == "View metadata")
+                && (menuItemHeader == "Edit contact data" || menuItemHeader == "View contact data")
                 && e.SourceElementsContact != null)
             {
                 // ask the plugin generic forms for information via event stack
-                await GetFormDescForSingleContact(e.SourceElementsContact,
-                    lambdaFormDescFound: (desc) =>
-                    {
-                        // create the form description
-                        if (!(desc is FormDescSubmodelElementCollection descSmc))
-                            return;
-						var fi = new FormInstanceSubmodelElementCollection(null, descSmc)
-						{
-							outerEventStack = _eventStack,
-							OuterPluginName = _plugin?.GetPluginName(),
-							OuterPluginSession = _session,
-						};
-						fi.PresetInstancesBasedOnSource(_updateSourceElements);
-
-						// initialize form and start editing
-						_formDoc = new AnyUiRenderForm(
-							fi,
-							updateMode: true);
-						PushUpdateEvent();
-					});
+                // and subsequently start editing form
+                await GetFormDescForSingleContact(e.SourceElementsContact);
 
                 // OK
                 return;
@@ -971,31 +970,16 @@ namespace AasxPluginContactInformation
 
             if (cmd == "ButtonAddContact")
             {
-                // prepare form instance, take over existing data
-#if not_ready
-                var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDescFor(_renderedVersion, _options);
-                _updateSourceElements = null;
-
-                var fi = new FormInstanceSubmodelElementCollection(null, desc);
-                fi.outerEventStack = _eventStack;
-                fi.OuterPluginName = _plugin?.GetPluginName();
-                fi.OuterPluginSession = _session;
-
-                // initialize form
-                _formDoc = new AnyUiRenderForm(
-                    fi,
-                    updateMode: false);
-
-                // bring it to the panel by redrawing the plugin
-                PushUpdateEvent();
+				// ask the plugin generic forms for information via event stack
+				// and subsequently start editing form
+				await GetFormDescForSingleContact(sourceElems: null);
 
                 // OK
                 return new AnyUiLambdaActionNone();
-#endif
-            }
+			}
 
-            // no?
-            return new AnyUiLambdaActionNone();
+			// no?
+			return new AnyUiLambdaActionNone();
         }
 
 #endregion
