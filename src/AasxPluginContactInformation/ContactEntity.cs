@@ -47,7 +47,7 @@ namespace AasxPluginContactInformation
 
 		// help info
 
-		public List<Aas.ISubmodelElement> SourceElementsContact = null;
+		public Aas.ISubmodelElementCollection SourceElementContact = null;
 
 		public AnyUiImage ImgContainerAnyUi = null;
 
@@ -141,7 +141,7 @@ namespace AasxPluginContactInformation
                     
                     // create entity, remember source
                     var ent = new ContactEntity();
-                    ent.SourceElementsContact = smcContact?.Value;
+                    ent.SourceElementContact = smcContact;
 
                     // personal names?
                     var personNameTaken = false;

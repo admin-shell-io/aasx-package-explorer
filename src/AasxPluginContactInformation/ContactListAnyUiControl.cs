@@ -742,86 +742,50 @@ namespace AasxPluginContactInformation
             // what to do?
             if (tag == null
                 && (menuItemHeader == "Edit contact data" || menuItemHeader == "View contact data")
-                && e.SourceElementsContact != null)
+                && e.SourceElementContact?.Value != null)
             {
                 // ask the plugin generic forms for information via event stack
                 // and subsequently start editing form
-                await GetFormDescForSingleContact(e.SourceElementsContact);
+                await GetFormDescForSingleContact(e.SourceElementContact.Value);
 
                 // OK
                 return;
             }
 
-            if (tag == null && menuItemHeader == "Delete" && e.SourceElementsContact != null
+            if (tag == null && menuItemHeader == "Delete" 
+                && e.SourceElementContact?.Value != null
+                && true == _submodel?.SubmodelElements?.Contains(e.SourceElementContact)
+                && true == e.SourceElementContact.SemanticId?.Matches(
+                    AasxPredefinedConcepts.IdtaContactInformationV10.Static
+                        .CD_ContactInformation.GetReference(), matchMode: MatchMode.Relaxed)
                 && _options != null
                 && _opContext?.IsDisplayModeEditOrAdd == true)
             {
-#if refactor_to_display_context
-                // the source elements need to match a Document
-                var semConf = DocuShelfSemanticConfig.CreateDefaultFor(_renderedVersion);
-                var found = false;
-                foreach (var smcDoc in
-                    _submodel.SubmodelElements.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
-                        semConf.SemIdDocument, MatchMode.Relaxed))
-                    if (smcDoc?.Value == e.SourceElementsDocument)
-                    {
-                        // identify as well the DocumentVersion
-                        // (convert to List() because of Count() below)
-                        var allVers =
-                            e.SourceElementsDocument.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
-                                semConf.SemIdDocumentVersion, MatchMode.Relaxed).ToList();
-                        foreach (var smcVer in allVers)
-                            if (smcVer?.Value == e.SourceElementsDocumentVersion)
-                            {
-                                // found 
-                                found = true;
+				// ask back via display context
+				if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
+					"Delete ContactEntity? This cannot be reverted!",
+					"Contact list",
+					AnyUiMessageBoxButton.OKCancel,
+					AnyUiMessageBoxImage.Question))
+					return;
 
-                                // access
-                                if (smcVer == null || smcVer.Value == null || smcDoc == null || smcDoc.Value == null)
-                                    continue;
+				// do it
+				try
+				{
+                    _submodel?.SubmodelElements.Remove(e.SourceElementContact);
 
-                                // ask back via display context
-                                if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
-                                    "Delete DocumentEntity? This cannot be reverted!",
-                                    "DocumentShelf",
-                                    AnyUiMessageBoxButton.OKCancel,
-                                    AnyUiMessageBoxImage.Question))
-                                    return;
+					// re-display also in Explorer
+					_eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements()
+					    { Session = _session });
 
-                                // do it
-                                try
-                                {
-                                    // confirmed! -> delete
-                                    if (allVers.Count < 2)
-                                        // remove the whole document!
-                                        _submodel.SubmodelElements.Remove(smcDoc);
-                                    else
-                                        // remove only the document version
-                                        e.SourceElementsDocument.Remove(smcVer);
-
-                                    // re-display also in Explorer
-                                    _eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements()
-                                    { Session = _session });
-
-                                    // log
-                                    _log?.Info("Deleted Document(Version).");
-                                }
-                                catch (Exception ex)
-                                {
-                                    _log?.Error(ex, "while saveing digital file to user specified loacation");
-                                }
-
-                                // OK
-                                return;
-                            }
-
-                        // ReSharper enable PossibleMultipleEnumeration
-                    }
-
-                if (!found)
-                    _log?.Error("Document element was not found properly!");
-#endif
-            }
+					// log
+					_log?.Info("Deleted Document(Version).");
+				}
+				catch (Exception ex)
+				{
+					_log?.Error(ex, "while deleting contact");
+				}
+			}
         }
 
         private void DocumentEntity_DoubleClick(ContactEntity e)
