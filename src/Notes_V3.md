@@ -56,6 +56,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * add "SML" to GenericForms
 
+* BlazorExplorer: F5 shall not lead to reloading the session? Or: preserve loaded AASX?
+
 ## Done (w.r.t. recently V3.0)
 
 * AAS / data spec / "Add known" ?? by preset list?? -- done
