@@ -848,7 +848,7 @@ updated by the IDTA 24 MAY 2022 */
   },
   "CD_IPCommunication": {
     "idShort": "IPCommunication",
-    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/IPCommunication",
     "embeddedDataSpecifications": [
       {
         "dataSpecification": {

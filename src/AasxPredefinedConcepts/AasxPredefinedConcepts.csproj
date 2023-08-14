@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="Resources\DigitalNameplateV20.json" />
     <None Remove="Resources\IdtaContactInformationV10.json" />
+    <None Remove="Resources\IdtaHandoverDocumentationV12.json" />
     <None Remove="Resources\IdtaHierarchicalStructV10.json" />
     <None Remove="Resources\IdtaTechnicalDataV12.json" />
     <None Remove="Resources\ZveiDigitalTypeplate.json" />
@@ -19,6 +20,7 @@
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\IdtaHandoverDocumentationV12.json" />
     <EmbeddedResource Include="Resources\IdtaHierarchicalStructV10.json" />
     <EmbeddedResource Include="Resources\IdtaContactInformationV10.json" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate.json" />

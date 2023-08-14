@@ -362,7 +362,7 @@
                 "PresetCategory": "",
                 "KeySemanticId": {
                   "type": "GlobalReference",
-                  "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/"
+                  "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/IPCommunication"
                 },
                 "Multiplicity": "ZeroToMany",
                 "IsReadOnly": false,

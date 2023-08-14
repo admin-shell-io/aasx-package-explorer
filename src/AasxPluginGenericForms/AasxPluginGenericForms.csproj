@@ -31,6 +31,9 @@
     <None Update="AasxPluginGenericForms_ZVEI_DigitalNameplate.add-options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="IDTA 02004-1-2_Template_Handover Documentation.add-options.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="IDTA_02002-1-0_Template_ContactInformation.add-options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
