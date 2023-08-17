@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AdminShellNS;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Extensions
@@ -25,26 +26,32 @@ namespace Extensions
         public static bool Matches(this IKey key,
                 KeyTypes type, string id, MatchMode matchMode = MatchMode.Strict)
         {
+            key.Value = key.Value.Trim();
+            id = id.Trim();
+
             if (matchMode == MatchMode.Strict)
-                return key.Type == type && key.Value == id;
+                return key.Type == type && key.Value.Replace("*01", "") == id.Replace("*01", "");
 
             if (matchMode == MatchMode.Relaxed)
                 return (key.Type == type || key.Type == KeyTypes.GlobalReference || type == KeyTypes.GlobalReference)
-                     && key.Value == id;
+                     && key.Value.Replace("*01", "") == id.Replace("*01", "");
 
             if (matchMode == MatchMode.Identification)
-                return key.Value == id;
+                return key.Value.Replace("*01", "") == id.Replace("*01", "");
 
             return false;
         }
         public static bool Matches(this IKey key, IKey otherKey)
         {
+            key.Value = key.Value.Trim();
+            otherKey.Value = otherKey.Value.Trim();
+
             if (otherKey == null)
             {
                 return false;
             }
 
-            if (key.Type == otherKey.Type && key.Value.Equals(otherKey.Value))
+            if (key.Type == otherKey.Type && key.Value.Replace("*01", "").Equals(otherKey.Value.Replace("*01", "")))
             {
                 return true;
             }
@@ -54,15 +61,18 @@ namespace Extensions
 
         public static bool Matches(this IKey key, IKey otherKey, MatchMode matchMode = MatchMode.Strict)
         {
+            key.Value = key.Value.Trim();
+            otherKey.Value = otherKey.Value.Trim();
+
             if (matchMode == MatchMode.Strict)
-                return key.Type == otherKey.Type && key.Value == otherKey.Value;
+                return key.Type == otherKey.Type && key.Value.Replace("*01", "") == otherKey.Value.Replace("*01", "");
 
             if (matchMode == MatchMode.Relaxed)
                 return (key.Type == otherKey.Type || key.Type == KeyTypes.GlobalReference || otherKey.Type == KeyTypes.GlobalReference)
-                    && (key.Value == otherKey.Value);
+                    && (key.Value.Replace("*01", "") == otherKey.Value.Replace("*01", ""));
 
             if (matchMode == MatchMode.Identification)
-                return key.Value == otherKey.Value;
+                return key.Value.Replace("*01", "") == otherKey.Value.Replace("*01", "");
 
             return false;
         }
