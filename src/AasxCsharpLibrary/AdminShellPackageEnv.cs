@@ -9,15 +9,19 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using Extensions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using static AasCore.Aas3_0.Reporting;
 
 namespace AdminShellNS
 {
@@ -1155,8 +1159,102 @@ namespace AdminShellNS
             return isLocal;
         }
 
+        private static WebProxy proxy = null;
+
         public Stream GetLocalStreamFromPackage(string uriString, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read)
         {
+            // Check, if remote
+            if (uriString.ToLower().Substring(0, 4) == "http")
+            {
+                if (proxy == null)
+                {
+                    string proxyAddress = "";
+                    string username = "";
+                    string password = "";
+
+                    string proxyFile = "proxy.txt";
+                    if (System.IO.File.Exists(proxyFile))
+                    {
+                        try
+                        {   // Open the text file using a stream reader.
+                            using (StreamReader sr = new StreamReader(proxyFile))
+                            {
+                                proxyFile = sr.ReadLine();
+                            }
+                        }
+                        catch (IOException e)
+                        {
+                            Console.WriteLine("proxy.txt could not be read:");
+                            Console.WriteLine(e.Message);
+                        }
+                    }
+
+                    try
+                    {
+                        using (StreamReader sr = new StreamReader(proxyFile))
+                        {
+                            proxyAddress = sr.ReadLine();
+                            username = sr.ReadLine();
+                            password = sr.ReadLine();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(proxyFile + " not found!");
+                    }
+
+                    if (proxyAddress != "")
+                    {
+                        proxy = new WebProxy();
+                        Uri newUri = new Uri(proxyAddress);
+                        proxy.Address = newUri;
+                        proxy.Credentials = new NetworkCredential(username, password);
+                        Console.WriteLine("Using proxy: " + proxyAddress);
+                    }
+                }
+
+                var handler = new HttpClientHandler();
+
+                if (proxy != null)
+                    handler.Proxy = proxy;
+                else
+                    handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+                var hc = new HttpClient(handler);
+
+                var response = hc.GetAsync(uriString).GetAwaiter().GetResult();
+
+                // if you call response.EnsureSuccessStatusCode here it will throw an exception
+                if (response.StatusCode == HttpStatusCode.Moved
+                    || response.StatusCode == HttpStatusCode.Found)
+                {
+                    var location = response.Headers.Location;
+                    response = hc.GetAsync(location).GetAwaiter().GetResult();
+                }
+
+                response.EnsureSuccessStatusCode();
+                var s = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+
+                if (s.Length < 500) // indirect load?
+                {
+                    StreamReader reader = new StreamReader(s);
+                    string json = reader.ReadToEnd();
+                    var parsed = JObject.Parse(json);
+                    try
+                    {
+                        string url = parsed.SelectToken("url").Value<string>();
+                        response = hc.GetAsync(url).GetAwaiter().GetResult();
+                        response.EnsureSuccessStatusCode();
+                        s = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return s;
+            }
+
             // access
             if (_openPackage == null)
                 throw (new Exception(string.Format($"AASX Package {_fn} not opened. Aborting!")));
