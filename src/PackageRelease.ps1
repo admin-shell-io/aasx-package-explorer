@@ -110,26 +110,16 @@ function PackageRelease($outputDir)
             -DestinationPath $archPath
     }
 
-    function MakePackageBlazor($identifier)
+    function MakePackageBlazor($identifier, $plugins)
     {
         $destinationDir = Join-Path $outputDir $identifier
+        $aasxBlazorDir = Join-Path $destinationDir "BlazorExplorer"
 
         Write-Host ("Making the package $($identifier|ConvertTo-Json) to: " +
             $destinationDir)
 
         Write-Host "* Packaging to: $destinationDir"
         New-Item -ItemType Directory -Force -Path $destinationDir|Out-Null
-
-        ##
-        # BlazorUI
-        ##
-
-        <#Write-Host "* Copying BlazorUI to: $destinationDir"
-        Copy-Item `
-            -Path (Join-Path $buildDir "BlazorUI") `
-            -Recurse `
-            -Destination $destinationDir
-        #>
 
         ##
         # BlazorExplorer
@@ -142,6 +132,22 @@ function PackageRelease($outputDir)
             -Destination $destinationDir
 
         ##
+        # Plug-ins
+        ##
+
+        $pluginsDir = Join-Path $aasxBlazorDir "plugins"
+        New-Item -ItemType Directory -Force -Path $pluginsDir|Out-Null
+
+        foreach ($plugin in $plugins)
+        {
+            Write-Host "* Copying $plugin to: $pluginsDir"
+            Copy-Item `
+                -Path (Join-Path $buildDir $plugin) `
+                -Recurse `
+                -Destination $pluginsDir
+        }
+
+        ##
         # Compress
         ##
 
@@ -152,6 +158,7 @@ function PackageRelease($outputDir)
             -DestinationPath $archPath
     }
 
+
     ##
     # Make packages
     ##
@@ -160,7 +167,9 @@ function PackageRelease($outputDir)
 
     MakePackage -identifier "aasx-package-explorer-small" #-plugins $smallPlugins
 
-    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer"
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer" -plugins $allPlugins
+
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer-small"
 
     # Do not copy the source code in the releases.
     # The source code will be distributed automatically through Github releases.
