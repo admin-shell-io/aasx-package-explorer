@@ -11,6 +11,7 @@ on:
     branches:
       - master
       - MIHO/*V3*
+      - awollbrink/**
 
 jobs:
   Check-release:
