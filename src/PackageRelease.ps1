@@ -39,10 +39,29 @@ function PackageRelease($outputDir)
     "AasxPluginImageMap",
     "AasxPluginMtpViewer",
     "AasxPluginPlotting",
-    #"AasxPluginSmdExporter",
+    "AasxPluginSmdExporter",
     "AasxPluginTechnicalData"
-    #"AasxPluginUaNetClient",
-    #"AasxPluginUaNetServer"
+    "AasxPluginUaNetClient",
+    "AasxPluginUaNetServer"
+    )
+
+    $blazorPlugins = $(
+        "AasxPluginAdvancedTextEditor",
+        "AasxPluginBomStructure",
+        "AasxPluginDocumentShelf",
+        "AasxPluginContactInformation",
+        "AasxPluginDigitalNameplate",
+        "AasxPluginExportTable",
+        "AasxPluginGenericForms",
+        "AasxPluginImageMap",
+        "AasxPluginKnownSubmodels",
+        "AasxPluginMtpViewer",
+        "AasxPluginPlotting",
+        "AasxPluginSmdExporter",
+        "AasxPluginTechnicalData",
+        "AasxPluginUaNetClient",
+        "AasxPluginUaNetServer",
+        "AasxPluginWebBrowser"
     )
 
     $allPlugins = $smallPlugins.Clone()
@@ -167,7 +186,7 @@ function PackageRelease($outputDir)
 
     MakePackage -identifier "aasx-package-explorer-small" #-plugins $smallPlugins
 
-    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer" -plugins $allPlugins
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer" -plugins $blazorPlugins
 
     MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer-small"
 

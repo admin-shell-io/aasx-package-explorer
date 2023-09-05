@@ -46,6 +46,7 @@ function Main
         "AasxPluginExportTable",
         "AasxPluginGenericForms",
         "AasxPluginImageMap",
+        "AasxPluginKnownSubmodels",
         "AasxPluginMtpViewer",
         "AasxPluginPlotting",
         "AasxPluginSmdExporter",
@@ -54,7 +55,6 @@ function Main
         "AasxPluginUaNetServer",
         "AasxPluginWebBrowser",
         "BlazorExplorer"
-        #"BlazorUI"
         )
 
         foreach ($project in $projects)
