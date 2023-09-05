@@ -16,6 +16,8 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 /*
@@ -353,19 +355,20 @@ namespace AasxOpenIdClient
                 return tr;
             }
 
-            var disco = await client.GetDiscoveryDocumentAsync(authServer);
+            //var disco = await client.GetDiscoveryDocumentAsync(authServer);
+            var disco = client.GetDiscoveryDocumentAsync(authServer).Result;
             if (disco.IsError) throw new Exception(disco.Error);
 
             UiLambdaSet.MesssageBoxShow(uiLambda, disco.Raw, "", "Discovery JSON", AnyUiMessageBoxButton.OK);
 
             List<string> rootCertSubject = new List<string>();
-            dynamic discoObject = null;
-            if (discoObject.rootCertSubjects != null)
+            var discoObject = JsonSerializer.Deserialize<JsonObject>(disco.Raw);
+            var rootCertSubjects = JsonSerializer.Deserialize<List<string>>(discoObject["rootCertSubjects"]);
+            if (rootCertSubjects != null)
             {
-                int i = 0;
-                while (i < discoObject.rootCertSubjects.Length)
+                foreach (var subject in rootCertSubjects)
                 {
-                    rootCertSubject.Add(discoObject.rootCertSubjects[i++]);
+                    rootCertSubject.Add(subject);
                 }
             }
 
@@ -380,7 +383,7 @@ namespace AasxOpenIdClient
             if (ssiURL == "")
                 UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", AnyUiMessageBoxButton.OK);
 
-            var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            var response = client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = disco.TokenEndpoint,
                 Scope = "resource1.scope1",
@@ -390,7 +393,7 @@ namespace AasxOpenIdClient
                     Type = OidcConstants.ClientAssertionTypes.JwtBearer,
                     Value = clientToken
                 }
-            });
+            }).Result;
 
             if (response.IsError)
             {

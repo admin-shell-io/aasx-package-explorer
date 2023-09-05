@@ -23,7 +23,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
@@ -710,21 +709,20 @@ namespace AasxPackageLogic
                 }
 
                 // ok
-                if (endpoint.Contains("asp.net"))
-                {
-                    var fileRepository = new PackageContainerAasxFileRepository(endpoint);
-                    fileRepository.GeneratePackageRepository();
-                    //this.UiAssertFileRepository(visible: true);
-                    MainWindow.UiShowRepositories(visible: true);
-                    PackageCentral.Repositories.AddAtTop(fileRepository);
-                }
-                else
+                if (endpoint.Contains("old"))
                 {
                     var fr = new PackageContainerListHttpRestRepository(endpoint);
                     await fr.SyncronizeFromServerAsync();
                     MainWindow.UiShowRepositories(visible: true);
                     PackageCentral.Repositories.AddAtTop(fr);
                     MainWindow.RedrawRepositories();
+                }
+                else
+                {
+                    var fileRepository = new PackageContainerAasxFileRepository(endpoint, this.PackageCentral.CentralRuntimeOptions);
+                    fileRepository.GeneratePackageRepository();
+                    MainWindow.UiShowRepositories(visible: true);
+                    PackageCentral.Repositories.AddAtTop(fileRepository);
                 }
             }
 
@@ -1431,22 +1429,22 @@ namespace AasxPackageLogic
 
             if (cmd == "missingcdsfromknown")
             {
-				// simply pass on
-				try
-				{
-					// delegate futher
-					await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
-				}
-				catch (Exception ex)
-				{
-					LogErrorToTicket(ticket, ex,
-						$"When executing command {cmd}, an error occurred");
-				}
+                // simply pass on
+                try
+                {
+                    // delegate futher
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        $"When executing command {cmd}, an error occurred");
+                }
 
-				// redisplay
+                // redisplay
                 if (ticket.Success)
-				    MainWindow.RedrawAllElementsAndFocus();
-			}
+                    MainWindow.RedrawAllElementsAndFocus();
+            }
 
             if (cmd == "convertelement")
             {

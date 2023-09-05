@@ -7,6 +7,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 
+using AasxOpenIdClient;
 using AdminShellNS;
 using System;
 using System.IO;
@@ -19,21 +20,32 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
         public Uri Endpoint { get; private set; }
 
         private AasxFileServerInterfaceService _aasxFileService;
-        public PackageContainerAasxFileRepository(string inputText)
+        public readonly PackCntRuntimeOptions CentralRuntimeOptions;
+        /// <summary>
+        /// OpenIdClient to be used by the repository/ registry. To be set, when
+        /// first time used.
+        /// </summary>
+        public OpenIdClientInstance OpenIdClient = null;
+
+
+        public PackageContainerAasxFileRepository(string inputText, PackCntRuntimeOptions centralRuntimeOptions)
         {
-            if (inputText.Contains('?'))
-            {
-                var splitTokens = inputText.Split(new[] { '?' }, 2);
-                if (splitTokens[1].Equals("asp.net", StringComparison.OrdinalIgnoreCase))
-                {
-                    IsAspNetConnection = true;
-                }
-                inputText = splitTokens[0];
-            }
+            //if (inputText.Contains('?'))
+            //{
+            //    var splitTokens = inputText.Split(new[] { '?' }, 2);
+            //    if (splitTokens[1].Equals("asp.net", StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        IsAspNetConnection = true;
+            //    }
+            //    inputText = splitTokens[0];
+            //}
+            this.Header = "AASX File Server Repository";
+            IsAspNetConnection = true;
             // always have a location
             Endpoint = new Uri(inputText);
 
             _aasxFileService = new AasxFileServerInterfaceService(inputText);
+            CentralRuntimeOptions = centralRuntimeOptions;
         }
 
         public bool IsAspNetConnection { get; private set; }
@@ -54,7 +66,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
 
         public async Task<AasxFilePackageContainerBase> LoadAasxFileFromServer(string packageId, PackCntRuntimeOptions runtimeOptions)
         {
-            string fileName = await _aasxFileService.LoadAasxPackageAsync(packageId, runtimeOptions);
+            string fileName = await _aasxFileService.LoadAasxPackageAsync(packageId, runtimeOptions, this);
 
             if (!String.IsNullOrEmpty(fileName))
             {
@@ -79,7 +91,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
 
         public override void DeletePackageFromServer(PackageContainerRepoItem fi)
         {
-            _aasxFileService.DeleteAasxFileFromServer(fi.PackageId);
+            _aasxFileService.DeleteAasxFileFromServer(fi.PackageId, this);
             base.DeletePackageFromServer(fi);
         }
 
@@ -98,7 +110,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             }
 
             var fileContent = System.IO.File.ReadAllBytes(copyFileName);
-            int packageId = _aasxFileService.PostAasxFileOnServer(Path.GetFileName(fileName), fileContent);
+            int packageId = _aasxFileService.PostAasxFileOnServer(Path.GetFileName(fileName), fileContent, this);
 
             //delete temp file
             System.IO.File.Delete(copyFileName);

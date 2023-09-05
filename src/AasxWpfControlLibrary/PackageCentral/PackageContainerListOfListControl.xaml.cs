@@ -327,7 +327,10 @@ namespace AasxWpfControlLibrary.PackageCentral
                     {
                         //Add the file to File Server
                         int packageId = fileRepo.AddPackageToServer(fileName);
-                        fileRepo.LoadAasxFile(_packageCentral, fileName, packageId);
+                        if (packageId != -1)
+                        {
+                            fileRepo.LoadAasxFile(_packageCentral, fileName, packageId);
+                        }
                     }
                 }
 
