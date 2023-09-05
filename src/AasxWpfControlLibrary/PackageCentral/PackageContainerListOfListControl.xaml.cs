@@ -7,6 +7,21 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxIntegrationBaseWpf;
+using AasxPackageExplorer;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
+using AnyUi;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
 namespace AasxWpfControlLibrary.PackageCentral
 {
     public partial class PackageContainerListOfListControl : UserControl

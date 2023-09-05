@@ -6,6 +6,17 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
+using AdminShellNS;
+using IO.Swagger.Api;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace AasxPackageLogic.PackageCentral
 {
     public class AasxFileServerInterfaceService
