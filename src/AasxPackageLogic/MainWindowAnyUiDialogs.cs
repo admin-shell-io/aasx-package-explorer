@@ -10,19 +10,6 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasxIntegrationBase;
-using AasxPackageExplorer;
-using AasxPackageLogic.PackageCentral;
-using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
-using AdminShellNS;
-using AnyUi;
-using Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload

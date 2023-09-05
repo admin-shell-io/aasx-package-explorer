@@ -1,15 +1,4 @@
-﻿using AasxOpenIdClient;
-using AasxPackageLogic.PackageCentral.AasxFileServerInterface.Models;
-using IdentityModel.Client;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json.Nodes;
-
-namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
+﻿namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
 {
     internal class AasxServerService
     {
@@ -218,9 +207,9 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             {
                 var stream = new MemoryStream(fileContent);
                 var content = new MultipartFormDataContent
-                {
-                    { new StreamContent(stream), "file", fileName }
-                };
+            {
+                { new StreamContent(stream), "file", fileName }
+            };
                 // get response?
                 var response = _httpClient.PostAsync("packages", content).Result;
 
