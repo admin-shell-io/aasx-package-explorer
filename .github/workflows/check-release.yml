@@ -56,6 +56,13 @@ jobs:
           name: aasx-package-explorer-small.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
           path: artefacts/release/LATEST.alpha/aasx-package-explorer-small.zip
 
+      - name: Upload latest small
+        continue-on-error: true
+        uses: actions/upload-artifact@v2
+        with:
+          name: aasx-package-explorer-small.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/aasx-package-explorer-small.zip
+
       - name: Upload latest BlazorUI
         continue-on-error: true
         uses: actions/upload-artifact@v2

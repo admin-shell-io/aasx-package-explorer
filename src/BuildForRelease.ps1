@@ -44,15 +44,15 @@ function Main
         "AasxPluginExportTable",
         "AasxPluginGenericForms",
         "AasxPluginImageMap",
+        "AasxPluginKnownSubmodels",
         "AasxPluginMtpViewer",
         "AasxPluginPlotting",
-        #"AasxPluginSmdExporter",
+        "AasxPluginSmdExporter",
         "AasxPluginTechnicalData",
-        #"AasxPluginUaNetClient",
-        #"AasxPluginUaNetServer",
+        "AasxPluginUaNetClient",
+        "AasxPluginUaNetServer",
         "AasxPluginWebBrowser",
         "BlazorExplorer"
-        #"BlazorUI"
         )
 
         foreach ($project in $projects)
