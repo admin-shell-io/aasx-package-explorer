@@ -127,7 +127,7 @@
     },
     */
     {
-      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\AasxPluginWebBrowser.dll",
       "Args": []
     }
 
