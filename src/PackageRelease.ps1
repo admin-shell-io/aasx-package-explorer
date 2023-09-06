@@ -59,7 +59,7 @@ function PackageRelease($outputDir)
         "AasxPluginTechnicalData",
         "AasxPluginUaNetClient",
         "AasxPluginUaNetServer",
-        "AasxPluginWebBrowser",
+        "AasxPluginWebBrowser"
     )
 
     $allPlugins = $smallPlugins.Clone()
