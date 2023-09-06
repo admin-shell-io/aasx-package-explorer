@@ -45,7 +45,7 @@ function PackageRelease($outputDir)
         "AasxPluginUaNetServer"
     )
 
-    blazerPlugins = $(
+    $blazorPlugins = $(
         "AasxPluginAdvancedTextEditor",
         "AasxPluginBomStructure",
         "AasxPluginDocumentShelf",
@@ -183,7 +183,7 @@ function PackageRelease($outputDir)
 
     MakePackage -identifier "aasx-package-explorer-small" #-plugins $smallPlugins
 
-    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer" -plugins $blazerPlugins
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer" -plugins $blazorPlugins
 
     MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer-small"
 
