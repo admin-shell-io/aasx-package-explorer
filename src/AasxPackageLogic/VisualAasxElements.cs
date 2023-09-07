@@ -1939,17 +1939,26 @@ namespace AasxPackageLogic
 
             // quickly connect the Identifiables to the environment
             {
-                foreach (var aas in env.AssetAdministrationShells)
-                    if (aas != null)
-                        aas.Parent = env;
+                if (env.AssetAdministrationShells is not null)
+                {
+                    foreach (var aas in env.AssetAdministrationShells)
+                        if (aas != null)
+                            aas.Parent = env;
+                }
 
-                foreach (var sm in env.Submodels)
-                    if (sm != null)
-                        sm.Parent = env;
+                if (env.Submodels is not null)
+                {
+                    foreach (var sm in env.Submodels)
+                        if (sm != null)
+                            sm.Parent = env;
+                }
 
-                foreach (var cd in env.ConceptDescriptions)
-                    if (cd != null)
-                        cd.Parent = env;
+                if (env.ConceptDescriptions is not null)
+                {
+                    foreach (var cd in env.ConceptDescriptions)
+                        if (cd != null)
+                            cd.Parent = env;
+                }
             }
 
             // many operations
@@ -1993,22 +2002,25 @@ namespace AasxPackageLogic
                 }
 
                 // over all Admin shells
-                foreach (var aas in env.AssetAdministrationShells)
+                if (env.AssetAdministrationShells is not null)
                 {
-                    // item
-                    var tiAas = GenerateVisuElemForAAS(aas, cache, env, package, editMode);
-
-                    // add item
-                    if (tiAas != null)
+                    foreach (var aas in env.AssetAdministrationShells)
                     {
-                        if (editMode)
+                        // item
+                        var tiAas = GenerateVisuElemForAAS(aas, cache, env, package, editMode);
+
+                        // add item
+                        if (tiAas != null)
                         {
-                            tiAas.Parent = tiShells;
-                            tiShells.Members.Add(tiAas);
-                        }
-                        else
-                        {
-                            res.Add(tiAas);
+                            if (editMode)
+                            {
+                                tiAas.Parent = tiShells;
+                                tiShells.Members.Add(tiAas);
+                            }
+                            else
+                            {
+                                res.Add(tiAas);
+                            }
                         }
                     }
                 }
