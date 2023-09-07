@@ -121,7 +121,7 @@ namespace Extensions
             }
             if (conceptDescriptions != null)
             {
-                var existingCd = conceptDescriptions.Where(c => c.Id == newConceptDescription.Id).First();
+                var existingCd = conceptDescriptions.Where(c => c.Id == newConceptDescription.Id).FirstOrDefault();
                 if (existingCd != null)
                 {
                     return existingCd;
@@ -299,8 +299,8 @@ namespace Extensions
 
         public static Reference GetCdReference(this IConceptDescription conceptDescription)
         {
-            var key = new Key(KeyTypes.ConceptDescription, conceptDescription.Id);
-            return new Reference(ReferenceTypes.ModelReference, new List<IKey> { key });
+            var key = new Key(KeyTypes.GlobalReference, conceptDescription.Id);
+            return new Reference(ReferenceTypes.ExternalReference, new List<IKey> { key });
         }
 
         public static void AddIsCaseOf(this IConceptDescription cd,
