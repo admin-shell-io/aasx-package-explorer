@@ -18,6 +18,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using AdminShellNS;
 using Grapevine.Interfaces.Server;
 using Grapevine.Server;
