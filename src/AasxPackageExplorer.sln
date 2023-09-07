@@ -155,6 +155,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxCsharpLibrary", "AasxCs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginDigitalNameplate", "AasxPluginDigitalNameplate\AasxPluginDigitalNameplate.csproj", "{DA75828B-E5AC-4E9D-AE1F-398F8FF5AE25}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UML", "UML", "{150C4204-DD7E-42E4-8C40-0ADA85726354}"
+	ProjectSection(SolutionItems) = preProject
+		ServiceInterfaceOperation.puml = ServiceInterfaceOperation.puml
+		ServiceInterfaceOperation_blue_outline.puml = ServiceInterfaceOperation_blue_outline.puml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1966,6 +1972,7 @@ Global
 		{6A1F717C-8F43-4260-98A6-49345F983EFC} = {DDA9C372-F8ED-4099-A53C-01B9333FD985}
 		{D39BC0A4-64EA-4C7B-B72C-BF0A80FF29FE} = {DDA9C372-F8ED-4099-A53C-01B9333FD985}
 		{DA75828B-E5AC-4E9D-AE1F-398F8FF5AE25} = {66D730EB-B9D7-4C3A-8954-0F86240AD612}
+		{150C4204-DD7E-42E4-8C40-0ADA85726354} = {9264D68F-5269-420F-A486-6B8F39BEEB8B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1AE21162-9541-4B98-A49C-A63B6AD03998}
