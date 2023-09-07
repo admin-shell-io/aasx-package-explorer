@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPackageExplorer", "AasxPackageExplorer\AasxPackageExplorer.csproj", "{569B369E-9393-4F57-994E-6B84398FD7CC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AA2A09A7-1E92-4572-9411-249C392ED6A6} = {AA2A09A7-1E92-4572-9411-249C392ED6A6}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxToolkit", "AasxToolkit\AasxToolkit.csproj", "{294FC59A-5645-412F-8216-702FB66528C1}"
 EndProject

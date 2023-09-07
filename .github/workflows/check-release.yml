@@ -12,6 +12,7 @@ on:
       - master
       - MIHO/*V3*
       - jtikekar/masterV30/fileIF
+      - martaf/*
 
 jobs:
   Check-release:
