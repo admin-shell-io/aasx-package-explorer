@@ -90,6 +90,9 @@
     <None Update="IDTA_and_PI40_t.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="options-debug.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="options-debug.MIHO.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

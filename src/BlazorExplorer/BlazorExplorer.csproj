@@ -96,6 +96,9 @@
     <None Update="start-server.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="startup.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="StylePile.txt">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
