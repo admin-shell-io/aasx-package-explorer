@@ -53,6 +53,8 @@ function PackageRelease($outputDir)
         "AasxPluginGenericForms",
         "AasxPluginImageMap",
         "AasxPluginKnownSubmodels",
+        "AasxPluginContactInformation",
+        "AasxPluginDigitalNameplate",
         "AasxPluginMtpViewer",
         "AasxPluginPlotting",
         "AasxPluginSmdExporter",
