@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -92,7 +92,7 @@ namespace AasxIntegrationBase.AasForms
         /// SemanticId of the SubmodelElement. Always required.
         /// </summary>
         [JsonProperty(Order = 8)]
-        public Aas.Key KeySemanticId = new Aas.Key(Aas.KeyTypes.GlobalReference, "");
+        public Aas.IKey KeySemanticId = new Aas.Key(Aas.KeyTypes.GlobalReference, "");
 
         // Constructors
         //=============
@@ -484,8 +484,6 @@ namespace AasxIntegrationBase.AasForms
 
             return res;
         }
-
-
     }
 
     [DisplayName("FormProperty")]

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -126,7 +126,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // init
                 this._stop = false;
                 _log.Info("Starting OPC UA AASX Server. Based on the OPC Foundation UA Net Standard stack.");
-                _log.Info("Copyright (c) 2018-2023 Festo AG & Co. KG " +
+                _log.Info("Copyright (c) 2018-2023 Festo SE & Co. KG " +
                     "<https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister.");
                 _log.Info("Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal "
                     + "Community License (RCL).");

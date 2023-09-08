@@ -41,6 +41,8 @@ function Main
         "AasxPluginAdvancedTextEditor",
         "AasxPluginBomStructure",
         "AasxPluginDocumentShelf",
+        "AasxPluginContactInformation",
+        "AasxPluginDigitalNameplate",
         "AasxPluginExportTable",
         "AasxPluginGenericForms",
         "AasxPluginImageMap",

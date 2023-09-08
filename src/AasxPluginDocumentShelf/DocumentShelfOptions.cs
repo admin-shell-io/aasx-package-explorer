@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -33,10 +33,11 @@ namespace AasxPluginDocumentShelf
     public class DocumentShelfOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
         /// <summary>
-        /// As for "foreign" records the semanticId matching of V11 will fail,
+        /// As for "foreign" records the semanticId matching of V12 will fail,
         /// it can be controlled.
+        /// Use case: "Documentations" used for PLC files, CAD, ..
         /// </summary>
-        public DocumentEntity.SubmodelVersion ForceVersion = DocumentEntity.SubmodelVersion.V11;
+        public DocumentEntity.SubmodelVersion ForceVersion = DocumentEntity.SubmodelVersion.V12;
 
         /// <summary>
         /// Give more usage information for this record / use of the Submodel.
@@ -72,16 +73,24 @@ namespace AasxPluginDocumentShelf
 
             // V1.1
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
+                AasxPredefinedConcepts.VDI2770v11.Static
+                    .SM_ManufacturerDocumentation.GetSemanticKey());
 
-            //
-            // further models for CAD
-            //
+			// V1.2
+			rec.AllowSubmodelSemanticId.Add(
+				AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static
+                    .SM_HandoverDocumentation.GetSemanticKey());
 
-            rec = new DocumentShelfOptionsRecord()
+			//
+			// further models for CAD
+            // (for the time being still V11!)
+			//
+
+			rec = new DocumentShelfOptionsRecord()
             {
                 UsageInfo = "Some manufacturers use manufacturer documentation to provide models for " +
-                "Computer Aided Design (CAD) and further engineering tools."
+                "Computer Aided Design (CAD) and further engineering tools.",
+                ForceVersion = DocumentEntity.SubmodelVersion.V11
             };
             opt.Records.Add(rec);
 

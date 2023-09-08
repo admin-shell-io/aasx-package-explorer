@@ -678,6 +678,16 @@
     }
   },
   {
+    "name": "GenericForms plugin | FormTag",
+    "qualifier": {
+      "kind": "TemplateQualifier",
+      "semanticId": null,
+      "type": "FormTag",
+      "value": "To be filled; 3 leter tag in the element tree",
+      "valueId": null
+    }
+  },
+  {
     "name": "GenericForms plugin | FormInfo",
     "qualifier": {
       "kind": "TemplateQualifier",

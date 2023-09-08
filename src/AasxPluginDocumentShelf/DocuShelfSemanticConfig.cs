@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -139,12 +139,49 @@ namespace AasxPluginDocumentShelf
             return opt;
         }
 
-        /// <summary>
-        /// Create a set of minimal options suitable for given version
-        /// </summary>
-        public static DocuShelfSemanticConfig CreateDefaultFor(DocumentEntity.SubmodelVersion ver)
+		/// <summary>
+		/// Create a set of minimal options suitable for V12
+		/// </summary>
+		public static DocuShelfSemanticConfig CreateDefaultV12()
+		{
+			var opt = new DocuShelfSemanticConfig();
+
+			// use pre-definitions
+			var preDefs = AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static;
+
+			opt.SemIdDocumentation = preDefs.SM_HandoverDocumentation.GetSemanticKey();
+			opt.SemIdDocument = preDefs.CD_Document?.GetSingleKey();
+			opt.SemIdDocumentIdValue = preDefs.CD_ValueId?.GetSingleKey();
+			opt.SemIdDocumentClassId = preDefs.CD_ClassId?.GetSingleKey();
+			opt.SemIdDocumentClassName = preDefs.CD_ClassName?.GetSingleKey();
+			opt.SemIdDocumentClassificationSystem = preDefs.CD_ClassificationSystem?.GetSingleKey();
+			opt.SemIdOrganizationName = preDefs.CD_OrganizationName?.GetSingleKey();
+			opt.SemIdOrganizationOfficialName = preDefs.CD_OrganizationOfficialName?.GetSingleKey();
+			opt.SemIdDocumentVersion = preDefs.CD_DocumentVersion?.GetSingleKey();
+			opt.SemIdLanguage = preDefs.CD_Language?.GetSingleKey();
+			opt.SemIdTitle = preDefs.CD_Title?.GetSingleKey();
+			opt.SemIdDate = preDefs.CD_StatusSetDate?.GetSingleKey();
+			opt.SemIdDocumentVersionIdValue = preDefs.CD_DocumentVersionId?.GetSingleKey();
+			opt.SemIdDigitalFile = preDefs.CD_DigitalFile?.GetSingleKey();
+			opt.SemIdDocumentId = preDefs.CD_DocumentId?.GetSingleKey();
+			opt.SemIdIsPrimaryDocumentId = preDefs.CD_IsPrimary?.GetSingleKey();
+			opt.SemIdDocumentVersionId = preDefs.CD_DocumentVersionId?.GetSingleKey();
+			opt.SemIdSummary = preDefs.CD_Summary?.GetSingleKey();
+			opt.SemIdKeywords = preDefs.CD_KeyWords?.GetSingleKey();
+			opt.SemIdStatusValue = preDefs.CD_StatusValue?.GetSingleKey();
+			opt.SemIdDomainId = preDefs.CD_DocumentDomainId?.GetSingleKey();
+
+			return opt;
+		}
+
+		/// <summary>
+		/// Create a set of minimal options suitable for given version
+		/// </summary>
+		public static DocuShelfSemanticConfig CreateDefaultFor(DocumentEntity.SubmodelVersion ver)
         {
-            if (ver == DocumentEntity.SubmodelVersion.V11)
+			if (ver == DocumentEntity.SubmodelVersion.V12)
+				return CreateDefaultV12();
+			if (ver == DocumentEntity.SubmodelVersion.V11)
                 return CreateDefaultV11();
             return CreateDefaultV10();
         }
@@ -155,7 +192,10 @@ namespace AasxPluginDocumentShelf
         public static FormDescSubmodelElementCollection CreateVdi2770TemplateDescFor(
             DocumentEntity.SubmodelVersion ver, DocumentShelfOptions opt)
         {
-            if (ver == DocumentEntity.SubmodelVersion.V11)
+			if (ver == DocumentEntity.SubmodelVersion.V12)
+                // needs to be handle on level of calling function
+				return null;
+			if (ver == DocumentEntity.SubmodelVersion.V11)
                 return CreateVdi2770v11TemplateDesc();
             return CreateVdi2770TemplateDesc(opt);
         }

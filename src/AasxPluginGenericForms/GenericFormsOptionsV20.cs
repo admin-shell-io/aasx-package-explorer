@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -25,7 +25,7 @@ using Newtonsoft.Json;
 
 namespace AasxCompatibilityModels.AasxPluginGenericForms
 {
-    [DisplayName("Record")]
+    [DisplayName("Record_V20")]
     public class GenericFormsOptionsRecordV20
     {
         /// <summary>
@@ -49,7 +49,7 @@ namespace AasxCompatibilityModels.AasxPluginGenericForms
         public AdminShellV20.ListOfConceptDescriptions ConceptDescriptions = null;
     }
 
-    [DisplayName("Options")]
+    [DisplayName("Options_V20")]
     public class GenericFormOptionsV20
     {
         //

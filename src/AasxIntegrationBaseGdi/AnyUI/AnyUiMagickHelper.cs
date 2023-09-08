@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -13,8 +13,12 @@ This source code may use other Open Source software components (see LICENSE.txt)
 #if UseMagickNet
 
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
+using System.Xml.Schema;
+using System.Xml;
 using AdminShellNS;
 using AnyUi;
 using ImageMagick;
@@ -42,7 +46,6 @@ namespace AasxIntegrationBaseGdi
                 // provide PNG as well
                 using (var cloneImage = source.Clone())
                 {
-                    Console.WriteLine($"4|Try save as png");
                     cloneImage.Format = MagickFormat.Png;
                     res.PngData = cloneImage.ToByteArray();
                 }
@@ -51,15 +54,36 @@ namespace AasxIntegrationBaseGdi
             return res;
         }
 
-        public static AnyUiBitmapInfo CreateAnyUiBitmapInfo(string path, bool doFreeze = true)
+        public static AnyUiBitmapInfo CreateAnyUiBitmapInfo(string path)
         {
-            Console.WriteLine($"2|Try load file {path}");
             var bi = new MagickImage(path);
-            Console.WriteLine($"3|Has image width {bi.Width}");
             return CreateAnyUiBitmapInfo(bi);
         }
 
-        public static AnyUiBitmapInfo LoadBitmapInfoFromPackage(AdminShellPackageEnv package, string path)
+        public static AnyUiBitmapInfo CreateAnyUiBitmapFromResource(string path,
+            Assembly assembly = null)
+		{
+			try
+			{
+                if (assembly == null)
+				    assembly = Assembly.GetExecutingAssembly();
+				using (Stream stream = assembly.GetManifestResourceStream(path))
+                {
+                    if (stream == null)
+                        return null;
+					var bi = new MagickImage(stream);
+					return CreateAnyUiBitmapInfo(bi);
+				}
+			}
+			catch (Exception ex)
+			{
+                LogInternally.That.SilentlyIgnoredError(ex);
+			}
+            
+            return null;
+		}
+
+		public static AnyUiBitmapInfo LoadBitmapInfoFromPackage(AdminShellPackageEnv package, string path)
         {
             if (package == null || path == null)
                 return null;
@@ -100,7 +124,7 @@ namespace AasxIntegrationBaseGdi
             try
             {
                 System.IO.Stream thumbStream = null;
-                if (true == package?.IsLocalFile(path))
+                if (true /*= package?.IsLocalFile(path)*/)
                     thumbStream = package.GetLocalStreamFromPackage(path);
                 else
                 {
@@ -109,6 +133,7 @@ namespace AasxIntegrationBaseGdi
                     var wc = new WebClient();                    
                     thumbStream = wc.OpenRead(path);
 #else
+                    /*
                     // upgrade to HttpClient and follow re-directs
                     var hc = new HttpClient();
                     var response = hc.GetAsync(path).GetAwaiter().GetResult();
@@ -123,6 +148,7 @@ namespace AasxIntegrationBaseGdi
 
                     response.EnsureSuccessStatusCode();
                     thumbStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+                    */
 #endif
                 }
 

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -76,11 +76,24 @@ namespace AasxIntegrationBase.AasForms
 
                     if (tsme != null)
                     {
-                        // take over directly
-                        tsme.PresetCategory = smw.Category;
+                        // adopt "deprecated"
+                        tsme.PresetCategory = "";
 
-                        // Qualifers
-                        var qs = smw.Qualifiers;
+                        // acquire some information for FormInfo
+                        var cd = env?.FindConceptDescriptionByReference(smw.SemanticId);
+                        var cdDef = cd?.GetIEC61360()?.Definition?.GetDefaultString();
+						var descTxt = smw.Description?.GetDefaultString();
+
+                        // if present, use description as FormInfo
+                        tsme.FormInfo = "";
+						if (cdDef?.HasContent() == true)
+							tsme.FormInfo += cdDef;
+						if (descTxt?.HasContent() == true)
+                            tsme.FormInfo += (tsme.FormInfo.HasContent() ? System.Environment.NewLine : "" ) 
+                                + descTxt;                        
+
+						// Qualifers
+						var qs = smw.Qualifiers;
 
                         var q = qs?.FindQualifierOfType("FormTitle");
                         if (q != null)
@@ -102,12 +115,16 @@ namespace AasxIntegrationBase.AasForms
                         if (q != null)
                             tsme.FormEditDescription = q.Value.Trim().ToLower() == "true";
 
-                        q = qs?.FindQualifierOfType("Multiplicity");
-                        if (q != null)
+                        var multiTrigger = new[] { "Multiplicity", "Cardinality", "SMT/Cardinality" };
+                        foreach (var mt in multiTrigger)
                         {
-                            foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
-                                if (("" + q.Value) == Enum.GetName(typeof(FormMultiplicity), m))
-                                    tsme.Multiplicity = m;
+                            q = qs?.FindQualifierOfType(mt);
+                            if (q != null)
+                            {
+                                foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
+                                    if (("" + q.Value) == Enum.GetName(typeof(FormMultiplicity), m))
+                                        tsme.Multiplicity = m;
+                            }
                         }
 
                         q = qs?.FindQualifierOfType("PresetValue");
@@ -147,7 +164,7 @@ namespace AasxIntegrationBase.AasForms
                         if (masterCd != null && masterCd.Id != null)
                         {
                             // already in cds?
-                            var copyCd = cds.Where(cd => cd.Id.Equals(masterCd.Id)).First();
+                            var copyCd = cds.Where(cd => cd.Id.Equals(masterCd.Id)).FirstOrDefault();
                             if (copyCd == null)
                             {
                                 // add clone

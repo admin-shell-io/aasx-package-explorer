@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Aas = AasCore.Aas3_0;
 //TODO (jtikekar, 0000-00-00): remove
 using AAS = AasCore.Aas3_0;
@@ -101,7 +102,12 @@ namespace AasxIntegrationBase
                 if (um.Replacements != null)
                     foreach (var rkey in um.Replacements.Keys)
                         json = json.Replace(rkey, um.Replacements[rkey]);
-                var oldOpts = Newtonsoft.Json.JsonConvert.DeserializeObject(json, um.OldRootType, settings);
+
+                if (um.RegexReplacements != null)
+                    foreach (var rkey in um.RegexReplacements.Keys)
+                        json = Regex.Replace(json, rkey, um.RegexReplacements[rkey]);
+
+				var oldOpts = Newtonsoft.Json.JsonConvert.DeserializeObject(json, um.OldRootType, settings);
                 opts = um.UpgradeLambda.Invoke(oldOpts) as T;
 
                 if (opts != null)
@@ -153,7 +159,8 @@ namespace AasxIntegrationBase
             public string Trigger;
             public Type OldRootType;
             public Dictionary<string, string> Replacements;
-            public Func<object, object> UpgradeLambda;
+			public Dictionary<string, string> RegexReplacements;
+			public Func<object, object> UpgradeLambda;
         }
 
         public void TryLoadAdditionalOptionsFromAssemblyDir<T>(

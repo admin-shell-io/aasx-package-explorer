@@ -1,0 +1,2140 @@
+{
+  "$type": "Options",
+  "Records": [
+    {
+      "$type": "Record",
+      "FormTag": "FRM",
+      "FormTitle": "Contact Information (IDTA) V1.0",
+      "FormSubmodel": {
+        "$type": "FormSubmodel",
+        "FormTitle": "Submodel",
+        "FormInfo": "",
+        "FormEditIdShort": false,
+        "FormEditDescription": false,
+        "PresetIdShort": "ContactInformations",
+        "PresetCategory": "CONSTANT",
+        "KeySemanticId": {
+          "type": "Submodel",
+          "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations"
+        },
+        "SubmodelElements": [
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "ContactInformation",
+            "FormInfo": "The SMC “ContactInformation” contains information on how to contact the manufacturer or an authorised service provider, e.g. when a maintenance service is required\r\nThe SMC “ContactInformation” contains information on how to contact the manufacturer or an authorised service provider, e.g. when a maintenance service is required",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "ContactInformation{0:00}",
+            "PresetCategory": "",
+            "KeySemanticId": {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation"
+            },
+            "Multiplicity": "OneToMany",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "RoleOfContactPerson",
+                "FormInfo": "function of a contact person in a process\r\nenumeration: 0173-1#07-AAS927#001 (administrativ contact), 0173-1#07-AAS928#001 (commercial contact), 0173-1#07-AAS929#001 (other contact), 0173-1#07-AAS930#001 (hazardous goods contact), 0173-1#07-AAS931#001 (technical contact). Note: the above mentioned ECLASS enumeration should be declared as “open” for further addition. ECLASS enumeration IRDI is preferable. If no IRDI available, custom input as String may also be accepted.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "RoleOfContactPerson",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO204#003"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "xs:string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "NationalCode",
+                "FormInfo": "code of a country\r\nNote: country codes defined accord. to ISO 3166-1. Recommendation: property declaration as MLP is required by its semantic definition. As the property value is language independent, users are recommended to provide maximal 1 string in any language of the user’s choice.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "NationalCode",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO134#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "Language",
+                "FormInfo": "Available language\r\nNote: language codes defined accord. to ISO 639-1. Note: as per ECLASS definition, Expression and representation of thoughts, information, feelings, ideas through characters.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Language{0:00}",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/Language"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "xs:string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "TimeZone",
+                "FormInfo": "offsets from Coordinated Universal Time (UTC)\r\nNote: notation accord. to ISO 8601 Note: for time in UTC the zone designator “Z” is to be used",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "TimeZone",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/TimeZone"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "xs:string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "CityTown",
+                "FormInfo": "town or city",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "CityTown",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO132#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "Company",
+                "FormInfo": "name of the company",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Company",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAW001#001"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "Department",
+                "FormInfo": "administrative section within an organisation where a business partner is located",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Department",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO127#003"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "Phone",
+                "FormInfo": "Phone number including type",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Phone",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/Phone"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "TelephoneNumber",
+                    "FormInfo": "complete telephone number to be called to reach a business partner\r\nRecommendation: property declaration as MLP is required by its semantic definition. As the property value is language independent, users are recommended to provide maximal 1 string in any language of the user’s choice.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TelephoneNumber",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAO136#002"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "TypeOfTelephone",
+                    "FormInfo": "characterization of a telephone according to its location or usage\r\n enumeration: 0173-1#07-AAS754#001 (office), 0173-1#07-AAS755#001 (office mobile), 0173-1#07-AAS756#001 (secretary), 0173-1#07-AAS757#001 (substitute), 0173-1#07-AAS758#001 (home), 0173-1#07-AAS759#001 (private mobile)",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfTelephone",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAO137#003"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "xs:string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "AvailableTime",
+                    "FormInfo": "Specification of the available time window",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "AvailableTime",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/AvailableTime/"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false
+                  }
+                ]
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "Fax",
+                "FormInfo": "Fax number including type",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Fax",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAQ834#005"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "FaxNumber",
+                    "FormInfo": "complete telephone number to be called to reach a business partner's fax machine\r\nRecommendation: property declaration as MLP is required by its semantic definition. As the property value is language independent, users are recommended to provide maximal 1 string in any language of the user’s choice.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "FaxNumber",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAO195#002"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "TypeOfFaxNumber",
+                    "FormInfo": "characterization of the fax according its location or usage\r\nenumeration: 0173-1#07-AAS754#001 (office), 0173-1#07-AAS756#001 (secretary), 0173-1#07-AAS758#001 (home)",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfFaxNumber",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAO196#003"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "xs:string"
+                    ],
+                    "presetValue": ""
+                  }
+                ]
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "Email",
+                "FormInfo": "E-mail address and encryption method",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Email",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAQ836#005"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "EmailAddress",
+                    "FormInfo": "electronic mail address of a business partner",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "EmailAddress",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAO198#002"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "xs:string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "PublicKey",
+                    "FormInfo": "public part of an unsymmetrical key pair to sign or encrypt text or messages\r\nRecommendation: property declaration as MLP is required by its semantic definition. As the property value is language independent, users are recommended to provide maximal 1 string in any language of the user’s choice.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "PublicKey",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAO200#002"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "TypeOfEmailAddress",
+                    "FormInfo": "characterization of an e-mail address according to its location or usage\r\nenumeration: 0173-1#07-AAS754#001 (office), 0173-1#07-AAS756#001 (secretary), 0173-1#07-AAS757#001 (substitute), 0173-1#07-AAS758#001 (home)",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfEmailAddress",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAO199#003"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "xs:string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "TypeOfPublicKey",
+                    "FormInfo": "characterization of a public key according to its encryption process",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfPublicKey",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAO201#002"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false
+                  }
+                ]
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "IPCommunication",
+                "FormInfo": "ContactInformation/IPCommunication IP-based communication channels, e.g. chat or video call",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "IPCommunication{0:00}",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/IPCommunication"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "AddressOfAdditionalLink",
+                    "FormInfo": "web site address where information about the product or contact is given",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "AddressOfAdditionalLink",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "0173-1#02-AAQ326#002"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "xs:string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "TypeOfCommunication",
+                    "FormInfo": "characterization of an IP-based communication channel",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfCommunication",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "https://admin-shell.io/zvei/nameplate/1/0/ ContactInformations/ContactInformation/IPCommunication/TypeOfCommunication"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "xs:string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "AvailableTime",
+                    "FormInfo": "Specification of the available time window",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "AvailableTime",
+                    "PresetCategory": "",
+                    "KeySemanticId": {
+                      "type": "GlobalReference",
+                      "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/AvailableTime/"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false
+                  }
+                ]
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "Street",
+                "FormInfo": "street name and house number",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Street",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO128#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "Zipcode",
+                "FormInfo": "ZIP code of address\r\nRecommendation: property declaration as MLP is required by its semantic definition. As the property value is language independent, users are recommended to provide maximal 1 string in any language of the user’s choice.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Zipcode",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO129#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "POBox",
+                "FormInfo": "P.O. box number",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "POBox",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO130#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "ZipCodeOfPOBox",
+                "FormInfo": "ZIP code of P.O. box address\r\nRecommendation: property declaration as MLP is required by its semantic definition. As the property value is language independent, users are recommended to provide maximal 1 string in any language of the user’s choice.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ZipCodeOfPOBox",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO131#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "StateCounty",
+                "FormInfo": "federal state a part of a state",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "StateCounty",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO133#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "NameOfContact",
+                "FormInfo": "surname of a contact person",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "NameOfContact",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO205#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "FirstName",
+                "FormInfo": "first name of a contact person",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "FirstName",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO206#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "MiddleNames",
+                "FormInfo": "middle names of contact person",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "MiddleNames",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO207#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "Title",
+                "FormInfo": "common, formal, religious, or other title preceding a contact person's name",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Title",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO208#003"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "AcademicTitle",
+                "FormInfo": "academic title preceding a contact person's name",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "AcademicTitle",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO209#003"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "FurtherDetailsOfContact",
+                "FormInfo": "additional information of the contact person",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "FurtherDetailsOfContact",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO210#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "AddressOfAdditionalLink",
+                "FormInfo": "web site address where information about the product or contact is given",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "AddressOfAdditionalLink",
+                "PresetCategory": "",
+                "KeySemanticId": {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAQ326#002"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "xs:string"
+                ],
+                "presetValue": ""
+              }
+            ]
+          }
+        ]
+      },
+      "ConceptDescriptions": [
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "ContactInformation",
+          "Administration": {
+            "$type": "AasCore.Aas3_0.AdministrativeInformation, AasCore.Aas3_0",
+            "Version": "",
+            "Revision": ""
+          },
+          "Id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "ContactInformation"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "The SMC “ContactInformation” contains information on how to contact the manufacturer or an authorised service provider, e.g. when a maintenance service is required"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ],
+          "IsCaseOf": [
+            {
+              "type": "ModelReference",
+              "keys": [
+                {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAQ837#005"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "RoleOfContactPerson",
+          "Id": "0173-1#02-AAO204#003",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "RoleOfContactPerson"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "function of a contact person in a process"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "NationalCode",
+          "Id": "0173-1#02-AAO134#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "NationalCode"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "code of a country"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Language",
+          "Id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/Language",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Language"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Available language"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ],
+          "IsCaseOf": [
+            {
+              "type": "ModelReference",
+              "keys": [
+                {
+                  "type": "GlobalReference",
+                  "value": "0173-1#02-AAO895#003"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "TimeZone",
+          "Id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/TimeZone",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "TimeZone"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "offsets from Coordinated Universal Time (UTC)"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "CityTown",
+          "Id": "0173-1#02-AAO132#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "CityTown"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "town or city"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Company",
+          "Id": "0173-1#02-AAW001#001",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Company"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "name of the company"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Department",
+          "Id": "0173-1#02-AAO127#003",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Department"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "administrative section within an organisation where a business partner is located"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Phone",
+          "Id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/Phone",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Phone"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Phone number including type"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "TelephoneNumber",
+          "Id": "0173-1#02-AAO136#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "TelephoneNumber"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "complete telephone number to be called to reach a business partner"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "TypeOfTelephone",
+          "Id": "0173-1#02-AAO137#003",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "TypeOfTelephone"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "characterization of a telephone according to its location or usage"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "AvailableTime",
+          "Id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/AvailableTime/",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "AvailableTime"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Specification of the available time window"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Fax",
+          "Id": "0173-1#02-AAQ834#005",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Fax"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Fax number including type"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "FaxNumber",
+          "Id": "0173-1#02-AAO195#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "FaxNumber"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "complete telephone number to be called to reach a business partner's fax machine"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "TypeOfFaxNumber",
+          "Id": "0173-1#02-AAO196#003",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "TypeOfFaxNumber"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "characterization of the fax according its location or usage"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Email",
+          "Id": "0173-1#02-AAQ836#005",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Email"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "E-mail address and encryption method"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "EmailAddress",
+          "Id": "0173-1#02-AAO198#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "EmailAddress"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "electronic mail address of a business partner"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "PublicKey",
+          "Id": "0173-1#02-AAO200#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "PublicKey"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "public part of an unsymmetrical key pair to sign or encrypt text or messages"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "TypeOfEmailAddress",
+          "Id": "0173-1#02-AAO199#003",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "TypeOfEmailAddress"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "characterization of an e-mail address according to its location or usage"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "TypeOfPublicKey",
+          "Id": "0173-1#02-AAO201#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "TypeOfPublicKey"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "characterization of a public key according to its encryption process"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "IPCommunication",
+          "Id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "IPCommunication"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "ContactInformation/IPCommunication IP-based communication channels, e.g. chat or video call"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "AddressOfAdditionalLink",
+          "Id": "0173-1#02-AAQ326#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "AddressOfAdditionalLink"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "web site address where information about the product or contact is given"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "TypeOfCommunication",
+          "Id": "https://admin-shell.io/zvei/nameplate/1/0/ ContactInformations/ContactInformation/IPCommunication/TypeOfCommunication",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "TypeOfCommunication"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "characterization of an IP-based communication channel"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Street",
+          "Id": "0173-1#02-AAO128#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Street"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "street name and house number"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Zipcode",
+          "Id": "0173-1#02-AAO129#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Zipcode"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "ZIP code of address"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "POBox",
+          "Id": "0173-1#02-AAO130#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "POBox"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "P.O. box number"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "ZipCodeOfPOBox",
+          "Id": "0173-1#02-AAO131#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "ZipCodeOfPOBox"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "ZIP code of P.O. box address"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "StateCounty",
+          "Id": "0173-1#02-AAO133#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "StateCounty"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "federal state a part of a state"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "NameOfContact",
+          "Id": "0173-1#02-AAO205#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "NameOfContact"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "surname of a contact person"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "FirstName",
+          "Id": "0173-1#02-AAO206#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "FirstName"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "first name of a contact person"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "MiddleNames",
+          "Id": "0173-1#02-AAO207#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "MiddleNames"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "middle names of contact person"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "Title",
+          "Id": "0173-1#02-AAO208#003",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "Title"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "common, formal, religious, or other title preceding a contact person's name"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "AcademicTitle",
+          "Id": "0173-1#02-AAO209#003",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "AcademicTitle"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "academic title preceding a contact person's name"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AasCore.Aas3_0.ConceptDescription, AasCore.Aas3_0",
+          "IdShort": "FurtherDetailsOfContact",
+          "Id": "0173-1#02-AAO210#002",
+          "EmbeddedDataSpecifications": [
+            {
+              "$type": "AasCore.Aas3_0.EmbeddedDataSpecification, AasCore.Aas3_0",
+              "DataSpecification": {
+                "type": "ExternalReference",
+                "keys": [
+                  {
+                    "type": "GlobalReference",
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+                  }
+                ]
+              },
+              "DataSpecificationContent": {
+                "$type": "AasCore.Aas3_0.DataSpecificationIec61360, AasCore.Aas3_0",
+                "PreferredName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringPreferredNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "FurtherDetailsOfContact"
+                  }
+                ],
+                "ShortName": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringShortNameTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": ""
+                  }
+                ],
+                "Definition": [
+                  {
+                    "$type": "AasCore.Aas3_0.LangStringDefinitionTypeIec61360, AasCore.Aas3_0",
+                    "Language": "en",
+                    "Text": "additional information of the contact person"
+                  }
+                ],
+                "Value": ""
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

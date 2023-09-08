@@ -1,0 +1,1409 @@
+﻿/* official Submodel Template Spec ZVEI ContactInformation V1.0 from 13 APR 2021;
+updated by the IDTA 24 MAY 2022 */
+{
+  "SM_ContactInformations": {
+    "idShort": "ContactInformations",
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations",
+    "kind": "Template",
+    "semanticId": {
+      "type": "ExternalReference",
+      "keys": [
+        {
+          "type": "Submodel",
+          "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations"
+        }
+      ]
+    },
+    "modelType": "Submodel"
+  },
+  "CD_ContactInformation": {
+    "idShort": "ContactInformation",
+    "administration": {
+      "version": "",
+      "revision": ""
+    },
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ContactInformation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "The SMC \u201CContactInformation\u201D contains information on how to contact the manufacturer or an authorised service provider, e.g. when a maintenance service is required"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "0173-1#02-AAQ837#005"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_RoleOfContactPerson": {
+    "idShort": "RoleOfContactPerson",
+    "id": "0173-1#02-AAO204#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "RoleOfContactPerson"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "function of a contact person in a process"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_NationalCode": {
+    "idShort": "NationalCode",
+    "id": "0173-1#02-AAO134#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "NationalCode"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "code of a country"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Language": {
+    "idShort": "Language",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/Language",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Language"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Available language"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "0173-1#02-AAO895#003"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TimeZone": {
+    "idShort": "TimeZone",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/TimeZone",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TimeZone"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "offsets from Coordinated Universal Time (UTC)"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_CityTown": {
+    "idShort": "CityTown",
+    "id": "0173-1#02-AAO132#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "CityTown"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "town or city"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Company": {
+    "idShort": "Company",
+    "id": "0173-1#02-AAW001#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Company"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "name of the company"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Department": {
+    "idShort": "Department",
+    "id": "0173-1#02-AAO127#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Department"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "administrative section within an organisation where a business partner is located"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Phone": {
+    "idShort": "Phone",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/Phone",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Phone"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Phone number including type"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TelephoneNumber": {
+    "idShort": "TelephoneNumber",
+    "id": "0173-1#02-AAO136#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TelephoneNumber"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "complete telephone number to be called to reach a business partner"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfTelephone": {
+    "idShort": "TypeOfTelephone",
+    "id": "0173-1#02-AAO137#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfTelephone"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of a telephone according to its location or usage"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_AvailableTime": {
+    "idShort": "AvailableTime",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/AvailableTime/",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "AvailableTime"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Specification of the available time window"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Fax": {
+    "idShort": "Fax",
+    "id": "0173-1#02-AAQ834#005",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Fax"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Fax number including type"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_FaxNumber": {
+    "idShort": "FaxNumber",
+    "id": "0173-1#02-AAO195#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "FaxNumber"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "complete telephone number to be called to reach a business partner\u0027s fax machine"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfFaxNumber": {
+    "idShort": "TypeOfFaxNumber",
+    "id": "0173-1#02-AAO196#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfFaxNumber"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of the fax according its location or usage"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Email": {
+    "idShort": "Email",
+    "id": "0173-1#02-AAQ836#005",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Email"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "E-mail address and encryption method"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_EmailAddress": {
+    "idShort": "EmailAddress",
+    "id": "0173-1#02-AAO198#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "EmailAddress"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "electronic mail address of a business partner"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_PublicKey": {
+    "idShort": "PublicKey",
+    "id": "0173-1#02-AAO200#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "PublicKey"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "public part of an unsymmetrical key pair to sign or encrypt text or messages"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfEmailAddress": {
+    "idShort": "TypeOfEmailAddress",
+    "id": "0173-1#02-AAO199#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfEmailAddress"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of an e-mail address according to its location or usage"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfPublicKey": {
+    "idShort": "TypeOfPublicKey",
+    "id": "0173-1#02-AAO201#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfPublicKey"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of a public key according to its encryption process"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_IPCommunication": {
+    "idShort": "IPCommunication",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/IPCommunication",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "IPCommunication"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "ContactInformation/IPCommunication IP-based communication channels, e.g. chat or video call"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_AddressOfAdditionalLink": {
+    "idShort": "AddressOfAdditionalLink",
+    "id": "0173-1#02-AAQ326#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "AddressOfAdditionalLink"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "web site address where information about the product or contact is given"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfCommunication": {
+    "idShort": "TypeOfCommunication",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ ContactInformations/ContactInformation/IPCommunication/TypeOfCommunication",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfCommunication"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of an IP-based communication channel"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Street": {
+    "idShort": "Street",
+    "id": "0173-1#02-AAO128#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Street"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "street name and house number"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Zipcode": {
+    "idShort": "Zipcode",
+    "id": "0173-1#02-AAO129#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Zipcode"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "ZIP code of address"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_POBox": {
+    "idShort": "POBox",
+    "id": "0173-1#02-AAO130#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "POBox"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "P.O. box number"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ZipCodeOfPOBox": {
+    "idShort": "ZipCodeOfPOBox",
+    "id": "0173-1#02-AAO131#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ZipCodeOfPOBox"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "ZIP code of P.O. box address"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_StateCounty": {
+    "idShort": "StateCounty",
+    "id": "0173-1#02-AAO133#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "StateCounty"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "federal state a part of a state"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_NameOfContact": {
+    "idShort": "NameOfContact",
+    "id": "0173-1#02-AAO205#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "NameOfContact"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "surname of a contact person"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_FirstName": {
+    "idShort": "FirstName",
+    "id": "0173-1#02-AAO206#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "FirstName"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "first name of a contact person"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MiddleNames": {
+    "idShort": "MiddleNames",
+    "id": "0173-1#02-AAO207#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MiddleNames"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "middle names of contact person"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Title": {
+    "idShort": "Title",
+    "id": "0173-1#02-AAO208#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Title"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "common, formal, religious, or other title preceding a contact person\u0027s name"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_AcademicTitle": {
+    "idShort": "AcademicTitle",
+    "id": "0173-1#02-AAO209#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "AcademicTitle"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "academic title preceding a contact person\u0027s name"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_FurtherDetailsOfContact": {
+    "idShort": "FurtherDetailsOfContact",
+    "id": "0173-1#02-AAO210#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "FurtherDetailsOfContact"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "additional information of the contact person"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  }
+}
