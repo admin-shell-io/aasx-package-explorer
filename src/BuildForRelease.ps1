@@ -42,7 +42,6 @@ function Main
         "AasxPluginBomStructure",
         "AasxPluginDocumentShelf",
         "AasxPluginContactInformation",
-        "AasxPluginDigitalNameplate",
         "AasxPluginExportTable",
         "AasxPluginGenericForms",
         "AasxPluginImageMap",

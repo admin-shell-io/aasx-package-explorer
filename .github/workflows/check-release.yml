@@ -8,10 +8,6 @@ on:
     types: [opened, synchronize, reopened, edited]
 
   push:
-    branches:
-      - master
-      - MIHO/*V3*
-      - jtikekar/masterV30/fileIF
 
 jobs:
   Check-release:
