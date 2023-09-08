@@ -45,6 +45,8 @@ function Main
         "AasxPluginGenericForms",
         "AasxPluginImageMap",
         "AasxPluginKnownSubmodels",
+        "AasxPluginContactInformation",
+        "AasxPluginDigitalNameplate",
         "AasxPluginMtpViewer",
         "AasxPluginPlotting",
         "AasxPluginSmdExporter",
