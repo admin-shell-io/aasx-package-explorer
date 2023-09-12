@@ -1,11 +1,11 @@
 # AASX Package Explorer
 
 ![Build-test-inspect](
-https://github.com/admin-shell-io/aasx-package-explorer/workflows/Build-test-inspect/badge.svg
+https://github.com/admin-shell-io/aasx-package-explorer/workflows/build-test-inspect/badge.svg
 ) ![Check-style](
-https://github.com/admin-shell-io/aasx-package-explorer/actions/workflows/Check-style.yml/badge.svg
+https://github.com/admin-shell-io/aasx-package-explorer/actions/workflows/check-style.yml/badge.svg
 ) ![Check-commit-messages](
-https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-commit-messages/badge.svg
+https://github.com/admin-shell-io/aasx-package-explorer/workflows/check-commit-messages/badge.svg
 ) ![Generate-docdev](
 https://github.com/admin-shell-io/aasx-package-explorer/workflows/Generate-docdev/badge.svg
 ) [![Coverage Status](
