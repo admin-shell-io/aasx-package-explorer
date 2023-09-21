@@ -215,6 +215,7 @@ namespace AasxPackageExplorer
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
                 Task<int> x = null;
+                /*
                 if (Application.Current != null)
                 {
                     // WPF case
@@ -228,6 +229,7 @@ namespace AasxPackageExplorer
                         Log.Singleton.Silent("" + x);
                 }
                 else
+                */
                 {
                     // Blazor case
                     await _script?.Remote?.Tool(args);
@@ -269,14 +271,17 @@ namespace AasxPackageExplorer
                     Console.WriteLine($"Execute Select " + string.Join(",", args));
 
                 // which application
+                /*
                 if (Application.Current == null)
                 {
                     Log.Singleton.Error("For script execution, Application.Current for Blazor is not available.");
                 }
+                */
 
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
                 Aas.IReferable x = null;
+                /*
                 if (Application.Current != null)
                 {
                     // WPF case
@@ -288,6 +293,7 @@ namespace AasxPackageExplorer
                         Log.Singleton.Silent("" + x.IdShort);
                 }
                 else
+                */
                 {
                     // Blazor?? case
                     x = _script.Remote?.Select(args);
@@ -337,6 +343,7 @@ namespace AasxPackageExplorer
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
                 bool x = false;
+                /*
                 if (Application.Current != null)
                 {
                     // WPF case
@@ -347,6 +354,7 @@ namespace AasxPackageExplorer
                     Log.Singleton.Silent("" + x);
                 }
                 else
+                */
                 {
                     // Blazor case
                     x = await _script.Remote?.Location(args);

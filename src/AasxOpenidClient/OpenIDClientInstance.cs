@@ -494,10 +494,13 @@ namespace AasxOpenIdClient
                 if (rootCertFound)
                     fcollection = fcollection2;
 
+                /*
                 X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
                     "Test Certificate Select",
                     "Select a certificate from the following list to get information on that certificate",
                     X509SelectionFlag.SingleSelection);
+                */
+                X509Certificate2Collection scollection = new X509Certificate2Collection(fcollection);
                 if (scollection.Count != 0)
                 {
                     certificate = scollection[0];

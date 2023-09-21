@@ -16,7 +16,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+// using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;

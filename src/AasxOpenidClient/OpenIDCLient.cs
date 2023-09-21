@@ -14,7 +14,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+// using System.Windows.Forms;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -38,6 +38,7 @@ namespace AasxOpenIdClient
 
         public class UiLambdaSet
         {
+            /*
             public delegate DialogResult ShowMessageDelegate(
                                     string content, string text, string caption, MessageBoxButtons buttons = 0);
             public ShowMessageDelegate MesssageBox;
@@ -50,6 +51,7 @@ namespace AasxOpenIdClient
                     return lambdaSet.MesssageBox(content, text, caption, buttons);
                 return System.Windows.Forms.MessageBox.Show(content + text, caption, buttons);
             }
+            */
         }
 
         public static string authServer = "https://localhost:50001";
@@ -112,6 +114,7 @@ namespace AasxOpenIdClient
                 "\nConinue?";
 
             // Displays the MessageBox.
+            /*
             var result = UiLambdaSet.MesssageBoxShow(
                 uiLambda, message, "", caption, MessageBoxButtons.YesNo);
             if (result != System.Windows.Forms.DialogResult.Yes)
@@ -122,6 +125,7 @@ namespace AasxOpenIdClient
 
             UiLambdaSet.MesssageBoxShow(uiLambda, "", "Access Aasx Server at " + dataServer,
                 "Data Server", MessageBoxButtons.OK);
+            */
 
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
@@ -147,8 +151,10 @@ namespace AasxOpenIdClient
 
             while (operation != "")
             {
+                /*
                 UiLambdaSet.MesssageBoxShow(uiLambda, "", "operation: " + operation + value + "\ntoken: " + token,
                     "Operation", MessageBoxButtons.OK);
+                */
 
                 switch (operation)
                 {
@@ -174,8 +180,10 @@ namespace AasxOpenIdClient
                                     StringSplitOptions.RemoveEmptyEntries);
                                 Console.WriteLine("Redirect to:" + splitResult[0]);
                                 authServer = splitResult[0];
+                                /*
                                 UiLambdaSet.MesssageBoxShow(
                                     uiLambda, authServer, "", "Redirect to", MessageBoxButtons.OK);
+                                */
                                 lastOperation = operation;
                                 operation = "authenticate";
                                 continue;
@@ -190,9 +198,11 @@ namespace AasxOpenIdClient
                             switch (operation)
                             {
                                 case "/server/listaas/":
+                                    /*
                                     UiLambdaSet.MesssageBoxShow(uiLambda,
                                         "", "SelectFromListFlyoutItem missing", "SelectFromListFlyoutItem missing",
                                         MessageBoxButtons.OK);
+                                    */
                                     value = "0";
                                     operation = "/server/getaasx2/";
                                     break;
@@ -247,9 +257,10 @@ namespace AasxOpenIdClient
                             client.SetBearerToken(token);
 
                             response.Show();
+                            /*
                             UiLambdaSet.MesssageBoxShow(uiLambda, response.AccessToken, "",
                                 "Access Token", MessageBoxButtons.OK);
-
+                            */
                             operation = lastOperation;
                             lastOperation = "";
                         }
@@ -261,8 +272,10 @@ namespace AasxOpenIdClient
                         }
                         break;
                     case "error":
+                        /*
                         UiLambdaSet.MesssageBoxShow(uiLambda, "", $"Can not perform: {lastOperation}",
                             "Error", MessageBoxButtons.OK);
+                        */
                         operation = "";
                         break;
                 }
@@ -280,7 +293,7 @@ namespace AasxOpenIdClient
             var disco = await client.GetDiscoveryDocumentAsync(authServer);
             if (disco.IsError) throw new Exception(disco.Error);
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, disco.Raw, "", "Discovery JSON", MessageBoxButtons.OK);
+            // UiLambdaSet.MesssageBoxShow(uiLambda, disco.Raw, "", "Discovery JSON", MessageBoxButtons.OK);
 
             List<string> rootCertSubject = new List<string>();
             dynamic discoObject = null;
@@ -301,7 +314,7 @@ namespace AasxOpenIdClient
             Console.ResetColor();
             Console.WriteLine(clientToken + "\n");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", MessageBoxButtons.OK);
+            // UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", MessageBoxButtons.OK);
 
             var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
@@ -376,12 +389,13 @@ namespace AasxOpenIdClient
 
             if (credential == null)
             {
+                /*
                 var res = UiLambdaSet.MesssageBoxShow(uiLambda, "",
                         "Select certificate chain from certificate store? \n" +
                         "(otherwise use file Andreas_Orzelski_Chain.pfx)",
                         "Select certificate chain", MessageBoxButtons.YesNo);
-
-                if (res == DialogResult.No)
+                */
+                if (false /*res == DialogResult.No*/)
                 {
                     certFileName = "Andreas_Orzelski_Chain.pfx";
                     password = "i40";
@@ -416,10 +430,13 @@ namespace AasxOpenIdClient
                 if (rootCertFound)
                     fcollection = fcollection2;
 
+                /*
                 X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
                     "Test Certificate Select",
                     "Select a certificate from the following list to get information on that certificate",
                     X509SelectionFlag.SingleSelection);
+                */
+                X509Certificate2Collection scollection = new X509Certificate2Collection(fcollection);
                 if (scollection.Count != 0)
                 {
                     certificate = scollection[0];
@@ -477,7 +494,7 @@ namespace AasxOpenIdClient
                 Convert.ToBase64String(certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
             builder.AppendLine("-----END CERTIFICATE-----");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate", MessageBoxButtons.OK);
+            // UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate", MessageBoxButtons.OK);
 
             credential = new X509SigningCredentials(certificate);
             // oz end

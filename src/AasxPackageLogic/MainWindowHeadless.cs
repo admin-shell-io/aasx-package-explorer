@@ -15,7 +15,7 @@ using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.Convert;
-using AasxSignature;
+// using AasxSignature;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
@@ -230,25 +230,31 @@ namespace AasxPackageLogic
                     }
 
                     // do
+                    /*
                     PackageHelper.SignAll(
                         sourceFn, certFn,
                         invokeMessage: (ticket.InvokeMessage == null)
                             ? StandardInvokeMessageDelegate : ticket.InvokeMessage);
+                    */
                 }
 
                 if (cmd == "validatecertificate")
                 {
                     // arguments
+                    /*
                     if (!(ticket["Source"] is string sourceFn))
                     {
                         LogErrorToTicket(ticket, "Validate: source package filename invalid.");
                         return;
                     }
+                    */
 
                     // do
+                    /*
                     PackageHelper.Validate(sourceFn,
                         invokeMessage: (ticket.InvokeMessage == null)
                             ? StandardInvokeMessageDelegate : ticket.InvokeMessage);
+                    */
                 }
 
                 if (cmd == "encrypt")

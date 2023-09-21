@@ -36,6 +36,7 @@ namespace BlazorUI
         public AasxMenu Menu { get => _menu; }
         private AasxMenu _menu = new AasxMenu();
 
+        /*
         private void RenderItemCollection(
             AasxMenu topMenu, AasxMenu menuItems,
             object blazorItems,
@@ -92,7 +93,7 @@ namespace BlazorUI
 
 
         }
-
+        */
         public bool IsChecked(string name)
         {
 

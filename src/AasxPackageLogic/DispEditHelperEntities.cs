@@ -20,8 +20,8 @@ using System.Data;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
-using System.Windows.Documents;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+// using System.Windows.Documents;
+// using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic

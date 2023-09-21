@@ -20,7 +20,7 @@ using AngleSharp.Text;
 using AnyUi;
 using Extensions;
 using Jose;
-using Microsoft.VisualBasic.ApplicationServices;
+// using Microsoft.VisualBasic.ApplicationServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.Webpki.JsonCanonicalizer;
@@ -38,13 +38,13 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static AasxPredefinedConcepts.ConceptModel.ConceptModelZveiTechnicalData;
-using System.Windows.Forms;
+// using System.Windows.Forms;
 using VDS.RDF.Ontology;
 using VDS.RDF.Query.Paths;
 using static System.Net.Mime.MediaTypeNames;
 using Aas = AasCore.Aas3_0;
 using VDS.RDF.Query.Algebra;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+// using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace AasxPackageExplorer
 {

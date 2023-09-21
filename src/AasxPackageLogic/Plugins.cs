@@ -54,7 +54,14 @@ namespace AasxPackageLogic
                 var mi = plugType.GetMethod(mname);
                 if (mi == null)
                     return null;
-                return mi.Invoke(plugObj, args);
+                try
+                {
+                    return mi.Invoke(plugObj, args);
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
             public async Task<object> BasicInvokeMethodAsync(string mname, params object[] args)

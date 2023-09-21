@@ -18,8 +18,8 @@ using System.IO.Packaging;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+// using System.Windows.Media;
+// using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxIntegrationBaseGdi;
 using AasxPackageExplorer;
@@ -28,7 +28,7 @@ using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using BlazorExplorer;
-using ExhaustiveMatching;
+// using ExhaustiveMatching;
 using Extensions;
 using Microsoft.JSInterop;
 using System.Linq;
@@ -218,7 +218,7 @@ namespace BlazorUI.Data
 
             // Main menu
             MainMenu = new AasxMenuBlazor();
-            MainMenu.LoadAndRender(logicalMainMenu, null, null);
+            // MainMenu.LoadAndRender(logicalMainMenu, null, null);
 
             // show Logo?
             if (Options.Curr.LogoFile != null)

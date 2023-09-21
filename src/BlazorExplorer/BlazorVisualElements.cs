@@ -31,7 +31,7 @@ using Extensions;
 using AasxIntegrationBase;
 using AnyUi;
 using BlazorUI.Data;
-using System.Windows.Controls;
+// using System.Windows.Controls;
 using AasxPackageExplorer;
 
 namespace BlazorUI

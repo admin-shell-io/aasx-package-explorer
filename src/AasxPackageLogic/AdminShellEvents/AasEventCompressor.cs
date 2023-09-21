@@ -11,8 +11,8 @@ using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Annotations;
-using static System.Windows.Forms.AxHost;
+// using System.Windows.Annotations;
+// using static System.Windows.Forms.AxHost;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxIntegrationBase.AdminShellEvents

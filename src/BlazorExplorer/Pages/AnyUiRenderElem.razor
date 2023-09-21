@@ -6,7 +6,7 @@
 @using AnyUi
 @using BlazorUI.Data
 @using BlazorUI.Pages
-@using UIComponents.Flags
+@* @using UIComponents.Flags *@
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.BlazorSession bi
 
@@ -489,8 +489,8 @@
 
         style.SetMinMaxWidthHeight(Element);
 
-        var country = Country.DE;
-        var size = FlagSize.Small;
+        // var country = Country.DE;
+        // var size = FlagSize.Small;
 
         <!--
         <CountryFlag Country="@country" Size="@size" Class="mx-3"></CountryFlag>
