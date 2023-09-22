@@ -362,7 +362,7 @@ namespace AdminShellNS
                     }
                 case AasSubmodelElements.ReferenceElement:
                     {
-                        // TODO: AAS core crashes without this
+                        // TODO (??, 0000-00-00): AAS core crashes without this
                         return new ReferenceElement(
                             value: new Reference(ReferenceTypes.ExternalReference, new List<IKey>())
                             ).UpdateFrom(sourceSme);

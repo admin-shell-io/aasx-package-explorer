@@ -668,7 +668,7 @@ namespace AasOpcUaServer
                 o, CreateMode.Instance, aas.DerivedFrom, "DerivedFrom");
 
             // associated asset
-            // TODO: AssetInformation
+            // TODO (??, 0000-00-00): AssetInformation
             //if (aas.assetRef != null)
             //{
             //    var asset = env.FindAsset(aas.assetRef);

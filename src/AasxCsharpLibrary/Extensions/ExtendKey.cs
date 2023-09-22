@@ -213,7 +213,7 @@ namespace Extensions
                 return IdType.IRDI;
 
             // IRI?
-            // TODO: check for escaping
+            // TODO (??, 0000-00-00): check for escaping
             if (Regex.IsMatch(id, @"(\w{3,5})://"))
                 return IdType.IRI;
 

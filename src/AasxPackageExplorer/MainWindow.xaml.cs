@@ -2204,7 +2204,7 @@ namespace AasxPackageExplorer
                         sourceSemanticId: refEv.SemanticId,
                         observableReference: refEv.Observed,
                         //observableSemanticId: (observable as IGetSemanticId)?.GetSemanticId());
-                        // TODO:jtikekar IDiaryData support
+                        // TODO (jtikekar, 0000-00-00): IDiaryData support
                         observableSemanticId: (observable as IHasSemantics)?.SemanticId); 
 
                     if (plStruct.Changes.Count >= 1)
