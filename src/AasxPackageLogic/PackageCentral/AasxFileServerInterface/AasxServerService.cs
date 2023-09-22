@@ -30,7 +30,6 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             handler.AllowAutoRedirect = false;
 
             _httpClient = new HttpClient(handler);
-            //_httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(baseAddress);
             _httpClient.DefaultRequestHeaders.Add("IsGetAllPackagesApi", "true");
         }

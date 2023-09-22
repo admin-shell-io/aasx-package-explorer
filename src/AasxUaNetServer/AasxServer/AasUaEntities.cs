@@ -1168,9 +1168,10 @@ namespace AasOpcUaServer
             base.PopulateInstanceObject(o, list);
 
             // own attributes
+            // dead-csharp off
             //this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Instance, "AllowDuplicates",
             //    DataTypeIds.Boolean, coll.AllowDuplicates, defaultSettings: true);
-
+            // dead-csharp on
             // values
             if (list.Value != null)
                 foreach (var smw in list.Value)
