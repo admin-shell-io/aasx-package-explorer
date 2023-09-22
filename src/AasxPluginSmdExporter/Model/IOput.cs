@@ -159,12 +159,12 @@ namespace AasxPluginSmdExporter
         {
             if (token.SelectToken("semanticId") != null)
             {
-				var jsonStr = token["semanticId"].ToString();
+                var jsonStr = token["semanticId"].ToString();
 
-				this.SemanticId = Aas.Jsonization.Deserialize.ReferenceFrom(
-					System.Text.Json.Nodes.JsonNode.Parse(jsonStr));
+                this.SemanticId = Aas.Jsonization.Deserialize.ReferenceFrom(
+                    System.Text.Json.Nodes.JsonNode.Parse(jsonStr));
 
-				this.ConceptDescription = this.SemanticId?.Keys[0].Value;
+                this.ConceptDescription = this.SemanticId?.Keys[0].Value;
             }
             else
             {

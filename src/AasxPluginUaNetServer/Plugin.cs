@@ -28,7 +28,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     // ReSharper disable once UnusedType.Global
     public class AasxPlugin : AasxPluginBase
-	{
+    {
         #region // Plug In
         private AasxUaNetServer.UaNetServerOptions _options = new AasxUaNetServer.UaNetServerOptions();
         private bool _stop = false;
@@ -68,7 +68,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public new void InitPlugin(string[] args)
         {
             PluginName = "AasxPluginUaNetServer";
-			_log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
             _options = AasxUaNetServer.UaNetServerOptions.CreateDefault();
@@ -77,8 +77,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             try
             {
                 var newOpt =
-					AasxPluginOptionsBase
-						.LoadDefaultOptionsFromAssemblyDir<AasxUaNetServer.UaNetServerOptions>(
+                    AasxPluginOptionsBase
+                        .LoadDefaultOptionsFromAssemblyDir<AasxUaNetServer.UaNetServerOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
                     this._options = newOpt;
@@ -88,13 +88,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 _log?.Error(ex, "Exception when reading default options {1}");
             }
 
-			// index them!
-			_options.IndexListOfRecords(_options.Records);
-		}
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
+        }
 
         public new AasxPluginActionDescriptionBase[] ListActions()
         {
-			var res = ListActionsBasicHelper(
+            var res = ListActionsBasicHelper(
                 enableCheckVisualExt: false,
                 enableLicenses: true);
             res.Add(new AasxPluginActionDescriptionBase("server-start", "Start OPC UA Server for AASX."));

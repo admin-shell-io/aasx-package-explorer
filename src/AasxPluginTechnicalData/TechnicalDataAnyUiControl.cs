@@ -318,13 +318,13 @@ namespace AasxPluginTechnicalData
                     smcGeneral.Value.FindFirstSemanticIdAs<Aas.Property>(
                         theDefs.CD_ManufacturerPartNumber?.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
-				var artNumber = "" +
-                	smcGeneral.Value.FindFirstSemanticIdAs<Aas.Property>(
-		                theDefs.CD_ManufacturerArticleNumber?.GetSingleKey(), MatchMode.Relaxed)?.Value;
+                var artNumber = "" +
+                    smcGeneral.Value.FindFirstSemanticIdAs<Aas.Property>(
+                        theDefs.CD_ManufacturerArticleNumber?.GetSingleKey(), MatchMode.Relaxed)?.Value;
                 if (!partNumber.HasContent())
                     partNumber = artNumber;
 
-				var manuName = "" +
+                var manuName = "" +
                     smcGeneral.Value.FindFirstSemanticIdAs<Aas.Property>(
                         theDefs.CD_ManufacturerName.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
@@ -435,7 +435,7 @@ namespace AasxPluginTechnicalData
             //if (smcClassifications != null)
             // dead-csharp on
             foreach (var childProdClass in sm.SubmodelElements.GetChildListsFromAllSemanticId(
-				theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed))            
+                theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed))
             {
                 // gather
 
@@ -674,7 +674,7 @@ namespace AasxPluginTechnicalData
                         Value = "" + sme.ValueAsText(defaultLang) + " " + unit
                     });
                 }
-                else 
+                else
                 if (sme is Aas.SubmodelElementCollection smc)
                 {
                     // SMC which is not dedicated main/ sub-section
@@ -699,10 +699,10 @@ namespace AasxPluginTechnicalData
                             FontWeight = AnyUiFontWeight.Bold
                         });
 
-					// recurse into that
-					TableAddPropertyRows_Recurse(
-						theDefs, defaultLang, package, rows, smc.Value, depth + 1);
-				}
+                    // recurse into that
+                    TableAddPropertyRows_Recurse(
+                        theDefs, defaultLang, package, rows, smc.Value, depth + 1);
+                }
             }
         }
 

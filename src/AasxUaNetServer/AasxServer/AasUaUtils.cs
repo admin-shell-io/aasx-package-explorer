@@ -66,37 +66,37 @@ namespace AasOpcUaServer
             return res;
         }
 
-		public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.IAbstractLangString> ls)
-		{
-			if (ls == null || ls.Count < 1)
-				return new[] { new LocalizedText("", "") };
-			var res = new LocalizedText[ls.Count];
-			for (int i = 0; i < ls.Count; i++)
-				res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
-			return res;
-		}
+        public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.IAbstractLangString> ls)
+        {
+            if (ls == null || ls.Count < 1)
+                return new[] { new LocalizedText("", "") };
+            var res = new LocalizedText[ls.Count];
+            for (int i = 0; i < ls.Count; i++)
+                res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
+            return res;
+        }
 
-		public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringPreferredNameTypeIec61360> ls)
-		{
-			if (ls == null || ls.Count < 1)
-				return new[] { new LocalizedText("", "") };
-			var res = new LocalizedText[ls.Count];
-			for (int i = 0; i < ls.Count; i++)
-				res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
-			return res;
-		}
+        public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringPreferredNameTypeIec61360> ls)
+        {
+            if (ls == null || ls.Count < 1)
+                return new[] { new LocalizedText("", "") };
+            var res = new LocalizedText[ls.Count];
+            for (int i = 0; i < ls.Count; i++)
+                res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
+            return res;
+        }
 
-		public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringShortNameTypeIec61360> ls)
-		{
-			if (ls == null || ls.Count < 1)
-				return new[] { new LocalizedText("", "") };
-			var res = new LocalizedText[ls.Count];
-			for (int i = 0; i < ls.Count; i++)
-				res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
-			return res;
-		}
+        public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringShortNameTypeIec61360> ls)
+        {
+            if (ls == null || ls.Count < 1)
+                return new[] { new LocalizedText("", "") };
+            var res = new LocalizedText[ls.Count];
+            for (int i = 0; i < ls.Count; i++)
+                res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
+            return res;
+        }
 
-		public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringDefinitionTypeIec61360> ls)
+        public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringDefinitionTypeIec61360> ls)
         {
             if (ls == null || ls.Count < 1)
                 return new[] { new LocalizedText("", "") };
@@ -136,18 +136,18 @@ namespace AasOpcUaServer
                 dataTypeId = DataTypeIds.Boolean;
                 return true;
             }
-            else if (valueType == Aas.DataTypeDefXsd.DateTime 
-                     || valueType == Aas.DataTypeDefXsd.Date 
+            else if (valueType == Aas.DataTypeDefXsd.DateTime
+                     || valueType == Aas.DataTypeDefXsd.Date
                      || valueType == Aas.DataTypeDefXsd.Time)
             {
                 sharpType = typeof(Int64);
                 dataTypeId = DataTypeIds.DateTime;
                 return true;
             }
-            else if (valueType == Aas.DataTypeDefXsd.Decimal 
-                     || valueType == Aas.DataTypeDefXsd.Integer 
+            else if (valueType == Aas.DataTypeDefXsd.Decimal
+                     || valueType == Aas.DataTypeDefXsd.Integer
                      || valueType == Aas.DataTypeDefXsd.Long
-					 || valueType == Aas.DataTypeDefXsd.NonPositiveInteger 
+                     || valueType == Aas.DataTypeDefXsd.NonPositiveInteger
                      || valueType == Aas.DataTypeDefXsd.NegativeInteger)
             {
                 sharpType = typeof(Int64);
@@ -172,8 +172,8 @@ namespace AasOpcUaServer
                 dataTypeId = DataTypeIds.Byte;
                 return true;
             }
-            else if (valueType == Aas.DataTypeDefXsd.NonNegativeInteger 
-                     || valueType == Aas.DataTypeDefXsd.PositiveInteger 
+            else if (valueType == Aas.DataTypeDefXsd.NonNegativeInteger
+                     || valueType == Aas.DataTypeDefXsd.PositiveInteger
                      || valueType == Aas.DataTypeDefXsd.UnsignedLong)
             {
                 sharpType = typeof(UInt64);

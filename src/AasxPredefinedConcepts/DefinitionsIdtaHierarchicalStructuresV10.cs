@@ -41,7 +41,7 @@ namespace AasxPredefinedConcepts
 
             // IReferable
             this.ReadLibrary(
-                Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." 
+                Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources."
                 + "IdtaHierarchicalStructV10.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(HierarchStructV10), useFieldNames: true);
         }

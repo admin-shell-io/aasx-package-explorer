@@ -111,7 +111,7 @@ namespace AasxPluginContactInformation
         public static ShelfAnyUiControl FillWithAnyUiControls(
             LogInstance log,
             object opackage, object osm,
-			ContactInformationOptions options,
+            ContactInformationOptions options,
             PluginEventStack eventStack,
             PluginSessionBase session,
             object opanel,
@@ -198,7 +198,7 @@ namespace AasxPluginContactInformation
                 foreground: AnyUiBrushes.DarkBlue,
                 fontSize: 1.5f,
                 setBold: true,
-                content: $"Contact informations");            
+                content: $"Contact informations");
 
             if (_opContext?.IsDisplayModeEditOrAdd == true)
                 AnyUiUIElement.RegisterControl(
@@ -261,26 +261,26 @@ namespace AasxPluginContactInformation
             // prepare selection
 
             var roleHeader = "Role - ";
-			var allRoles = new List<string>();
+            var allRoles = new List<string>();
             allRoles.Add("Role - All");
             if (its != null)
                 allRoles.AddRange(its
                     .Select((ce) => roleHeader + ce.Role)
                     .Distinct());
 
-			// ui
+            // ui
 
-			AnyUiComboBox cbRoles = null;
-			cbRoles = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
-			{
-				Margin = new AnyUiThickness(6, 4, 4, 4),
-				MinWidth = 200,
-				Items = allRoles.Cast<object>().ToList(),
-				SelectedIndex = (_selectedRole ==  null) ? 0 : allRoles.IndexOf(roleHeader + _selectedRole)
-			}), (o) =>
-			{
+            AnyUiComboBox cbRoles = null;
+            cbRoles = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
+            {
+                Margin = new AnyUiThickness(6, 4, 4, 4),
+                MinWidth = 200,
+                Items = allRoles.Cast<object>().ToList(),
+                SelectedIndex = (_selectedRole == null) ? 0 : allRoles.IndexOf(roleHeader + _selectedRole)
+            }), (o) =>
+            {
                 if (cbRoles != null && cbRoles.SelectedIndex.HasValue
-					&& cbRoles.SelectedIndex >= 0 && cbRoles.SelectedIndex < allRoles.Count
+                    && cbRoles.SelectedIndex >= 0 && cbRoles.SelectedIndex < allRoles.Count
                     && (allRoles[cbRoles.SelectedIndex.Value] is string selRole)
                     && selRole.Length >= roleHeader.Length)
                 {
@@ -288,47 +288,47 @@ namespace AasxPluginContactInformation
                         _selectedRole = null;
                     else
                         _selectedRole = selRole.Substring(roleHeader.Length);
-				}
-				
-				PushUpdateEvent();
-				return new AnyUiLambdaActionNone();
-			});
+                }
 
-			//
-			// Text based filter
-			//
+                PushUpdateEvent();
+                return new AnyUiLambdaActionNone();
+            });
 
-			AnyUiButton btnFilter = null;
+            //
+            // Text based filter
+            //
 
-			btnFilter = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiButton()
-			{
-				Margin = new AnyUiThickness(6, 4, 4, 4),
+            AnyUiButton btnFilter = null;
+
+            btnFilter = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiButton()
+            {
+                Margin = new AnyUiThickness(6, 4, 4, 4),
                 Content = "Filter \U0001f846"
-			}), (o) =>
-			{
-				PushUpdateEvent();
-				return new AnyUiLambdaActionNone();
-			});
+            }), (o) =>
+            {
+                PushUpdateEvent();
+                return new AnyUiLambdaActionNone();
+            });
 
             AnyUiTextBox tbFilterText = null;
-			tbFilterText = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiTextBox()
-			{
-				Margin = new AnyUiThickness(6, 4, 4, 4),
+            tbFilterText = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiTextBox()
+            {
+                Margin = new AnyUiThickness(6, 4, 4, 4),
                 MinWidth = 200,
-				Text = _selectedFilterText
-			}), (o) =>
-			{
+                Text = _selectedFilterText
+            }), (o) =>
+            {
                 if (o is string os)
                     _selectedFilterText = os;
-				return new AnyUiLambdaActionNone();
-			});
+                return new AnyUiLambdaActionNone();
+            });
 
-			//
-			// Scroll area
-			//
+            //
+            // Scroll area
+            //
 
-			// small spacer
-			outer.RowDefinitions[2] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
+            // small spacer
+            outer.RowDefinitions[2] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
             uitk.AddSmallBasicLabelTo(outer, 2, 0,
                 fontSize: 0.3f,
                 verticalAlignment: AnyUiVerticalAlignment.Top,
@@ -361,7 +361,7 @@ namespace AasxPluginContactInformation
             // role etc. ..
 
             var filtered = new List<ContactEntity>();
-			if (its != null)
+            if (its != null)
                 foreach (var ce in its)
                 {
                     // Country?
@@ -378,20 +378,20 @@ namespace AasxPluginContactInformation
                     // Filter text?
                     if (_selectedFilterText?.HasContent() == true)
                     {
-                        var found = ce.Headline.Contains(_selectedFilterText, 
+                        var found = ce.Headline.Contains(_selectedFilterText,
                             StringComparison.InvariantCultureIgnoreCase);
-						found = found || ce.Headline.Contains(_selectedFilterText,
-	                        StringComparison.InvariantCultureIgnoreCase);
+                        found = found || ce.Headline.Contains(_selectedFilterText,
+                            StringComparison.InvariantCultureIgnoreCase);
                         if (ce.BodyItems != null)
                             foreach (var bi in ce.BodyItems)
-								found = found || bi.Contains(_selectedFilterText,
-							        StringComparison.InvariantCultureIgnoreCase);
+                                found = found || bi.Contains(_selectedFilterText,
+                                    StringComparison.InvariantCultureIgnoreCase);
                         if (!found)
                             continue;
-					}
+                    }
 
-					// ok, add
-					filtered.Add(ce);
+                    // ok, add
+                    filtered.Add(ce);
                 }
 
             // display
@@ -424,12 +424,12 @@ namespace AasxPluginContactInformation
                         // frequently
                         LogInternally.That.SilentlyIgnoredError(ex);
                     }
-                }               
+                }
                 else
                 {
-					// add placeholder
-					ent.LoadImageFromResource("AasxPluginContactInformation.Resources.no-contact-preview.png");
-				}
+                    // add placeholder
+                    ent.LoadImageFromResource("AasxPluginContactInformation.Resources.no-contact-preview.png");
+                }
 
                 // attach events and add
                 ent.DoubleClick += DocumentEntity_DoubleClick;
@@ -457,7 +457,7 @@ namespace AasxPluginContactInformation
                     background: AnyUiBrushes.DarkGray,
                     borderBrush: AnyUiBrushes.Transparent,
                     borderThickness: new AnyUiThickness(1.0),
-					cornerRadius: 3),
+                    cornerRadius: 3),
                 skipForTarget: AnyUiTargetPlatform.Browser);
 
             // make the border, which will get content
@@ -466,7 +466,7 @@ namespace AasxPluginContactInformation
                 background: AnyUiBrushes.White,
                 borderBrush: AnyUiBrushes.Black,
                 borderThickness: new AnyUiThickness(1.0),
-                cornerRadius:3) ;
+                cornerRadius: 3);
 
             // the border emits double clicks
             border.EmitEvent = AnyUiEventMask.LeftDouble;
@@ -494,7 +494,7 @@ namespace AasxPluginContactInformation
                 setHorizontal: true);
 
             if (de.CountryCode?.HasContent() == true)
-				sp1.Add(new AnyUiCountryFlag()
+                sp1.Add(new AnyUiCountryFlag()
                 {
                     HorizontalAlignment = AnyUiHorizontalAlignment.Left,
                     ISO3166Code = de.CountryCode,
@@ -515,8 +515,8 @@ namespace AasxPluginContactInformation
                 FontWeight = AnyUiFontWeight.Bold
             });
 
-			// Headline
-			uitk.AddSmallBasicLabelTo(g, 1, 1,
+            // Headline
+            uitk.AddSmallBasicLabelTo(g, 1, 1,
                 textIsSelectable: false,
                 margin: new AnyUiThickness(2),
                 verticalAlignment: AnyUiVerticalAlignment.Center,
@@ -530,7 +530,7 @@ namespace AasxPluginContactInformation
             if (de.BodyItems != null && de.BodyItems.Count > 0)
             {
                 var bits = string.Join(" \u2022 ", de.BodyItems);
-				uitk.AddSmallBasicLabelTo(g, 2, 1,
+                uitk.AddSmallBasicLabelTo(g, 2, 1,
                     textIsSelectable: false,
                     margin: new AnyUiThickness(2),
                     verticalAlignment: AnyUiVerticalAlignment.Center,
@@ -548,7 +548,7 @@ namespace AasxPluginContactInformation
                     rowSpan: 3,
                     horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
                     verticalAlignment: AnyUiVerticalAlignment.Stretch);
-           
+
             var hds = new List<string>();
             if (_opContext?.IsDisplayModeEditOrAdd == true)
             {
@@ -672,7 +672,7 @@ namespace AasxPluginContactInformation
         private List<Aas.ISubmodelElement> _updateSourceElements = null;
 
         private async Task GetFormDescForSingleContact(
-			List<Aas.ISubmodelElement> sourceElems)
+            List<Aas.ISubmodelElement> sourceElems)
         {
             // ask the plugin generic forms for information via event stack
             _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventInvokeOtherPlugin()
@@ -681,10 +681,10 @@ namespace AasxPluginContactInformation
                 PluginName = "AasxPluginGenericForms",
                 Action = "find-form-desc",
                 UseAsync = false,
-                Args = new object[] { 
+                Args = new object[] {
                     AasxPredefinedConcepts.IdtaContactInformationV10.Static
                         .SM_ContactInformations.GetSemanticRef() }
-			});
+            });
 
             // .. and receive incoming event ..
             _menuSubscribeForNextEventReturn = (revt) =>
@@ -713,23 +713,23 @@ namespace AasxPluginContactInformation
                         return;
 
                     // build up outer frame
-					var fi = new FormInstanceSubmodelElementCollection(null, descSmc)
-					{
-						outerEventStack = _eventStack,
-						OuterPluginName = _plugin?.GetPluginName(),
-						OuterPluginSession = _session,
-					};
+                    var fi = new FormInstanceSubmodelElementCollection(null, descSmc)
+                    {
+                        outerEventStack = _eventStack,
+                        OuterPluginName = _plugin?.GetPluginName(),
+                        OuterPluginSession = _session,
+                    };
 
                     // if present, create link to existing data
                     // -> update instead of add
-					fi.PresetInstancesBasedOnSource(_updateSourceElements);
+                    fi.PresetInstancesBasedOnSource(_updateSourceElements);
 
-					// initialize form and start editing
-					_formDoc = new AnyUiRenderForm(
-						fi,
-						updateMode: sourceElems != null);
-					PushUpdateEvent();
-				}
+                    // initialize form and start editing
+                    _formDoc = new AnyUiRenderForm(
+                        fi,
+                        updateMode: sourceElems != null);
+                    PushUpdateEvent();
+                }
             };
         }
 
@@ -752,7 +752,7 @@ namespace AasxPluginContactInformation
                 return;
             }
 
-            if (tag == null && menuItemHeader == "Delete" 
+            if (tag == null && menuItemHeader == "Delete"
                 && e.SourceElementContact?.Value != null
                 && true == _submodel?.SubmodelElements?.Contains(e.SourceElementContact)
                 && true == e.SourceElementContact.SemanticId?.Matches(
@@ -761,31 +761,31 @@ namespace AasxPluginContactInformation
                 && _options != null
                 && _opContext?.IsDisplayModeEditOrAdd == true)
             {
-				// ask back via display context
-				if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
-					"Delete ContactEntity? This cannot be reverted!",
-					"Contact list",
-					AnyUiMessageBoxButton.OKCancel,
-					AnyUiMessageBoxImage.Question))
-					return;
+                // ask back via display context
+                if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
+                    "Delete ContactEntity? This cannot be reverted!",
+                    "Contact list",
+                    AnyUiMessageBoxButton.OKCancel,
+                    AnyUiMessageBoxImage.Question))
+                    return;
 
-				// do it
-				try
-				{
+                // do it
+                try
+                {
                     _submodel?.SubmodelElements.Remove(e.SourceElementContact);
 
-					// re-display also in Explorer
-					_eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements()
-					    { Session = _session });
+                    // re-display also in Explorer
+                    _eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements()
+                    { Session = _session });
 
-					// log
-					_log?.Info("Deleted Document(Version).");
-				}
-				catch (Exception ex)
-				{
-					_log?.Error(ex, "while deleting contact");
-				}
-			}
+                    // log
+                    _log?.Info("Deleted Document(Version).");
+                }
+                catch (Exception ex)
+                {
+                    _log?.Error(ex, "while deleting contact");
+                }
+            }
         }
 
         private void DocumentEntity_DoubleClick(ContactEntity e)
@@ -934,21 +934,21 @@ namespace AasxPluginContactInformation
 
             if (cmd == "ButtonAddContact")
             {
-				// ask the plugin generic forms for information via event stack
-				// and subsequently start editing form
-				await GetFormDescForSingleContact(sourceElems: null);
+                // ask the plugin generic forms for information via event stack
+                // and subsequently start editing form
+                await GetFormDescForSingleContact(sourceElems: null);
 
                 // OK
                 return new AnyUiLambdaActionNone();
-			}
+            }
 
-			// no?
-			return new AnyUiLambdaActionNone();
+            // no?
+            return new AnyUiLambdaActionNone();
         }
 
-#endregion
+        #endregion
 
-#region Utilities
+        #region Utilities
         //===============
 
         private bool CheckIfPackageFile(string fn)
@@ -956,6 +956,6 @@ namespace AasxPluginContactInformation
             return fn.StartsWith(@"/");
         }
 
-#endregion
+        #endregion
     }
 }

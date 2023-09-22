@@ -114,7 +114,7 @@ namespace AasxPluginBomStructure
 
         public BomStructureOptionsRecordList(IEnumerable<BomStructureOptionsRecord> collection) : base(collection) { }
 
-        public BomArguments FindFirstLinkStyle(Aas.IReference semId, 
+        public BomArguments FindFirstLinkStyle(Aas.IReference semId,
             List<Aas.IReference> supplSemIds = null)
         {
             foreach (var rec in this)

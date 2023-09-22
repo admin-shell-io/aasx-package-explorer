@@ -85,9 +85,9 @@ namespace AasxPluginSmdExporter
                     ).Cast<Aas.IKey>().ToList()));
 
             var bom_json = Jsonization.Serialize.ToJsonObject(Bom)
-						.ToJsonString(new System.Text.Json.JsonSerializerOptions());
+                        .ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-			if (AASRestClient.PutSubmodel(bom_json, name_sm, name))
+            if (AASRestClient.PutSubmodel(bom_json, name_sm, name))
             {
                 return true;
             }
@@ -110,10 +110,10 @@ namespace AasxPluginSmdExporter
                 assetInformation: new Aas.AssetInformation(Aas.AssetKind.Instance));
 
             var smd = Jsonization.Serialize.ToJsonObject(aas)
-						.ToJsonString(new System.Text.Json.JsonSerializerOptions());
+                        .ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-			//Put SMD
-			if (AASRestClient.PutAAS(smd, name))
+            //Put SMD
+            if (AASRestClient.PutAAS(smd, name))
             {
                 return true;
             }
@@ -145,9 +145,9 @@ namespace AasxPluginSmdExporter
                         var portAsRel = GetPortsAsRelation(input, output);
 
                         var test_ent_json = Jsonization.Serialize.ToJsonObject(portAsRel)
-						        .ToJsonString(new System.Text.Json.JsonSerializerOptions());
+                                .ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-						if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
+                        if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
                         {
                             allsuccess = false;
                         }
@@ -164,9 +164,9 @@ namespace AasxPluginSmdExporter
                             GetPortsAsRelation(port, port.ConnectedTo[0], 1);
 
                         var test_ent_json = Jsonization.Serialize.ToJsonObject(portAsRel)
-								.ToJsonString(new System.Text.Json.JsonSerializerOptions());
+                                .ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-						if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
+                        if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
                         {
                             allsuccess = false;
                         }
@@ -196,11 +196,11 @@ namespace AasxPluginSmdExporter
                     {
                         simAsEntity.Add(port);
                     }
-                    
-                    var test_ent_json = Jsonization.Serialize.ToJsonObject(simAsEntity)
-								.ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-					SimModelsAsEntities.Add(sim.Name, simAsEntity);
+                    var test_ent_json = Jsonization.Serialize.ToJsonObject(simAsEntity)
+                                .ToJsonString(new System.Text.Json.JsonSerializerOptions());
+
+                    SimModelsAsEntities.Add(sim.Name, simAsEntity);
 
                     if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
                     {
@@ -250,16 +250,17 @@ namespace AasxPluginSmdExporter
             try
             {
                 vt = Aas.Jsonization.Deserialize.DataTypeDefXsdFrom(port.Datatype);
-            } catch { }
+            }
+            catch { }
 
             var port_prop = new Aas.Property(
                 valueType: vt,
-				idShort: port.IdShort,
+                idShort: port.IdShort,
                 semanticId: port.SemanticId,
-                qualifiers: (new[] { 
+                qualifiers: (new[] {
                     new Aas.Qualifier("direction", Aas.DataTypeDefXsd.String, value: direction),
-					new Aas.Qualifier("Domain", Aas.DataTypeDefXsd.String, value: port.Domain)
-				}).Cast<Aas.IQualifier>().ToList());
+                    new Aas.Qualifier("Domain", Aas.DataTypeDefXsd.String, value: port.Domain)
+                }).Cast<Aas.IQualifier>().ToList());
 
             return port_prop;
         }
@@ -313,13 +314,13 @@ namespace AasxPluginSmdExporter
             property.Parent = entity;
 
             var outentity = new Aas.Entity(
-				entityType: Aas.EntityType.CoManagedEntity,
-				idShort: output.Owner);
+                entityType: Aas.EntityType.CoManagedEntity,
+                idShort: output.Owner);
             outentity.Parent = submodel;
 
             var outproperty = new Aas.Property(
-				valueType: Aas.DataTypeDefXsd.String,
-				idShort: output.IdShort);
+                valueType: Aas.DataTypeDefXsd.String,
+                idShort: output.IdShort);
             outproperty.Parent = outentity;
 
             // setzen als first bzw second
@@ -328,7 +329,7 @@ namespace AasxPluginSmdExporter
                 first: outproperty.GetReference(),
                 second: property.GetReference(),
                 idShort: $"{relCount++}",
-				semanticId: SetSemanticIdRelEle(input, output, type));
+                semanticId: SetSemanticIdRelEle(input, output, type));
 
             return relationshipElement;
         }
@@ -343,20 +344,23 @@ namespace AasxPluginSmdExporter
         public Aas.IReference SetSemanticIdRelEle(IOput input, IOput output, int type)
         {
             var semantic = new Aas.Reference(Aas.ReferenceTypes.ExternalReference,
-				(new[] {
-					new Aas.Key(Aas.KeyTypes.ConceptDescription, "to be filled") }
-				).Cast<Aas.IKey>().ToList());
+                (new[] {
+                    new Aas.Key(Aas.KeyTypes.ConceptDescription, "to be filled") }
+                ).Cast<Aas.IKey>().ToList());
 
             switch (type)
             {
-                case 0: semantic.Keys[0].Value = 
-                        SemanticPort.GetInstance().GetSemanticForPort("SmdComp_SignalFlow"); 
-                        break;
-                case 1: semantic.Keys[0].Value = 
-                        SemanticPort.GetInstance().GetSemanticForPort("SmdComp_PhysicalElectric"); 
-                        break;
-                case 2: semantic.Keys[0].Value = "mechanic"; 
-                        break;
+                case 0:
+                    semantic.Keys[0].Value =
+                        SemanticPort.GetInstance().GetSemanticForPort("SmdComp_SignalFlow");
+                    break;
+                case 1:
+                    semantic.Keys[0].Value =
+                        SemanticPort.GetInstance().GetSemanticForPort("SmdComp_PhysicalElectric");
+                    break;
+                case 2:
+                    semantic.Keys[0].Value = "mechanic";
+                    break;
             }
             return semantic;
         }

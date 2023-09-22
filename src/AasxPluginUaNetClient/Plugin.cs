@@ -32,18 +32,18 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     // ReSharper disable once UnusedType.Global
     public class AasxPlugin : AasxPluginBase
-	{
+    {
         public new void InitPlugin(string[] args)
         {
-			PluginName = "AasxPluginOpcUaClient";
-			_log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
-		}
+            PluginName = "AasxPluginOpcUaClient";
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+        }
 
         public AasxPluginActionDescriptionBase[] ListActions()
         {
-			var res = ListActionsBasicHelper(
-				enableCheckVisualExt: false,
-				enableLicenses: true);
+            var res = ListActionsBasicHelper(
+                enableCheckVisualExt: false,
+                enableLicenses: true);
             res.Add(new AasxPluginActionDescriptionBase("create-client",
                 "Creates a OPC UA client and returns as plain object. Arguments: (string _endpointURL, "
                 + "bool _autoAccept, int _stopTimeout, string _userName, string _password)."));

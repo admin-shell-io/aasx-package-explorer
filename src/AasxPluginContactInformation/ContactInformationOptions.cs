@@ -27,7 +27,7 @@ namespace AasxPluginContactInformation
     /// Additional version specific information. None, yet.
     /// </summary>
     public class ContactInformationOptionsRecord : AasxPluginOptionsLookupRecordBase
-    {        
+    {
     }
 
     public class ContactInformationOptions : AasxPluginLookupOptionsBase

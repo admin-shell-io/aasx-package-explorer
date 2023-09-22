@@ -65,13 +65,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public new AasxPluginActionDescriptionBase[] ListActions()
         {
             var res = ListActionsBasicHelper(
-				enableCheckVisualExt: true,
-				enableOptions: true,
-				enableLicenses: true,
-				enableEventsGet: true,
+                enableCheckVisualExt: true,
+                enableOptions: true,
+                enableLicenses: true,
+                enableEventsGet: true,
                 enableEventReturn: true,
                 enableNewSubmodel: true,
-				enablePanelAnyUi: true);
+                enablePanelAnyUi: true);
             return res.ToArray();
         }
 

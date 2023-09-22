@@ -753,7 +753,7 @@ namespace AasxPackageLogic
         public void AddKeyListLangStr<T>(
             AnyUiStackPanel view, string key, List<T> langStr, ModifyRepo repo = null,
             Aas.IReferable relatedReferable = null,
-			Action<Aas.IReferable> emitCustomEvent = null) where T : IAbstractLangString
+            Action<Aas.IReferable> emitCustomEvent = null) where T : IAbstractLangString
         {
             // sometimes needless to show
             if (repo == null && (langStr == null || langStr.Count < 1))
@@ -765,12 +765,12 @@ namespace AasxPackageLogic
             if (repo != null)
                 rowOfs = 1;
 
-			// default
-			if (emitCustomEvent == null)
-				emitCustomEvent = (rf) => { this.AddDiaryEntry(rf, new DiaryEntryStructChange()); };
+            // default
+            if (emitCustomEvent == null)
+                emitCustomEvent = (rf) => { this.AddDiaryEntry(rf, new DiaryEntryStructChange()); };
 
-			// Grid
-			var g = new AnyUiGrid();
+            // Grid
+            var g = new AnyUiGrid();
             g.Margin = new AnyUiThickness(0, 0, 0, 0);
 
             // 0 key
@@ -820,9 +820,9 @@ namespace AasxPackageLogic
                     {
                         langStr.Add<T>("", "");
 
-						emitCustomEvent?.Invoke(relatedReferable);
+                        emitCustomEvent?.Invoke(relatedReferable);
 
-						return new AnyUiLambdaActionRedrawEntity();
+                        return new AnyUiLambdaActionRedrawEntity();
                     });
             }
 
@@ -868,8 +868,8 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 langStr[currentI].Language = o as string;
-								emitCustomEvent?.Invoke(relatedReferable);
-								return new AnyUiLambdaActionNone();
+                                emitCustomEvent?.Invoke(relatedReferable);
+                                return new AnyUiLambdaActionNone();
                             });
                         // check here, if to hightlight
                         if (tbLang != null && this.highlightField != null &&
@@ -893,8 +893,8 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 langStr[currentI].Text = o as string;
-								emitCustomEvent?.Invoke(relatedReferable);
-								return new AnyUiLambdaActionNone();
+                                emitCustomEvent?.Invoke(relatedReferable);
+                                return new AnyUiLambdaActionNone();
                             });
                         // check here, if to hightlight
                         if (tbStr != null && this.highlightField != null &&
@@ -915,8 +915,8 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 langStr.RemoveAt(currentI);
-								emitCustomEvent?.Invoke(relatedReferable);
-								return new AnyUiLambdaActionRedrawEntity();
+                                emitCustomEvent?.Invoke(relatedReferable);
+                                return new AnyUiLambdaActionRedrawEntity();
                             });
                     }
 
@@ -2829,7 +2829,7 @@ namespace AasxPackageLogic
                 {
                     dataStr = Jsonization.Serialize.ToJsonObject(rf)
                         .ToJsonString(new System.Text.Json.JsonSerializerOptions());
-                } 
+                }
                 catch (Exception ex)
                 {
                     LogInternally.That.SilentlyIgnoredError(ex);

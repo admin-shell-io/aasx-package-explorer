@@ -23,38 +23,38 @@ namespace AasxPredefinedConcepts
         public static IdtaHandoverDocumentationV12 Static = new IdtaHandoverDocumentationV12();
 
         public Aas.Submodel
-			SM_HandoverDocumentation;
+            SM_HandoverDocumentation;
 
-		public Aas.ConceptDescription
-			CD_numberOfDocuments,
-			CD_Document,
-			CD_DocumentId,
-			CD_DocumentDomainId,
-			CD_ValueId,
-			CD_IsPrimary,
-			CD_DocumentClassification,
-			CD_ClassId,
-			CD_ClassName,
-			CD_ClassificationSystem,
-			CD_DocumentVersion,
-			CD_Language,
-			CD_DocumentVersionId,
-			CD_Title,
-			CD_SubTitle,
-			CD_Summary,
-			CD_KeyWords,
-			CD_StatusSetDate,
-			CD_StatusValue,
-			CD_OrganizationName,
-			CD_OrganizationOfficialName,
-			CD_RefersTo,
-			CD_BasedOn,
-			CD_TranslationOf,
-			CD_DigitalFile,
-			CD_PreviewFile,
-			CD_DocumentedEntity;
+        public Aas.ConceptDescription
+            CD_numberOfDocuments,
+            CD_Document,
+            CD_DocumentId,
+            CD_DocumentDomainId,
+            CD_ValueId,
+            CD_IsPrimary,
+            CD_DocumentClassification,
+            CD_ClassId,
+            CD_ClassName,
+            CD_ClassificationSystem,
+            CD_DocumentVersion,
+            CD_Language,
+            CD_DocumentVersionId,
+            CD_Title,
+            CD_SubTitle,
+            CD_Summary,
+            CD_KeyWords,
+            CD_StatusSetDate,
+            CD_StatusValue,
+            CD_OrganizationName,
+            CD_OrganizationOfficialName,
+            CD_RefersTo,
+            CD_BasedOn,
+            CD_TranslationOf,
+            CD_DigitalFile,
+            CD_PreviewFile,
+            CD_DocumentedEntity;
 
-		public IdtaHandoverDocumentationV12()
+        public IdtaHandoverDocumentationV12()
         {
             // info
             this.DomainInfo = "Handover Documentation (IDTA) V1.2";

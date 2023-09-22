@@ -220,7 +220,7 @@ namespace AasxPackageLogic
         public bool HiddenSelected
         {
             get { return _isSelected; }
-            set { _isSelected = value;  }
+            set { _isSelected = value; }
         }
 
         /// <summary>

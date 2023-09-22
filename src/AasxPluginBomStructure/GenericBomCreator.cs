@@ -434,7 +434,7 @@ namespace AasxPluginBomStructure
         }
 
         public void CreateAasAndSubmodelNodes(
-            Microsoft.Msagl.Drawing.Graph graph, 
+            Microsoft.Msagl.Drawing.Graph graph,
             Aas.ISubmodel sm)
         {
             // access
@@ -449,7 +449,7 @@ namespace AasxPluginBomStructure
                     sm,
                     sm.ToIdShortString(),
                     Microsoft.Msagl.Drawing.Shape.Hexagon,
-                    EntityStyleSubmodel.FillColor, EntityStyleSubmodel.BorderColor, 
+                    EntityStyleSubmodel.FillColor, EntityStyleSubmodel.BorderColor,
                     EntityStyleSubmodel.FontColor,
                     xRadius: 0, yRadius: 0,
                     fontSize: 12,
@@ -469,7 +469,7 @@ namespace AasxPluginBomStructure
                     aas,
                     aas.ToIdShortString(),
                     Microsoft.Msagl.Drawing.Shape.DoubleCircle,
-                    EntityStyleAAS.FillColor, EntityStyleAAS.BorderColor, 
+                    EntityStyleAAS.FillColor, EntityStyleAAS.BorderColor,
                     EntityStyleAAS.FontColor,
                     xRadius: 0, yRadius: 0,
                     fontSize: 12,
@@ -618,7 +618,7 @@ namespace AasxPluginBomStructure
                     // for adding Nodes to the graph, we need in advance the knowledge, if a property
                     // is connected by a BOM relationship ..
                     if (pass == 1)
-                    {                        
+                    {
                         if (x1 != null)
                             referableByRelation[x1] = sme;
                         if (x2 != null)
@@ -743,7 +743,7 @@ namespace AasxPluginBomStructure
                         referableToNode[sme] = node1;
 
                         // add asset label
-                        if (_options?.ShowAssetIds == true 
+                        if (_options?.ShowAssetIds == true
                             && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
                         {
                             // another node

@@ -60,17 +60,17 @@ namespace AasxPluginSmdExporter
         {
 
         }
-        
+
         public void SetSubmodelElementsAsEntity(JObject jObject)
         {
             foreach (var subEle in jObject["submodelElements"])
             {
-				var jsonStr = subEle.ToString();
+                var jsonStr = subEle.ToString();
 
-				Aas.IEntity entity = Aas.Jsonization.Deserialize.EntityFrom(
-					System.Text.Json.Nodes.JsonNode.Parse(jsonStr));
+                Aas.IEntity entity = Aas.Jsonization.Deserialize.EntityFrom(
+                    System.Text.Json.Nodes.JsonNode.Parse(jsonStr));
 
-				this.SubmodelElementsAsEntity.Add(entity?.IdShort, entity);
+                this.SubmodelElementsAsEntity.Add(entity?.IdShort, entity);
             }
         }
 
@@ -119,10 +119,10 @@ namespace AasxPluginSmdExporter
                         {
                             var jsonStr = subEle["semanticId"].ToString();
 
-							Aas.IReference semantic = Aas.Jsonization.Deserialize.ReferenceFrom(
+                            Aas.IReference semantic = Aas.Jsonization.Deserialize.ReferenceFrom(
                                 System.Text.Json.Nodes.JsonNode.Parse(jsonStr));
 
-							SemanticIdDict.Add(idshort, semantic);
+                            SemanticIdDict.Add(idshort, semantic);
                         }
                     }
                 }

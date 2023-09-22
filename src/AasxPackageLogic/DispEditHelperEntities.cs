@@ -1809,7 +1809,7 @@ namespace AasxPackageLogic
                         {
                             // from SMEs
 
-                            var adaptive61360 = 
+                            var adaptive61360 =
                                 this.context?.MessageBoxFlyoutShow(
                                     "Create IEC61360 data specifications and adaptively fill preferredName " +
                                     "and definition by idShort and description attributes?",
@@ -1825,7 +1825,7 @@ namespace AasxPackageLogic
                             Log.Singleton.Info(StoredPrint.Color.Blue, $"Added {res.Item3} CDs to the environment, " +
                                 $"while {res.Item1} invalid semanticIds were present and " +
                                 $"{res.Item2} CDs were already existing.");
-                            
+
                             return new AnyUiLambdaActionRedrawAllElements(
                                         submodel, isExpanded: true);
                         }
@@ -2790,7 +2790,7 @@ namespace AasxPackageLogic
                         if (buttonNdx == 3)
                         {
                             var res = this.ImportCDsFromSmSme(env, sme, recurseChilds: false, repairSemIds: true);
-                            
+
                             if (res.Item1 > 0)
                             {
                                 Log.Singleton.Error("Cannot create CD because no valid semanticId is present " +
@@ -2818,9 +2818,9 @@ namespace AasxPackageLogic
                                     "Create CDs from SMEs",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Information);
 
-                            var res = this.ImportCDsFromSmSme(env, sme, recurseChilds: true, repairSemIds: true, 
+                            var res = this.ImportCDsFromSmSme(env, sme, recurseChilds: true, repairSemIds: true,
                                 adaptive61360: adaptive61360);
-                            
+
                             Log.Singleton.Info(StoredPrint.Color.Blue, $"Added {res.Item3} CDs to the environment, " +
                                 $"while {res.Item1} invalid semanticIds were present and " +
                                 $"{res.Item2} CDs were already existing.");
@@ -3415,9 +3415,9 @@ namespace AasxPackageLogic
                         }))
 
                     this.AddKeyListLangStr<Aas.ILangStringTextType>(
-                        stack, "value", mlp.Value, repo, 
+                        stack, "value", mlp.Value, repo,
                         relatedReferable: mlp,
-						emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
 
                 // ValueId
 
@@ -3488,8 +3488,8 @@ namespace AasxPackageLogic
                     v =>
                     {
                         rng.Min = v as string;
-						this.AddDiaryEntry(rng, new DiaryEntryUpdateValue());
-						return new AnyUiLambdaActionNone();
+                        this.AddDiaryEntry(rng, new DiaryEntryUpdateValue());
+                        return new AnyUiLambdaActionNone();
                     });
 
                 this.AddHintBubble(
@@ -3509,8 +3509,8 @@ namespace AasxPackageLogic
                     v =>
                     {
                         rng.Max = v as string;
-						this.AddDiaryEntry(rng, new DiaryEntryUpdateValue());
-						return new AnyUiLambdaActionNone();
+                        this.AddDiaryEntry(rng, new DiaryEntryUpdateValue());
+                        return new AnyUiLambdaActionNone();
                     });
             }
             else if (sme is Aas.File fl)
@@ -4152,7 +4152,7 @@ namespace AasxPackageLogic
                         }))
                 {
                     this.AddKeyListKeys(stack, "observed", bev.Observed.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.Main, 
+                        packages, PackageCentral.PackageCentral.Selector.Main,
                         addExistingEntities: "All",
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,

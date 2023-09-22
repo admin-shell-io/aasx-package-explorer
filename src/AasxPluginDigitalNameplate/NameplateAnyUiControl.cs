@@ -924,7 +924,7 @@ namespace AasxPluginDigitalNameplate
                                 background: AnyUiBrushes.White,
                                 textWrapping: AnyUiTextWrapping.Wrap,
                                 verticalAlignment: AnyUiVerticalAlignment.Stretch,
-                                verticalContentAlignment: AnyUiVerticalAlignment.Center));                            
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center));
                     }
 
                     // render (little) additional text

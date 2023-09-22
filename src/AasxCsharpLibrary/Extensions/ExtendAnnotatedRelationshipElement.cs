@@ -41,8 +41,8 @@ namespace Extensions
         }
 
         public static object AddChild(
-            this AnnotatedRelationshipElement annotatedRelationshipElement, 
-            ISubmodelElement childSubmodelElement, 
+            this AnnotatedRelationshipElement annotatedRelationshipElement,
+            ISubmodelElement childSubmodelElement,
             EnumerationPlacmentBase placement = null)
         {
             if (childSubmodelElement == null || childSubmodelElement is not IDataElement)

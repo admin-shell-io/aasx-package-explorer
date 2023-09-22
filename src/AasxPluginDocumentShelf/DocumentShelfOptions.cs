@@ -76,17 +76,17 @@ namespace AasxPluginDocumentShelf
                 AasxPredefinedConcepts.VDI2770v11.Static
                     .SM_ManufacturerDocumentation.GetSemanticKey());
 
-			// V1.2
-			rec.AllowSubmodelSemanticId.Add(
-				AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static
+            // V1.2
+            rec.AllowSubmodelSemanticId.Add(
+                AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static
                     .SM_HandoverDocumentation.GetSemanticKey());
 
-			//
-			// further models for CAD
+            //
+            // further models for CAD
             // (for the time being still V11!)
-			//
+            //
 
-			rec = new DocumentShelfOptionsRecord()
+            rec = new DocumentShelfOptionsRecord()
             {
                 UsageInfo = "Some manufacturers use manufacturer documentation to provide models for " +
                 "Computer Aided Design (CAD) and further engineering tools.",

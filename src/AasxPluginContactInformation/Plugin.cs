@@ -65,12 +65,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public new AasxPluginActionDescriptionBase[] ListActions()
         {
             var res = ListActionsBasicHelper(
-				enableCheckVisualExt: true,
-				enableOptions: true,
-				enableLicenses: true,
-				enableEventsGet: true,
+                enableCheckVisualExt: true,
+                enableOptions: true,
+                enableLicenses: true,
+                enableEventsGet: true,
                 enableEventReturn: true,
-				enablePanelAnyUi: true);
+                enablePanelAnyUi: true);
             return res.ToArray();
         }
 
@@ -213,7 +213,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var res = new AasxPluginResultBaseObject();
                 res.obj = list;
                 return res;
-            }            
+            }
 
             // default
             return null;

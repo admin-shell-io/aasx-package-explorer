@@ -98,8 +98,8 @@ namespace AasxPluginExportTable
             using (StreamWriter file = File.CreateText(fn))
             {
                 JsonSerializer serializer = new JsonSerializer();
-				serializer.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-				serializer.Formatting = Formatting.Indented;
+                serializer.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                serializer.Formatting = Formatting.Indented;
                 serializer.Serialize(file, this);
             }
         }

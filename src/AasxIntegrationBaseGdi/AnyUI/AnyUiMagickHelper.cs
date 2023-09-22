@@ -62,28 +62,28 @@ namespace AasxIntegrationBaseGdi
 
         public static AnyUiBitmapInfo CreateAnyUiBitmapFromResource(string path,
             Assembly assembly = null)
-		{
-			try
-			{
+        {
+            try
+            {
                 if (assembly == null)
-				    assembly = Assembly.GetExecutingAssembly();
-				using (Stream stream = assembly.GetManifestResourceStream(path))
+                    assembly = Assembly.GetExecutingAssembly();
+                using (Stream stream = assembly.GetManifestResourceStream(path))
                 {
                     if (stream == null)
                         return null;
-					var bi = new MagickImage(stream);
-					return CreateAnyUiBitmapInfo(bi);
-				}
-			}
-			catch (Exception ex)
-			{
+                    var bi = new MagickImage(stream);
+                    return CreateAnyUiBitmapInfo(bi);
+                }
+            }
+            catch (Exception ex)
+            {
                 LogInternally.That.SilentlyIgnoredError(ex);
-			}
-            
-            return null;
-		}
+            }
 
-		public static AnyUiBitmapInfo LoadBitmapInfoFromPackage(AdminShellPackageEnv package, string path)
+            return null;
+        }
+
+        public static AnyUiBitmapInfo LoadBitmapInfoFromPackage(AdminShellPackageEnv package, string path)
         {
             if (package == null || path == null)
                 return null;

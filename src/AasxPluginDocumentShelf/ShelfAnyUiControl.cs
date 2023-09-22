@@ -227,18 +227,18 @@ namespace AasxPluginDocumentShelf
             // right now: hardcoded check for model version
             _renderedVersion = DocumentEntity.SubmodelVersion.Default;
             var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
-			var defs12 = AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static;
-			if (_submodel.SemanticId.MatchesExactlyOneKey(defs12?.SM_HandoverDocumentation?.GetSemanticKey()))
-				_renderedVersion = DocumentEntity.SubmodelVersion.V12;
-			if (_submodel.SemanticId.MatchesExactlyOneKey(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
+            var defs12 = AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static;
+            if (_submodel.SemanticId.MatchesExactlyOneKey(defs12?.SM_HandoverDocumentation?.GetSemanticKey()))
+                _renderedVersion = DocumentEntity.SubmodelVersion.V12;
+            if (_submodel.SemanticId.MatchesExactlyOneKey(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
                 _renderedVersion = DocumentEntity.SubmodelVersion.V11;
             if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V10)
                 _renderedVersion = DocumentEntity.SubmodelVersion.V10;
             if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V11)
                 _renderedVersion = DocumentEntity.SubmodelVersion.V11;
-			if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V12)
-				_renderedVersion = DocumentEntity.SubmodelVersion.V12;
-			_selectedVersion = _renderedVersion;
+            if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V12)
+                _renderedVersion = DocumentEntity.SubmodelVersion.V12;
+            _selectedVersion = _renderedVersion;
 
             // set usage info
             var useinf = foundRec.UsageInfo;
@@ -250,8 +250,8 @@ namespace AasxPluginDocumentShelf
             _renderedEntities = new List<DocumentEntity>();
             // ReSharper disable ExpressionIsAlwaysNull
             if (_renderedVersion == DocumentEntity.SubmodelVersion.V12)
-				_renderedEntities = ListOfDocumentEntity.ParseSubmodelForV12(
-					_package, _submodel, defs12, defaultLang, (int)_selectedDocClass, _selectedLang);
+                _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV12(
+                    _package, _submodel, defs12, defaultLang, (int)_selectedDocClass, _selectedLang);
             else if (_renderedVersion == DocumentEntity.SubmodelVersion.V11)
                 _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV11(
                     _package, _submodel, defs11, defaultLang, (int)_selectedDocClass, _selectedLang);
@@ -392,8 +392,8 @@ namespace AasxPluginDocumentShelf
                 MinWidth = 60,
                 Items = (new[] { "V1.0", "V1.1", "V1.2" }).ToList<object>(),
                 SelectedIndex =
-				    (_renderedVersion == DocumentEntity.SubmodelVersion.V12 ? 2 :
-					(_renderedVersion == DocumentEntity.SubmodelVersion.V11 ? 1 : 0)),
+                    (_renderedVersion == DocumentEntity.SubmodelVersion.V12 ? 2 :
+                    (_renderedVersion == DocumentEntity.SubmodelVersion.V11 ? 1 : 0)),
             }), (o) =>
             {
                 if (o is int oi)
@@ -852,54 +852,54 @@ namespace AasxPluginDocumentShelf
 
         private List<Aas.ISubmodelElement> _updateSourceElements = null;
 
-		private async Task GetFormDescForV12(
-	        List<Aas.ISubmodelElement> sourceElems,
-			Action<FormDescSubmodelElementCollection> lambda)
-		{
-			// ask the plugin generic forms for information via event stack
-			_eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventInvokeOtherPlugin()
-			{
-				Session = _session,
-				PluginName = "AasxPluginGenericForms",
-				Action = "find-form-desc",
-				UseAsync = false,
-				Args = new object[] {
-					AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static
-						.SM_HandoverDocumentation.GetSemanticRef() }
-			});
+        private async Task GetFormDescForV12(
+            List<Aas.ISubmodelElement> sourceElems,
+            Action<FormDescSubmodelElementCollection> lambda)
+        {
+            // ask the plugin generic forms for information via event stack
+            _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventInvokeOtherPlugin()
+            {
+                Session = _session,
+                PluginName = "AasxPluginGenericForms",
+                Action = "find-form-desc",
+                UseAsync = false,
+                Args = new object[] {
+                    AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static
+                        .SM_HandoverDocumentation.GetSemanticRef() }
+            });
 
-			// .. and receive incoming event ..
-			_menuSubscribeForNextEventReturn = (revt) =>
-			{
-				if (revt is AasxPluginEventReturnInvokeOther rinv
-					&& rinv.ResultData is AasxPluginResultBaseObject rbo
-					&& rbo.obj is List<FormDescBase> fdb
-					&& fdb.Count == 1
-					&& fdb[0] is FormDescSubmodel descSm)
-				{
-					_updateSourceElements = sourceElems;
+            // .. and receive incoming event ..
+            _menuSubscribeForNextEventReturn = (revt) =>
+            {
+                if (revt is AasxPluginEventReturnInvokeOther rinv
+                    && rinv.ResultData is AasxPluginResultBaseObject rbo
+                    && rbo.obj is List<FormDescBase> fdb
+                    && fdb.Count == 1
+                    && fdb[0] is FormDescSubmodel descSm)
+                {
+                    _updateSourceElements = sourceElems;
 
-					// need to identify the form for single document BELOW the Submodel
-					FormDescSubmodelElementCollection descSmc = null;
-					if (descSm.SubmodelElements != null)
-						foreach (var desc in descSm.SubmodelElements)
-							if (desc is FormDescSubmodelElementCollection desc2
-								&& AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static
-									.CD_Document.GetReference()?.MatchesExactlyOneKey(
-										desc2?.KeySemanticId, matchMode: MatchMode.Relaxed) == true)
-							{
-								descSmc = desc2;
-							}
+                    // need to identify the form for single document BELOW the Submodel
+                    FormDescSubmodelElementCollection descSmc = null;
+                    if (descSm.SubmodelElements != null)
+                        foreach (var desc in descSm.SubmodelElements)
+                            if (desc is FormDescSubmodelElementCollection desc2
+                                && AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static
+                                    .CD_Document.GetReference()?.MatchesExactlyOneKey(
+                                        desc2?.KeySemanticId, matchMode: MatchMode.Relaxed) == true)
+                            {
+                                descSmc = desc2;
+                            }
 
-					if (descSmc == null)
-						return;
+                    if (descSmc == null)
+                        return;
 
                     lambda?.Invoke(descSmc);
-				}
-			};
-		}
+                }
+            };
+        }
 
-		private async Task DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
+        private async Task DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
         {
             // first check
             if (e == null || menuItemHeader == null)
@@ -913,34 +913,34 @@ namespace AasxPluginDocumentShelf
                 // lambda
                 Action<FormDescSubmodelElementCollection> lambda = (desc) =>
                 {
-					var fi = new FormInstanceSubmodelElementCollection(null, desc);
-					fi.PresetInstancesBasedOnSource(_updateSourceElements);
-					fi.outerEventStack = _eventStack;
-					fi.OuterPluginName = _plugin?.GetPluginName();
-					fi.OuterPluginSession = _session;
+                    var fi = new FormInstanceSubmodelElementCollection(null, desc);
+                    fi.PresetInstancesBasedOnSource(_updateSourceElements);
+                    fi.outerEventStack = _eventStack;
+                    fi.OuterPluginName = _plugin?.GetPluginName();
+                    fi.OuterPluginSession = _session;
 
-					// initialize form
-					_formDoc = new AnyUiRenderForm(
-						fi,
-						updateMode: true);
-					PushUpdateEvent();
-				};
+                    // initialize form
+                    _formDoc = new AnyUiRenderForm(
+                        fi,
+                        updateMode: true);
+                    PushUpdateEvent();
+                };
 
                 // prepare form instance, take over existing data
                 if (_renderedVersion == DocumentEntity.SubmodelVersion.V12)
                 {
-					// ask the plugin generic forms for information via event stack
-					// and subsequently start editing form
-					await GetFormDescForV12(e.SourceElementsDocument, lambda);
+                    // ask the plugin generic forms for information via event stack
+                    // and subsequently start editing form
+                    await GetFormDescForV12(e.SourceElementsDocument, lambda);
                 }
                 else
                 {
                     var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDescFor(_renderedVersion, _options);
-                        _updateSourceElements = e.SourceElementsDocument;
+                    _updateSourceElements = e.SourceElementsDocument;
 
                     lambda(desc);
-				}
-              
+                }
+
                 // OK
                 return;
             }
@@ -1281,14 +1281,14 @@ namespace AasxPluginDocumentShelf
                         (rf) => { return rf is Aas.ConceptDescription; }).ToList();
                 }
 
-				// v12
-				if (_selectedVersion == DocumentEntity.SubmodelVersion.V12)
-				{
-					theCds = AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static.GetAllReferables().Where(
-					    (rf) => { return rf is Aas.ConceptDescription; }).ToList();
-				}
+                // v12
+                if (_selectedVersion == DocumentEntity.SubmodelVersion.V12)
+                {
+                    theCds = AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static.GetAllReferables().Where(
+                        (rf) => { return rf is Aas.ConceptDescription; }).ToList();
+                }
 
-				if (theCds.Count < 1)
+                if (theCds.Count < 1)
                 {
                     _log?.Error(
                         "Not able to find appropriate ConceptDescriptions in pre-definitions. " +
@@ -1346,30 +1346,30 @@ namespace AasxPluginDocumentShelf
 
             if (cmd == "ButtonAddDocument")
             {
-				// lambda
-				Action<FormDescSubmodelElementCollection> lambda = (desc) =>
-				{
-					var fi = new FormInstanceSubmodelElementCollection(null, desc);
-					fi.outerEventStack = _eventStack;
-					fi.OuterPluginName = _plugin?.GetPluginName();
-					fi.OuterPluginSession = _session;
+                // lambda
+                Action<FormDescSubmodelElementCollection> lambda = (desc) =>
+                {
+                    var fi = new FormInstanceSubmodelElementCollection(null, desc);
+                    fi.outerEventStack = _eventStack;
+                    fi.OuterPluginName = _plugin?.GetPluginName();
+                    fi.OuterPluginSession = _session;
 
-					// initialize form
-					_formDoc = new AnyUiRenderForm(
-						fi,
-						updateMode: false);
+                    // initialize form
+                    _formDoc = new AnyUiRenderForm(
+                        fi,
+                        updateMode: false);
 
-					// bring it to the panel by redrawing the plugin
-					PushUpdateEvent();
-				};
+                    // bring it to the panel by redrawing the plugin
+                    PushUpdateEvent();
+                };
 
                 // prepare form instance, take over existing data
                 if (_renderedVersion == DocumentEntity.SubmodelVersion.V12)
                 {
-					// ask the plugin generic forms for information via event stack
-					// and subsequently start editing form
-					await GetFormDescForV12(sourceElems: null, lambda);
-				}
+                    // ask the plugin generic forms for information via event stack
+                    // and subsequently start editing form
+                    await GetFormDescForV12(sourceElems: null, lambda);
+                }
                 else
                 {
                     var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDescFor(_renderedVersion, _options);
@@ -1377,7 +1377,7 @@ namespace AasxPluginDocumentShelf
                     lambda(desc);
                 }
 
-               
+
                 // OK
                 return new AnyUiLambdaActionNone();
             }

@@ -52,7 +52,7 @@ namespace Extensions
         }
 
         public static object AddChild(
-            this ISubmodel submodel, ISubmodelElement childSubmodelElement, 
+            this ISubmodel submodel, ISubmodelElement childSubmodelElement,
             EnumerationPlacmentBase placement = null)
         {
             if (childSubmodelElement == null)
@@ -346,20 +346,20 @@ namespace Extensions
                 return new Key(KeyTypes.Submodel, submodel.Id);
         }
 
-		/// <summary>
-		///  If instance, return semanticId as one key.
-		///  If template, return identification as key.
-		/// </summary>
-		public static IReference GetSemanticRef(this Submodel submodel)
-		{
-			if (submodel.Kind == ModellingKind.Instance)
-				return submodel.SemanticId;
-			else
-				return new Reference(ReferenceTypes.ModelReference, new[] {
+        /// <summary>
+        ///  If instance, return semanticId as one key.
+        ///  If template, return identification as key.
+        /// </summary>
+        public static IReference GetSemanticRef(this Submodel submodel)
+        {
+            if (submodel.Kind == ModellingKind.Instance)
+                return submodel.SemanticId;
+            else
+                return new Reference(ReferenceTypes.ModelReference, new[] {
                     new Key(KeyTypes.Submodel, submodel.Id) }.Cast<IKey>().ToList());
-		}
+        }
 
-		public static List<ISubmodelElement> SmeForWrite(this Submodel submodel)
+        public static List<ISubmodelElement> SmeForWrite(this Submodel submodel)
         {
             if (submodel.SubmodelElements == null)
                 submodel.SubmodelElements = new();

@@ -58,7 +58,7 @@ namespace BlazorUI.Controllers
 
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    if (stream!= null)
+                    if (stream != null)
                     {
                         stream.CopyTo(ms);
                     }

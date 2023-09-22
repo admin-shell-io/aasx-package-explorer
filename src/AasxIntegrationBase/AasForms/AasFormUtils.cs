@@ -82,18 +82,18 @@ namespace AasxIntegrationBase.AasForms
                         // acquire some information for FormInfo
                         var cd = env?.FindConceptDescriptionByReference(smw.SemanticId);
                         var cdDef = cd?.GetIEC61360()?.Definition?.GetDefaultString();
-						var descTxt = smw.Description?.GetDefaultString();
+                        var descTxt = smw.Description?.GetDefaultString();
 
                         // if present, use description as FormInfo
                         tsme.FormInfo = "";
-						if (cdDef?.HasContent() == true)
-							tsme.FormInfo += cdDef;
-						if (descTxt?.HasContent() == true)
-                            tsme.FormInfo += (tsme.FormInfo.HasContent() ? System.Environment.NewLine : "" ) 
-                                + descTxt;                        
+                        if (cdDef?.HasContent() == true)
+                            tsme.FormInfo += cdDef;
+                        if (descTxt?.HasContent() == true)
+                            tsme.FormInfo += (tsme.FormInfo.HasContent() ? System.Environment.NewLine : "")
+                                + descTxt;
 
-						// Qualifers
-						var qs = smw.Qualifiers;
+                        // Qualifers
+                        var qs = smw.Qualifiers;
 
                         var q = qs?.FindQualifierOfType("FormTitle");
                         if (q != null)

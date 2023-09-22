@@ -197,7 +197,7 @@ namespace Extensions
             return null;
         }
 
-		#region Guess identification types
+        #region Guess identification types
 
         public enum IdType { Unknown = 0, IRI, IRDI };
 
@@ -221,48 +221,48 @@ namespace Extensions
             return IdType.Unknown;
         }
 
-		#endregion
+        #endregion
 
-		// dead-csharp off
-		// -------------------------------------------------------------------------------------------------------------
-		#region Handling with enums for KeyTypes
+        // dead-csharp off
+        // -------------------------------------------------------------------------------------------------------------
+        #region Handling with enums for KeyTypes
 
-		// see: https://stackoverflow.com/questions/27372816/how-to-read-the-value-for-an-enummember-attribute
-		//public static string? GetEnumMemberValue<T>(this T value)
-		//    where T : Enum
-		//{
-		//    return typeof(T)
-		//        .GetTypeInfo()
-		//        .DeclaredMembers
-		//        .SingleOrDefault(x => x.Name == value.ToString())
-		//        ?.GetCustomAttribute<EnumMemberAttribute>(false)
-		//        ?.Value;
-		//}
+        // see: https://stackoverflow.com/questions/27372816/how-to-read-the-value-for-an-enummember-attribute
+        //public static string? GetEnumMemberValue<T>(this T value)
+        //    where T : Enum
+        //{
+        //    return typeof(T)
+        //        .GetTypeInfo()
+        //        .DeclaredMembers
+        //        .SingleOrDefault(x => x.Name == value.ToString())
+        //        ?.GetCustomAttribute<EnumMemberAttribute>(false)
+        //        ?.Value;
+        //}
 
-		//public static KeyTypes? MapFrom(AasReferables input)
-		//{
-		//    var st = input.GetEnumMemberValue();
-		//    var res = Stringification.KeyTypesFromString(st);
-		//    return res;
-		//}
+        //public static KeyTypes? MapFrom(AasReferables input)
+        //{
+        //    var st = input.GetEnumMemberValue();
+        //    var res = Stringification.KeyTypesFromString(st);
+        //    return res;
+        //}
 
-		//public static List<KeyTypes> MapFrom(IEnumerable<AasReferables> input)
-		//{
-		//    List<KeyTypes> res = new();
-		//    foreach (var i in input)
-		//    {
-		//        var x = MapFrom(i);
-		//        if (x.HasValue)
-		//            res.Add(x.Value);
-		//    }
-		//    return res;
-		//}
+        //public static List<KeyTypes> MapFrom(IEnumerable<AasReferables> input)
+        //{
+        //    List<KeyTypes> res = new();
+        //    foreach (var i in input)
+        //    {
+        //        var x = MapFrom(i);
+        //        if (x.HasValue)
+        //            res.Add(x.Value);
+        //    }
+        //    return res;
+        //}
 
-		//public static List<KeyTypes> GetAllKeyTypesForAasReferables()
-		//    => ExtendKey.MapFrom(Enum.GetValues(typeof(AasReferables)).OfType<AasReferables>());
+        //public static List<KeyTypes> GetAllKeyTypesForAasReferables()
+        //    => ExtendKey.MapFrom(Enum.GetValues(typeof(AasReferables)).OfType<AasReferables>());
 
-		#endregion
-		// dead-csharp on
+        #endregion
+        // dead-csharp on
 
-	}
+    }
 }

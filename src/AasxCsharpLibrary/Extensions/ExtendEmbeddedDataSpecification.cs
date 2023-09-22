@@ -54,9 +54,9 @@ namespace Extensions
                 // TODO (MIHO, 2022-19-12): check again, see questions
                 var oldid = new[] {
                     "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
-					"http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
-					"www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"
-				};
+                    "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+                    "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"
+                };
                 var newid = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0";
 
                 // map all "usable" old ids to new one ..

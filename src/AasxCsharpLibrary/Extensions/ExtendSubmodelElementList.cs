@@ -64,7 +64,7 @@ namespace Extensions
         }
 
         public static object AddChild(
-            this SubmodelElementList submodelElementList, ISubmodelElement childSubmodelElement, 
+            this SubmodelElementList submodelElementList, ISubmodelElement childSubmodelElement,
             EnumerationPlacmentBase placement = null)
         {
             if (childSubmodelElement == null)

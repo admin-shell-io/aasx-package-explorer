@@ -22,11 +22,11 @@ using AasxIntegrationBase;
 namespace AasxUaNetServer
 {
     public class UaNetServerOptionsRecord : AasxPluginOptionsLookupRecordBase
-	{
+    {
     }
 
     public class UaNetServerOptions : AasxPluginLookupOptionsBase
-	{
+    {
         public string[] Args;
 
         public List<UaNetServerOptionsRecord> Records = new List<UaNetServerOptionsRecord>();

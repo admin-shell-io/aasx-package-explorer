@@ -206,8 +206,9 @@ namespace AasxIntegrationBase.AdminShellEvents
                 return false;
             }
 
-            public virtual AasEventMsgEnvelope GetResult() { 
-                return MsgEnv; 
+            public virtual AasEventMsgEnvelope GetResult()
+            {
+                return MsgEnv;
             }
         }
 
@@ -282,10 +283,10 @@ namespace AasxIntegrationBase.AdminShellEvents
                 // ok?
                 if (next == null || !(next is TraceLinkOneValueUpdate nvu)
                     || this.OneValueUpdate == null || nvu.OneValueUpdate == null
-                    || this.Path == null || this.Path.Count < 1 
-                    || nvu.Path == null || nvu.Path.Count < 1 
+                    || this.Path == null || this.Path.Count < 1
+                    || nvu.Path == null || nvu.Path.Count < 1
                     || !this.Path.Matches(nvu.Path, MatchMode.Relaxed))
-                return false;
+                    return false;
 
                 // take over next
                 this.OneValueUpdate.Value = nvu.OneValueUpdate.Value;

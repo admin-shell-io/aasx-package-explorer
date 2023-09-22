@@ -894,7 +894,7 @@ namespace AasxPackageExplorer
             }
         }
 
-		private void TreeViewInner_Expanded(object sender, RoutedEventArgs e)
+        private void TreeViewInner_Expanded(object sender, RoutedEventArgs e)
         {
             // access and check
             var tvi = e?.OriginalSource as TreeViewItem;
@@ -987,9 +987,9 @@ namespace AasxPackageExplorer
 
             IsSelectionChangeActiveProperty.SetValue(treeViewInner, true, null);
 
-			lambda.Invoke();
+            lambda.Invoke();
 
-			IsSelectionChangeActiveProperty.SetValue
+            IsSelectionChangeActiveProperty.SetValue
             (
               treeViewInner,
               isSelectionChangeActive,
@@ -1089,34 +1089,6 @@ namespace AasxPackageExplorer
         /// This function cares, that all PARENT ABOVE the visual elements are expanded!!
         /// </summary>
 		public bool TryExpandVisualElements(ListOfVisualElementBasic ves)
-		{
-			// access?
-			if (ves == null)
-				return false;
-
-			// suppressed
-			SuppressSelectionChangeNotification(() =>
-			{
-
-				// step 2 : expand PARENTS
-				foreach (var x in ves)
-				{
-					var sii = x?.Parent;
-					while (sii != null)
-					{
-						sii.IsExpanded = true;
-						sii = sii.Parent;
-					}
-				}
-			});
-
-			treeViewInner.UpdateLayout();
-
-			// OK
-			return true;
-		}
-
-		public bool TrySelectVisualElements(ListOfVisualElementBasic ves, bool preventFireItem = false)
         {
             // access?
             if (ves == null)
@@ -1126,8 +1098,36 @@ namespace AasxPackageExplorer
             SuppressSelectionChangeNotification(() =>
             {
 
-				// step 1 : deselect all
-				foreach (var si in _selectedItems)
+                // step 2 : expand PARENTS
+                foreach (var x in ves)
+                {
+                    var sii = x?.Parent;
+                    while (sii != null)
+                    {
+                        sii.IsExpanded = true;
+                        sii = sii.Parent;
+                    }
+                }
+            });
+
+            treeViewInner.UpdateLayout();
+
+            // OK
+            return true;
+        }
+
+        public bool TrySelectVisualElements(ListOfVisualElementBasic ves, bool preventFireItem = false)
+        {
+            // access?
+            if (ves == null)
+                return false;
+
+            // suppressed
+            SuppressSelectionChangeNotification(() =>
+            {
+
+                // step 1 : deselect all
+                foreach (var si in _selectedItems)
                     si.IsSelected = false;
                 _selectedItems.Clear();
 
@@ -1164,39 +1164,39 @@ namespace AasxPackageExplorer
 
         protected ListOfVisualElementBasic TranslateMainDataObjectsToVisualElements(IEnumerable<object> mainObjects)
         {
-			var ves = new ListOfVisualElementBasic();
-			if (mainObjects != null)
-				foreach (var mo in mainObjects)
-				{
-					var ve = SearchVisualElementOnMainDataObject(mo);
-					if (ve != null)
-						ves.Add(ve);
-				}
+            var ves = new ListOfVisualElementBasic();
+            if (mainObjects != null)
+                foreach (var mo in mainObjects)
+                {
+                    var ve = SearchVisualElementOnMainDataObject(mo);
+                    if (ve != null)
+                        ves.Add(ve);
+                }
             return ves;
-		}
+        }
 
-		/// <summary>
-		/// This function cares, that all PARENT ABOVE the visual elements are expanded!!
-		/// </summary>
-		public void TryExpandMainDataObjects(IEnumerable<object> mainObjects, bool preventFireItem = false)
-		{
-			// gather objects
-			var ves = TranslateMainDataObjectsToVisualElements(mainObjects);
-
-			// select
-			TryExpandVisualElements(ves);
-
-			// fire event
-			FireSelectedItem();
-		}
-
-		public void TrySelectMainDataObjects(IEnumerable<object> mainObjects, bool preventFireItem = false)
+        /// <summary>
+        /// This function cares, that all PARENT ABOVE the visual elements are expanded!!
+        /// </summary>
+        public void TryExpandMainDataObjects(IEnumerable<object> mainObjects, bool preventFireItem = false)
         {
             // gather objects
             var ves = TranslateMainDataObjectsToVisualElements(mainObjects);
 
-			// select
-			TrySelectVisualElements(ves, preventFireItem);
+            // select
+            TryExpandVisualElements(ves);
+
+            // fire event
+            FireSelectedItem();
+        }
+
+        public void TrySelectMainDataObjects(IEnumerable<object> mainObjects, bool preventFireItem = false)
+        {
+            // gather objects
+            var ves = TranslateMainDataObjectsToVisualElements(mainObjects);
+
+            // select
+            TrySelectVisualElements(ves, preventFireItem);
 
             // fire event
             FireSelectedItem();

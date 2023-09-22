@@ -714,18 +714,18 @@ namespace AasxPackageLogic
                     // let the user control the number of references
                     this.AddActionPanel(
                         stack, "Spec. records:", repo: repo,
-						superMenu: superMenu,
-				        ticketMenu: new AasxMenu()
-					        .AddAction("add-record", "Add record",
-						        "Adds a record for data specification reference and content.")
-							.AddAction("add-iec61360", "Add IEC61360",
-								"Adds a record initialized for IEC 61360 content.")
-							.AddAction("auto-detect", "Auto detect content",
-								"Auto dectects known data specification contents and sets valid references.")
-							.AddAction("delete-last", "Delete last record",
-								"Deletes last record (data specification reference and content)."),
-						ticketAction: (buttonNdx, ticket) =>
-						{
+                        superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-record", "Add record",
+                                "Adds a record for data specification reference and content.")
+                            .AddAction("add-iec61360", "Add IEC61360",
+                                "Adds a record initialized for IEC 61360 content.")
+                            .AddAction("auto-detect", "Auto detect content",
+                                "Auto dectects known data specification contents and sets valid references.")
+                            .AddAction("delete-last", "Delete last record",
+                                "Deletes last record (data specification reference and content)."),
+                        ticketAction: (buttonNdx, ticket) =>
+                        {
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
                                     new Aas.EmbeddedDataSpecification(
