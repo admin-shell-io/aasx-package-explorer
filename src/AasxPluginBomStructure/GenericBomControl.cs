@@ -275,7 +275,9 @@ namespace AasxPluginBomStructure
                 return null;
 
             // new master panel
+            // dead-csharp off
             // var master = new DockPanel();
+            // dead-csharp on
 
             // clear some other members (GenericBomControl is not allways created new)
             _creatorOptions = new GenericBomCreatorOptions();
@@ -324,7 +326,9 @@ namespace AasxPluginBomStructure
             theReferable = _submodel;
 
             // return viewer for advanced manipulation
+            // dead-csharp off
             // return viewer;
+            // dead-csharp on
 
             // return master
             return master;

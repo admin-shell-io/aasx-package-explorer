@@ -572,7 +572,7 @@ namespace AasOpcUaServer
 
                 // register node record
                 this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, asset.GlobalAssetId));
-
+                // dead-csharp off
                 // Referable
                 // this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, asset);                
                 // Identifiable (V3.0: not anymore)
@@ -580,13 +580,14 @@ namespace AasOpcUaServer
                 //    o, CreateMode.Instance, asset.identification);
                 // this.entityBuilder.AasTypes.Administration.CreateAddElements(
                 //    o, CreateMode.Instance, asset.administration);
-                
+
                 // HasKind
                 this.entityBuilder.AasTypes.AssetKind.CreateAddElements(o, CreateMode.Instance, asset.AssetKind);
-                
+
                 // own attributes
                 //this.entityBuilder.AasTypes.Reference.CreateAddElements(
                 //    o, CreateMode.Instance, asset.assetIdentificationModelRef, "AssetIdentificationModel");
+                // dead-csharp on
             }
 
             return o;
@@ -669,6 +670,7 @@ namespace AasOpcUaServer
 
             // associated asset
             // TODO (??, 0000-00-00): AssetInformation
+            // dead-csharp off
             //if (aas.assetRef != null)
             //{
             //    var asset = env.FindAsset(aas.assetRef);
@@ -676,7 +678,7 @@ namespace AasOpcUaServer
             //        this.entityBuilder.AasTypes.Asset.CreateAddElements(
             //            o, CreateMode.Instance, asset);
             //}
-
+            // dead-csharp on
             // associated submodels
             if (aas.Submodels != null)
                 foreach (var smr in aas.Submodels)
@@ -1098,7 +1100,7 @@ namespace AasOpcUaServer
             // access
             if (coll == null)
                 return null;
-
+            // dead-csharp off
             // containing element
             var to = GetTypeObject().NodeId;
             //if (coll.ordered && this.typeObjectOrdered != null)
@@ -1112,7 +1114,7 @@ namespace AasOpcUaServer
             // own attributes
             //this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Instance, "AllowDuplicates",
             //    DataTypeIds.Boolean, coll.AllowDuplicates, defaultSettings: true);
-
+            // dead-csharp on
             // values
             if (coll.Value != null)
                 foreach (var smw in coll.Value)

@@ -278,10 +278,12 @@ namespace AasxPluginSmdExporter
                 idShort: simulationModel.Name,
                 semanticId: simulationModel.SemanticId);
 
+            // dead-csharp off
             // make new parent
             //var newpar = new AdminShellV20.Referable();
             //newpar.idShort = nameSubmodel;
             //entity.parent = newpar;
+            // dead-csharp off
 
             // to be processed further
             return entity;

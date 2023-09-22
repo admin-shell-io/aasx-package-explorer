@@ -2203,7 +2203,9 @@ namespace AasxPackageExplorer
                         source: refEv.GetReference(),
                         sourceSemanticId: refEv.SemanticId,
                         observableReference: refEv.Observed,
+                        // dead-csharp off
                         //observableSemanticId: (observable as IGetSemanticId)?.GetSemanticId());
+                        // dead-csharp on
                         // TODO (jtikekar, 0000-00-00): IDiaryData support
                         observableSemanticId: (observable as IHasSemantics)?.SemanticId); 
 

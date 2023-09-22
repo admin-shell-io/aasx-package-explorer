@@ -33,8 +33,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private AasxUaNetServer.UaNetServerOptions _options = new AasxUaNetServer.UaNetServerOptions();
         private bool _stop = false;
         private UaServerWrapper _server = null;
-
+        // dead-csharp off
         /* TODO (MIHO, 2021-11-17): damned, weird dependency reasons between
+         * 
          * .net6.0 and .net472 seem NOT TO ALLOW referring to AasxIntegrationBase.
          * Fix */
         //private static T LoadDefaultOptionsFromAssemblyDirXXXX<T>(
@@ -62,7 +63,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         //    // no
         //    return null;
         //}
-
+        // dead-csharp on
 
         public new void InitPlugin(string[] args)
         {

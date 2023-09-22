@@ -538,7 +538,7 @@ namespace Extensions
 
             return null;
         }
-
+        // dead-csharp off
         //public static IEnumerable<ISubmodel> FindAllSubmodelsGroupedByAAS(this AasCore.Aas3_0.Environment environment, Func<IAssetAdministrationShell, ISubmodel, bool> p = null)
         //{
         //    if (environment.AssetAdministrationShells == null || environment.Submodels == null)
@@ -555,7 +555,7 @@ namespace Extensions
         //        }
         //    }
         //}
-
+        // dead-csharp on
         public static IEnumerable<ISubmodel> FindAllSubmodelBySemanticId(this AasCore.Aas3_0.Environment environment, string semanticId)
         {
             if (semanticId == null)

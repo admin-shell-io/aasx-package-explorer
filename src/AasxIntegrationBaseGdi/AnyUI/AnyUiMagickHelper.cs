@@ -133,7 +133,9 @@ namespace AasxIntegrationBaseGdi
                     var wc = new WebClient();                    
                     thumbStream = wc.OpenRead(path);
 #else
+                    // dead-csharp off
                     /*
+                     * 
                     // upgrade to HttpClient and follow re-directs
                     var hc = new HttpClient();
                     var response = hc.GetAsync(path).GetAwaiter().GetResult();
@@ -149,6 +151,7 @@ namespace AasxIntegrationBaseGdi
                     response.EnsureSuccessStatusCode();
                     thumbStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
                     */
+                    // dead-csharp on
 #endif
                 }
 

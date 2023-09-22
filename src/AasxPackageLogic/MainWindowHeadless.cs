@@ -1359,7 +1359,9 @@ namespace AasxPackageLogic
                         && aprcmi.RenderWpfContent != null)
                     {
                         Log.Singleton.Info("Try displaying external entity control from plugin command..");
+                        // dead-csharp off
                         // MainWindow?.DisplayExternalEntity(aprcmi.RenderWpfContent);
+                        // dead-csharp on
                     }
                 }
                 catch (Exception ex)

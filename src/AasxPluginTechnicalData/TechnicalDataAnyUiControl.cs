@@ -428,12 +428,12 @@ namespace AasxPluginTechnicalData
             //
             // also Section: Product Classifications
             //
-
+            // dead-csharp off
             //var smcClassifications =
             //    sm.SubmodelElements.FindFirstSemanticIdAs<Aas.SubmodelElementCollection>(
             //        theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed);
             //if (smcClassifications != null)
-            
+            // dead-csharp on
             foreach (var childProdClass in sm.SubmodelElements.GetChildListsFromAllSemanticId(
 				theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed))            
             {

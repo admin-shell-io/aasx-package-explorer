@@ -319,8 +319,10 @@ namespace AasxIntegrationBase.AdminShellEvents
                 Aas.IKey currKey = rf.GetReference()?.Keys.Last();
 
                 // whole path
-                var currentPath = evplsc.Changes[0].Path;  // evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.IKey>() { currKey });
-
+                var currentPath = evplsc.Changes[0].Path;
+                // dead-csharp off
+                // evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.IKey>() { currKey });
+                // dead-csharp on
                 // create a mapping
                 return new TraceLinkOneStructChange()
                 {

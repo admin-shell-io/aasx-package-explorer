@@ -405,59 +405,59 @@ namespace AasxPackageExplorer
             // select
             return TrySelectVisualElement(ve, wishExpanded);
         }
-
+        // dead-csharp off
         // duplicate, see below
-  //      public bool TrySelectMainDataObjects(IEnumerable<object> dataObjects)
-  //      {
-  //          // get ve's
-  //          var ves = new ListOfVisualElementBasic();
-  //          foreach (var dob in dataObjects)
-  //          {
-		//		var ve = SearchVisualElementOnMainDataObject(dob);
-  //              if (ve != null)
-  //                  ves.Add(ve);
-		//	}
-  //          if (ves.Count < 1)
-  //              return false;
+        //      public bool TrySelectMainDataObjects(IEnumerable<object> dataObjects)
+        //      {
+        //          // get ve's
+        //          var ves = new ListOfVisualElementBasic();
+        //          foreach (var dob in dataObjects)
+        //          {
+        //		var ve = SearchVisualElementOnMainDataObject(dob);
+        //              if (ve != null)
+        //                  ves.Add(ve);
+        //	}
+        //          if (ves.Count < 1)
+        //              return false;
 
-  //          // do a bulk change
-		//	// step 1 : de-select all active
-		//	// foreach (var x in _selectedItems)
-  //             // x.IsSelected = false;
+        //          // do a bulk change
+        //	// step 1 : de-select all active
+        //	// foreach (var x in _selectedItems)
+        //             // x.IsSelected = false;
 
-  //          // step 2 : expand PARENTS
-  // //         foreach (var x in ves)
-  // //         {
-		//	//	var sii = x?.Parent;
-		//	//	while (sii != null)
-		//	//	{
-		//	//		sii.IsExpanded = true;
-		//	//		sii = sii.Parent;
-		//	//	}
-		//	//}
+        //          // step 2 : expand PARENTS
+        // //         foreach (var x in ves)
+        // //         {
+        //	//	var sii = x?.Parent;
+        //	//	while (sii != null)
+        //	//	{
+        //	//		sii.IsExpanded = true;
+        //	//		sii = sii.Parent;
+        //	//	}
+        //	//}
 
-  //          // step 3 : set selections
-  //          foreach (var x in ves)
-  //          {
-  //              x.IsSelected = true;
-  //              _lastItemSelected = null;
-		//	}
+        //          // step 3 : set selections
+        //          foreach (var x in ves)
+        //          {
+        //              x.IsSelected = true;
+        //              _lastItemSelected = null;
+        //	}
 
-  //          _selectedItems.Clear();
-  //          _selectedItems.AddRange(ves);
+        //          _selectedItems.Clear();
+        //          _selectedItems.AddRange(ves);
 
-  //          // for the first, fire event
-  //          // FireSelectedItem();
-  //          UpdateLayout();
+        //          // for the first, fire event
+        //          // FireSelectedItem();
+        //          UpdateLayout();
 
 
-  //          //this.treeViewInner.Items.Refresh();
-  //          //this.treeViewInner.UpdateLayout();
+        //          //this.treeViewInner.Items.Refresh();
+        //          //this.treeViewInner.UpdateLayout();
 
-  //          // okay
-  //          return true;
-		//}
-
+        //          // okay
+        //          return true;
+        //}
+        // dead-csharp on
         public void SelectSingleVisualElement(VisualElementGeneric ve, bool preventFireItem = false)
         {
             if (ve == null)

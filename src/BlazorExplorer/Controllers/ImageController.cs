@@ -51,8 +51,10 @@ namespace BlazorUI.Controllers
                     .GetExecutingAssembly()
                     .GetManifestResourceStream("BlazorUI.Resources.sample.png"))
             {
+                // dead-csharp off
                 // if (stream == null)
                 //    return NotFound();
+                // dead-csharp on
 
                 using (MemoryStream ms = new MemoryStream())
                 {

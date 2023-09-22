@@ -29,6 +29,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
 
         public PackageContainerAasxFileRepository(string inputText, PackCntRuntimeOptions centralRuntimeOptions)
         {
+            // dead-csharp off
             //if (inputText.Contains('?'))
             //{
             //    var splitTokens = inputText.Split(new[] { '?' }, 2);
@@ -38,6 +39,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             //    }
             //    inputText = splitTokens[0];
             //}
+            // dead-csharp on
             this.Header = "AASX File Server Repository";
             IsAspNetConnection = true;
             // always have a location

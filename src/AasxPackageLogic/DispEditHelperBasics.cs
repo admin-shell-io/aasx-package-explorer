@@ -2840,7 +2840,9 @@ namespace AasxPackageLogic
                     path: (rf as Aas.IReferable)?.GetReference()?.Keys,
                     createAtIndex: desc.CreateAtIndex,
                     // Assumption: models will be serialized correctly
+                    // dead-csharp off
                     // data: JsonConvert.SerializeObject(rf));
+                    // dead-csharp on
                     data: dataStr);
 
                 if (diaryReference?.OriginalPath != null)
