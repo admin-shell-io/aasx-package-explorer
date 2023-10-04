@@ -368,7 +368,9 @@ namespace AasxOpenIdClient
             UiLambdaSet uiLambda = null)
         {
             // oz
-            //// string x5c = "";
+            // dead-csharp off
+            // string x5c = "";
+            // dead-csharp on
             string[] x5c = null;
             string certFileName = certPfx;
             string password = certPfxPW;

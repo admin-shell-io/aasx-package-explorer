@@ -559,10 +559,10 @@ namespace AasxPluginSmdExporter
         private Aas.IReference createSemanticIdSummingPoint()
         {
             var semanticId = new Aas.Reference(
-                type: Aas.ReferenceTypes.ModelReference, 
-                keys: (new[] { 
+                type: Aas.ReferenceTypes.ModelReference,
+                keys: (new[] {
                     new Aas.Key(Aas.KeyTypes.ConceptDescription,
-                        SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Sum")) } 
+                        SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Sum")) }
                 ).Cast<Aas.IKey>().ToList());
             return semanticId;
         }
@@ -657,12 +657,12 @@ namespace AasxPluginSmdExporter
             int multCount = 0;
             List<SimulationModel> newSimMod = new List<SimulationModel>();
 
-			var semanticId = new Aas.Reference(
-				type: Aas.ReferenceTypes.ModelReference,
-				keys: (new[] {
-					new Aas.Key(Aas.KeyTypes.ConceptDescription,
-						SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Mult")) }
-				).Cast<Aas.IKey>().ToList());
+            var semanticId = new Aas.Reference(
+                type: Aas.ReferenceTypes.ModelReference,
+                keys: (new[] {
+                    new Aas.Key(Aas.KeyTypes.ConceptDescription,
+                        SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Mult")) }
+                ).Cast<Aas.IKey>().ToList());
 
             foreach (var simmod in SimulationsModels.Values)
             {
@@ -826,12 +826,12 @@ namespace AasxPluginSmdExporter
             int nodeCount = 0;
             List<SimulationModel> newSimMod = new List<SimulationModel>();
 
-			var semanticId = new Aas.Reference(
-				type: Aas.ReferenceTypes.ModelReference,
-				keys: (new[] {
-					new Aas.Key(Aas.KeyTypes.ConceptDescription,
-						"www.tedz.itsowl.com/ids/cd/1132_9030_2102_4033") }
-				).Cast<Aas.IKey>().ToList());
+            var semanticId = new Aas.Reference(
+                type: Aas.ReferenceTypes.ModelReference,
+                keys: (new[] {
+                    new Aas.Key(Aas.KeyTypes.ConceptDescription,
+                        "www.tedz.itsowl.com/ids/cd/1132_9030_2102_4033") }
+                ).Cast<Aas.IKey>().ToList());
 
             List<List<IOput>> nodeLists = new List<List<IOput>>();
 

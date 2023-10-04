@@ -62,28 +62,28 @@ namespace AasxIntegrationBaseGdi
 
         public static AnyUiBitmapInfo CreateAnyUiBitmapFromResource(string path,
             Assembly assembly = null)
-		{
-			try
-			{
+        {
+            try
+            {
                 if (assembly == null)
-				    assembly = Assembly.GetExecutingAssembly();
-				using (Stream stream = assembly.GetManifestResourceStream(path))
+                    assembly = Assembly.GetExecutingAssembly();
+                using (Stream stream = assembly.GetManifestResourceStream(path))
                 {
                     if (stream == null)
                         return null;
-					var bi = new MagickImage(stream);
-					return CreateAnyUiBitmapInfo(bi);
-				}
-			}
-			catch (Exception ex)
-			{
+                    var bi = new MagickImage(stream);
+                    return CreateAnyUiBitmapInfo(bi);
+                }
+            }
+            catch (Exception ex)
+            {
                 LogInternally.That.SilentlyIgnoredError(ex);
-			}
-            
-            return null;
-		}
+            }
 
-		public static AnyUiBitmapInfo LoadBitmapInfoFromPackage(AdminShellPackageEnv package, string path)
+            return null;
+        }
+
+        public static AnyUiBitmapInfo LoadBitmapInfoFromPackage(AdminShellPackageEnv package, string path)
         {
             if (package == null || path == null)
                 return null;
@@ -133,7 +133,9 @@ namespace AasxIntegrationBaseGdi
                     var wc = new WebClient();                    
                     thumbStream = wc.OpenRead(path);
 #else
+                    // dead-csharp off
                     /*
+                     * 
                     // upgrade to HttpClient and follow re-directs
                     var hc = new HttpClient();
                     var response = hc.GetAsync(path).GetAwaiter().GetResult();
@@ -149,6 +151,7 @@ namespace AasxIntegrationBaseGdi
                     response.EnsureSuccessStatusCode();
                     thumbStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
                     */
+                    // dead-csharp on
 #endif
                 }
 

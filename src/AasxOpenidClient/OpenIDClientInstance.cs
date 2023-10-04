@@ -355,7 +355,6 @@ namespace AasxOpenIdClient
                 return tr;
             }
 
-            //var disco = await client.GetDiscoveryDocumentAsync(authServer);
             var disco = client.GetDiscoveryDocumentAsync(authServer).Result;
             if (disco.IsError) throw new Exception(disco.Error);
 

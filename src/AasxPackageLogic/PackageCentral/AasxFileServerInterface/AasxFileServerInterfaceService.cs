@@ -22,7 +22,6 @@ namespace AasxPackageLogic.PackageCentral
     public class AasxFileServerInterfaceService
     {
         private AASXFileServerInterfaceApi _fileApiInstance;
-        //private AssetAdministrationShellRepositoryApi _aasApiInstace;
         private object _aasApiInstace;
         private AasxServerService _aasxServerService;
 
@@ -45,7 +44,6 @@ namespace AasxPackageLogic.PackageCentral
             var output = new List<PackageContainerRepoItem>();
             try
             {
-                //var response = _fileApiInstance.GetAllAASXPackageIds();
                 var response = _aasxServerService.GetAllAASXPackageIds();
 
                 foreach (var packageDescription in response)

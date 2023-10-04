@@ -874,7 +874,7 @@ namespace AasxPluginDigitalNameplate
                     if (markImg != null)
                     {
                         // render IMAGE
-
+                        // dead-csharp off
                         //var img = uitk.Set(
                         //    new AnyUiImage() { Stretch = AnyUiStretch.Uniform, BitmapInfo = markImg },
                         //    margin: new AnyUiThickness(0, 0, 4, 4),
@@ -884,6 +884,7 @@ namespace AasxPluginDigitalNameplate
 
                         //img.MaxHeight = 70;
                         //img.MaxWidth = 100;
+                        // dead-csharp on
                         var img = uitk.Set(
                             uitk.AddSmallImageTo(oneMarkGrid, 0, 0,
                                 margin: new AnyUiThickness(0, 0, 4, 4),
@@ -895,6 +896,7 @@ namespace AasxPluginDigitalNameplate
                     }
                     else
                     {
+                        // dead-csharp off
                         // render TEXT
 
                         //var tb = new AnyUiTextBlock()
@@ -912,7 +914,7 @@ namespace AasxPluginDigitalNameplate
 
                         //tb.MaxHeight = 70;
                         //tb.MaxWidth = 100;
-
+                        // dead-csharp on
                         var tb = uitk.Set(
                             uitk.AddSmallBasicLabelTo(oneMarkGrid, 0, 0,
                                 content: "" + mark.Name,
@@ -922,7 +924,7 @@ namespace AasxPluginDigitalNameplate
                                 background: AnyUiBrushes.White,
                                 textWrapping: AnyUiTextWrapping.Wrap,
                                 verticalAlignment: AnyUiVerticalAlignment.Stretch,
-                                verticalContentAlignment: AnyUiVerticalAlignment.Center));                            
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center));
                     }
 
                     // render (little) additional text

@@ -45,18 +45,18 @@ namespace AasxPluginContactInformation
         public string CountryCode = "";
         public Aas.IResource PreviewFile;
 
-		// help info
+        // help info
 
-		public Aas.ISubmodelElementCollection SourceElementContact = null;
+        public Aas.ISubmodelElementCollection SourceElementContact = null;
 
-		public AnyUiImage ImgContainerAnyUi = null;
+        public AnyUiImage ImgContainerAnyUi = null;
 
-		/// <summary>
-		/// The parsing might add a dedicated, version-specific action to add.
-		/// </summary>        
-		public delegate bool AddPreviewFileDelegate(ContactEntity e, string path, string contentType);
+        /// <summary>
+        /// The parsing might add a dedicated, version-specific action to add.
+        /// </summary>        
+        public delegate bool AddPreviewFileDelegate(ContactEntity e, string path, string contentType);
         public AddPreviewFileDelegate AddPreviewFile;
-      
+
         public ContactEntity() { }
 
         public void RaiseDoubleClick()
@@ -91,24 +91,24 @@ namespace AasxPluginContactInformation
             return null;
         }
 
-		/// <summary>
-		/// This function needs to be called as part of tick-Thread in STA / UI thread
-		/// </summary>
-		public AnyUiBitmapInfo LoadImageFromResource(string path)
-		{
-			// convert here, as the tick-Thread in STA / UI thread
-			try
-			{
-				ImgContainerAnyUi.BitmapInfo = AnyUiGdiHelper.CreateAnyUiBitmapFromResource(path,
+        /// <summary>
+        /// This function needs to be called as part of tick-Thread in STA / UI thread
+        /// </summary>
+        public AnyUiBitmapInfo LoadImageFromResource(string path)
+        {
+            // convert here, as the tick-Thread in STA / UI thread
+            try
+            {
+                ImgContainerAnyUi.BitmapInfo = AnyUiGdiHelper.CreateAnyUiBitmapFromResource(path,
                     assembly: Assembly.GetExecutingAssembly());
-			}
-			catch (Exception ex)
-			{
-				LogInternally.That.SilentlyIgnoredError(ex);
-			}
-			return null;
-		}
-	}
+            }
+            catch (Exception ex)
+            {
+                LogInternally.That.SilentlyIgnoredError(ex);
+            }
+            return null;
+        }
+    }
 
     public class ListOfContactEntity : List<ContactEntity>
     {
@@ -138,14 +138,14 @@ namespace AasxPluginContactInformation
                     // access
                     if (smcContact?.Value == null)
                         continue;
-                    
+
                     // create entity, remember source
                     var ent = new ContactEntity();
                     ent.SourceElementContact = smcContact;
 
                     // personal names?
                     var personNameTaken = false;
-                    var lastName = 
+                    var lastName =
                         "" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
                             defs.CD_NameOfContact, mm)?.Value?.GetDefaultString(defaultLang);
 
@@ -155,60 +155,60 @@ namespace AasxPluginContactInformation
                                 defs.CD_MiddleNames, mm)
                             .Select((mlp) => mlp.Value?.GetDefaultString(defaultLang)));
 
-					var firstName =
-						  "" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
-							  defs.CD_FirstName, mm)?.Value?.GetDefaultString(defaultLang);
+                    var firstName =
+                          "" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                              defs.CD_FirstName, mm)?.Value?.GetDefaultString(defaultLang);
 
-					var acadTitle =
-						  "" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
-							  defs.CD_AcademicTitle, mm)?.Value?.GetDefaultString(defaultLang);
+                    var acadTitle =
+                          "" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                              defs.CD_AcademicTitle, mm)?.Value?.GetDefaultString(defaultLang);
 
                     var personName = "";
-					if (lastName.HasContent())
+                    if (lastName.HasContent())
                     {
-						personName = lastName.ToUpper();
+                        personName = lastName.ToUpper();
                         if (firstName.HasContent() || middleNames.HasContent())
-							personName += ", " + firstName + " " + middleNames;
+                            personName += ", " + firstName + " " + middleNames;
                         if (acadTitle.HasContent())
-							personName += ", " + acadTitle;
+                            personName += ", " + acadTitle;
                     }
 
-					if (personName.HasContent())
-					{
-						personNameTaken = true;
-                        ent.Headline = personName; 
-					}
+                    if (personName.HasContent())
+                    {
+                        personNameTaken = true;
+                        ent.Headline = personName;
+                    }
 
-					// department?
-					var departmentTaken = false;
-					var department =
-						"" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
-							defs.CD_Department, mm)?.Value?.GetDefaultString(defaultLang);
+                    // department?
+                    var departmentTaken = false;
+                    var department =
+                        "" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                            defs.CD_Department, mm)?.Value?.GetDefaultString(defaultLang);
                     if (!personNameTaken && department.HasContent())
                     {
                         departmentTaken = true;
                         ent.Headline = department;
-					}
+                    }
 
-					// company?
-					var companyTaken = false;
-					var company =
-						"" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
-							defs.CD_Company, mm)?.Value?.GetDefaultString(defaultLang);
-					if (!personNameTaken && !departmentTaken && company.HasContent())
-					{
-						companyTaken = true;
-						ent.Headline = company;
-					}
+                    // company?
+                    var companyTaken = false;
+                    var company =
+                        "" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                            defs.CD_Company, mm)?.Value?.GetDefaultString(defaultLang);
+                    if (!personNameTaken && !departmentTaken && company.HasContent())
+                    {
+                        companyTaken = true;
+                        ent.Headline = company;
+                    }
 
                     // any headline?
                     if (!ent.Headline.HasContent())
                         ent.Headline = "???";
 
-					// cole?
-					var role =
-						"" + smcContact.Value.FindFirstSemanticIdAs<Aas.Property>(
-							defs.CD_RoleOfContactPerson, mm)?.Value;
+                    // cole?
+                    var role =
+                        "" + smcContact.Value.FindFirstSemanticIdAs<Aas.Property>(
+                            defs.CD_RoleOfContactPerson, mm)?.Value;
                     if (role.HasContent())
                         ent.Role = role;
                     else
@@ -217,80 +217,80 @@ namespace AasxPluginContactInformation
 
                     // country code?
                     ent.CountryCode =
-						"" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
-							defs.CD_NationalCode, mm)?.Value?.GetDefaultString(defaultLang);
+                        "" + smcContact.Value.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(
+                            defs.CD_NationalCode, mm)?.Value?.GetDefaultString(defaultLang);
 
-					// start body items
-					ent.BodyItems = new List<string>();
+                    // start body items
+                    ent.BodyItems = new List<string>();
 
                     if (!personNameTaken && personName.HasContent())
                         ent.BodyItems.Add(personName);
-					if (!departmentTaken && department.HasContent())
-						ent.BodyItems.Add(department);
-					if (!companyTaken && company.HasContent())
-						ent.BodyItems.Add(company);
+                    if (!departmentTaken && department.HasContent())
+                        ent.BodyItems.Add(department);
+                    if (!companyTaken && company.HasContent())
+                        ent.BodyItems.Add(company);
 
                     // more body items
 
-					Action<List<Aas.ISubmodelElement>, string, Aas.IKey> tryAdd = (coll, header, key) =>
-					{
-						var st = coll?.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(key, mm)?
-							        .Value?.GetDefaultString(defaultLang);
+                    Action<List<Aas.ISubmodelElement>, string, Aas.IKey> tryAdd = (coll, header, key) =>
+                    {
+                        var st = coll?.FindFirstSemanticIdAs<Aas.IMultiLanguageProperty>(key, mm)?
+                                    .Value?.GetDefaultString(defaultLang);
                         st = st ?? coll?.FindFirstSemanticIdAs<Aas.IProperty>(key, mm)?.Value;
-						if (st?.HasContent() == true)
+                        if (st?.HasContent() == true)
                             ent.BodyItems.Add(st);
-					};
+                    };
 
-					tryAdd(smcContact.Value, null, defs.CD_ZipCodeOfPOBox?.GetSingleKey());
-					tryAdd(smcContact.Value, null, defs.CD_POBox?.GetSingleKey());
-					tryAdd(smcContact.Value, null, defs.CD_Street?.GetSingleKey());
-					tryAdd(smcContact.Value, null, defs.CD_CityTown?.GetSingleKey());
-					tryAdd(smcContact.Value, null, defs.CD_StateCounty?.GetSingleKey());
-					tryAdd(smcContact.Value, null, defs.CD_NationalCode?.GetSingleKey());
-					tryAdd(smcContact.Value, null, defs.CD_FurtherDetailsOfContact?.GetSingleKey());
-					tryAdd(smcContact.Value, null, defs.CD_AddressOfAdditionalLink?.GetSingleKey());
+                    tryAdd(smcContact.Value, null, defs.CD_ZipCodeOfPOBox?.GetSingleKey());
+                    tryAdd(smcContact.Value, null, defs.CD_POBox?.GetSingleKey());
+                    tryAdd(smcContact.Value, null, defs.CD_Street?.GetSingleKey());
+                    tryAdd(smcContact.Value, null, defs.CD_CityTown?.GetSingleKey());
+                    tryAdd(smcContact.Value, null, defs.CD_StateCounty?.GetSingleKey());
+                    tryAdd(smcContact.Value, null, defs.CD_NationalCode?.GetSingleKey());
+                    tryAdd(smcContact.Value, null, defs.CD_FurtherDetailsOfContact?.GetSingleKey());
+                    tryAdd(smcContact.Value, null, defs.CD_AddressOfAdditionalLink?.GetSingleKey());
 
-					// even more in sub-entities?
+                    // even more in sub-entities?
 
-					// Phone
+                    // Phone
 
-					var smc2 = smcContact.Value?
-						.FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Phone?.GetSingleKey(), mm);
-					if (smc2 != null)
-						tryAdd(smc2.Value, null, defs.CD_TelephoneNumber?.GetSingleKey());
+                    var smc2 = smcContact.Value?
+                        .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Phone?.GetSingleKey(), mm);
+                    if (smc2 != null)
+                        tryAdd(smc2.Value, null, defs.CD_TelephoneNumber?.GetSingleKey());
 
-					// Fax
+                    // Fax
 
-					smc2 = smcContact.Value?
-						.FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(
+                    smc2 = smcContact.Value?
+                        .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(
                             defs.CD_Fax?.GetSingleKey(), mm);
-					if (smc2 != null)
-						tryAdd(smc2.Value, null, defs.CD_FaxNumber?.GetSingleKey());
+                    if (smc2 != null)
+                        tryAdd(smc2.Value, null, defs.CD_FaxNumber?.GetSingleKey());
 
-					// Email
+                    // Email
 
-					smc2 = smcContact.Value?
-						.FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(
+                    smc2 = smcContact.Value?
+                        .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(
                             defs.CD_Email?.GetSingleKey(), mm);
-					if (smc2 != null)
-						tryAdd(smc2.Value, null, defs.CD_EmailAddress?.GetSingleKey());
+                    if (smc2 != null)
+                        tryAdd(smc2.Value, null, defs.CD_EmailAddress?.GetSingleKey());
 
-					// IP communication
-					var smc3 = smcContact.Value?
-						.FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(
+                    // IP communication
+                    var smc3 = smcContact.Value?
+                        .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(
                             defs.CD_IPCommunication?.GetSingleKey(), mm);
-					if (smc3 != null)
-						tryAdd(smc3.Value, null, defs.CD_AddressOfAdditionalLink?.GetSingleKey());
+                    if (smc3 != null)
+                        tryAdd(smc3.Value, null, defs.CD_AddressOfAdditionalLink?.GetSingleKey());
 
-					// preview?
-					var fl = smcContact.Value.FindFirstSemanticIdAs<Aas.File>(
-							AasxPredefinedConcepts.SmtAdditions.Static.CD_ContactInfoPreviewFile, mm);
+                    // preview?
+                    var fl = smcContact.Value.FindFirstSemanticIdAs<Aas.File>(
+                            AasxPredefinedConcepts.SmtAdditions.Static.CD_ContactInfoPreviewFile, mm);
                     if (fl != null)
                         ent.PreviewFile = new Aas.Resource(fl.Value, fl.ContentType);
 
                     // add
                     its.Add(ent);
-				}
+                }
 
             // ok
             return its;

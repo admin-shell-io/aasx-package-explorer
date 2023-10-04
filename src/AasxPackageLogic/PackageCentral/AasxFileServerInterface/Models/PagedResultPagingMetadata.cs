@@ -1,4 +1,12 @@
 /*
+Copyright (c) 2018-2023 
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+/*
  * DotAAS Part 2 | HTTP/REST | Asset Administration Shell Repository Service Specification
  *
  * The Full Profile of the Asset Administration Shell Repository Service Specification as part of Specification of the Asset Administration Shell: Part 2. Publisher: Industrial Digital Twin Association (IDTA) April 2023

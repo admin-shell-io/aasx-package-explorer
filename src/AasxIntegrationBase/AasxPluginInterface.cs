@@ -85,7 +85,7 @@ namespace AasxIntegrationBase
         public List<Aas.ConceptDescription> cds;
     }
 
-	public class AasxPluginResultSingleMenuItem
+    public class AasxPluginResultSingleMenuItem
     {
         /// <summary>
         /// Identifies, where in the hierarchy of the application's main menu
@@ -122,12 +122,12 @@ namespace AasxIntegrationBase
         public Aas.IReference targetReference = null;
     }
 
-	public class AasxPluginResultEventVisualSelectEntities : AasxPluginResultEventBase
-	{
-		public List<Aas.IReferable> Referables = null;
-	}
+    public class AasxPluginResultEventVisualSelectEntities : AasxPluginResultEventBase
+    {
+        public List<Aas.IReferable> Referables = null;
+    }
 
-	public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase
+    public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase
     {
         public string fn = null;
         public string mimeType = null;
@@ -166,15 +166,15 @@ namespace AasxIntegrationBase
         public AnyUiMessageBoxImage Image = AnyUiMessageBoxImage.None;
     }
 
-	public class AasxPluginResultEventInvokeOtherPlugin : AasxPluginResultEventBase
-	{
-		public string PluginName = "";
-		public string Action = "";
+    public class AasxPluginResultEventInvokeOtherPlugin : AasxPluginResultEventBase
+    {
+        public string PluginName = "";
+        public string Action = "";
         public bool UseAsync = false;
         public object[] Args = null;
-	}
+    }
 
-	public class AasxPluginEventReturnBase
+    public class AasxPluginEventReturnBase
     {
         public AasxPluginResultEventBase sourceEvent = null;
     }
@@ -194,12 +194,12 @@ namespace AasxIntegrationBase
         public AnyUiMessageBoxResult Result = AnyUiMessageBoxResult.None;
     }
 
-	public class AasxPluginEventReturnInvokeOther : AasxPluginEventReturnBase
-	{
+    public class AasxPluginEventReturnInvokeOther : AasxPluginEventReturnBase
+    {
         public object ResultData = null;
-	}
+    }
 
-	public class AasxPluginEventReturnUpdateAnyUi : AasxPluginResultEventBase
+    public class AasxPluginEventReturnUpdateAnyUi : AasxPluginResultEventBase
     {
         public string PluginName = "";
         public AnyUiRenderMode Mode = AnyUiRenderMode.All;

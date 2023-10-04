@@ -158,9 +158,9 @@ namespace AasxUaNetServer
             }
 
             // Important: set appropriate trace mask
-            Utils.SetTraceMask(Utils.TraceMasks.Error 
-                | Utils.TraceMasks.Information 
-                | Utils.TraceMasks.StartStop 
+            Utils.SetTraceMask(Utils.TraceMasks.Error
+                | Utils.TraceMasks.Information
+                | Utils.TraceMasks.StartStop
                 | Utils.TraceMasks.StackTrace);
 
             // attach tracing?

@@ -228,7 +228,7 @@ namespace AnyUi
             double? fontSize = null,
             AnyUiTextWrapping? textWrap = null,
             bool? multiLine = null,
-			bool verticalCenter = false)
+            bool verticalCenter = false)
         {
             var tb = new AnyUiTextBox();
             tb.Margin = margin;
@@ -244,22 +244,22 @@ namespace AnyUi
                 tb.VerticalAlignment = verticalAlignment;
             if (verticalContentAlignment != null)
                 tb.VerticalContentAlignment = verticalContentAlignment.Value;
-			if (verticalCenter)
-			{
-				tb.VerticalAlignment = AnyUiVerticalAlignment.Center;
-				tb.VerticalContentAlignment = AnyUiVerticalAlignment.Center;
-			}
-			if (textWrap.HasValue)
+            if (verticalCenter)
+            {
+                tb.VerticalAlignment = AnyUiVerticalAlignment.Center;
+                tb.VerticalContentAlignment = AnyUiVerticalAlignment.Center;
+            }
+            if (textWrap.HasValue)
                 tb.TextWrapping = textWrap.Value;
-            
+
             // (MIHO, 2020-11-13): be default constrain to one line
             tb.MultiLine = false;
             tb.MaxLines = 3;
 
-			if (multiLine.HasValue)
-				tb.MultiLine = multiLine.Value;
+            if (multiLine.HasValue)
+                tb.MultiLine = multiLine.Value;
 
-			tb.VerticalScrollBarVisibility = AnyUiScrollBarVisibility.Auto;
+            tb.VerticalScrollBarVisibility = AnyUiScrollBarVisibility.Auto;
 
             AnyUiGrid.SetRow(tb, row);
             AnyUiGrid.SetColumn(tb, col);
@@ -591,23 +591,23 @@ namespace AnyUi
             view.Add(space);
         }
 
-		public AnyUiBorder AddVerticalSpaceTo(
-			AnyUiGrid g, int row, double height = 5)
-		{
-			var space = new AnyUiBorder()
-			{
-				BorderBrush = AnyUiBrushes.Transparent,
-				BorderThickness = new AnyUiThickness(height),
-				Height = height
-			};
+        public AnyUiBorder AddVerticalSpaceTo(
+            AnyUiGrid g, int row, double height = 5)
+        {
+            var space = new AnyUiBorder()
+            {
+                BorderBrush = AnyUiBrushes.Transparent,
+                BorderThickness = new AnyUiThickness(height),
+                Height = height
+            };
 
-			AnyUiGrid.SetRow(space, row);
-			AnyUiGrid.SetColumn(space, 0);
-			g.Children.Add(space);
-			return (space);
-		}
+            AnyUiGrid.SetRow(space, row);
+            AnyUiGrid.SetColumn(space, 0);
+            g.Children.Add(space);
+            return (space);
+        }
 
-		public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrushTuple colors,
+        public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrushTuple colors,
             bool requestAuxButton = false,
             string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null,
             string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
@@ -726,8 +726,8 @@ namespace AnyUi
             if (verticalCenter)
             {
                 lab.VerticalAlignment = AnyUiVerticalAlignment.Center;
-				lab.VerticalContentAlignment = AnyUiVerticalAlignment.Center;
-			}
+                lab.VerticalContentAlignment = AnyUiVerticalAlignment.Center;
+            }
             if (foreground != null)
                 lab.Foreground = foreground;
             if (background != null)

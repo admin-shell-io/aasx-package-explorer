@@ -1158,13 +1158,14 @@ namespace AasxPackageExplorer
             // TEST
             //
 
-            if (false) {
+            if (false)
+            {
                 // in both cases, prepare list of events as string
                 var lev = new List<AasEventMsgEnvelope>();
 
                 lev.Add(new AasEventMsgEnvelope()
                 {
-                    Source = new Aas.Reference(ReferenceTypes.ExternalReference, 
+                    Source = new Aas.Reference(ReferenceTypes.ExternalReference,
                         new List<IKey>(new[] { new Aas.Key(KeyTypes.Blob, "bb") }))
                 });
 
@@ -1718,38 +1719,38 @@ namespace AasxPackageExplorer
                     await UiHandleNavigateTo(evtNavTo.targetReference);
                 }
 
-				// Visually select referables in the tree
-				//=======================================
+                // Visually select referables in the tree
+                //=======================================
 
-				if (evt is AasxIntegrationBase.AasxPluginResultEventVisualSelectEntities evtVisSel
-					&& evtVisSel.Referables != null && evtVisSel.Referables.Count > 0)
-				{
+                if (evt is AasxIntegrationBase.AasxPluginResultEventVisualSelectEntities evtVisSel
+                    && evtVisSel.Referables != null && evtVisSel.Referables.Count > 0)
+                {
                     // quite EXPERIMENTAL!
                     // info
                     Log.Singleton.Info($"Plugin request to select {evtVisSel.Referables.Count} Referables.");
 
-					// set all parents required?
-					foreach (var sm in PackageCentral.Main?.AasEnv?.OverSubmodelsOrEmpty())
-						sm?.SetAllParents();
+                    // set all parents required?
+                    foreach (var sm in PackageCentral.Main?.AasEnv?.OverSubmodelsOrEmpty())
+                        sm?.SetAllParents();
 
                     // ugly 3 step approach
 
                     // step 1 : expand all nodes in order to search them ..
                     DisplayElements.ExpandAllItems();
-					await Task.Delay(1000);
+                    await Task.Delay(1000);
 
-					// step 2 : wait for expand events to be internally digested by treeview
-					DisplayElements.TryExpandMainDataObjects(evtVisSel.Referables);
-					await Task.Delay(1000);                    
+                    // step 2 : wait for expand events to be internally digested by treeview
+                    DisplayElements.TryExpandMainDataObjects(evtVisSel.Referables);
+                    await Task.Delay(1000);
 
                     // step 3 : now select
                     DisplayElements.TrySelectMainDataObjects(evtVisSel.Referables);
-				}
+                }
 
-				// Display Content Url
-				//====================
+                // Display Content Url
+                //====================
 
-				if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+                if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
                     && evtDispCont.fn != null)
                     try
                     {
@@ -1882,13 +1883,13 @@ namespace AasxPackageExplorer
                         AnyUiDisplayContextWpf.SessionSingletonWpf);
                 }
 
-				// Invoke other plugin
-				//====================
+                // Invoke other plugin
+                //====================
 
-				if (evt is AasxIntegrationBase.AasxPluginResultEventInvokeOtherPlugin evInvOth)
-				{
+                if (evt is AasxIntegrationBase.AasxPluginResultEventInvokeOtherPlugin evInvOth)
+                {
                     // result
-                    object res = null ;
+                    object res = null;
 
                     // find plugin
                     var pi = Plugins.FindPluginInstance(evInvOth.PluginName);
@@ -1900,22 +1901,22 @@ namespace AasxPackageExplorer
                             res = await pi.InvokeActionAsync(evInvOth.Action, evInvOth.Args);
                         else
                             res = pi.InvokeAction(evInvOth.Action, evInvOth.Args);
-					}
+                    }
 
-					// fire back
-					pluginInstance?.InvokeAction("event-return",
-						new AasxIntegrationBase.AasxPluginEventReturnInvokeOther()
-						{
-							sourceEvent = evt,
-							ResultData = res
-						},
-						AnyUiDisplayContextWpf.SessionSingletonWpf);
-				}
+                    // fire back
+                    pluginInstance?.InvokeAction("event-return",
+                        new AasxIntegrationBase.AasxPluginEventReturnInvokeOther()
+                        {
+                            sourceEvent = evt,
+                            ResultData = res
+                        },
+                        AnyUiDisplayContextWpf.SessionSingletonWpf);
+                }
 
-				// Re-render Any UI Panels
-				//========================
+                // Re-render Any UI Panels
+                //========================
 
-				if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
+                if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
                 {
                     UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }
@@ -2203,9 +2204,11 @@ namespace AasxPackageExplorer
                         source: refEv.GetReference(),
                         sourceSemanticId: refEv.SemanticId,
                         observableReference: refEv.Observed,
+                        // dead-csharp off
                         //observableSemanticId: (observable as IGetSemanticId)?.GetSemanticId());
-                        // TODO:jtikekar IDiaryData support
-                        observableSemanticId: (observable as IHasSemantics)?.SemanticId); 
+                        // dead-csharp on
+                        // TODO (jtikekar, 0000-00-00): IDiaryData support
+                        observableSemanticId: (observable as IHasSemantics)?.SemanticId);
 
                     if (plStruct.Changes.Count >= 1)
                         ev.PayloadItems.Add(plStruct);
@@ -3188,9 +3191,9 @@ namespace AasxPackageExplorer
                             frame.Continue = false; // stops the frame
                         }
                     }
-                 };
+                };
             }
-                 
+
             // start (focus)
             ucfoc.ControlStart();
 

@@ -68,12 +68,12 @@ namespace AasxPackageExplorer
                 domains.Sort();
                 foreach (var d in domains)
                     this.ListBoxDomains.Items.Add(d);
-                
+
                 if (_lastDomainSelected != null)
                 {
                     var i = this.ListBoxDomains.Items.IndexOf(_lastDomainSelected);
                     this.ListBoxDomains.SelectedIndex = i;
-                } 
+                }
                 else
                 {
                     if (this.ListBoxDomains.Items.Count > 0)
@@ -112,12 +112,12 @@ namespace AasxPackageExplorer
             var ld = this.DataSourcePools?.GetEntitiesForDomain(dom)?.ToList();
             if (ld != null)
             {
-                ld.Sort( (x1, x2) => x1.DisplayName.CompareTo(x2.DisplayName) );
+                ld.Sort((x1, x2) => x1.DisplayName.CompareTo(x2.DisplayName));
                 DataGridEntities.Items.Clear();
                 foreach (var ent in ld)
                     DataGridEntities.Items.Add(ent);
                 _lastDomainSelected = ListBoxDomains.SelectedItem;
-                }
+            }
         }
 
         private bool PrepareResult()

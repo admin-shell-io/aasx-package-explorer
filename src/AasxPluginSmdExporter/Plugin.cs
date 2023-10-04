@@ -26,70 +26,70 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     {
         public new void InitPlugin(string[] args)
         {
-			PluginName = "AasxPluginSmdExporter";
-			_log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            PluginName = "AasxPluginSmdExporter";
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
         }
 
         public new AasxPluginActionDescriptionBase[] ListActions()
         {
-			var res = ListActionsBasicHelper(
-				enableCheckVisualExt: false,
-				enableLicenses: false);
+            var res = ListActionsBasicHelper(
+                enableCheckVisualExt: false,
+                enableLicenses: false);
             res.Add(new AasxPluginActionDescriptionBase("generate-SMD", "Generates a SMD"));
             return res.ToArray();
         }
 
-		public new AasxPluginResultBase ActivateAction(string action, params object[] args)
-		{
-			if (action == "generate-SMD")
-			{
-				Queue<string> logs;
-				string modeltype = "";
-				string machineName = "";
-				// To work five arguments are needed
-				if (args[0] is AasxIntegrationBase.IFlyoutProvider fop
-					&& args[1] is Queue<string>
-					&& args[2] is string
-					&& args[3] is string
-					&& args[4] is AasxMenuActionTicket ticket)
-				{
-					// Flyout for the name
-					machineName = ticket["Machine"] as string;
-					if (machineName == null)
-					{
-						var tb = new TextBoxFlyout("Enter name:", AnyUiMessageBoxImage.Question);
-						fop.StartFlyoverModal(tb);
-						if (!tb.Result) return null;
-						machineName = tb.Text;
-					}
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
+        {
+            if (action == "generate-SMD")
+            {
+                Queue<string> logs;
+                string modeltype = "";
+                string machineName = "";
+                // To work five arguments are needed
+                if (args[0] is AasxIntegrationBase.IFlyoutProvider fop
+                    && args[1] is Queue<string>
+                    && args[2] is string
+                    && args[3] is string
+                    && args[4] is AasxMenuActionTicket ticket)
+                {
+                    // Flyout for the name
+                    machineName = ticket["Machine"] as string;
+                    if (machineName == null)
+                    {
+                        var tb = new TextBoxFlyout("Enter name:", AnyUiMessageBoxImage.Question);
+                        fop.StartFlyoverModal(tb);
+                        if (!tb.Result) return null;
+                        machineName = tb.Text;
+                    }
 
-					// Flyout for choosing type of simulationmodel
-					modeltype = ticket["Model"] as string;
-					if (modeltype?.HasContent() != true)
-					{
-						var pd = new PhysicalDialog();
-						fop.StartFlyoverModal(pd);
-						modeltype = pd.Result;
-						if (modeltype == null) return null;
-					}
+                    // Flyout for choosing type of simulationmodel
+                    modeltype = ticket["Model"] as string;
+                    if (modeltype?.HasContent() != true)
+                    {
+                        var pd = new PhysicalDialog();
+                        fop.StartFlyoverModal(pd);
+                        modeltype = pd.Result;
+                        if (modeltype == null) return null;
+                    }
 
-					// Gets the queue from the argument list
-					// The queue is used to be able to display log messages in the Package Explorer
-					logs = args[1] as Queue<string>;
-				}
-				else
-				{
-					return new AasxPluginResultBase();
-				}
+                    // Gets the queue from the argument list
+                    // The queue is used to be able to display log messages in the Package Explorer
+                    logs = args[1] as Queue<string>;
+                }
+                else
+                {
+                    return new AasxPluginResultBase();
+                }
 
-				TextUI ui = new TextUI(logs);
-				// The host and the machine are given as arguments(2&3) by the package explorer
-				ui.Start(args[2] as string, machineName, modeltype);
+                TextUI ui = new TextUI(logs);
+                // The host and the machine are given as arguments(2&3) by the package explorer
+                ui.Start(args[2] as string, machineName, modeltype);
 
-			}
+            }
 
-			return new AasxPluginResultBase();
-		}
+            return new AasxPluginResultBase();
+        }
 
-	}
+    }
 }

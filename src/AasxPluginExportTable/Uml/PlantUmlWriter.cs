@@ -157,7 +157,7 @@ namespace AasxPluginExportTable.Uml
                 Writeln($"}}");
                 Writeln("");
 
-            } 
+            }
             else
             {
                 // see "not_promising"

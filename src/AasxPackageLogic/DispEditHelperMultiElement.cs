@@ -544,18 +544,18 @@ namespace AasxPackageLogic
                         stack, repo, vecd.theEnv, vecd.theEnv,
                         this.theCopyPaste, entities, superMenu: superMenu);
 
-					// data specifications
-					this.AddActionPanel(
-						stack, "Spec. records:", repo: repo,
-						superMenu: superMenu,
-						ticketMenu: new AasxMenu()
-							.AddAction("auto-detect", "Auto detect content",
-								"Auto dectects known data specification contents and sets valid references."),
-						ticketAction: (buttonNdx, ticket) =>
-						{
-							if (buttonNdx == 0)
-							{
-								var fix = 0;
+                    // data specifications
+                    this.AddActionPanel(
+                        stack, "Spec. records:", repo: repo,
+                        superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("auto-detect", "Auto detect content",
+                                "Auto dectects known data specification contents and sets valid references."),
+                        ticketAction: (buttonNdx, ticket) =>
+                        {
+                            if (buttonNdx == 0)
+                            {
+                                var fix = 0;
 
                                 if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "Auto-detect data specification contents and set data specification references " +
@@ -563,7 +563,7 @@ namespace AasxPackageLogic
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                     return new AnyUiLambdaActionNone();
 
-								foreach (var ve in entities)
+                                foreach (var ve in entities)
                                     if (ve is VisualElementConceptDescription vecd2
                                         && vecd2.theCD?.EmbeddedDataSpecifications != null)
                                         foreach (var eds in vecd2.theCD.EmbeddedDataSpecifications)
@@ -572,15 +572,15 @@ namespace AasxPackageLogic
                                                 fix++;
                                                 Log.Singleton.Info(
                                                     $"Fix CD {vecd2.theCD.IdShort} with ID {vecd2.theCD.Id} ..");
-												this.AddDiaryEntry(vecd2.theCD, new DiaryEntryStructChange());
-											}
-								
+                                                this.AddDiaryEntry(vecd2.theCD, new DiaryEntryStructChange());
+                                            }
+
                                 Log.Singleton.Info($"Fixed {fix} records of embedded data specification.");
-							}							
-							
-							return new AnyUiLambdaActionRedrawEntity();
-						});
-				}
+                            }
+
+                            return new AnyUiLambdaActionRedrawEntity();
+                        });
+                }
 
                 if (first is VisualElementAdminShell veaas)
                 {

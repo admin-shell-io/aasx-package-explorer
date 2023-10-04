@@ -235,17 +235,17 @@ namespace AasxPackageExplorer
                     .AddWpf(name: "ServerPluginOPCUA", header: "Plugin: OPC UA …")
                     .AddWpf(name: "ServerPluginMQTT", header: "Plugin: MQTT …"))
                 .AddSeparator(filter: AasxMenuFilter.NotBlazor)
-				.AddMenu(header: "System …", filter: AasxMenuFilter.NotBlazor,
-						 attachPoint: "System", childs: (new AasxMenu())
-					.AddWpf(name: "AttachFileAssoc", header: "Attach .aasx file associations",
-					    args: new AasxMenuListOfArgDefs()
-							.Add("File", "Windows RegEdit file to write.")
-							.Add("Location", "Location selection", hidden: true))
-					.AddWpf(name: "RemoveFileAssoc", header: "Remove .aasx file associations",
-						args: new AasxMenuListOfArgDefs()
-							.Add("File", "Windows RegEdit file to write.")
-							.Add("Location", "Location selection", hidden: true)))
-				.AddWpfBlazor(name: "Exit", header: "_Exit", inputGesture: "Alt+F4"));
+                .AddMenu(header: "System …", filter: AasxMenuFilter.NotBlazor,
+                         attachPoint: "System", childs: (new AasxMenu())
+                    .AddWpf(name: "AttachFileAssoc", header: "Attach .aasx file associations",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "Windows RegEdit file to write.")
+                            .Add("Location", "Location selection", hidden: true))
+                    .AddWpf(name: "RemoveFileAssoc", header: "Remove .aasx file associations",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "Windows RegEdit file to write.")
+                            .Add("Location", "Location selection", hidden: true)))
+                .AddWpfBlazor(name: "Exit", header: "_Exit", inputGesture: "Alt+F4"));
 
             //
             // Workspace
@@ -296,8 +296,8 @@ namespace AasxPackageExplorer
                             args: new AasxMenuListOfArgDefs()
                                 .Add("Domain", "Domain of knowledge/ name of the Submodel (partially)")
                                 .Add("SmRef", "Return: Submodel generated", hidden: true))
-					.AddWpfBlazor(name: "MissingCdsFromKnown", header: "Missing ConceptDescriptions from pool of known",
-							help: "For the selected element: checks which SME refer to missing " +
+                    .AddWpfBlazor(name: "MissingCdsFromKnown", header: "Missing ConceptDescriptions from pool of known",
+                            help: "For the selected element: checks which SME refer to missing " +
                                   "ConceptDescriptions, which can be created from pool of known definitions."))
                 .AddMenu(header: "Visualize …", attachPoint: "Visualize")
                 .AddSeparator()

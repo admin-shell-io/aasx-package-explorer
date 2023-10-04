@@ -206,8 +206,9 @@ namespace AasxIntegrationBase.AdminShellEvents
                 return false;
             }
 
-            public virtual AasEventMsgEnvelope GetResult() { 
-                return MsgEnv; 
+            public virtual AasEventMsgEnvelope GetResult()
+            {
+                return MsgEnv;
             }
         }
 
@@ -282,10 +283,10 @@ namespace AasxIntegrationBase.AdminShellEvents
                 // ok?
                 if (next == null || !(next is TraceLinkOneValueUpdate nvu)
                     || this.OneValueUpdate == null || nvu.OneValueUpdate == null
-                    || this.Path == null || this.Path.Count < 1 
-                    || nvu.Path == null || nvu.Path.Count < 1 
+                    || this.Path == null || this.Path.Count < 1
+                    || nvu.Path == null || nvu.Path.Count < 1
                     || !this.Path.Matches(nvu.Path, MatchMode.Relaxed))
-                return false;
+                    return false;
 
                 // take over next
                 this.OneValueUpdate.Value = nvu.OneValueUpdate.Value;
@@ -319,8 +320,10 @@ namespace AasxIntegrationBase.AdminShellEvents
                 Aas.IKey currKey = rf.GetReference()?.Keys.Last();
 
                 // whole path
-                var currentPath = evplsc.Changes[0].Path;  // evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.IKey>() { currKey });
-
+                var currentPath = evplsc.Changes[0].Path;
+                // dead-csharp off
+                // evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.IKey>() { currKey });
+                // dead-csharp on
                 // create a mapping
                 return new TraceLinkOneStructChange()
                 {

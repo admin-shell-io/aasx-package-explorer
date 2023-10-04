@@ -1,4 +1,12 @@
-﻿using AasxOpenIdClient;
+﻿/*
+Copyright (c) 2018-2023 
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using AasxOpenIdClient;
 using AasxPackageLogic.PackageCentral.AasxFileServerInterface.Models;
 using IdentityModel.Client;
 using Newtonsoft.Json;
@@ -22,7 +30,6 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             handler.AllowAutoRedirect = false;
 
             _httpClient = new HttpClient(handler);
-            //_httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(baseAddress);
             _httpClient.DefaultRequestHeaders.Add("IsGetAllPackagesApi", "true");
         }

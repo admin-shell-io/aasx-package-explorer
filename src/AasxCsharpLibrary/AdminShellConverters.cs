@@ -298,7 +298,7 @@ namespace AdminShellNS
                         jsonStr = jsonStr.TrimStart('{').TrimEnd('}');
                         writer.WriteRaw(jsonStr);
                         writer.WriteEndObject();
-                    } 
+                    }
                     else
                     {
                         // double-digest by a text reader and rewrite token stream

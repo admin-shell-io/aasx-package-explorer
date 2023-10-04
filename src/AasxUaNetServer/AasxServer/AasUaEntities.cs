@@ -274,10 +274,10 @@ namespace AasOpcUaServer
                 return null;
 
             var o = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Kind",
-                DataTypeIds.String, 
-                (mode == CreateMode.Type) 
-                    ? null 
-                    : "" + (kind != null ? Stringification.ToString(kind.Value) : ""), 
+                DataTypeIds.String,
+                (mode == CreateMode.Type)
+                    ? null
+                    : "" + (kind != null ? Stringification.ToString(kind.Value) : ""),
                 defaultSettings: true,
                 modellingRule: modellingRule);
 
@@ -301,10 +301,10 @@ namespace AasOpcUaServer
                 return null;
 
             var o = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Kind",
-                DataTypeIds.String, 
-                (mode == CreateMode.Type) 
-                    ? null 
-                    : "" + ( kind != null ? Stringification.ToString(kind) : ""), 
+                DataTypeIds.String,
+                (mode == CreateMode.Type)
+                    ? null
+                    : "" + (kind != null ? Stringification.ToString(kind) : ""),
                 defaultSettings: true,
                 modellingRule: modellingRule);
 
@@ -371,12 +371,12 @@ namespace AasOpcUaServer
             if (this.entityBuilder != null && this.entityBuilder.theServerOptions != null
                 && this.entityBuilder.theServerOptions.ReferenceKeysAsSingleString)
             {
-				// fix for open62541
+                // fix for open62541
 
-				var typeo = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Type",
-					DataTypeIds.String, null, defaultSettings: true);
+                var typeo = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Type",
+                    DataTypeIds.String, null, defaultSettings: true);
 
-				var keyo = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Keys",
+                var keyo = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Keys",
                     DataTypeIds.String, null, defaultSettings: true);
 
                 if (mode == CreateMode.Instance && keyo != null)
@@ -572,7 +572,7 @@ namespace AasOpcUaServer
 
                 // register node record
                 this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, asset.GlobalAssetId));
-
+                // dead-csharp off
                 // Referable
                 // this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, asset);                
                 // Identifiable (V3.0: not anymore)
@@ -580,13 +580,14 @@ namespace AasOpcUaServer
                 //    o, CreateMode.Instance, asset.identification);
                 // this.entityBuilder.AasTypes.Administration.CreateAddElements(
                 //    o, CreateMode.Instance, asset.administration);
-                
+
                 // HasKind
                 this.entityBuilder.AasTypes.AssetKind.CreateAddElements(o, CreateMode.Instance, asset.AssetKind);
-                
+
                 // own attributes
                 //this.entityBuilder.AasTypes.Reference.CreateAddElements(
                 //    o, CreateMode.Instance, asset.assetIdentificationModelRef, "AssetIdentificationModel");
+                // dead-csharp on
             }
 
             return o;
@@ -668,7 +669,8 @@ namespace AasOpcUaServer
                 o, CreateMode.Instance, aas.DerivedFrom, "DerivedFrom");
 
             // associated asset
-            // TODO: AssetInformation
+            // TODO (??, 0000-00-00): AssetInformation
+            // dead-csharp off
             //if (aas.assetRef != null)
             //{
             //    var asset = env.FindAsset(aas.assetRef);
@@ -676,7 +678,7 @@ namespace AasOpcUaServer
             //        this.entityBuilder.AasTypes.Asset.CreateAddElements(
             //            o, CreateMode.Instance, asset);
             //}
-
+            // dead-csharp on
             // associated submodels
             if (aas.Submodels != null)
                 foreach (var smr in aas.Submodels)
@@ -904,9 +906,9 @@ namespace AasOpcUaServer
 
                 if (smw is Aas.ISubmodelElementCollection coll)
                     return this.entityBuilder.AasTypes.Collection.CreateAddInstanceObject(parent, coll);
-				else if (smw is Aas.ISubmodelElementList list)
-					return this.entityBuilder.AasTypes.SmeList.CreateAddInstanceObject(parent, list);
-				else if (smw is Aas.IProperty)
+                else if (smw is Aas.ISubmodelElementList list)
+                    return this.entityBuilder.AasTypes.SmeList.CreateAddInstanceObject(parent, list);
+                else if (smw is Aas.IProperty)
                     return this.entityBuilder.AasTypes.Property.CreateAddInstanceObject(
                         parent, smw as Aas.IProperty);
                 else if (smw is Aas.IFile)
@@ -974,15 +976,15 @@ namespace AasOpcUaServer
                 DataTypeIds.String, "" + prop.ValueType, defaultSettings: true);
 
             // aim is to support many types natively
-            
+
             if (prop.ValueType == DataTypeDefXsd.Boolean)
             {
                 var x = (prop.Value ?? "").ToLower().Trim();
                 this.entityBuilder.CreateAddPropertyState<bool>(o, mode, "Value",
                     DataTypeIds.Boolean, x == "true", defaultSettings: true);
             }
-            else if (prop.ValueType == DataTypeDefXsd.DateTime 
-                     || prop.ValueType == DataTypeDefXsd.Date 
+            else if (prop.ValueType == DataTypeDefXsd.DateTime
+                     || prop.ValueType == DataTypeDefXsd.Date
                      || prop.ValueType == DataTypeDefXsd.Time)
             {
                 if (DateTime.TryParse(prop.Value, CultureInfo.InvariantCulture,
@@ -990,8 +992,8 @@ namespace AasOpcUaServer
                     this.entityBuilder.CreateAddPropertyState<Int64>(o, mode, "Value",
                         DataTypeIds.DateTime, dt.ToFileTimeUtc(), defaultSettings: true);
             }
-            else if (prop.ValueType == DataTypeDefXsd.Decimal 
-                     || prop.ValueType == DataTypeDefXsd.Integer 
+            else if (prop.ValueType == DataTypeDefXsd.Decimal
+                     || prop.ValueType == DataTypeDefXsd.Integer
                      || prop.ValueType == DataTypeDefXsd.Long
                      || prop.ValueType == DataTypeDefXsd.NegativeInteger)
             {
@@ -1017,8 +1019,8 @@ namespace AasOpcUaServer
                     this.entityBuilder.CreateAddPropertyState<SByte>(o, mode, "Value",
                         DataTypeIds.Byte, v, defaultSettings: true);
             }
-            else if (prop.ValueType == DataTypeDefXsd.NonNegativeInteger 
-                     || prop.ValueType == DataTypeDefXsd.PositiveInteger 
+            else if (prop.ValueType == DataTypeDefXsd.NonNegativeInteger
+                     || prop.ValueType == DataTypeDefXsd.PositiveInteger
                      || prop.ValueType == DataTypeDefXsd.UnsignedLong)
             {
                 if (UInt64.TryParse(prop.Value, out var v))
@@ -1098,7 +1100,7 @@ namespace AasOpcUaServer
             // access
             if (coll == null)
                 return null;
-
+            // dead-csharp off
             // containing element
             var to = GetTypeObject().NodeId;
             //if (coll.ordered && this.typeObjectOrdered != null)
@@ -1112,7 +1114,7 @@ namespace AasOpcUaServer
             // own attributes
             //this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Instance, "AllowDuplicates",
             //    DataTypeIds.Boolean, coll.AllowDuplicates, defaultSettings: true);
-
+            // dead-csharp on
             // values
             if (coll.Value != null)
                 foreach (var smw in coll.Value)
@@ -1124,63 +1126,64 @@ namespace AasOpcUaServer
         }
     }
 
-	public class AasUaEntitySmeList : AasUaEntitySubmodelElementBase
-	{
-		public NodeState typeObjectOrdered = null;
+    public class AasUaEntitySmeList : AasUaEntitySubmodelElementBase
+    {
+        public NodeState typeObjectOrdered = null;
 
-		public AasUaEntitySmeList(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
-			: base(entityBuilder)
-		{
-			// create type object
-			this.typeObject = this.entityBuilder.CreateAddObjectType("AASSubmodelElementListType",
-				entityBuilder.AasTypes.SubmodelElement.GetTypeNodeId(), preferredTypeNumId,
-				descriptionKey: "AAS:SubmodelElementList");
-			this.typeObjectOrdered = this.entityBuilder.CreateAddObjectType("AASSubmodelElementOrderedListType",
-				this.GetTypeNodeId(), preferredTypeNumId + 1,
-				descriptionKey: "AAS:SubmodelElementList");
+        public AasUaEntitySmeList(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
+            : base(entityBuilder)
+        {
+            // create type object
+            this.typeObject = this.entityBuilder.CreateAddObjectType("AASSubmodelElementListType",
+                entityBuilder.AasTypes.SubmodelElement.GetTypeNodeId(), preferredTypeNumId,
+                descriptionKey: "AAS:SubmodelElementList");
+            this.typeObjectOrdered = this.entityBuilder.CreateAddObjectType("AASSubmodelElementOrderedListType",
+                this.GetTypeNodeId(), preferredTypeNumId + 1,
+                descriptionKey: "AAS:SubmodelElementList");
 
-			// some elements
-			// ReSharper disable once RedundantExplicitArrayCreation
-			foreach (var o in new NodeState[] { this.typeObject /* , this.typeObjectOrdered */ })
-			{
-				this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Type, "AllowDuplicates",
-					DataTypeIds.Boolean, false, defaultSettings: true,
-					modellingRule: AasUaNodeHelper.ModellingRule.Optional);
-			}
-		}
+            // some elements
+            // ReSharper disable once RedundantExplicitArrayCreation
+            foreach (var o in new NodeState[] { this.typeObject /* , this.typeObjectOrdered */ })
+            {
+                this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Type, "AllowDuplicates",
+                    DataTypeIds.Boolean, false, defaultSettings: true,
+                    modellingRule: AasUaNodeHelper.ModellingRule.Optional);
+            }
+        }
 
-		public NodeState CreateAddInstanceObject(NodeState parent, Aas.ISubmodelElementList list)
-		{
-			// access
-			if (list == null)
-				return null;
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.ISubmodelElementList list)
+        {
+            // access
+            if (list == null)
+                return null;
 
-			// containing element
-			var to = GetTypeObject().NodeId;
+            // containing element
+            var to = GetTypeObject().NodeId;
             if (list.OrderRelevant.HasValue && list.OrderRelevant.Value && this.typeObjectOrdered != null)
                 to = this.typeObjectOrdered.NodeId;
             var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance,
-				"" + list.IdShort, ReferenceTypeIds.HasComponent, to);
+                "" + list.IdShort, ReferenceTypeIds.HasComponent, to);
 
-			// populate common attributes
-			base.PopulateInstanceObject(o, list);
+            // populate common attributes
+            base.PopulateInstanceObject(o, list);
 
-			// own attributes
-			//this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Instance, "AllowDuplicates",
-			//    DataTypeIds.Boolean, coll.AllowDuplicates, defaultSettings: true);
+            // own attributes
+            // dead-csharp off
+            //this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Instance, "AllowDuplicates",
+            //    DataTypeIds.Boolean, coll.AllowDuplicates, defaultSettings: true);
+            // dead-csharp on
+            // values
+            if (list.Value != null)
+                foreach (var smw in list.Value)
+                    this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
+                        o, CreateMode.Instance, smw);
 
-			// values
-			if (list.Value != null)
-				foreach (var smw in list.Value)
-					this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
-						o, CreateMode.Instance, smw);
+            // result
+            return o;
+        }
+    }
 
-			// result
-			return o;
-		}
-	}
-
-	public class AasUaEntityFile : AasUaEntitySubmodelElementBase
+    public class AasUaEntityFile : AasUaEntitySubmodelElementBase
     {
         public AasUaEntityFile(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
             : base(entityBuilder)
@@ -1524,7 +1527,7 @@ namespace AasOpcUaServer
             // result
             return o;
         }
-    }        
+    }
 
     public class AasUaEntityDataSpecification : AasUaBaseEntity
     {
@@ -1682,7 +1685,7 @@ namespace AasOpcUaServer
 
                 if (ds.DataType != null)
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "DataType",
-                        DataTypeIds.String, value: Stringification.ToString(ds.DataType.Value), 
+                        DataTypeIds.String, value: Stringification.ToString(ds.DataType.Value),
                         defaultSettings: true);
 
                 if (ds.Definition != null && ds.Definition.Count > 0)

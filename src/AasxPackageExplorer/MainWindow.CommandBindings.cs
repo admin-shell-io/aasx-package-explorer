@@ -358,8 +358,8 @@ namespace AasxPackageExplorer
             if (cmd == "attachfileassoc" || cmd == "removefileassoc")
                 await CommandBinding_RegistryTools(cmd, ticket);
 
-			// pass dispatch on to next (lower) level of menu functions
-			await Logic.CommandBinding_GeneralDispatchAnyUiDialogs(cmd, menuItem, ticket);
+            // pass dispatch on to next (lower) level of menu functions
+            await Logic.CommandBinding_GeneralDispatchAnyUiDialogs(cmd, menuItem, ticket);
         }
 
         public bool PanelConcurrentCheckIsVisible()
@@ -672,7 +672,7 @@ namespace AasxPackageExplorer
             // make an agent
             var agent = new FlyoutAgentMqttPublisher();
 
-			// ask for preferences
+            // ask for preferences
 #if __WPF_based
             agent.DiaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASX MQTT publisher ..",
                         jtoken: Options.Curr.MqttPublisherOptions);
@@ -681,154 +681,154 @@ namespace AasxPackageExplorer
             if (!uc1.Result)
                 return;
 #else
-			agent.DiaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASX MQTT publisher ..",
-						jtoken: Options.Curr.MqttPublisherOptions);
-			var uc1 = new AnyUiDialogueDataModalPanel(agent.DiaData.Caption);
+            agent.DiaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASX MQTT publisher ..",
+                        jtoken: Options.Curr.MqttPublisherOptions);
+            var uc1 = new AnyUiDialogueDataModalPanel(agent.DiaData.Caption);
             uc1.DisableScrollArea = true;
-			uc1.ActivateRenderPanel(agent.DiaData,
-				(uci) =>
-				{
+            uc1.ActivateRenderPanel(agent.DiaData,
+                (uci) =>
+                {
                     // create panel
-					var panel = new AnyUiStackPanel();
-					var helper = new AnyUiSmallWidgetToolkit();
+                    var panel = new AnyUiStackPanel();
+                    var helper = new AnyUiSmallWidgetToolkit();
 
                     var data = uci.Data as AnyUiDialogueDataMqttPublisher;
                     if (data == null)
                         return panel;
 
                     // outer grid
-					var g = helper.AddSmallGrid(13, 3, new[] { "#", "5:", "*" },
-								padding: new AnyUiThickness(0, 5, 0, 5));
+                    var g = helper.AddSmallGrid(13, 3, new[] { "#", "5:", "*" },
+                                padding: new AnyUiThickness(0, 5, 0, 5));
 
                     int row = 0;
 
                     // Row : MQTT broker
                     helper.AddSmallLabelTo(g, row, 0, content: "Format:", verticalCenter: true);
-					AnyUiUIElement.SetStringFromControl(
-						helper.AddSmallTextBoxTo(g, row, 2,
-							margin: new AnyUiThickness(0, 2, 2, 2),
-							text: "" + data.BrokerUrl,
-							verticalCenter: true),
-						(str) => { data.BrokerUrl = str; });
+                    AnyUiUIElement.SetStringFromControl(
+                        helper.AddSmallTextBoxTo(g, row, 2,
+                            margin: new AnyUiThickness(0, 2, 2, 2),
+                            text: "" + data.BrokerUrl,
+                            verticalCenter: true),
+                        (str) => { data.BrokerUrl = str; });
 
-					// Row : retain
-					AnyUiUIElement.SetBoolFromControl(
-						helper.Set(
-							helper.AddSmallCheckBoxTo(g, ++row, 2,
-								content: "Set retain flag in MQTT messages",
-								isChecked: data.MqttRetain,
-								verticalContentAlignment: AnyUiVerticalAlignment.Center)),
-							(b) => { data.MqttRetain = b; });
+                    // Row : retain
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.Set(
+                            helper.AddSmallCheckBoxTo(g, ++row, 2,
+                                content: "Set retain flag in MQTT messages",
+                                isChecked: data.MqttRetain,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center)),
+                            (b) => { data.MqttRetain = b; });
 
                     // VSpace
                     helper.AddVerticalSpaceTo(g, ++row);
 
-					// Row : first time publish
-					helper.AddSmallLabelTo(g, ++row, 0, content: "First time publish:", verticalCenter: true);
-					AnyUiUIElement.SetBoolFromControl(
-						helper.AddSmallCheckBoxTo(g, row, 2,
-							content: "Enable publishing",
-							isChecked: data.EnableFirstPublish,
-							verticalContentAlignment: AnyUiVerticalAlignment.Center),
-						(b) => { data.EnableFirstPublish = b; });
+                    // Row : first time publish
+                    helper.AddSmallLabelTo(g, ++row, 0, content: "First time publish:", verticalCenter: true);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.AddSmallCheckBoxTo(g, row, 2,
+                            content: "Enable publishing",
+                            isChecked: data.EnableFirstPublish,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                        (b) => { data.EnableFirstPublish = b; });
 
                     // Row : Topic AAS
                     helper.Set(
                         helper.AddSmallLabelTo(g, ++row, 0, content: "Topic AAS:", verticalCenter: true),
                         horizontalAlignment: AnyUiHorizontalAlignment.Right,
                         horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
-					AnyUiUIElement.SetStringFromControl(
-						helper.AddSmallTextBoxTo(g, row, 2,
-							margin: new AnyUiThickness(0, 2, 2, 2),
-							text: "" + data.FirstTopicAAS,
-							verticalCenter: true),
-						(str) => { data.FirstTopicAAS = str; });
+                    AnyUiUIElement.SetStringFromControl(
+                        helper.AddSmallTextBoxTo(g, row, 2,
+                            margin: new AnyUiThickness(0, 2, 2, 2),
+                            text: "" + data.FirstTopicAAS,
+                            verticalCenter: true),
+                        (str) => { data.FirstTopicAAS = str; });
 
-					// Row : Topic Submodel
-					helper.Set(
-						helper.AddSmallLabelTo(g, ++row, 0, content: "Topic Submodel:", verticalCenter: true),
-						horizontalAlignment: AnyUiHorizontalAlignment.Right,
-						horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
-					AnyUiUIElement.SetStringFromControl(
-						helper.AddSmallTextBoxTo(g, row, 2,
-							margin: new AnyUiThickness(0, 2, 2, 2),
-							text: "" + data.FirstTopicSubmodel,
-							verticalCenter: true),
-						(str) => { data.FirstTopicSubmodel = str; });
+                    // Row : Topic Submodel
+                    helper.Set(
+                        helper.AddSmallLabelTo(g, ++row, 0, content: "Topic Submodel:", verticalCenter: true),
+                        horizontalAlignment: AnyUiHorizontalAlignment.Right,
+                        horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
+                    AnyUiUIElement.SetStringFromControl(
+                        helper.AddSmallTextBoxTo(g, row, 2,
+                            margin: new AnyUiThickness(0, 2, 2, 2),
+                            text: "" + data.FirstTopicSubmodel,
+                            verticalCenter: true),
+                        (str) => { data.FirstTopicSubmodel = str; });
 
-					// VSpace
-					helper.AddVerticalSpaceTo(g, ++row);
+                    // VSpace
+                    helper.AddVerticalSpaceTo(g, ++row);
 
-					// Row : continous event time publish
-					helper.AddSmallLabelTo(g, ++row, 0, content: "Continous event publish:", verticalCenter: true);
-					AnyUiUIElement.SetBoolFromControl(
-						helper.AddSmallCheckBoxTo(g, row, 2,
-							content: "Enable publishing",
-							isChecked: data.EnableEventPublish,
-							verticalContentAlignment: AnyUiVerticalAlignment.Center),
-						(b) => { data.EnableEventPublish = b; });
+                    // Row : continous event time publish
+                    helper.AddSmallLabelTo(g, ++row, 0, content: "Continous event publish:", verticalCenter: true);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.AddSmallCheckBoxTo(g, row, 2,
+                            content: "Enable publishing",
+                            isChecked: data.EnableEventPublish,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                        (b) => { data.EnableEventPublish = b; });
 
-					// Row : Topic event publish
-					helper.Set(
-						helper.AddSmallLabelTo(g, ++row, 0, content: "Topic:", verticalCenter: true),
-						horizontalAlignment: AnyUiHorizontalAlignment.Right,
-						horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
-					AnyUiUIElement.SetStringFromControl(
-						helper.AddSmallTextBoxTo(g, row, 2,
-							margin: new AnyUiThickness(0, 2, 2, 2),
-							text: "" + data.EventTopic,
-							verticalCenter: true),
-						(str) => { data.EventTopic = str; });
+                    // Row : Topic event publish
+                    helper.Set(
+                        helper.AddSmallLabelTo(g, ++row, 0, content: "Topic:", verticalCenter: true),
+                        horizontalAlignment: AnyUiHorizontalAlignment.Right,
+                        horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
+                    AnyUiUIElement.SetStringFromControl(
+                        helper.AddSmallTextBoxTo(g, row, 2,
+                            margin: new AnyUiThickness(0, 2, 2, 2),
+                            text: "" + data.EventTopic,
+                            verticalCenter: true),
+                        (str) => { data.EventTopic = str; });
 
-					// VSpace
-					helper.AddVerticalSpaceTo(g, ++row);
+                    // VSpace
+                    helper.AddVerticalSpaceTo(g, ++row);
 
-					// Row : single value publish
-					helper.AddSmallLabelTo(g, ++row, 0, content: "Single value publish:", verticalCenter: true);
-					AnyUiUIElement.SetBoolFromControl(
-						helper.AddSmallCheckBoxTo(g, row, 2,
-							content: "Enable publishing",
-							isChecked: data.SingleValuePublish,
-							verticalContentAlignment: AnyUiVerticalAlignment.Center),
-						(b) => { data.SingleValuePublish = b; });
-					
+                    // Row : single value publish
+                    helper.AddSmallLabelTo(g, ++row, 0, content: "Single value publish:", verticalCenter: true);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.AddSmallCheckBoxTo(g, row, 2,
+                            content: "Enable publishing",
+                            isChecked: data.SingleValuePublish,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                        (b) => { data.SingleValuePublish = b; });
+
                     // Row : single value first time
                     AnyUiUIElement.SetBoolFromControl(
-						helper.AddSmallCheckBoxTo(g, ++row, 2,
-							content: "First time",
-							isChecked: data.SingleValueFirstTime,
-							verticalContentAlignment: AnyUiVerticalAlignment.Center),
-						(b) => { data.SingleValueFirstTime = b; });
+                        helper.AddSmallCheckBoxTo(g, ++row, 2,
+                            content: "First time",
+                            isChecked: data.SingleValueFirstTime,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                        (b) => { data.SingleValueFirstTime = b; });
 
-					// Row : Topic single value publish
-					helper.Set(
-						helper.AddSmallLabelTo(g, ++row, 0, content: "Topic:", verticalCenter: true),
-						horizontalAlignment: AnyUiHorizontalAlignment.Right,
-						horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
-					AnyUiUIElement.SetStringFromControl(
-						helper.AddSmallTextBoxTo(g, row, 2,
-							margin: new AnyUiThickness(0, 2, 2, 2),
-							text: "" + data.SingleValueTopic,
-							verticalCenter: true),
-						(str) => { data.SingleValueTopic = str; });
+                    // Row : Topic single value publish
+                    helper.Set(
+                        helper.AddSmallLabelTo(g, ++row, 0, content: "Topic:", verticalCenter: true),
+                        horizontalAlignment: AnyUiHorizontalAlignment.Right,
+                        horizontalContentAlignment: AnyUiHorizontalAlignment.Right);
+                    AnyUiUIElement.SetStringFromControl(
+                        helper.AddSmallTextBoxTo(g, row, 2,
+                            margin: new AnyUiThickness(0, 2, 2, 2),
+                            text: "" + data.SingleValueTopic,
+                            verticalCenter: true),
+                        (str) => { data.SingleValueTopic = str; });
 
-					// give back
-					return g;
-				});
+                    // give back
+                    return g;
+                });
 
-			if (!ticket.ScriptMode)
-			{
-				// do the dialogue
-				if (!(await DisplayContext.StartFlyoverModalAsync(uc1)))
-					return;
+            if (!ticket.ScriptMode)
+            {
+                // do the dialogue
+                if (!(await DisplayContext.StartFlyoverModalAsync(uc1)))
+                    return;
 
-				// stop
-				await Task.Delay(2000);
-			}
+                // stop
+                await Task.Delay(2000);
+            }
 #endif
 
-			// make a logger
-			agent.Logger = new AasxMqttClient.GrapevineLoggerToStoredPrints();
+            // make a logger
+            agent.Logger = new AasxMqttClient.GrapevineLoggerToStoredPrints();
 
             // make listing flyout
             var uc2 = new LogMessageFlyout("AASX MQTT Publisher", "Starting MQTT Client ..", () =>
@@ -1652,10 +1652,10 @@ namespace AasxPackageExplorer
             var regtxt = "";
             var propFn = "";
 
-			// see: https://learn.microsoft.com/de-de/windows/win32/shell/
+            // see: https://learn.microsoft.com/de-de/windows/win32/shell/
             // how-to-assign-a-custom-icon-to-a-file-type?redirectedfrom=MSDN
 
-			if (cmd == "attachfileassoc")
+            if (cmd == "attachfileassoc")
             {
                 regtxt = AdminShellUtil.CleanHereStringWithNewlines(
                     @"Windows Registry Editor Version 5.00
@@ -1665,24 +1665,24 @@ namespace AasxPackageExplorer
                 propFn = "attach_aasx.reg";
             }
 
-			if (cmd == "removefileassoc")
-			{
-				regtxt = AdminShellUtil.CleanHereStringWithNewlines(
-					@"Windows Registry Editor Version 5.00
+            if (cmd == "removefileassoc")
+            {
+                regtxt = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"Windows Registry Editor Version 5.00
 
                     [-HKEY_CLASSES_ROOT\.aasx\DefaultIcon]
                     [-HKEY_CLASSES_ROOT\.aasx]");
-				propFn = "remove_aasx.reg";
-			}
+                propFn = "remove_aasx.reg";
+            }
 
-			if (cmd.HasContent() && propFn.HasContent())
+            if (cmd.HasContent() && propFn.HasContent())
             {
-				if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
+                if (!(await DisplayContext.MenuSelectSaveFilenameToTicketAsync(
                         ticket, "File",
                         "Create regedit for for .aasx file associations",
                         propFn,
-						"RegEdit files (*.reg)|*.reg",
-                        "No valid filename.", 
+                        "RegEdit files (*.reg)|*.reg",
+                        "No valid filename.",
                         reworkSpecialFn: true)))
                     return;
 
@@ -1693,7 +1693,7 @@ namespace AasxPackageExplorer
 
                     regtxt = regtxt.Replace(@"%EXE%", exepath);
 
-					File.WriteAllText(ticket["File"] as string, regtxt);
+                    File.WriteAllText(ticket["File"] as string, regtxt);
 
                     // ok, give hints
                     Log.Singleton.Info(StoredPrint.Color.Blue, "Click windows start menu, type regedit.exe " +
@@ -1706,7 +1706,7 @@ namespace AasxPackageExplorer
                     Log.Singleton.Error(ex, "when creating regedit file");
                 }
             }
-		}
+        }
 
     }
 }

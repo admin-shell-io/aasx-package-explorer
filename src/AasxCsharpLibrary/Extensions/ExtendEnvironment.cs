@@ -538,7 +538,7 @@ namespace Extensions
 
             return null;
         }
-
+        // dead-csharp off
         //public static IEnumerable<ISubmodel> FindAllSubmodelsGroupedByAAS(this AasCore.Aas3_0.Environment environment, Func<IAssetAdministrationShell, ISubmodel, bool> p = null)
         //{
         //    if (environment.AssetAdministrationShells == null || environment.Submodels == null)
@@ -555,7 +555,7 @@ namespace Extensions
         //        }
         //    }
         //}
-
+        // dead-csharp on
         public static IEnumerable<ISubmodel> FindAllSubmodelBySemanticId(this AasCore.Aas3_0.Environment environment, string semanticId)
         {
             if (semanticId == null)
@@ -1064,12 +1064,12 @@ namespace Extensions
             // access
             if (srcEnv == null || src == null || src.SemanticId == null)
                 return;
-            
+
             // check for this SubmodelElement in Source
             var cdSrc = srcEnv.FindConceptDescriptionByReference(src.SemanticId);
             if (cdSrc == null)
                 return;
-            
+
             // check for this SubmodelElement in Destnation (this!)
             var cdDest = environment.FindConceptDescriptionByReference(src.SemanticId);
             if (cdDest == null)
@@ -1077,7 +1077,7 @@ namespace Extensions
                 // copy new
                 environment.ConceptDescriptions.Add(cdSrc.Copy());
             }
-            
+
             // recurse?
             if (!shallowCopy)
                 foreach (var m in src.EnumerateChildren())

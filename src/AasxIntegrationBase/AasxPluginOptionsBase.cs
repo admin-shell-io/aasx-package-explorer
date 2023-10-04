@@ -107,7 +107,7 @@ namespace AasxIntegrationBase
                     foreach (var rkey in um.RegexReplacements.Keys)
                         json = Regex.Replace(json, rkey, um.RegexReplacements[rkey]);
 
-				var oldOpts = Newtonsoft.Json.JsonConvert.DeserializeObject(json, um.OldRootType, settings);
+                var oldOpts = Newtonsoft.Json.JsonConvert.DeserializeObject(json, um.OldRootType, settings);
                 opts = um.UpgradeLambda.Invoke(oldOpts) as T;
 
                 if (opts != null)
@@ -159,8 +159,8 @@ namespace AasxIntegrationBase
             public string Trigger;
             public Type OldRootType;
             public Dictionary<string, string> Replacements;
-			public Dictionary<string, string> RegexReplacements;
-			public Func<object, object> UpgradeLambda;
+            public Dictionary<string, string> RegexReplacements;
+            public Func<object, object> UpgradeLambda;
         }
 
         public void TryLoadAdditionalOptionsFromAssemblyDir<T>(

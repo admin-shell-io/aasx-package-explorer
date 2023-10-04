@@ -24,7 +24,7 @@ namespace AasxPredefinedConcepts
         public static SmtAdditions Static = new SmtAdditions();
 
         public Aas.ConceptDescription
-			CD_ContactInfoPreviewFile;
+            CD_ContactInfoPreviewFile;
 
         public SmtAdditions()
         {
@@ -33,9 +33,9 @@ namespace AasxPredefinedConcepts
 
             // definitons
             CD_ContactInfoPreviewFile = CreateSparseConceptDescription("en", "IRI",
-				"ContactInfoPreviewFile",
-				"https://admin-shell.io/tmp/SMT/Additions/ContactInformation/PreviewFile",
-				@"Provides a preview image of the contact, e.g. an image of a person or a symbolic pictuture, in a commonly used image format and low resolution.");
+                "ContactInfoPreviewFile",
+                "https://admin-shell.io/tmp/SMT/Additions/ContactInformation/PreviewFile",
+                @"Provides a preview image of the contact, e.g. an image of a person or a symbolic pictuture, in a commonly used image format and low resolution.");
 
             // reflect
             AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);

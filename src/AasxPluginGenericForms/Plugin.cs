@@ -63,12 +63,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     {
                         { "AdminShellNS.AdminShellV20+", "AasxCompatibilityModels.AdminShellV20+" }
                     },
-					RegexReplacements = new Dictionary<string, string>()
-					{
-						{ @"""\$type""\s*:\s*""(Record|Options|Form\w+)""",
-						  @"""$type"": ""$1_V20""" }
-					},
-					UpgradeLambda = (old) => new AasxPluginGenericForms.GenericFormOptions(
+                    RegexReplacements = new Dictionary<string, string>()
+                    {
+                        { @"""\$type""\s*:\s*""(Record|Options|Form\w+)""",
+                          @"""$type"": ""$1_V20""" }
+                    },
+                    UpgradeLambda = (old) => new AasxPluginGenericForms.GenericFormOptions(
                         old as AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20)
                 });
 
@@ -80,12 +80,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (newOpt != null)
                     _options = newOpt;
 
-				// try find additional options
-				_options.TryLoadAdditionalOptionsFromAssemblyDir
+                // try find additional options
+                _options.TryLoadAdditionalOptionsFromAssemblyDir
                     <AasxPluginGenericForms.GenericFormOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
                         _log, upgrades.ToArray());
-                
+
                 // dead-csharp off
                 //// need special settings
                 //var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
@@ -116,21 +116,21 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         public new AasxPluginActionDescriptionBase[] ListActions()
         {
-			var res = ListActionsBasicHelper(
-				enableCheckVisualExt: true,
-				enableOptions: true,
-				enableLicenses: true,
-				enableEventsGet: true,
-				enableEventReturn: true,
-				enablePanelAnyUi: true,
+            var res = ListActionsBasicHelper(
+                enableCheckVisualExt: true,
+                enableOptions: true,
+                enableLicenses: true,
+                enableEventsGet: true,
+                enableEventReturn: true,
+                enablePanelAnyUi: true,
                 enableNewSubmodel: true);
 
-			res.Add(new AasxPluginActionDescriptionBase(
-				"find-form-desc",
-				"Searches the loaded options to find form descriptions matching the provided " +
+            res.Add(new AasxPluginActionDescriptionBase(
+                "find-form-desc",
+                "Searches the loaded options to find form descriptions matching the provided " +
                 "semanticId. Returns list of all form descriptions."));
 
-			return res.ToArray();
+            return res.ToArray();
         }
 
         public new AasxPluginResultBase ActivateAction(string action, params object[] args)
@@ -283,7 +283,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     }
                     // ReSharper enable UnusedVariable
                 }
-                
+
                 if (action == "get-list-new-submodel")
                 {
                     // prepare list
@@ -328,27 +328,27 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return res;
                 }
 
-				if (action == "find-form-desc")
-				{
-					// arguments (semId)
-					if (args == null || args.Length < 1 ||
+                if (action == "find-form-desc")
+                {
+                    // arguments (semId)
+                    if (args == null || args.Length < 1 ||
                         !(args[0] is Aas.IReference semIdToFind))
-						return null;
+                        return null;
 
-					// prepare list
-					var list = new List<FormDescBase>();
+                    // prepare list
+                    var list = new List<FormDescBase>();
 
                     // check
                     foreach (var fd in FindAllFormDescriptionForSemanticId(semIdToFind))
                         list.Add(fd.Copy());
 
-					// make result
-					var res = new AasxPluginResultBaseObject();
-					res.strType = "OK";
-					res.obj = list;
-					return res;
-				}
-			}
+                    // make result
+                    var res = new AasxPluginResultBaseObject();
+                    res.strType = "OK";
+                    res.obj = list;
+                    return res;
+                }
+            }
             catch (Exception ex)
             {
                 _log.Error(ex, "");
@@ -370,5 +370,5 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     yield return or.FormSubmodel;
         }
 
-	}
+    }
 }

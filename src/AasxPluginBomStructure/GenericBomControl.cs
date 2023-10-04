@@ -64,15 +64,15 @@ namespace AasxPluginBomStructure
             // create TOP controls
             var wpTop = new WrapPanel();
             wpTop.Orientation = Orientation.Horizontal;
-            
+
             // style
 
             wpTop.Children.Add(new Label() { Content = "Layout style: " });
 
             var cbli = new ComboBox()
             {
-				Margin = new Thickness(0, 0, 0, 5)
-			};
+                Margin = new Thickness(0, 0, 0, 5)
+            };
             foreach (var psn in this.PresetSettingNames)
                 cbli.Items.Add(psn);
             cbli.SelectedIndex = _creatorOptions.LayoutIndex;
@@ -151,8 +151,8 @@ namespace AasxPluginBomStructure
             var btnSelect = new Button()
             {
                 Content = "Selection \U0001f846 tree",
-				Margin = new Thickness(0, 0, 0, 5),
-				Padding = new Thickness(4, 0, 4, 0)
+                Margin = new Thickness(0, 0, 0, 5),
+                Padding = new Thickness(4, 0, 4, 0)
             };
             btnSelect.Click += (s3, e3) =>
             {
@@ -162,7 +162,7 @@ namespace AasxPluginBomStructure
                 if (theViewer != null)
                     foreach (var vn in theViewer.GetViewerNodes())
                         if (vn.MarkedForDragging && vn.Node?.UserData is Aas.IReferable rf)
-							markedRf.Add(rf);
+                            markedRf.Add(rf);
 
                 if (markedRf.Count < 1)
                     return;
@@ -275,7 +275,9 @@ namespace AasxPluginBomStructure
                 return null;
 
             // new master panel
+            // dead-csharp off
             // var master = new DockPanel();
+            // dead-csharp on
 
             // clear some other members (GenericBomControl is not allways created new)
             _creatorOptions = new GenericBomCreatorOptions();
@@ -324,7 +326,9 @@ namespace AasxPluginBomStructure
             theReferable = _submodel;
 
             // return viewer for advanced manipulation
+            // dead-csharp off
             // return viewer;
+            // dead-csharp on
 
             // return master
             return master;
@@ -382,7 +386,7 @@ namespace AasxPluginBomStructure
                 }
                 else
                 {
-                    for (int pass=1; pass <= 3; pass++)
+                    for (int pass = 1; pass <= 3; pass++)
                         foreach (var sm2 in env.AasEnv.OverSubmodelsOrEmpty())
                         {
                             // create AAS and SM
@@ -396,7 +400,7 @@ namespace AasxPluginBomStructure
                             creator.SetRecods(recs);
 
                             // graph itself
-                            creator.RecurseOnLayout(pass, graph, null, sm2.SubmodelElements, 1, null, 
+                            creator.RecurseOnLayout(pass, graph, null, sm2.SubmodelElements, 1, null,
                                 entityParentRef: sm2);
                         }
                 }
@@ -404,7 +408,7 @@ namespace AasxPluginBomStructure
 
             // make default or (already) preferred settings
             var settings = GivePresetSettings(options, graph.NodeCount);
-            if (this.preferredPreset != null && sm != null 
+            if (this.preferredPreset != null && sm != null
                 && this.preferredPreset.ContainsKey(sm))
                 settings = GivePresetSettings(this.preferredPreset[sm], graph.NodeCount);
             if (settings != null)

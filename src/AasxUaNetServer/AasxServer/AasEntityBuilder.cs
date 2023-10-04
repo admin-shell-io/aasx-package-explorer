@@ -131,23 +131,23 @@ namespace AasOpcUaServer
             return NodeRecordFromIdentificationHash[hash];
         }
 
-		/// <summary>
-		/// Use this always to lookup node records from Indentifiable
-		/// </summary>
-		/// <param name="identification"></param>
-		/// <returns></returns>
-		public NodeRecord LookupNodeRecordFromId(string id)
-		{
-			var hash = "" + id?.Trim().ToUpper();
-			if (NodeRecordFromReferable == null || !NodeRecordFromIdentificationHash.ContainsKey(hash))
-				return null;
-			return NodeRecordFromIdentificationHash[hash];
-		}
+        /// <summary>
+        /// Use this always to lookup node records from Indentifiable
+        /// </summary>
+        /// <param name="identification"></param>
+        /// <returns></returns>
+        public NodeRecord LookupNodeRecordFromId(string id)
+        {
+            var hash = "" + id?.Trim().ToUpper();
+            if (NodeRecordFromReferable == null || !NodeRecordFromIdentificationHash.ContainsKey(hash))
+                return null;
+            return NodeRecordFromIdentificationHash[hash];
+        }
 
-		/// <summary>
-		/// Base class for actions, which shall be done on the 2nd pass of the information model building
-		/// </summary>
-		public class NodeLateAction
+        /// <summary>
+        /// Base class for actions, which shall be done on the 2nd pass of the information model building
+        /// </summary>
+        public class NodeLateAction
         {
             public NodeState uanode = null;
         }
@@ -584,8 +584,8 @@ namespace AasOpcUaServer
             public AasUaEntitySubmodel Submodel;
             public AasUaEntityProperty Property;
             public AasUaEntityCollection Collection;
-			public AasUaEntitySmeList SmeList;
-			public AasUaEntitySubmodelElement SubmodelElement;
+            public AasUaEntitySmeList SmeList;
+            public AasUaEntitySubmodelElement SubmodelElement;
             public AasUaEntitySubmodelWrapper SubmodelWrapper;
             public AasUaEntityFile File;
             public AasUaEntityFileType FileType;
@@ -662,8 +662,8 @@ namespace AasOpcUaServer
                 Submodel = new AasUaEntitySubmodel(builder, 1007); // dependencies: SubmodelWrapper
                 Property = new AasUaEntityProperty(builder, 1009);
                 Collection = new AasUaEntityCollection(builder, 1010); // needs 2 ids!
-				SmeList = new AasUaEntitySmeList(builder, 1028); // needs 2 ids!
-				FileType = new AasUaEntityFileType(builder, 1014);
+                SmeList = new AasUaEntitySmeList(builder, 1028); // needs 2 ids!
+                FileType = new AasUaEntityFileType(builder, 1014);
                 File = new AasUaEntityFile(builder, 1013); // dependencies: FileType
                 Blob = new AasUaEntityBlob(builder, 1015);
                 ReferenceElement = new AasUaEntityReferenceElement(builder, 1016);

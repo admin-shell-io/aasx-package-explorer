@@ -420,7 +420,7 @@ namespace AasxPluginExportTable.Table
                                                 verticalAlignment: AnyUiVerticalAlignment.Stretch,
                                                 verticalContentAlignment: AnyUiVerticalAlignment.Top,
                                                 textWrap: AnyUiTextWrapping.Wrap,
-                                                fontSize: 0.7, 
+                                                fontSize: 0.7,
                                                 multiLine: true),
                                             minWidth: 100,
                                             minHeight: 60,
