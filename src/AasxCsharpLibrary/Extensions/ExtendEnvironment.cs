@@ -603,6 +603,9 @@ namespace Extensions
             if (string.IsNullOrEmpty(cdId))
                 return null;
 
+            if (env.ConceptDescriptions == null || env.ConceptDescriptions.Count == 0)
+                return null;
+
             var conceptDescription = env.ConceptDescriptions.Where(c => c.Id.Equals(cdId)).FirstOrDefault();
             return conceptDescription;
         }
