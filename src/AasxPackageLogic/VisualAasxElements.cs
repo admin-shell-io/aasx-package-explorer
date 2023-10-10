@@ -12,6 +12,7 @@ using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -1939,17 +1940,26 @@ namespace AasxPackageLogic
 
             // quickly connect the Identifiables to the environment
             {
-                foreach (var aas in env.AssetAdministrationShells)
-                    if (aas != null)
-                        aas.Parent = env;
+                if (!env.AssetAdministrationShells.IsNullOrEmpty())
+                {
+                    foreach (var aas in env.AssetAdministrationShells)
+                        if (aas != null)
+                            aas.Parent = env;
+                }
 
-                foreach (var sm in env.Submodels)
-                    if (sm != null)
-                        sm.Parent = env;
+                if (!env.Submodels.IsNullOrEmpty())
+                {
+                    foreach (var sm in env.Submodels)
+                        if (sm != null)
+                            sm.Parent = env;
+                }
 
-                foreach (var cd in env.ConceptDescriptions)
-                    if (cd != null)
-                        cd.Parent = env;
+                if (!env.ConceptDescriptions.IsNullOrEmpty())
+                {
+                    foreach (var cd in env.ConceptDescriptions)
+                        if (cd != null)
+                            cd.Parent = env;
+                }
             }
 
             // many operations
