@@ -16,7 +16,7 @@ namespace Extensions
     {
         public static Qualifier ConvertFromV10(this Qualifier qualifier, AasxCompatibilityModels.AdminShellV10.Qualifier sourceQualifier)
         {
-            if (sourceQualifier.semanticId != null)
+            if (sourceQualifier.semanticId != null && !sourceQualifier.semanticId.IsEmpty)
             {
                 var keyList = new List<IKey>();
                 foreach (var refKey in sourceQualifier.semanticId.Keys)
@@ -37,7 +37,7 @@ namespace Extensions
             qualifier.Type = sourceQualifier.qualifierType;
             qualifier.Value = sourceQualifier.qualifierValue;
 
-            if (sourceQualifier.qualifierValueId != null)
+            if (sourceQualifier.qualifierValueId != null && !sourceQualifier.qualifierValueId.IsEmpty)
             {
                 var keyList = new List<IKey>();
                 foreach (var refKey in sourceQualifier.qualifierValueId.Keys)
@@ -60,7 +60,7 @@ namespace Extensions
 
         public static Qualifier ConvertFromV20(this Qualifier qualifier, AasxCompatibilityModels.AdminShellV20.Qualifier sourceQualifier)
         {
-            if (sourceQualifier.semanticId != null)
+            if (sourceQualifier.semanticId != null && !sourceQualifier.semanticId.IsEmpty)
             {
                 var keyList = new List<IKey>();
                 foreach (var refKey in sourceQualifier.semanticId.Keys)
@@ -82,7 +82,7 @@ namespace Extensions
             qualifier.Type = sourceQualifier.type;
             qualifier.Value = sourceQualifier.value;
 
-            if (sourceQualifier.valueId != null)
+            if (sourceQualifier.valueId != null && !sourceQualifier.valueId.IsEmpty)
             {
                 var keyList = new List<IKey>();
                 foreach (var refKey in sourceQualifier.valueId.Keys)

@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 using AdminShellNS;
+using AdminShellNS.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -113,11 +114,24 @@ namespace Extensions
 
             if (sourceAas.derivedFrom != null)
             {
-                var key = new Key(KeyTypes.AssetAdministrationShell, sourceAas.identification.id);
-                assetAdministrationShell.DerivedFrom = new Reference(ReferenceTypes.ModelReference, new List<IKey>() { key });
+                var newKeyList = new List<IKey>();
+
+                foreach (var sourceKey in sourceAas.derivedFrom.Keys)
+                {
+                    var keyType = Stringification.KeyTypesFromString(sourceKey.type);
+                    if (keyType != null)
+                    {
+                        newKeyList.Add(new Key((KeyTypes)keyType, sourceKey.value));
+                    }
+                    else
+                    {
+                        Console.WriteLine($"KeyType value {sourceKey.type} not found.");
+                    }
+                }
+                assetAdministrationShell.DerivedFrom = new Reference(ReferenceTypes.ExternalReference, newKeyList);
             }
 
-            if (sourceAas.submodelRefs != null || sourceAas.submodelRefs.Count != 0)
+            if (!sourceAas.submodelRefs.IsNullOrEmpty())
             {
                 foreach (var submodelRef in sourceAas.submodelRefs)
                 {
@@ -134,10 +148,7 @@ namespace Extensions
                             Console.WriteLine($"KeyType value {refKey.type} not found.");
                         }
                     }
-                    if (assetAdministrationShell.Submodels == null)
-                    {
-                        assetAdministrationShell.Submodels = new List<IReference>();
-                    }
+                    assetAdministrationShell.Submodels ??= new List<IReference>();
                     assetAdministrationShell.Submodels.Add(new Reference(ReferenceTypes.ModelReference, keyList));
                 }
             }
@@ -151,9 +162,12 @@ namespace Extensions
                 }
                 foreach (var dataSpecification in sourceAas.hasDataSpecification.reference)
                 {
-                    assetAdministrationShell.EmbeddedDataSpecifications.Add(new EmbeddedDataSpecification(
-                        ExtensionsUtil.ConvertReferenceFromV10(dataSpecification, ReferenceTypes.ExternalReference),
-                        null));
+                    if (!dataSpecification.IsEmpty)
+                    {
+                        assetAdministrationShell.EmbeddedDataSpecifications.Add(new EmbeddedDataSpecification(
+                                        ExtensionsUtil.ConvertReferenceFromV10(dataSpecification, ReferenceTypes.ExternalReference),
+                                        null));
+                    }
                 }
             }
 
@@ -188,11 +202,24 @@ namespace Extensions
 
             if (sourceAas.derivedFrom != null)
             {
-                var key = new Key(KeyTypes.AssetAdministrationShell, sourceAas.identification.id);
-                assetAdministrationShell.DerivedFrom = new Reference(ReferenceTypes.ModelReference, new List<IKey>() { key });
+                var newKeyList = new List<IKey>();
+
+                foreach (var sourceKey in sourceAas.derivedFrom.Keys)
+                {
+                    var keyType = Stringification.KeyTypesFromString(sourceKey.type);
+                    if (keyType != null)
+                    {
+                        newKeyList.Add(new Key((KeyTypes)keyType, sourceKey.value));
+                    }
+                    else
+                    {
+                        Console.WriteLine($"KeyType value {sourceKey.type} not found.");
+                    }
+                }
+                assetAdministrationShell.DerivedFrom = new Reference(ReferenceTypes.ExternalReference, newKeyList);
             }
 
-            if (sourceAas.submodelRefs != null || sourceAas.submodelRefs.Count != 0)
+            if (!sourceAas.submodelRefs.IsNullOrEmpty())
             {
                 foreach (var submodelRef in sourceAas.submodelRefs)
                 {
@@ -209,10 +236,7 @@ namespace Extensions
                             Console.WriteLine($"KeyType value {refKey.type} not found.");
                         }
                     }
-                    if (assetAdministrationShell.Submodels == null)
-                    {
-                        assetAdministrationShell.Submodels = new List<IReference>();
-                    }
+                    assetAdministrationShell.Submodels ??= new List<IReference>();
                     assetAdministrationShell.Submodels.Add(new Reference(ReferenceTypes.ModelReference, keyList));
                 }
             }

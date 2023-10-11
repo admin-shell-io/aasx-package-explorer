@@ -18,7 +18,7 @@ namespace Extensions
         public static Reference ConvertReferenceFromV10(AdminShellV10.Reference sourceReference, ReferenceTypes referenceTypes)
         {
             Reference outputReference = null;
-            if (sourceReference != null)
+            if (sourceReference != null && !sourceReference.IsEmpty)
             {
                 var keyList = new List<IKey>();
                 foreach (var refKey in sourceReference.Keys)
@@ -42,7 +42,7 @@ namespace Extensions
         public static Reference ConvertReferenceFromV20(AdminShellV20.Reference sourceReference, ReferenceTypes referenceTypes)
         {
             Reference outputReference = null;
-            if (sourceReference != null)
+            if (sourceReference != null && !sourceReference.IsEmpty)
             {
                 var keyList = new List<IKey>();
                 foreach (var refKey in sourceReference.Keys)

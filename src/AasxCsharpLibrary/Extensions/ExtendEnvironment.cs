@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 using AdminShellNS;
+using AdminShellNS.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -166,12 +167,9 @@ namespace Extensions
         public static AasCore.Aas3_0.Environment ConvertFromV10(this AasCore.Aas3_0.Environment environment, AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv sourceEnvironement)
         {
             //Convert Administration Shells
-            if (sourceEnvironement.AdministrationShells != null)
+            if (!sourceEnvironement.AdministrationShells.IsNullOrEmpty())
             {
-                if (environment.AssetAdministrationShells == null)
-                {
-                    environment.AssetAdministrationShells = new List<IAssetAdministrationShell>();
-                }
+                environment.AssetAdministrationShells ??= new List<IAssetAdministrationShell>();
                 foreach (var sourceAas in sourceEnvironement.AdministrationShells)
                 {
                     var sourceAsset = sourceEnvironement?.FindAsset(sourceAas.assetRef);
@@ -190,12 +188,9 @@ namespace Extensions
             }
 
             //Convert Submodels
-            if (sourceEnvironement.Submodels != null)
+            if (!sourceEnvironement.Submodels.IsNullOrEmpty())
             {
-                if (environment.Submodels == null)
-                {
-                    environment.Submodels = new List<ISubmodel>();
-                }
+                environment.Submodels ??= new List<ISubmodel>();
                 foreach (var sourceSubmodel in sourceEnvironement.Submodels)
                 {
                     var newSubmodel = new Submodel(sourceSubmodel.identification.id);
@@ -204,12 +199,9 @@ namespace Extensions
                 }
             }
 
-            if (sourceEnvironement.ConceptDescriptions != null)
+            if (!sourceEnvironement.ConceptDescriptions.IsNullOrEmpty())
             {
-                if (environment.ConceptDescriptions == null)
-                {
-                    environment.ConceptDescriptions = new List<IConceptDescription>();
-                }
+                environment.ConceptDescriptions ??= new List<IConceptDescription>();
                 foreach (var sourceConceptDescription in sourceEnvironement.ConceptDescriptions)
                 {
                     var newConceptDescription = new ConceptDescription(sourceConceptDescription.identification.id);
@@ -225,12 +217,9 @@ namespace Extensions
         public static AasCore.Aas3_0.Environment ConvertFromV20(this AasCore.Aas3_0.Environment environment, AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv sourceEnvironement)
         {
             //Convert Administration Shells
-            if (sourceEnvironement.AdministrationShells != null)
+            if (!sourceEnvironement.AdministrationShells.IsNullOrEmpty())
             {
-                if (environment.AssetAdministrationShells == null)
-                {
-                    environment.AssetAdministrationShells = new List<IAssetAdministrationShell>();
-                }
+                environment.AssetAdministrationShells ??= new List<IAssetAdministrationShell>();
                 foreach (var sourceAas in sourceEnvironement.AdministrationShells)
                 {
                     // first make the AAS
@@ -250,12 +239,9 @@ namespace Extensions
             }
 
             //Convert Submodels
-            if (sourceEnvironement.Submodels != null)
+            if (!sourceEnvironement.Submodels.IsNullOrEmpty())
             {
-                if (environment.Submodels == null)
-                {
-                    environment.Submodels = new List<ISubmodel>();
-                }
+                environment.Submodels ??= new List<ISubmodel>();
                 foreach (var sourceSubmodel in sourceEnvironement.Submodels)
                 {
                     var newSubmodel = new Submodel(sourceSubmodel.identification.id);
@@ -264,12 +250,9 @@ namespace Extensions
                 }
             }
 
-            if (sourceEnvironement.ConceptDescriptions != null)
+            if (!sourceEnvironement.ConceptDescriptions.IsNullOrEmpty())
             {
-                if (environment.ConceptDescriptions == null)
-                {
-                    environment.ConceptDescriptions = new List<IConceptDescription>();
-                }
+                environment.ConceptDescriptions ??= new List<IConceptDescription>();
                 foreach (var sourceConceptDescription in sourceEnvironement.ConceptDescriptions)
                 {
                     var newConceptDescription = new ConceptDescription(sourceConceptDescription.identification.id);

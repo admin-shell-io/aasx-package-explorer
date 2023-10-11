@@ -77,10 +77,7 @@ namespace Extensions
             if (sourceSmeCollection == null)
                 return null;
 
-            if (submodelElementCollection.Value == null)
-            {
-                submodelElementCollection.Value = new List<ISubmodelElement>();
-            }
+            submodelElementCollection.Value ??= new List<ISubmodelElement>();
 
             if (!shallowCopy)
             {
@@ -105,10 +102,7 @@ namespace Extensions
             if (sourceSmeCollection == null)
                 return null;
 
-            if (submodelElementCollection.Value == null)
-            {
-                submodelElementCollection.Value = new List<ISubmodelElement>();
-            }
+            submodelElementCollection.Value ??= new List<ISubmodelElement>();
 
             if (!shallowCopy)
             {
