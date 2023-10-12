@@ -7,11 +7,6 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="TestResources\AasxCsharpLibrary.Tests\XmlValidation\expectedOk\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

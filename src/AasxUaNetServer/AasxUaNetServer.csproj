@@ -14,9 +14,4 @@
     <ProjectReference Include="..\AasCore.Aas3_0\AasCore.Aas3_0.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
 </Project>

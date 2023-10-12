@@ -27,11 +27,6 @@
     <ProjectReference Include="..\MsaglWpfControl\MsaglWpfControl.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="LICENSE.TXT">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

@@ -46,9 +46,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Content Include="AasxPluginUaNetServer.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

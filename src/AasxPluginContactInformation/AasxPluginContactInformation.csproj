@@ -24,9 +24,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="LICENSE.TXT">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <EmbeddedResource Include="Resources\no-contact-preview.png" />
   </ItemGroup>
   <ItemGroup>

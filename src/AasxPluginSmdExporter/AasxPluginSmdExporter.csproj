@@ -19,12 +19,6 @@
         <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
         <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Resource Include="LICENSE.TXT">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Resource>
-    </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Resources\LICENSE.txt">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

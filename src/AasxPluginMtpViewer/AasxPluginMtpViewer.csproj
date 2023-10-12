@@ -19,9 +19,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="LICENSE.TXT" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\LICENSE.TXT" />
   </ItemGroup>
   <ItemGroup>

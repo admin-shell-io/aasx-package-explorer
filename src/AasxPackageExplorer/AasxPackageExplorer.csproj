@@ -128,9 +128,6 @@
     <Resource Include="icon-set\Icon_AASX_256x256_W.bmp" />
     <Resource Include="aasx.ico" />
     <Folder Include="eclass\" />
-    <Resource Include="LICENSE.TXT">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <None Include="content-for-demo\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

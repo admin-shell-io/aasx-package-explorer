@@ -12,11 +12,6 @@
 		<Using Include="AasCore.Aas3_0" />
 	</ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\schemaV201\AAS.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

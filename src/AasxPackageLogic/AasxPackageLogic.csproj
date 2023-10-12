@@ -17,15 +17,11 @@
 		<Using Include="AasCore.Aas3_0" />
 	</ItemGroup>
   <ItemGroup>
-    <None Remove="LICENSE.txt" />
     <None Remove="Resources\BuildDate.txt" />
     <None Remove="Resources\i4AASCS.xml" />
     <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\BuildDate.txt" />
     <EmbeddedResource Include="Resources\i4AASCS.xml" />
   </ItemGroup>

@@ -16,11 +16,6 @@
     <ProjectReference Include="..\WpfMtpControl\WpfMtpControl.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <None Update="Opc.Ua.SampleClient.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
