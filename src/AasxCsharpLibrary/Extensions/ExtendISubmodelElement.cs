@@ -359,13 +359,10 @@ namespace Extensions
                 }
             }
 
-            if (sourceSubmodelElement.hasDataSpecification != null)
+            if (sourceSubmodelElement.hasDataSpecification != null && !sourceSubmodelElement.hasDataSpecification.reference.IsNullOrEmpty())
             {
                 //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
-                if (submodelElement.EmbeddedDataSpecifications == null)
-                {
-                    submodelElement.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
-                }
+                submodelElement.EmbeddedDataSpecifications ??= new List<IEmbeddedDataSpecification>();
                 foreach (var dataSpecification in sourceSubmodelElement.hasDataSpecification.reference)
                 {
                     if (!dataSpecification.IsEmpty)

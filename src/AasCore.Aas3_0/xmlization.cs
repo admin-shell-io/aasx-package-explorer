@@ -3,11 +3,10 @@
  * Do NOT edit or append.
  */
 
+using System.Collections.Generic;  // can't alias
 using Aas = AasCore.Aas3_0;  // renamed
 using CodeAnalysis = System.Diagnostics.CodeAnalysis;
 using Xml = System.Xml;
-
-using System.Collections.Generic;  // can't alias
 
 namespace AasCore.Aas3_0
 {
@@ -24657,6 +24656,10 @@ namespace AasCore.Aas3_0
                 Aas.IReference that,
                 Xml.XmlWriter writer)
             {
+                if (that == null)
+                {
+                    return;
+                }
                 writer.WriteStartElement(
                     "type",
                     NS);
