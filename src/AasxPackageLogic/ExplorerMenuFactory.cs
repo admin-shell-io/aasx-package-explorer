@@ -124,7 +124,11 @@ namespace AasxPackageExplorer
                             .Add("Asset", "String with Asset-Id.")))
                 .AddSeparator()
                 .AddMenu(header: "Import …", attachPoint: "import", childs: (new AasxMenu())
-                    .AddWpfBlazor(name: "ImportAML", header: "Import AutomationML into AASX …",
+					.AddWpfBlazor(name: "ImportAASX", header: "Import further AASX file into AASX …",
+						help: "Import AASX file(s) with entities to overall AAS environment.",
+						args: new AasxMenuListOfArgDefs()
+							.Add("Files", "One or multiple AASX file(s) with AAS entities data."))
+					.AddWpfBlazor(name: "ImportAML", header: "Import AutomationML into AASX …",
                         help: "Import AML file with AAS entities to overall AAS environment.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "AML file with AAS entities data."))

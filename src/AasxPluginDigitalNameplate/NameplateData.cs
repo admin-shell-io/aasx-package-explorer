@@ -150,21 +150,21 @@ namespace AasxPluginDigitalNameplate
                 var smc2 = smcContInf?.Value?
                     .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Pho?.GetSingleKey(), mm);
                 if (smc2 != null)
-                    tryAdd(smc2.Value, null, defs.CD_TelNum?.GetSingleKey());
+                    tryAdd(smc2.Value, "\u260e", defs.CD_TelNum?.GetSingleKey());
 
                 // Fax
 
                 smc2 = smcContInf?.Value?
                     .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Fax?.GetSingleKey(), mm);
                 if (smc2 != null)
-                    tryAdd(smc2.Value, null, defs.CD_FaxNum?.GetSingleKey());
+                    tryAdd(smc2.Value, "\U0001f5b7", defs.CD_FaxNum?.GetSingleKey());
 
                 // Email
 
                 smc2 = smcContInf?.Value?
                     .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Ema?.GetSingleKey(), mm);
                 if (smc2 != null)
-                    tryAdd(smc2.Value, null, defs.CD_EmaAdd?.GetSingleKey());
+                    tryAdd(smc2.Value, "\U0001f4e7", defs.CD_EmaAdd?.GetSingleKey());
             }
 
             // find markings?
@@ -325,21 +325,21 @@ namespace AasxPluginDigitalNameplate
                 var smc2 = smcContInf?.Value?
                     .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Phone?.GetSingleKey(), mm);
                 if (smc2 != null)
-                    tryAdd(smc2.Value, null, defs.CD_TelephoneNumber?.GetSingleKey());
+                    tryAdd(smc2.Value, "\u260e", defs.CD_TelephoneNumber?.GetSingleKey());
 
                 // Fax
 
                 smc2 = smcContInf?.Value?
                     .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Fax?.GetSingleKey(), mm);
                 if (smc2 != null)
-                    tryAdd(smc2.Value, null, defs.CD_FaxNumber?.GetSingleKey());
+                    tryAdd(smc2.Value, "\U0001f5b7", defs.CD_FaxNumber?.GetSingleKey());
 
                 // Email
 
                 smc2 = smcContInf?.Value?
                     .FindFirstSemanticIdAs<Aas.ISubmodelElementCollection>(defs.CD_Email?.GetSingleKey(), mm);
                 if (smc2 != null)
-                    tryAdd(smc2.Value, null, defs.CD_EmailAddress?.GetSingleKey());
+                    tryAdd(smc2.Value, "\U0001f4e7", defs.CD_EmailAddress?.GetSingleKey());
             }
 
             // find markings?

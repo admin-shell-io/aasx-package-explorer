@@ -1047,7 +1047,32 @@ namespace AasxPackageLogic
                 }
             }
 
-            if (cmd == "importaml")
+			if (cmd == "importaasx")
+			{
+				// start
+				ticket?.StartExec();
+
+				// filename
+				if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+					ticket, "File",
+					"Select AML file to be imported",
+					null,
+					"AutomationML files (*.aml)|*.aml|All files (*.*)|*.*",
+					"Import AML: No valid filename.")))
+					return;
+
+				try
+				{
+					await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+					MainWindow.RestartUIafterNewPackage();
+				}
+				catch (Exception ex)
+				{
+					LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
+				}
+			}
+
+			if (cmd == "importaml")
             {
                 // start
                 ticket?.StartExec();

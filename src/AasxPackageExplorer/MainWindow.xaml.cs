@@ -77,8 +77,8 @@ namespace AasxPackageExplorer
             get => Logic?.PackageCentral;
 
         }
-
-        public AasxMenuWpf MainMenu = new AasxMenuWpf();
+		
+		public AasxMenuWpf MainMenu = new AasxMenuWpf();
 
         private string showContentPackageUri = null;
         private string showContentPackageMime = null;
@@ -697,11 +697,73 @@ namespace AasxPackageExplorer
                         this.AssetId.Text = WpfStringAddWrapChars(
                             AdminShellUtil.EvalToNonNullString("{0}", asset.GlobalAssetId));
 
-                    // asset thumbnail
-                    try
-                    {
-                        // identify which stream to use..
-                        if (PackageCentral.MainAvailable)
+					// asset thumbnail
+					try
+					{
+						// identify which stream to use..
+						var picFound = false;
+
+						// specific for the AAS
+						if (PackageCentral.MainAvailable)
+							try
+							{
+								if (asset?.DefaultThumbnail?.Path?.HasContent() == true)
+								{
+									using (var thumbStream = PackageCentral.Main.GetLocalStreamFromPackage(
+										uriString: asset.DefaultThumbnail.Path))
+									{
+										// load image
+										if (thumbStream != null)
+										{
+											var bi = new BitmapImage();
+											bi.BeginInit();
+
+											// See https://stackoverflow.com/a/5346766/1600678
+											bi.CacheOption = BitmapCacheOption.OnLoad;
+
+											bi.StreamSource = thumbStream;
+											bi.EndInit();
+											this.AssetPic.Source = bi;
+											picFound = true;
+										}
+									}
+								}
+							}
+							catch (Exception ex)
+							{
+								AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+							}
+
+
+						// no, ask online server?
+						if (!picFound && this.theOnlineConnection != null 
+                            && this.theOnlineConnection.IsValid() 
+                            && this.theOnlineConnection.IsConnected())
+							try
+							{
+								using (var thumbStream = this.theOnlineConnection.GetThumbnailStream())
+								{
+									if (thumbStream != null)
+									{
+										using (var ms = new MemoryStream())
+										{
+											thumbStream.CopyTo(ms);
+											ms.Flush();
+											var bitmapdata = ms.ToArray();
+
+											var bi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
+											this.AssetPic.Source = bi;
+										}
+									}
+								}
+							}
+							catch (Exception ex)
+							{
+								AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+							}
+
+						// no, from the AASX?
+						if (!picFound && PackageCentral.MainAvailable)
                             try
                             {
                                 using (var thumbStream = PackageCentral.Main.GetLocalThumbnailStream())
@@ -726,30 +788,7 @@ namespace AasxPackageExplorer
                                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                             }
 
-                        if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
-                            this.theOnlineConnection.IsConnected())
-                            try
-                            {
-                                using (var thumbStream = this.theOnlineConnection.GetThumbnailStream())
-                                {
-                                    if (thumbStream != null)
-                                    {
-                                        using (var ms = new MemoryStream())
-                                        {
-                                            thumbStream.CopyTo(ms);
-                                            ms.Flush();
-                                            var bitmapdata = ms.ToArray();
-
-                                            var bi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
-                                            this.AssetPic.Source = bi;
-                                        }
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                            }
+                        
 
                     }
                     catch (Exception ex)
@@ -1920,7 +1959,7 @@ namespace AasxPackageExplorer
                     UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }
 
-                #endregion
+#endregion
             }
             catch (Exception ex)
             {
@@ -2996,7 +3035,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        #region Modal Flyovers
+#region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -3331,8 +3370,8 @@ namespace AasxPackageExplorer
             return DisplayContext;
         }
 
-        #endregion
-        #region Drag&Drop
+#endregion
+#region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -3422,7 +3461,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-        #endregion
+#endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {
