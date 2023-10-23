@@ -2272,7 +2272,19 @@ namespace AasxPackageLogic
                 relatedReferable: cd, superMenu: superMenu);
 
 #endif
-        }
+
+			// experimental: SAMM elements
+
+			DisplayOrEditEntitySammExtensions(
+				env, stack, cd.Extensions,
+				(v) => { cd.Extensions = v; },
+				addPresetNames: new[] { "IEC61360" /* , "Physical Unit" */ },
+				addPresetKeyLists: new[] {
+					new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() /* ,
+                    new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() */ }
+				},
+				relatedReferable: cd, superMenu: superMenu);
+		}
 
         public void DisplayOrEditAasEntityValueReferencePair(
             PackageCentral.PackageCentral packages, Aas.Environment env,

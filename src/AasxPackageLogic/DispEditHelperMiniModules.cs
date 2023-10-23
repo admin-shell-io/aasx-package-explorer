@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Aas = AasCore.Aas3_0;
+using Samm = AasCore.Samm2_2_0;
 
 namespace AasxPackageLogic
 {
@@ -979,171 +980,180 @@ namespace AasxPackageLogic
                     margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0));
 
-                AddHintBubble(
-                    substack, hintMode,
-                    new[] {
+                // special case: SAMM extension
+                if (Samm.Util.HasSammSemanticId(extension))
+                {
+                    substack.Add(new AnyUiLabel()
+                    {
+                        Content = "(special extension; see below)"
+                    });
+                }
+                else
+                {
+                    AddHintBubble(
+                        substack, hintMode,
+                        new[] {
                         new HintCheck(
                             () => !extension.Name.HasContent(),
                             "A name specification shall be given and unqiue within this list!")
-                    });
-                AddKeyValueExRef(
-                    substack, "name", extension, extension.Name, null, repo,
-                    v =>
-                    {
-                        extension.Name = v as string;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    });
+                        });
+                    AddKeyValueExRef(
+                        substack, "name", extension, extension.Name, null, repo,
+                        v =>
+                        {
+                            extension.Name = v as string;
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionNone();
+                        });
 
-                AddHintBubble(
-                    substack, hintMode,
-                    new[] {
+                    AddHintBubble(
+                        substack, hintMode,
+                        new[] {
                         new HintCheck(
                             () => extension.SemanticId?.IsValid() != true,
                             "Check, if a semanticId can be given in addition the key!",
                             severityLevel: HintCheck.Severity.Notice)
-                    });
-                if (SafeguardAccess(
-                        substack, repo, extension.SemanticId, "semanticId:", "Create data element!",
-                        v =>
-                        {
-                            extension.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }))
-                {
-                    AddVerticalSpace(substack);
-                    AddKeyReference(
-                        substack, "semanticId", extension.SemanticId, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAux,
-                        showRefSemId: false,
-                        addExistingEntities: "All", addFromKnown: true,
-                        addEclassIrdi: true,
-                        relatedReferable: relatedReferable,
-                        auxContextHeader: new[] { "\u2573", "Delete semanticId" },
-                        auxContextLambda: (i) =>
-                        {
-                            if (i == 0)
+                        });
+                    if (SafeguardAccess(
+                            substack, repo, extension.SemanticId, "semanticId:", "Create data element!",
+                            v =>
                             {
-                                extension.SemanticId = null;
+                                extension.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
                                 this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionRedrawEntity();
+                            }))
+                    {
+                        AddVerticalSpace(substack);
+                        AddKeyReference(
+                            substack, "semanticId", extension.SemanticId, repo,
+                            packages, PackageCentral.PackageCentral.Selector.MainAux,
+                            showRefSemId: false,
+                            addExistingEntities: "All", addFromKnown: true,
+                            addEclassIrdi: true,
+                            relatedReferable: relatedReferable,
+                            auxContextHeader: new[] { "\u2573", "Delete semanticId" },
+                            auxContextLambda: (i) =>
+                            {
+                                if (i == 0)
+                                {
+                                    extension.SemanticId = null;
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+                                return new AnyUiLambdaActionNone();
+                            });
+                        AddVerticalSpace(substack);
+                    }
+
+                    AddKeyValueExRef(
+                        substack, "valueType", extension, Aas.Stringification.ToString(extension.ValueType), null, repo,
+                        comboBoxIsEditable: editMode,
+                        //comboBoxItems: DataElement.ValueTypeItems,
+                        //TODO (jtikekar, 0000-00-00): change
+                        comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
+                        comboBoxMinWidth: 190,
+                        // dead-csharp off
+                        //new string[] {
+                        //"anyURI", "base64Binary",
+                        //"boolean", "date", "dateTime",
+                        //"dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
+                        //"positiveInteger",
+                        //"unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte",
+                        //"nonPositiveInteger", "negativeInteger",
+                        //"double", "duration",
+                        //"dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" },
+                        // dead-csharp on
+                        setValue: v =>
+                        {
+                            var vt = Aas.Stringification.DataTypeDefXsdFromString((string)v);
+                            if (vt.HasValue)
+                                extension.ValueType = vt.Value;
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionNone();
+                        });
+
+                    AddKeyValueExRef(
+                        substack, "value", extension, extension.Value, null, repo,
+                        v =>
+                        {
+                            extension.Value = v as string;
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionNone();
+                        },
+                        limitToOneRowForNoEdit: true,
+                        auxButtonTitles: new[] { "\u2261" },
+                        auxButtonToolTips: new[] { "Edit in multiline editor" },
+                        auxButtonLambda: (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0)
+                            {
+                                var uc = new AnyUiDialogueDataTextEditor(
+                                                    caption: $"Edit Extension '{"" + extension.Name}'",
+                                                    mimeType: Aas.Stringification.ToString(extension.ValueType),
+                                                    text: extension.Value);
+                                if (this.context.StartFlyoverModal(uc))
+                                {
+                                    extension.Value = uc.Text;
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryUpdateValue());
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
                             }
                             return new AnyUiLambdaActionNone();
                         });
-                    AddVerticalSpace(substack);
-                }
 
-
-                AddKeyValueExRef(
-                    substack, "valueType", extension, Aas.Stringification.ToString(extension.ValueType), null, repo,
-                    comboBoxIsEditable: editMode,
-                    //comboBoxItems: DataElement.ValueTypeItems,
-                    //TODO (jtikekar, 0000-00-00): change
-                    comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
-                    comboBoxMinWidth: 190,
-                    // dead-csharp off
-                    //new string[] {
-                    //"anyURI", "base64Binary",
-                    //"boolean", "date", "dateTime",
-                    //"dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
-                    //"positiveInteger",
-                    //"unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte",
-                    //"nonPositiveInteger", "negativeInteger",
-                    //"double", "duration",
-                    //"dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" },
-                    // dead-csharp on
-                    setValue: v =>
-                    {
-                        var vt = Aas.Stringification.DataTypeDefXsdFromString((string)v);
-                        if (vt.HasValue)
-                            extension.ValueType = vt.Value;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                AddKeyValueExRef(
-                    substack, "value", extension, extension.Value, null, repo,
-                    v =>
-                    {
-                        extension.Value = v as string;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    },
-                    limitToOneRowForNoEdit: true,
-                    auxButtonTitles: new[] { "\u2261" },
-                    auxButtonToolTips: new[] { "Edit in multiline editor" },
-                    auxButtonLambda: (buttonNdx) =>
-                    {
-                        if (buttonNdx == 0)
-                        {
-                            var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit Extension '{"" + extension.Name}'",
-                                                mimeType: Aas.Stringification.ToString(extension.ValueType),
-                                                text: extension.Value);
-                            if (this.context.StartFlyoverModal(uc))
+                    // refersTo are MULTIPLE ModelReference<IReferable>. That is: multiple x multiple keys!                
+                    if (this.SafeguardAccess(
+                            substack, this.repo, extension.RefersTo, "refersTo:", "Create data element!",
+                            v =>
                             {
-                                extension.Value = uc.Text;
-                                this.AddDiaryEntry(relatedReferable, new DiaryEntryUpdateValue());
-                                return new AnyUiLambdaActionRedrawEntity();
-                            }
-                        }
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                // refersTo are MULTIPLE ModelReference<IReferable>. That is: multiple x multiple keys!                
-                if (this.SafeguardAccess(
-                        substack, this.repo, extension.RefersTo, "refersTo:", "Create data element!",
-                        v =>
-                        {
-                            extension.RefersTo = new List<IReference>() { new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>()) };
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }))
-                {
-                    if (editMode)
-                    {
-                        // let the user control the number of references
-                        this.AddActionPanel(
-                            substack, "refersTo:",
-                            new[] { "Add Reference", "Delete last reference" }, repo,
-                            (buttonNdx) =>
-                            {
-                                if (buttonNdx == 0)
-                                {
-                                    if (extension.RefersTo == null)
-                                        extension.RefersTo = new List<IReference>();
-                                    extension.RefersTo.Add(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>()));
-                                }
-
-                                if (buttonNdx == 1 && extension.RefersTo != null)
-                                {
-                                    if (extension.RefersTo.Count > 0)
-                                        extension.RefersTo.Remove(extension.RefersTo.Last());
-                                    else
-                                        extension.RefersTo = null;
-                                }
-
+                                extension.RefersTo = new List<IReference>() { new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>()) };
                                 this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionRedrawEntity();
-                            });
-                    }
-
-                    // now use the normal mechanism to deal with editMode or not..
-                    if (extension.RefersTo != null && extension.RefersTo != null)
+                            }))
                     {
-                        for (int ki = 0; ki < extension.RefersTo.Count; ki++)
-                            if (extension.RefersTo[ki] != null)
-                                this.AddKeyReference(
-                                    substack, String.Format("refersTo[{0}]", ki),
-                                    extension.RefersTo[ki],
-                                    repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
-                                    addExistingEntities: "All", addFromKnown: true,
-                                    addEclassIrdi: true,
-                                    showRefSemId: false);
+                        if (editMode)
+                        {
+                            // let the user control the number of references
+                            this.AddActionPanel(
+                                substack, "refersTo:",
+                                new[] { "Add Reference", "Delete last reference" }, repo,
+                                (buttonNdx) =>
+                                {
+                                    if (buttonNdx == 0)
+                                    {
+                                        if (extension.RefersTo == null)
+                                            extension.RefersTo = new List<IReference>();
+                                        extension.RefersTo.Add(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>()));
+                                    }
+
+                                    if (buttonNdx == 1 && extension.RefersTo != null)
+                                    {
+                                        if (extension.RefersTo.Count > 0)
+                                            extension.RefersTo.Remove(extension.RefersTo.Last());
+                                        else
+                                            extension.RefersTo = null;
+                                    }
+
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                });
+                        }
+
+                        // now use the normal mechanism to deal with editMode or not..
+                        if (extension.RefersTo != null && extension.RefersTo != null)
+                        {
+                            for (int ki = 0; ki < extension.RefersTo.Count; ki++)
+                                if (extension.RefersTo[ki] != null)
+                                    this.AddKeyReference(
+                                        substack, String.Format("refersTo[{0}]", ki),
+                                        extension.RefersTo[ki],
+                                        repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
+                                        addExistingEntities: "All", addFromKnown: true,
+                                        addEclassIrdi: true,
+                                        showRefSemId: false);
+                        }
                     }
                 }
-
             }
 
         }

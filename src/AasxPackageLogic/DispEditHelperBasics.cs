@@ -1579,7 +1579,8 @@ namespace AasxPackageLogic
             bool topContextMenu = false,
             Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
             string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
-            string[] auxContextHeader = null, Func<int, AnyUiLambdaActionBase> auxContextLambda = null)
+            string[] auxContextHeader = null, Func<int, AnyUiLambdaActionBase> auxContextLambda = null,
+            int maxNumOfKey = int.MaxValue)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
