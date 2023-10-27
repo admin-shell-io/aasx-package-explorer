@@ -16814,29 +16814,31 @@ namespace AasCore.Aas3_0
                     }
                 }
 
-                if (theDataSpecification == null)
-                {
-                    error = new Reporting.Error(
-                        "The required property DataSpecification has not been given " +
-                        "in the XML representation of an instance of class EmbeddedDataSpecification");
-                    return null;
-                }
+                //if (theDataSpecification == null)
+                //{
+                //    error = new Reporting.Error(
+                //        "The required property DataSpecification has not been given " +
+                //        "in the XML representation of an instance of class EmbeddedDataSpecification");
+                //    return null;
+                //}
 
-                if (theDataSpecificationContent == null)
-                {
-                    error = new Reporting.Error(
-                        "The required property DataSpecificationContent has not been given " +
-                        "in the XML representation of an instance of class EmbeddedDataSpecification");
-                    return null;
-                }
+                //if (theDataSpecificationContent == null)
+                //{
+                //    error = new Reporting.Error(
+                //        "The required property DataSpecificationContent has not been given " +
+                //        "in the XML representation of an instance of class EmbeddedDataSpecification");
+                //    return null;
+                //}
 
-                return new Aas.EmbeddedDataSpecification(
-                    theDataSpecification
-                         ?? throw new System.InvalidOperationException(
-                            "Unexpected null, had to be handled before"),
-                    theDataSpecificationContent
-                         ?? throw new System.InvalidOperationException(
-                            "Unexpected null, had to be handled before"));
+                //return new Aas.EmbeddedDataSpecification(
+                //    theDataSpecification
+                //         ?? throw new System.InvalidOperationException(
+                //            "Unexpected null, had to be handled before"),
+                //    theDataSpecificationContent
+                //         ?? throw new System.InvalidOperationException(
+                //            "Unexpected null, had to be handled before"));
+
+                return new EmbeddedDataSpecification(theDataSpecification, theDataSpecificationContent);
             }  // internal static Aas.EmbeddedDataSpecification? EmbeddedDataSpecificationFromSequence
 
             /// <summary>
@@ -24897,25 +24899,31 @@ namespace AasCore.Aas3_0
                 Aas.IEmbeddedDataSpecification that,
                 Xml.XmlWriter writer)
             {
-                writer.WriteStartElement(
-                    "dataSpecification",
-                    NS);
+                if (that.DataSpecification != null)
+                {
+                    writer.WriteStartElement(
+                                "dataSpecification",
+                                NS);
 
-                this.ReferenceToSequence(
-                    that.DataSpecification,
-                    writer);
+                    this.ReferenceToSequence(
+                        that.DataSpecification,
+                        writer);
 
-                writer.WriteEndElement();
+                    writer.WriteEndElement();
+                }
 
-                writer.WriteStartElement(
-                    "dataSpecificationContent",
-                    NS);
+                if (that.DataSpecificationContent != null)
+                {
+                    writer.WriteStartElement(
+                                "dataSpecificationContent",
+                                NS);
 
-                this.Visit(
-                    that.DataSpecificationContent,
-                    writer);
+                    this.Visit(
+                        that.DataSpecificationContent,
+                        writer);
 
-                writer.WriteEndElement();
+                    writer.WriteEndElement();
+                }
 
             }  // private void EmbeddedDataSpecificationToSequence
 
