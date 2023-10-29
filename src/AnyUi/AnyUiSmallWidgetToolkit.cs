@@ -620,9 +620,10 @@ namespace AnyUi
         public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrush background, AnyUiBrush foreground,
             bool requestAuxButton = false,
             string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null,
-            string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
+            string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null,
+            AnyUiFrameworkElement iconElement = null)
         {
-            var g = AddSmallGrid(1, 4, new[] { "*", "#", "#", "#" }, margin: new AnyUiThickness(0, 13, 0, 0));
+            var g = AddSmallGrid(1, 4, new[] { "#", "*", "#", "#" }, margin: new AnyUiThickness(0, 13, 0, 0));
 
             // manually add label (legacy?)
             var l = new AnyUiLabel();
@@ -633,16 +634,30 @@ namespace AnyUi
             l.Content = "" + name;
             l.FontWeight = AnyUiFontWeight.Bold;
             AnyUiGrid.SetRow(l, 0);
-            AnyUiGrid.SetColumn(l, 0);
+            AnyUiGrid.SetColumn(l, 1);
             g.Children.Add(l);
             view.Children.Add(g);
+
+            // add icon
+            if (iconElement != null)
+            {
+				AnyUiGrid.SetRow(iconElement, 0);
+				AnyUiGrid.SetColumn(iconElement, 0);
+				g.Children.Add(iconElement);
+                l.VerticalContentAlignment = AnyUiVerticalAlignment.Bottom;
+			}
+            else
+            {
+                // make sure no effect
+                g.ColumnDefinitions[0].Width = new AnyUiGridLength(0, AnyUiGridUnitType.Pixel);
+            }
 
             // auxButton
             if (requestAuxButton && auxButtonTitle != null && auxButtonLambda != null)
             {
                 AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
-                        g, 0, 1,
+                        g, 0, 2,
                         margin: new AnyUiThickness(2, 2, 2, 2),
                         padding: new AnyUiThickness(5, 0, 5, 0),
                         content: auxButtonTitle),
@@ -653,7 +668,7 @@ namespace AnyUi
             if (requestAuxButton && auxContextHeader != null && auxContextLambda != null)
             {
                 AddSmallContextMenuItemTo(
-                        g, 0, 2,
+                        g, 0, 3,
                         "\u22ee",
                         auxContextHeader.ToArray(),
                         margin: new AnyUiThickness(2, 2, 2, 2),

@@ -981,7 +981,8 @@ namespace AasxPackageLogic
                     padding: new AnyUiThickness(5, 0, 5, 0));
 
                 // special case: SAMM extension
-                if (Samm.Util.HasSammSemanticId(extension))
+                // TODO: enable
+                if (false && Samm.Util.HasSammSemanticId(extension))
                 {
                     substack.Add(new AnyUiLabel()
                     {

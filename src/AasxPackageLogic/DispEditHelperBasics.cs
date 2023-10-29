@@ -300,7 +300,8 @@ namespace AasxPackageLogic
             string[] auxButtonToolTips = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
             bool limitToOneRowForNoEdit = false,
-            int comboBoxMinWidth = -1)
+            int comboBoxMinWidth = -1,
+			bool noFirstColumnWidth = false)
         {
             AddKeyValue(
                 view, key, value, nullValue, repo, setValue, comboBoxItems, comboBoxIsEditable,
@@ -308,7 +309,8 @@ namespace AasxPackageLogic
                 auxButtonTitles, auxButtonToolTips, takeOverLambdaAction,
                 (value == null) ? 0 : value.GetHashCode(), containingObject: containingObject,
                 limitToOneRowForNoEdit: limitToOneRowForNoEdit,
-                comboBoxMinWidth: comboBoxMinWidth);
+                comboBoxMinWidth: comboBoxMinWidth,
+                noFirstColumnWidth: noFirstColumnWidth);
         }
 
         /// <summary>
@@ -344,7 +346,8 @@ namespace AasxPackageLogic
             Nullable<int> valueHash = null,
             object containingObject = null,
             bool limitToOneRowForNoEdit = false,
-            int comboBoxMinWidth = -1)
+            int comboBoxMinWidth = -1,
+            bool noFirstColumnWidth = false)
         {
             // draw anyway?
             if (repo != null && value == null)
@@ -380,7 +383,8 @@ namespace AasxPackageLogic
             g.Margin = new AnyUiThickness(0, 1, 0, 1);
             var gc1 = new AnyUiColumnDefinition();
             gc1.Width = AnyUiGridLength.Auto;
-            gc1.MinWidth = this.GetWidth(FirstColumnWidth.Standard);
+            if (!noFirstColumnWidth)
+                gc1.MinWidth = this.GetWidth(FirstColumnWidth.Standard);
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new AnyUiColumnDefinition();
             gc2.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);

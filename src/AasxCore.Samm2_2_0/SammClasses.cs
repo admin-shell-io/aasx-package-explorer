@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Linq.Expressions;
 using System.Reflection.PortableExecutable;
 using System.Runtime.Serialization;
+using AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -45,12 +46,30 @@ namespace AasCore.Samm2_2_0
 		/// get short name, which can als be used to distinguish elements.
 		/// Exmaple: samm-x
 		/// </summary>
-		public string GetSelfName();
+		string GetSelfName();
 
 		/// <summary>
 		/// Get URN of this element class.
 		/// </summary>
-		public string GetSelfUrn();
+		string GetSelfUrn();
+	}
+
+	/// <summary>
+	/// Shall be implemented in order to give hints about the
+	/// (hierarchical) structuring of elements
+	/// </summary>
+	public interface ISammStructureModel
+	{
+		/// <summary>
+		/// True, if a top element of a hierarchy
+		/// </summary>
+		bool IsTopElement();
+
+		/// <summary>
+		/// Iterate over all the SAMM elements referenced from this instance
+		/// without further recursion (see AasCore).
+		/// </summary>
+		IEnumerable<SammReference> DescendOnce();
 	}
 
 	/// <summary>
@@ -59,6 +78,10 @@ namespace AasCore.Samm2_2_0
 	/// </summary>
 	public class ModelElement
 	{
+		// Note:
+		// The SAMM meta model details, that every element has a name.
+		// For AAS, the name is given by the Id of the ConceptDescription
+
 		/// <summary>
 		/// Human readable name in a specific language. This attribute may be defined multiple
 		/// times for different languages but only once for a specific language. There should 
@@ -237,23 +260,11 @@ namespace AasCore.Samm2_2_0
 	/// </summary>
 	public class SammReference
 	{
-		private string Rf { get; set; }
+		public string Value { get; set; }
 
-		public SammReference(string rf)
+		public SammReference(string val = "")
 		{
-			Rf = rf;
-		}
-
-		public static implicit operator string(SammReference sr)
-		{
-			if (sr == null)
-				return "";
-			return sr.Rf;
-		}
-
-		public static implicit operator SammReference(string rf)
-		{
-			return new SammReference(rf);
+			Value = val;
 		}
 	}
 
@@ -404,12 +415,30 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#characteristic-characteristic"/>
 	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Characteristic"/>
 	/// </summary>
-	public class Characteristic : ModelElement
+	public class Characteristic : ModelElement, ISammSelfDescription, ISammStructureModel
 	{
+		// self description
+		public string GetSelfName() => "samm-characteristic";
+		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Characteristic";
+
+		// structure model
+		public bool IsTopElement() => false;
+		public IEnumerable<SammReference> DescendOnce()
+		{
+			if (DataType != null)
+				yield return DataType;
+		}
+
 		/// <summary>
 		/// Reference to a scalar or complex (Entity) data type. See Section "Type System" in the Aspect Meta Model.
+		/// Also the scalar data types (e.g. xsd:decimal) are treated as references in the first degree.
 		/// </summary>
-		public SammDataType? DataType { get; set; }
+		public SammReference DataType { get; set; }
+
+		public Characteristic()
+		{
+			DataType = new SammReference("");
+		}
 	}
 
 	/// <summary>
@@ -422,8 +451,8 @@ namespace AasCore.Samm2_2_0
 	public class Trait : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-trait";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Trait";
+		public new string GetSelfName() => "samm-trait";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Trait";
 
 		/// <summary>
 		/// The Characterstic that is being constrained.
@@ -447,8 +476,8 @@ namespace AasCore.Samm2_2_0
 	public class Quantifiable : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-quantifiable";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Quantifiable";
+		public new string GetSelfName() => "samm-quantifiable";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Quantifiable";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog
@@ -464,16 +493,13 @@ namespace AasCore.Samm2_2_0
 	public class Measurement : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-measurement";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Measurement";
+		public new string GetSelfName() => "samm-measurement";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Measurement";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog
 		/// </summary>
-		[JsonIgnore]
 		public SammReference Unit { get; set; }
-		[JsonProperty(PropertyName = "Unit")]
-		public string JsonUnit { get => "" + Unit; }
 
 		public Measurement()
 		{
@@ -489,8 +515,8 @@ namespace AasCore.Samm2_2_0
 	public class Enumeration : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-enumeration";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Enumeration";
+		public new string GetSelfName() => "samm-enumeration";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Enumeration";
 
 		/// <summary>
 		/// List of possible values. The dataType of each of the values must match the 
@@ -534,8 +560,8 @@ namespace AasCore.Samm2_2_0
 	public class Duration : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-duration";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Duration";
+		public new string GetSelfName() => "samm-duration";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Duration";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog. The referenced unit or its referenceUnit 
@@ -551,7 +577,7 @@ namespace AasCore.Samm2_2_0
 
 		public Duration()
 		{
-			Unit = "";
+			Unit = new SammReference();
 		}
 	}
 
@@ -564,8 +590,8 @@ namespace AasCore.Samm2_2_0
 	public class Collection : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-collection";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Collection";
+		public new string GetSelfName() => "samm-collection";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Collection";
 
 		/// <summary>
 		/// Reference to a Characteristic which describes the individual elements contained in the Collection.
@@ -574,7 +600,7 @@ namespace AasCore.Samm2_2_0
 
 		public Collection()
 		{
-			ElementCharacteristic = "";
+			ElementCharacteristic = new SammReference();
 		}
 	}
 
@@ -643,8 +669,8 @@ namespace AasCore.Samm2_2_0
 	public class Code : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-code";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Code";
+		public new string GetSelfName() => "samm-code";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Code";
 	}
 
 	/// <summary>
@@ -657,8 +683,8 @@ namespace AasCore.Samm2_2_0
 	public class Either : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-either";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Either";
+		public new string GetSelfName() => "samm-either";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Either";
 
 		/// <summary>
 		/// The left side of the Either. The attribute references another Characteristic which describes the value.
@@ -686,8 +712,8 @@ namespace AasCore.Samm2_2_0
 	public class SingleEntity : Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-single-entity";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#SingleEntity";
+		public new string GetSelfName() => "samm-single-entity";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#SingleEntity";
 	}
 
 	/// <summary>
@@ -701,8 +727,8 @@ namespace AasCore.Samm2_2_0
 	public class StructuredValue: Characteristic, ISammSelfDescription
 	{
 		// self description
-		public string GetSelfName() => "samm-structured-value";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#StructuredValue";
+		public new string GetSelfName() => "samm-structured-value";
+		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#StructuredValue";
 
 		/// <summary>
 		/// The regular expression used to deconstruct the value into parts that are mapped to separate 
@@ -722,6 +748,76 @@ namespace AasCore.Samm2_2_0
 		{
 			DeconstructionRule = "";
 			Elements = new List<string>();
+		}
+	}
+
+	/// <summary>
+	/// A Property represents a named value. This element is optional and can appear multiple times in a model ([0..n]). 
+	/// One Property has exactly one Characteristic.
+	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/meta-model-elements.html#meta-model-elements"/>
+	/// </summary>
+	public class Property : ModelElement, ISammSelfDescription, ISammStructureModel
+	{
+		// self description
+		public string GetSelfName() => "samm-property";
+		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Property";
+
+		// structure model
+		public bool IsTopElement() => false;
+		public IEnumerable<SammReference> DescendOnce()
+		{
+			if (Characteristic != null)
+				yield return Characteristic;
+		}
+
+		/// <summary>
+		/// This provides an example value for the Property, which requires that the entered data type has been defined 
+		/// in a corresponding Characteristic. It is important to ensure that the data type has the correct format. 
+		/// Find the Data Types (SAMM 2.1.0) with an example value.
+		/// </summary>
+		public string? ExampleValue { get; set; }
+
+		/// <summary>
+		/// One Property has exactly one Characteristic.
+		/// </summary>
+		public SammReference Characteristic { get; set; }
+
+		public Property()
+		{
+			Characteristic = new SammReference("");
+		}
+	}
+
+	/// <summary>
+	/// An Aspect is the root element of each Aspect Model and has a number of Properties, Events, and Operations. 
+	/// This element is mandatory and must appear exactly once per model. 
+	/// It has any number of Properties, Operations and Events ([0..n]).
+	/// </summary>
+	public class Aspect : ModelElement, ISammSelfDescription, ISammStructureModel
+	{
+		// self description
+		public string GetSelfName() => "samm-aspect";
+		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Aspect";
+
+		// structure model
+		public bool IsTopElement() => true;
+		public IEnumerable<SammReference> DescendOnce()
+		{
+			if (Properties != null)
+				foreach (var x in Properties)
+					yield return x;
+		}
+
+		// own
+		public List<SammReference> Properties { get; set; }
+		public List<SammReference> Events { get; set; }
+		public List<SammReference> Operations { get; set; }
+
+		public Aspect()
+		{
+			Properties = new List<SammReference>();
+			Events = new List<SammReference>();
+			Operations = new List<SammReference>();
 		}
 	}
 
@@ -750,6 +846,127 @@ namespace AasCore.Samm2_2_0
 			typeof(SingleEntity),
 			typeof(StructuredValue)
 		};
+
+		public static Type[] AddableElements =
+		{
+			// Top level
+			typeof(Aspect),
+			typeof(Property),
+			// Characteristic
+			typeof(Characteristic),
+			typeof(Trait),
+			typeof(Quantifiable),
+			typeof(Measurement),
+			typeof(Enumeration),
+			typeof(State),
+			typeof(Duration),
+			typeof(Collection),
+			typeof(List),
+			typeof(Set),
+			typeof(SortedSet),
+			typeof(TimeSeries),
+			typeof(Code),
+			typeof(Either),
+			typeof(SingleEntity),
+			typeof(StructuredValue)
+		};
+
+		/// <summary>
+		/// Holds information, how model element types should be rendered on the screen.
+		/// </summary>
+		public class SammElementRenderInfo
+		{
+			public string DisplayName = "";
+			public string Abbreviation = "";
+			public uint Foreground = 0x00000000;
+			public uint Background = 0x00000000;
+		}
+
+		private static Dictionary<Type, SammElementRenderInfo> _renderInfo = 
+			      new Dictionary<Type, SammElementRenderInfo>();
+
+		public static SammElementRenderInfo? GetRenderInfo(Type t)
+		{
+			if (t != null && _renderInfo.ContainsKey(t))
+				return _renderInfo[t];
+			return null;
+		}
+
+		static Constants()
+		{
+			_renderInfo.Add(typeof(Aspect), new SammElementRenderInfo() { 
+				DisplayName = "Aspect",
+				Abbreviation = "A",
+				Foreground = 0xFF000000,
+				Background = 0xFF8298E0
+			});
+
+			_renderInfo.Add(typeof(Property), new SammElementRenderInfo()
+			{
+				DisplayName = "Property",
+				Abbreviation = "P",
+				Foreground = 0xFF000000,
+				Background = 0xFFC5C8D4
+			});
+
+			_renderInfo.Add(typeof(Characteristic), new SammElementRenderInfo()
+			{
+				DisplayName = "Characteristic",
+				Abbreviation = "C",
+				Foreground = 0xFF000000,
+				Background = 0xFFD6E2A6
+			});
+
+			_renderInfo.Add(typeof(IEntity), new SammElementRenderInfo()
+			{
+				DisplayName = "Entity",
+				Abbreviation = "E",
+				Foreground = 0xFF000000,
+				Background = 0xFFAEADE0
+			});
+
+			_renderInfo.Add(typeof(UnaryExpression), new SammElementRenderInfo()
+			{
+				DisplayName = "Unit",
+				Abbreviation = "U",
+				Foreground = 0xFF000000,
+				Background = 0xFFB9AB50
+			});
+
+			_renderInfo.Add(typeof(Constraint), new SammElementRenderInfo()
+			{
+				DisplayName = "Constraint",
+				Abbreviation = "C",
+				Foreground = 0xFF000000,
+				Background = 0xFF74AEAF
+			});
+
+			_renderInfo.Add(typeof(Trait), new SammElementRenderInfo()
+			{
+				DisplayName = "Trait",
+				Abbreviation = "T",
+				Foreground = 0xFF000000,
+				Background = 0xFF74AEAF
+			});
+
+			_renderInfo.Add(typeof(Operation), new SammElementRenderInfo()
+			{
+				DisplayName = "Operation",
+				Abbreviation = "O",
+				Foreground = 0xFF000000,
+				Background = 0xFFD5BFDA
+			});
+
+			_renderInfo.Add(typeof(EventArgs), new SammElementRenderInfo()
+			{
+				DisplayName = "Event",
+				Abbreviation = "E",
+				Foreground = 0xFF000000,
+				Background = 0xFFB9D8FA
+			});
+		}
+
+		public static uint RenderBackground = 0xFFEFEFF0;
 	}
 
 	public static class Util
@@ -776,13 +993,18 @@ namespace AasCore.Samm2_2_0
 
 		public static Dictionary<string, Type> SammUrnToType = new Dictionary<string, Type>();
 
+		public static Dictionary<Type, string> SammTypeToName = new Dictionary<Type, string>();
+
 		static Util()
 		{
 			// dictionary from URN to type
-			foreach (var st in Constants.AddableCharacteristic)
+			foreach (var st in Constants.AddableElements)
 			{
 				if (Activator.CreateInstance(st, new object[] { }) is ISammSelfDescription ssd)
+				{
 					SammUrnToType.Add(ssd.GetSelfUrn().ToLower(), st);
+					SammTypeToName.Add(st, "" + ssd.GetSelfName());
+				}
 			}
 		}
 
@@ -793,6 +1015,64 @@ namespace AasCore.Samm2_2_0
 			if (SammUrnToType.ContainsKey(urn.ToLower()))
 				return SammUrnToType[urn.ToLower()];
 			return null;
+		}
+
+		public static string? GetNameFromSammType(Type? sammType)
+		{
+			if (sammType == null)
+				return null;
+			if (SammTypeToName.ContainsKey(sammType))
+				return SammTypeToName[sammType];
+			return null;
+		}
+
+		/// <summary>
+		/// Any chars which are sitting between "meaningful words" within a URI
+		/// </summary>
+		public static char[] UriDelimiters = new[] {
+			':', '/', '+', '?', '[', ']', '@', '!', '$', '&',
+			'\'', '(', ')', '*', ',', ';', '.', '=' };
+
+		public static string? ShortenUri(string? uri)
+		{
+			// corner case
+			if (uri == null)
+				return null;
+			uri = uri.Trim();
+			if (uri.Length < 1)
+				return "";
+
+			// simple case: find a anchor / '#'
+			var trimPos = uri.LastIndexOf('#');
+
+			// be more flexible?
+			if (trimPos < 0)
+				trimPos = uri.LastIndexOfAny(UriDelimiters);
+
+			// ok, trim
+			if (trimPos >= 0)
+				uri = uri.Substring(0, trimPos);
+
+			// return
+			return uri;
+		}
+
+		public static string? LastWordOfUri(string? uri, string elseStr = "")
+		{
+			// corner case
+			if (uri == null)
+				return null;
+			uri = uri.Trim();
+			if (uri.Length < 1)
+				return "";
+
+			// find delimiter?
+			var li = uri.LastIndexOf('#'); 
+			if (li < 0) 
+				li = uri.LastIndexOfAny(UriDelimiters);
+			if (li > 0)
+				return uri.Substring(li + 1);
+			return elseStr;
 		}
 	}
 }

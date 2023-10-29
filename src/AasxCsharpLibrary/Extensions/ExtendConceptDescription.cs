@@ -310,5 +310,45 @@ namespace Extensions
                 cd.IsCaseOf = new List<IReference>();
             cd.IsCaseOf.Add(ico);
         }
-    }
+
+		/// <summary>
+		/// Returns false, if there is another element with same idShort in the list
+		/// </summary>
+		public static bool CheckIdShortIsUnique(this List<IConceptDescription> cds, string idShort)
+		{
+			idShort = idShort?.Trim();
+			if (idShort == null || idShort.Length < 1)
+				return false;
+
+			var res = true;
+			foreach (var smw in cds)
+				if (smw != null && smw.IdShort != null && smw.IdShort == idShort)
+				{
+					res = false;
+					break;
+				}
+
+			return res;
+		}
+
+        /// <summary>
+        /// Creates ids with numerical index according to template string, until a unique idShort is found
+        /// </summary>
+		public static string IterateIdShortTemplateToBeUnique(this List<IConceptDescription> cds, string idShortTemplate, int maxNum)
+		{
+			if (idShortTemplate == null || maxNum < 1 || !idShortTemplate.Contains("{0"))
+				return null;
+
+			int i = 1;
+			while (i < maxNum)
+			{
+				var ids = string.Format(idShortTemplate, i);
+				if (cds.CheckIdShortIsUnique(ids))
+					return ids;
+				i++;
+			}
+
+			return null;
+		}
+	}
 }

@@ -475,8 +475,6 @@ namespace AasxPackageExplorer
             if (ve == null)
                 return false;
 
-            // select (but no callback!)
-            SelectSingleVisualElement(ve, preventFireItem: true);
 
             if (wishExpanded == true)
             {
@@ -490,7 +488,11 @@ namespace AasxPackageExplorer
             }
             if (wishExpanded == false)
                 ve.IsExpanded = false;
-            Woodoo(ve);
+
+			// select (but no callback!)
+			SelectSingleVisualElement(ve, preventFireItem: true);
+
+			Woodoo(ve);
 
             this.Refresh();
 

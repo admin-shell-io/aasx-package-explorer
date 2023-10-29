@@ -12,6 +12,7 @@ using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
+using Namotion.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +20,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using Aas = AasCore.Aas3_0;
+using Samm = AasCore.Samm2_2_0;
 
 // ReSharper disable VirtualMemberCallInConstructor
 
@@ -561,7 +563,7 @@ namespace AasxPackageLogic
             "Environment", "AdministrationShells", "ConceptDescriptions", "Package", "OrphanSubmodels",
             "AllSubmodels", "SupplementalFiles", "Value.Aas.Reference", "Empty", "Dummy" };
 
-        public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
+        public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme, Structured }
 
         public string thePackageSourceFn;
         public AdminShellPackageEnv thePackage = null;
@@ -1229,7 +1231,27 @@ namespace AasxPackageLogic
                         this.Info += " = " + vl;
                 }
 
-                //TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
+                // SAMM?
+                var sammType = DispEditHelperModules.CheckReferableForSammExtensionType(theCD);
+				var sammName = DispEditHelperModules.CheckReferableForSammExtensionTypeName(sammType);
+                if (sammName?.HasContent() == true)
+                {
+                    // completely reformat the Caption
+                    this.Caption = $"\"{"" + theCD.IdShort}\" \uff5f{sammName}\uff60 {"" + theCD.Id}";
+
+                    // do model element colors?
+                    var ri = Samm.Constants.GetRenderInfo(sammType);
+                    if (ri != null)
+                    {
+                        this.TagString = "" + ri.Abbreviation;
+                        this.Border = new AnyUiColor(ri.Background);
+                        this.Background = new AnyUiColor(Samm.Constants.RenderBackground);
+						this.TagBg = new AnyUiColor(ri.Background);
+                        this.TagFg = new AnyUiColor(ri.Foreground);
+					}
+				}
+
+				//TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
                 var dspu = theCD.GetPhysicalUnit();
                 if (dspu != null)
@@ -1242,7 +1264,7 @@ namespace AasxPackageLogic
 
                 } 
 #endif
-            }
+			}
         }
 
         // sorting
@@ -1501,6 +1523,9 @@ namespace AasxPackageLogic
         // kept in the class
         private VisualElementEnvironmentItem
             tiPackage = null, tiEnv = null, tiShells = null, tiCDs = null;
+
+        private MultiValueDictionary<string, Aas.IReferable> _idToReferable =
+            new MultiValueDictionary<string, IReferable>();
 
         private MultiValueDictionary<Aas.IConceptDescription, VisualElementGeneric> _cdReferred =
             new MultiValueDictionary<Aas.IConceptDescription, VisualElementGeneric>();
@@ -1871,6 +1896,45 @@ namespace AasxPackageLogic
                 return;
 
             //
+            // try to approach structures first
+            //
+
+            if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Structured)
+            {
+                // recursive lambda!!
+                Action<VisualElementGeneric, Aas.IConceptDescription> lambdaAddRecurse = null;
+                lambdaAddRecurse = (tiParent, cd) =>
+                {
+                    // add
+                    var tiCD = GenerateVisualElementsForSingleCD(cache, env, cd, tiParent);
+                    _cdReferred.Add(cd, tiCD);
+
+					// look for descendants
+					foreach (var me in DispEditHelperModules.CheckReferableForSammElements(cd))
+						if (me is Samm.ISammStructureModel ssm)
+                            foreach (var sr in ssm.DescendOnce())
+                            {
+                                // try to find SAMM elements
+                                if (sr?.Value?.HasContent() != true || !_idToReferable.ContainsKey(sr.Value))
+                                    continue;
+
+                                foreach (var y in _idToReferable[sr.Value])
+                                    if (y is Aas.IConceptDescription foundCD)
+                                        lambdaAddRecurse(tiCD, foundCD);
+                            }
+				};
+
+                // visit top nodes to start the lambda
+				foreach (var cd in env.ConceptDescriptions)
+                    foreach (var me in DispEditHelperModules.CheckReferableForSammElements(cd))
+                        if (me is Samm.ISammStructureModel ssm && ssm.IsTopElement())
+                        {
+                            // add && recurse
+                            lambdaAddRecurse(tiCDs, cd);
+					    }
+			}
+
+            //
             // create 
             //
 
@@ -1885,7 +1949,11 @@ namespace AasxPackageLogic
                     && _cdToSm.ContainsKey(cd))
                     continue;
 
-                GenerateVisualElementsForSingleCD(cache, env, cd, tiCDs);
+				if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Structured
+					&& _cdReferred.ContainsKey(cd))
+					continue;
+
+				GenerateVisualElementsForSingleCD(cache, env, cd, tiCDs);
             }
 
             //
@@ -1938,19 +2006,33 @@ namespace AasxPackageLogic
             OptionLazyLoadingFirst = lazyLoadingFirst;
 
             // quickly connect the Identifiables to the environment
+            // and index them in order to quickly look them up
             {
-                foreach (var aas in env.AssetAdministrationShells)
+                _idToReferable.Clear();
+                _cdReferred.Clear();
+                _cdToSm.Clear();
+
+				foreach (var aas in env.AssetAdministrationShells)
                     if (aas != null)
+                    {
                         aas.Parent = env;
+                        _idToReferable.Add(aas.Id, aas);
+                    }
 
                 foreach (var sm in env.Submodels)
                     if (sm != null)
+                    {
                         sm.Parent = env;
+						_idToReferable.Add(sm.Id, sm);
+					}
 
-                foreach (var cd in env.ConceptDescriptions)
+				foreach (var cd in env.ConceptDescriptions)
                     if (cd != null)
+                    {
                         cd.Parent = env;
-            }
+						_idToReferable.Add(cd.Id, cd);
+					}
+			}
 
             // many operations
             try

@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Samm2_2_0;
 using AasxAmlImExport;
 using AasxCompatibilityModels;
 using AasxIntegrationBase;
@@ -19,6 +20,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Windows.Media;
+using System.Xaml;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using Aas = AasCore.Aas3_0;
 using Samm = AasCore.Samm2_2_0;
@@ -2403,6 +2406,252 @@ namespace AasxPackageLogic
 		//
 		//
 
+        public Type SammExtensionHelperSelectSammType(Type[] addableElements)
+        {
+			// create choices
+			var fol = new List<AnyUiDialogueListItem>();
+			foreach (var stp in addableElements)
+				fol.Add(new AnyUiDialogueListItem("" + stp.Name, stp));
+
+			// prompt for this list
+			var uc = new AnyUiDialogueDataSelectFromList(
+				caption: "Select SAMM element type to add ..");
+			uc.ListOfItems = fol;
+			this.context.StartFlyoverModal(uc);
+            if (uc.Result && uc.ResultItem != null && uc.ResultItem.Tag != null &&
+                ((Type)uc.ResultItem.Tag).IsAssignableTo(typeof(Samm.ModelElement)))
+                return (Type)uc.ResultItem.Tag;
+            return null;
+		}
+
+        public void SammExtensionHelperUpdateJson(Aas.IExtension se, Type sammType, Samm.ModelElement sammInst)
+        {
+            // trivial
+            if (se == null || sammType == null || sammInst == null)
+                return;
+
+			// do a full fledged, carefull serialization
+			string json = "";
+			try
+			{
+				var settings = new JsonSerializerSettings
+				{
+					// SerializationBinder = new DisplayNameSerializationBinder(new[] { typeof(AasEventMsgEnvelope) }),
+					NullValueHandling = NullValueHandling.Ignore,
+					ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+					TypeNameHandling = TypeNameHandling.None,
+					Formatting = Formatting.Indented
+				};
+				settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                //settings.Converters.Add(new AdminShellConverters.AdaptiveAasIClassConverter(
+                //	AdminShellConverters.AdaptiveAasIClassConverter.ConversionMode.AasCore));
+				json = JsonConvert.SerializeObject(sammInst, sammType, settings);
+			}
+			catch (Exception ex)
+			{
+				LogInternally.That.SilentlyIgnoredError(ex);
+			}
+
+			// save this to the extension
+			se.Value = json;
+			se.ValueType = DataTypeDefXsd.String;
+		}
+
+		public void SammExtensionHelperAddSammReference(
+			Aas.Environment env, AnyUiStackPanel stack, string caption,
+            Samm.ModelElement sammInst,
+            Aas.IReferable relatedReferable,
+			Samm.SammReference sr,
+            Action<Samm.SammReference> setValue,
+			bool noFirstColumnWidth = false)
+        {
+			AddKeyValueExRef(
+				stack, "" + caption, sammInst,
+				value: "" + sr?.Value, null, repo,
+				setValue: v =>
+				{
+                    setValue?.Invoke(new Samm.SammReference((string)v));
+					return new AnyUiLambdaActionNone();
+				},
+                noFirstColumnWidth: noFirstColumnWidth,
+				auxButtonTitles: new[] { "Existing ..", "New ..", "Jump" },
+				auxButtonToolTips: new[] {
+					"Select existing ConceptDescription.",
+					"Create a new ConceptDescription for SAMM use.",
+					"Jump to ConceptDescription with given Id."
+				},
+				auxButtonLambda: (i) =>
+				{
+					if (i == 0)
+					{
+						var k2 = SmartSelectAasEntityKeys(
+							packages,
+							PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+							"ConceptDescription");
+						if (k2 != null && k2.Count >= 1)
+						{
+							setValue?.Invoke(new Samm.SammReference("" + k2[0].Value));
+							return new AnyUiLambdaActionRedrawEntity();
+						}
+					}
+
+					if (i == 1)
+					{
+						// select type
+						var sammTypeToCreate = SammExtensionHelperSelectSammType(Samm.Constants.AddableElements);
+						if (sammTypeToCreate == null)
+							return new AnyUiLambdaActionNone();
+
+						// select name
+						var newUri = Samm.Util.ShortenUri(
+							"" + (relatedReferable as Aas.IIdentifiable)?.Id);
+						var uc = new AnyUiDialogueDataTextBox(
+							"New Id for SAMM element:",
+							symbol: AnyUiMessageBoxImage.Question,
+							maxWidth: 1400,
+							text: "" + newUri);
+						if (!this.context.StartFlyoverModal(uc))
+							return new AnyUiLambdaActionNone();
+						newUri = uc.Text;
+
+                        // select idShort
+                        var newIdShort = Samm.Util.LastWordOfUri(newUri);
+						var uc2 = new AnyUiDialogueDataTextBox(
+							"New idShort for SAMM element:",
+							symbol: AnyUiMessageBoxImage.Question,
+							maxWidth: 1400,
+							text: "" + newIdShort);
+						if (!this.context.StartFlyoverModal(uc2))
+							return new AnyUiLambdaActionNone();
+						newIdShort = uc2.Text;
+                        if (newIdShort.HasContent() != true)
+                        {
+                            newIdShort = env?.ConceptDescriptions?
+                                .IterateIdShortTemplateToBeUnique("samm{0:0000}", 9999);
+						}
+
+						// make sure, the name is a new, valid Id for CDs
+						if (newUri?.HasContent() != true ||
+							null != env?.FindConceptDescriptionById(newUri))
+						{
+							Log.Singleton.Error("Invalid (used?) Id for a new ConceptDescriptin. Aborting!");
+							return new AnyUiLambdaActionNone();
+						}
+
+						// add the new name to the current element
+						setValue?.Invoke(new Samm.SammReference(newUri));
+
+                        // now create a new CD for the new SAMM element
+                        var newCD = new Aas.ConceptDescription(
+                            id: newUri,
+                            idShort: newIdShort);
+
+						// create new SAMM element 
+						var newSamm = Activator.CreateInstance(
+							sammTypeToCreate, new object[] { }) as Samm.ModelElement;
+
+						var newSammSsd = newSamm as Samm.ISammSelfDescription;
+
+						var newSammExt = new Aas.Extension(
+								name: "" + newSammSsd?.GetSelfName(),
+								semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
+									(new[] { new Aas.Key(KeyTypes.GlobalReference,
+																 newSammSsd.GetSelfUrn()) })
+										.Cast<Aas.IKey>().ToList()),
+								value: "");
+						newCD.Extensions = new List<IExtension> { newSammExt };
+
+						// fill with empty data content for SAMM
+						SammExtensionHelperUpdateJson(newSammExt, sammTypeToCreate, newSamm);
+
+						// save CD
+						env?.ConceptDescriptions?.Add(newCD);
+
+						// now, jump to this new CD
+						return new AnyUiLambdaActionRedrawAllElements(nextFocus: newCD, isExpanded: true);
+					}
+
+					if (i == 2 && sr?.Value?.HasContent() == true)
+					{
+						return new AnyUiLambdaActionNavigateTo(
+							new Aas.Reference(
+								    Aas.ReferenceTypes.ModelReference,
+								    new Aas.IKey[] {
+										new Aas.Key(KeyTypes.ConceptDescription, sr.Value)
+								    }.ToList()));
+					}
+
+					return new AnyUiLambdaActionNone();
+				});
+		}
+
+        /// <summary>
+        /// Shall provide rather quick access to information ..
+        /// </summary>
+        public static Type CheckReferableForSammExtensionType(Aas.IReferable rf)
+        {
+            // access
+            if (rf?.Extensions == null)
+                return null;
+
+            // find any?
+            foreach (var se in rf.Extensions)
+            {
+				var sammType = Samm.Util.GetTypeFromUrn(Samm.Util.GetSammUrn(se));
+                if (sammType != null)
+                    return sammType;
+			}
+
+            // no?
+            return null;
+        }
+
+        public static IEnumerable<ModelElement> CheckReferableForSammElements(Aas.IReferable rf)
+        {
+            // access
+            if (rf?.Extensions == null)
+                yield break;
+
+            // find any?
+            foreach (var se in rf.Extensions)
+            { 
+				// get type 
+			    var sammType = Samm.Util.GetTypeFromUrn(Samm.Util.GetSammUrn(se));
+                if (sammType == null)
+                    continue;
+
+    			// get instance data
+	    		ModelElement sammInst = null;
+		
+                // try to de-serializa extension value
+				try
+				{
+					if (se.Value != null)
+						sammInst = JsonConvert.DeserializeObject(se.Value, sammType) as ModelElement;
+				}
+				catch (Exception ex)
+				{
+					LogInternally.That.SilentlyIgnoredError(ex);
+					sammInst = null;
+				}
+
+                if (sammInst == null)
+                    continue;
+
+                // give back
+                yield return sammInst;
+			}
+		}
+
+		/// <summary>
+		/// Shall provide rather quick access to information ..
+		/// </summary>
+		/// <returns>Null, if not a SAMM model element</returns>
+		public static string CheckReferableForSammExtensionTypeName(Type sammType)
+		{
+			return Samm.Util.GetNameFromSammType(sammType);
+		}
+
 		public void DisplayOrEditEntitySammExtensions(
 			Aas.Environment env, AnyUiStackPanel stack,
 			List<Aas.IExtension> sammExtension,
@@ -2451,10 +2700,10 @@ namespace AasxPackageLogic
 						stack, "Spec. records:", repo: repo,
 						superMenu: superMenu,
 						ticketMenu: new AasxMenu()
-							.AddAction("add-quantifiable", "Add Quantifiable",
-								"A value which can be quantified and may have a unit.")
-							.AddAction("add-measurement", "Add Measurement",
-								"A measurement is a numeric value with an associated unit and quantity kind.")
+							.AddAction("add-aspect", "Add Aspect",
+								"Add single top level of any SAMM aspect model.")
+							.AddAction("add-property", "Add Property",
+								"Add a named value element to the aspect or its sub-entities.")
 							.AddAction("auto-enumeration", "Add Enumeration",
 								"An enumeration represents a list of possible values.")
 							.AddAction("auto-collection", "Add Collection",
@@ -2468,14 +2717,14 @@ namespace AasxPackageLogic
 								"Deletes last extension."),
 						ticketAction: (buttonNdx, ticket) =>
 						{
-                            Samm.Characteristic newChar = null;
+                            Samm.ModelElement newChar = null;
                             switch (buttonNdx)
                             {
                                 case 0: 
-                                    newChar = new Samm.Quantifiable();
+                                    newChar = new Samm.Aspect();
                                     break;
 								case 1:
-									newChar = new Samm.Measurement();
+									newChar = new Samm.Property();
 									break;
 								case 2:
 									newChar = new Samm.Enumeration();
@@ -2490,22 +2739,14 @@ namespace AasxPackageLogic
 
                             if (buttonNdx == 5)
                             {
-								// add other
-								var fol = new List<AnyUiDialogueListItem>();
-                                foreach (var stp in Samm.Constants.AddableCharacteristic)
-                                    fol.Add(new AnyUiDialogueListItem("" + stp.Name, stp));
+                                // select
+                                var sammTypeToCreate = SammExtensionHelperSelectSammType(Samm.Constants.AddableElements);
 
-                                // prompt for this list
-								var uc = new AnyUiDialogueDataSelectFromList(
-									caption: "Select SAMM element to add ..");
-								uc.ListOfItems = fol;
-								this.context.StartFlyoverModal(uc);
-								if (uc.Result && uc.ResultItem != null && uc.ResultItem.Tag != null &&
-										((Type)uc.ResultItem.Tag).IsAssignableTo(typeof(Samm.Characteristic)))
+								if (sammTypeToCreate != null)
 								{
                                     // to which?
                                     newChar = Activator.CreateInstance(
-                                        (Type)uc.ResultItem.Tag, new object[] { }) as Samm.Characteristic;
+										sammTypeToCreate, new object[] { }) as Samm.ModelElement;
 								}
 							}
 
@@ -2535,6 +2776,8 @@ namespace AasxPackageLogic
 				// now use the normal mechanism to deal with editMode or not ..
 				if (sammExtension != null && sammExtension.Count > 0)
 				{
+                    var numSammExt = 0;
+
 					for (int i = 0; i < sammExtension.Count; i++)
 					{
                         // get type 
@@ -2542,15 +2785,53 @@ namespace AasxPackageLogic
                         var sammType = Samm.Util.GetTypeFromUrn(Samm.Util.GetSammUrn(se));
                         if (sammType == null)
                         {
-                            stack.Add(new AnyUiLabel() { Content = "(unknown SAMM type)" });
                             continue;
                         }
 
-						// indicate
-						this.AddGroup(stack, $"SAMM extension [{i+1}]: {sammType.Name}", levelColors.SubSection);
+						// more then one?
+						this.AddHintBubble(
+							stack, hintMode,
+							new[] {
+                            new HintCheck(
+                                () => numSammExt > 0,
+                                "Only one SAMM extension per ConceptDescription allowed!",
+                                breakIfTrue: true)});
 
-                        // get instance data
-                        object sammInst = null;
+						// indicate
+						numSammExt++;
+
+                        AnyUiFrameworkElement iconElem = null;
+                        var ri = Samm.Constants.GetRenderInfo(sammType);
+                        if (ri != null)
+                        {
+                            iconElem = new AnyUiBorder()
+                            {
+                                Background = new AnyUiBrush(ri.Background),
+                                BorderBrush = new AnyUiBrush(ri.Foreground),
+                                BorderThickness = new AnyUiThickness(2.0f),
+                                MinHeight = 25,
+                                MinWidth = 25,
+                                Child = new AnyUiTextBlock()
+                                {
+                                    Text = "" + ri.Abbreviation,
+									HorizontalAlignment = AnyUiHorizontalAlignment.Center,
+									VerticalAlignment = AnyUiVerticalAlignment.Center,
+									Foreground = new AnyUiBrush(ri.Foreground),
+                                    Background = AnyUi.AnyUiBrushes.Transparent,                                    
+                                },
+								HorizontalAlignment = AnyUiHorizontalAlignment.Center,
+								VerticalAlignment = AnyUiVerticalAlignment.Center,
+								Margin = new AnyUiThickness(0, 0, 10, 0),
+                                SkipForTarget = AnyUiTargetPlatform.Browser
+                            };
+                        }
+
+                        this.AddGroup(stack, $"SAMM extension [{i + 1}]: {sammType.Name}",
+                            levelColors.SubSection.Bg, levelColors.SubSection.Fg,
+                            iconElement: iconElem);
+
+						// get instance data
+						object sammInst = null;
                         if (false)
                         {
                             // Note: right now, create fresh instance
@@ -2584,30 +2865,7 @@ namespace AasxPackageLogic
                         // editing actions need to asynchronously write back values
                         Action WriteSammInstBack = () =>
                         {
-                            // do a full fledged, carefull serialization
-                            string json = "";
-                            try
-                            {
-								var settings = new JsonSerializerSettings
-								{
-									// SerializationBinder = new DisplayNameSerializationBinder(new[] { typeof(AasEventMsgEnvelope) }),
-									NullValueHandling = NullValueHandling.Ignore,
-									ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-									TypeNameHandling = TypeNameHandling.None,
-									Formatting = Formatting.Indented
-								};
-								settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-								//settings.Converters.Add(new AdminShellConverters.AdaptiveAasIClassConverter(
-								//	AdminShellConverters.AdaptiveAasIClassConverter.ConversionMode.AasCore));
-								json = JsonConvert.SerializeObject(sammInst, sammType, settings);
-							} catch (Exception ex)
-                            {
-                                LogInternally.That.SilentlyIgnoredError(ex);
-                            }
-
-                            // save this to the extension
-                            se.Value = json;
-                            se.ValueType = DataTypeDefXsd.String;
+                            SammExtensionHelperUpdateJson(se, sammType, sammInst as Samm.ModelElement);
                         };
 
                         // okay, try to build up a edit field by reflection
@@ -2624,8 +2882,117 @@ namespace AasxPackageLogic
                             // List of SammReference?
                             if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.SammReference>)))
                             {
-                                ;
-                            }
+								var lsr = (List<Samm.SammReference>)pii.GetValue(sammInst);
+
+                                Action<List<Samm.SammReference>> lambdaSetValue = (v) =>
+                                {
+                                    pii.SetValue(sammInst, v);
+                                    WriteSammInstBack();
+                                };
+
+								if (this.SafeguardAccess(stack, repo, lsr, "" + pii.Name + ":", 
+                                    "Create data element!", 
+                                    v => {
+                                        lambdaSetValue(new List<Samm.SammReference>());
+									    return new AnyUiLambdaActionRedrawEntity();
+								    }))
+								{
+									// Head
+									var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
+									rows: 1 + lsr.Count, cols: 2,
+									minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+									colWidths: new[] { "*", "#" });
+
+									AnyUiUIElement.RegisterControl(
+										AddSmallButtonTo(sg, 0, 1,
+										margin: new AnyUiThickness(2, 2, 2, 2),
+										padding: new AnyUiThickness(5, 0, 5, 0),
+										content: "\u2795"),
+										(v) =>
+										{
+											lsr.Add(new Samm.SammReference());
+											lambdaSetValue(lsr);
+											return new AnyUiLambdaActionRedrawEntity();
+										});
+
+                                    // single references
+                                    for (int lsri = 0; lsri < lsr.Count; lsri++)
+                                    {
+                                        // remember lambda safe
+                                        var theLsri = lsri;
+
+                                        // Stack in the 1st column
+                                        var sp1 = AddSmallStackPanelTo(sg, 1 + lsri, 0);
+                                        SammExtensionHelperAddSammReference(
+                                            env, sp1, $"[{lsri}]", 
+                                            (Samm.ModelElement)sammInst, relatedReferable,
+											lsr[lsri],
+                                            noFirstColumnWidth: true,
+									        setValue: (v) => {
+                                                lsr[theLsri] = v;
+                                                lambdaSetValue(lsr);
+									        });
+
+                                        if (false)
+                                        {
+                                            // remove button
+                                            AnyUiUIElement.RegisterControl(
+                                            AddSmallButtonTo(sg, 1 + lsri, 1,
+                                            margin: new AnyUiThickness(2, 2, 2, 2),
+                                            padding: new AnyUiThickness(5, 0, 5, 0),
+                                            content: "-"),
+                                            (v) =>
+                                            {
+                                                lsr.RemoveAt(theLsri);
+                                                lambdaSetValue(lsr);
+                                                return new AnyUiLambdaActionRedrawEntity();
+                                            });
+                                        }
+                                        else
+                                        {
+											// button [hamburger]
+											AddSmallContextMenuItemTo(
+												sg, 1 + lsri, 1,
+												"\u22ee",
+												repo, new[] {
+								                    "\u2702", "Delete",
+								                    "\u25b2", "Move Up",
+								                    "\u25bc", "Move Down",
+												},
+												margin: new AnyUiThickness(2, 2, 2, 2),
+												padding: new AnyUiThickness(5, 0, 5, 0),
+												menuItemLambda: (o) =>
+												{
+													var action = false;
+
+													if (o is int ti)
+														switch (ti)
+														{
+															case 0:
+																lsr.RemoveAt(theLsri);
+																action = true;
+																break;
+															case 1:
+																MoveElementInListUpwards<Samm.SammReference>(lsr, lsr[theLsri]);
+																action = true;
+																break;
+															case 2:
+																MoveElementInListDownwards<Samm.SammReference>(lsr, lsr[theLsri]);
+																action = true;
+																break;
+														}
+
+                                                    if (action)
+                                                    {
+                                                        lambdaSetValue(lsr);
+                                                        return new AnyUiLambdaActionRedrawEntity();
+                                                    }
+													return new AnyUiLambdaActionNone();
+												});
+										}
+									}
+								}
+							}
 
 							// List of Constraint?
 							if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.Constraint>)))
@@ -2636,52 +3003,73 @@ namespace AasxPackageLogic
 							// single SammReference?
 							if (pii.PropertyType.IsAssignableTo(typeof(Samm.SammReference)))
 							{
-                                //                        var tempKeys = new Aas.IKey[] {
-                                //                                new Aas.Key(KeyTypes.ConceptDescription, (string)pii.GetValue(sammInst))
-                                //                            }.ToList();
-
-                                //AddKeyListKeys(
-                                //                            stack, "" + pii.Name,
-                                //                            keys: tempKeys,
-                                //                            repo: repo, 
-                                //                            packages: packages, 
-                                //                            selector: PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                                //                            addExistingEntities: "ConceptDescription",
-                                //                            emitCustomEvent: (o) =>
-                                //                            {
-                                //                                var valBack = "";
-                                //                                if (tempKeys.Count >= 1)
-                                //                                    valBack = tempKeys[0].Value;
-                                //		pii.SetValue(sammInst, valBack);
-                                //		WriteSammInstBack();
-                                //	});				                    
-
                                 var sr = (Samm.SammReference)pii.GetValue(sammInst);
 
-								AddKeyValueExRef(
-									stack, "" + pii.Name, sammInst, 
-                                    value: "" + sr, null, repo,
-									setValue: v =>
-									{
-										pii.SetValue(sammInst, new Samm.SammReference((string) v));
+                                SammExtensionHelperAddSammReference(
+                                    env, stack, "" + pii.Name, (Samm.ModelElement) sammInst, relatedReferable,
+                                    sr,
+                                    setValue: (v) => {
+										pii.SetValue(sammInst, v);
 										WriteSammInstBack();
-										return new AnyUiLambdaActionNone();
-									},
-                                    auxButtonTitles: new[] { "Existing ..", "Jump" },
-                                    auxButtonToolTips: new[] { 
-                                        "Select existing ConceptDescription",
-                                        "Jump to ConceptDescription with id"
-                                    },
-                                    auxButtonLambda: (i) =>
-                                    {
-										return new AnyUiLambdaActionNone();
 									});
 							}
 
 							// List of string?
 							if (pii.PropertyType.IsAssignableTo(typeof(List<string>)))
 							{
-                                ;
+								var ls = (List<string>)pii.GetValue(sammInst);
+                                if (ls == null)
+                                {
+                                    Log.Singleton.Error("Internal error in SAMM element. Aborting.");
+                                    continue;
+                                }
+
+                                var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
+                                    rows: 1 + ls.Count, cols: 2,
+                                    minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+									colWidths: new[] { "*", "#" });
+
+                                AnyUiUIElement.RegisterControl(
+                                    AddSmallButtonTo(sg, 0, 1, 
+									margin: new AnyUiThickness(2, 2, 2, 2),
+						            padding: new AnyUiThickness(5, 0, 5, 0),
+									content: "Add blank"),
+                                    (v) =>
+                                    {
+                                        ls.Add("");
+                                        pii.SetValue(sammInst, ls);
+                                        WriteSammInstBack();
+                                        return new AnyUiLambdaActionRedrawEntity();
+                                    });
+
+                                for (int lsi=0; lsi<ls.Count; lsi++)
+                                {
+                                    var theLsi = lsi;
+									AnyUiUIElement.RegisterControl(
+									    AddSmallTextBoxTo(sg, 1+lsi, 0, 
+                                        text: ls[lsi],
+										margin: new AnyUiThickness(2, 2, 2, 2)),
+										(v) =>
+										{
+                                            ls[theLsi] = (string)v;
+											pii.SetValue(sammInst, ls);
+											WriteSammInstBack();
+											return new AnyUiLambdaActionRedrawEntity();
+										});
+
+									AnyUiUIElement.RegisterControl(
+									    AddSmallButtonTo(sg, 1 + lsi, 1,
+									    margin: new AnyUiThickness(2, 2, 2, 2),
+									    padding: new AnyUiThickness(5, 0, 5, 0),
+									    content: "-"),
+									    (v) =>
+									    {
+                                            ls.RemoveAt(theLsi);
+										    pii.SetValue(sammInst, ls);
+										    WriteSammInstBack();
+										    return new AnyUiLambdaActionRedrawEntity();
+									    });
+								}
 							}
 
 							// single string?

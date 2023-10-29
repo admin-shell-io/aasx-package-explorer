@@ -48,6 +48,8 @@ namespace AdminShellNS
                 return dict.Values;
             }
         }
+
+        public void Clear() => dict.Clear();
     }
 
     public class DoubleSidedDict<T1, T2>
