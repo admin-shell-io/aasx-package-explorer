@@ -6,3 +6,4 @@
 // Select("Submodel", "Next");
 // Tool("exportsmtasciidoc", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\new.zip", "ExportHtml", "true");
 // Tool("Exit");
+Tool("sammaspectimport", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\BatteryPass-spiel-short.ttl");

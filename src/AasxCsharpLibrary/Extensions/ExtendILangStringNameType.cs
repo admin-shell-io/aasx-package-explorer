@@ -9,7 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+    
 namespace Extensions
 {
     public static class ExtendILangStringNameType

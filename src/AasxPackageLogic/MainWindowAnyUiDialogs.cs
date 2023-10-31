@@ -989,7 +989,35 @@ namespace AasxPackageLogic
                 }
             }
 
-            if (cmd == "submodeltdexport")
+			if (cmd == "sammaspectimport")
+			{
+				// filename
+				if (!(await DisplayContextPlus.MenuSelectOpenFilenameToTicketAsync(
+					ticket, "File",
+					"Select SAMM aspect model file to be imported",
+					null,
+					"SAMM/Turtle (*.ttl)|*.ttl",
+					"SAMM aspect model file import: No valid filename.")))
+					return;
+
+				// do it
+				try
+				{
+					// delegate futher
+					await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+					// redisplay
+					MainWindow.RedrawAllAasxElements();
+					MainWindow.RedrawElementView();
+				}
+				catch (Exception ex)
+				{
+					LogErrorToTicket(ticket, ex,
+						"When importing SAMM aspect model to ConceptDescriptions, an error occurred");
+				}
+			}
+
+			if (cmd == "submodeltdexport")
             {
                 // filename
                 if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(

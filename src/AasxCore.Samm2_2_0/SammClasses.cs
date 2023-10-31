@@ -18,6 +18,9 @@ using Extensions;
 using Newtonsoft.Json;
 using Aas = AasCore.Aas3_0;
 
+// Note: Nice regex for searching prefix in .ttl files:
+// @prefix\s+([^:]*)\:\s+<([^>]+)>.
+
 namespace AasCore.Samm2_2_0
 {
 
@@ -35,6 +38,61 @@ namespace AasCore.Samm2_2_0
 		/// Text in this language.
 		/// </summary>
 		public string? Text { get; set; }
+
+		public LangString() { }
+
+		public LangString(string language, string text)
+		{
+			Language = language;
+			Text = text;
+		}
+	}
+
+	/// <summary>
+	/// This attribute gives a list of given presets to an field or property.
+	/// in order to avoid cycles
+	/// </summary>
+	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
+	public class SammPresetListAttribute : System.Attribute
+	{
+		public string PresetListName = "";
+
+		public SammPresetListAttribute(string presetListName)
+		{
+			if (presetListName != null)
+				PresetListName = presetListName;
+		}
+	}
+
+	/// <summary>
+	/// This attribute marks a string field/ property as multiline.
+	/// in order to avoid cycles
+	/// </summary>
+	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property)]
+	public class SammMultiLineAttribute : System.Attribute
+	{
+		public int? MaxLines = null;
+
+		public SammMultiLineAttribute(int maxLines = -1)
+		{
+			if (maxLines > 0)
+				MaxLines = maxLines;
+		}
+	}
+
+	/// <summary>
+	/// This attribute gives a list of given presets to an field or property.
+	/// in order to avoid cycles
+	/// </summary>
+	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
+	public class SammPropertyUriAttribute : System.Attribute
+	{
+		public string Uri = "";
+
+		public SammPropertyUriAttribute(string uri)
+		{
+			Uri = uri;
+		}
 	}
 
 	/// <summary>
@@ -87,20 +145,24 @@ namespace AasCore.Samm2_2_0
 		/// times for different languages but only once for a specific language. There should 
 		/// be at least one preferredName defined with an "en" language tag.
 		/// </summary>
-		public List<LangString>? PreferredName = null;
+		[SammPropertyUri("bamm:preferredName")]
+		public List<LangString>? PreferredName { get; set; } = null;
 
-		/// <summary>
-		/// Human readable description in a specific language. This attribute may be defined multiple 
-		/// times for different languages but only once for a specific language. There should be at 
-		/// least one description defined with an "en" language tag.
-		/// </summary>
-		public List<LangString>? Description = null;
+		// Note: Description is already in the Referable
+		///// <summary>
+		///// Human readable description in a specific language. This attribute may be defined multiple 
+		///// times for different languages but only once for a specific language. There should be at 
+		///// least one description defined with an "en" language tag.
+		///// </summary>
+		//[SammPropertyUri("bamm:description")]
+		//public List<LangString>? Description { get; set; } = null;
 
 		/// <summary>
 		/// A reference to a related element in an external taxonomy, ontology or other standards document. 
 		/// The datatype is xsd:anyURI. This attribute may be defined multiple times.
 		/// </summary>
-		public List<string>? See = null;
+		[SammPropertyUri("bamm:see")]
+		public List<string>? See { get; set; } = null;
 	}
 
 	/// <summary>
@@ -269,6 +331,89 @@ namespace AasCore.Samm2_2_0
 	}
 
 	/// <summary>
+	/// Single item for <c>NamespaceMap</c>.
+	/// </summary>
+	public class NamespaceMapItem
+	{
+		/// <summary>
+		/// Prefix of a namespace. 
+		/// Format: short sequence of chars. ALWAYS trailing colon (:).
+		/// </summary>
+		public string Prefix { get; set; } = "";
+
+		/// <summary>
+		/// Absolute URI to replace a prefix.
+		/// </summary>
+		public string Uri { get; set; } = "";
+
+		public NamespaceMapItem() { }
+		public NamespaceMapItem(string prefix, string uri)
+		{
+			Prefix = prefix;
+			Uri = uri;
+		}
+	}
+
+	/// <summary>
+	/// This (proprietary) map links prefixes and uris together.
+	/// Intended use case is to be embedded into the SAMM aspect
+	/// and help resolving complete URIs.
+	/// </summary>
+	public class NamespaceMap
+	{
+		/// <summary>
+		/// Container of map items.
+		/// </summary>
+		[JsonIgnore]
+		public Dictionary<string, NamespaceMapItem> Map { get; set; } = 
+			   new Dictionary<string, NamespaceMapItem>();
+
+		// For JSON
+		public NamespaceMapItem[] Items
+		{
+			get => Map.Keys.Select(k => Map[k]).ToArray();
+			set {
+				Map.Clear();
+				foreach (var v in value)
+					AddOrIgnore(v.Prefix, v.Uri);
+			}
+		}
+
+		public int Count() => Map.Count();
+
+		public NamespaceMapItem this[int index] => Map[Map.Keys.ElementAt(index)];
+
+		public void RemoveAt(int index) => Map.Remove(Map.Keys.ElementAt(index));
+
+		public bool AddOrIgnore(string prefix, string uri)
+		{
+			if (prefix == null || uri == null)
+				return false;
+			prefix = prefix.Trim();
+			if (!prefix.EndsWith(':'))
+				return false;
+			if (Map.ContainsKey(prefix))
+				return false;
+			Map[prefix] = new NamespaceMapItem(prefix, uri);
+			return true;
+		}
+
+		public string? ExtendUri(string input)
+		{
+			if (input == null)
+				return null;
+			var p = input.IndexOf(':');
+			if (p < 0)
+				return input;
+			var ask = input.Substring(0, p) + ':';
+			if (!Map.ContainsKey(ask) || (p+1) >= input.Length)
+				return input;
+			var res = Map[ask].Uri + input.Substring(p + 1);
+			return res;
+		}
+	}
+
+	/// <summary>
 	/// Base class for other constraints that constrain a Characteristic in some way, e.g., the Range Constraint 
 	/// limits the value range for a Property.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#constraint"/>
@@ -433,6 +578,7 @@ namespace AasCore.Samm2_2_0
 		/// Reference to a scalar or complex (Entity) data type. See Section "Type System" in the Aspect Meta Model.
 		/// Also the scalar data types (e.g. xsd:decimal) are treated as references in the first degree.
 		/// </summary>
+		[SammPresetList("SammXsdDataTypes")]
 		public SammReference DataType { get; set; }
 
 		public Characteristic()
@@ -780,11 +926,39 @@ namespace AasCore.Samm2_2_0
 		/// <summary>
 		/// One Property has exactly one Characteristic.
 		/// </summary>
+		[SammPresetList("Characteristics")]
 		public SammReference Characteristic { get; set; }
 
 		public Property()
 		{
 			Characteristic = new SammReference("");
+		}
+	}
+
+	/// <summary>
+	/// As defined in the Meta Model Elements, an Entity has a number of Properties. 
+	/// </summary>
+	public class Entity : ModelElement, ISammSelfDescription, ISammStructureModel
+	{
+		// self description
+		public string GetSelfName() => "samm-entity";
+		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Entity";
+
+		// structure model
+		public bool IsTopElement() => false;
+		public IEnumerable<SammReference> DescendOnce()
+		{
+			if (Properties != null)
+				foreach (var x in Properties)
+					yield return x;
+		}
+
+		// own
+		public List<SammReference> Properties { get; set; }
+
+		public Entity()
+		{
+			Properties = new List<SammReference>();
 		}
 	}
 
@@ -809,7 +983,21 @@ namespace AasCore.Samm2_2_0
 		}
 
 		// own
+
+		/// <summary>
+		/// The namespaces/ prefix definitions of the SAMM models are attached to the Aspect.
+		/// </summary>
+		public NamespaceMap Namespaces { get; set; } = new NamespaceMap();
+
+		/// <summary>
+		/// Multiline string with comments (for the whole SAMM file).
+		/// </summary>
+		[SammMultiLine(maxLines: 5)]
+		public string Comments { get; set; } = "";
+
+		[SammPropertyUri("bamm:properties")]
 		public List<SammReference> Properties { get; set; }
+		
 		public List<SammReference> Events { get; set; }
 		public List<SammReference> Operations { get; set; }
 
@@ -852,6 +1040,7 @@ namespace AasCore.Samm2_2_0
 			// Top level
 			typeof(Aspect),
 			typeof(Property),
+			typeof(Entity),
 			// Characteristic
 			typeof(Characteristic),
 			typeof(Trait),
@@ -892,6 +1081,8 @@ namespace AasCore.Samm2_2_0
 			return null;
 		}
 
+		public static NamespaceMap SelfNamespaces = new NamespaceMap();
+
 		static Constants()
 		{
 			_renderInfo.Add(typeof(Aspect), new SammElementRenderInfo() { 
@@ -917,7 +1108,7 @@ namespace AasCore.Samm2_2_0
 				Background = 0xFFD6E2A6
 			});
 
-			_renderInfo.Add(typeof(IEntity), new SammElementRenderInfo()
+			_renderInfo.Add(typeof(Entity), new SammElementRenderInfo()
 			{
 				DisplayName = "Entity",
 				Abbreviation = "E",
@@ -964,9 +1155,78 @@ namespace AasCore.Samm2_2_0
 				Foreground = 0xFF000000,
 				Background = 0xFFB9D8FA
 			});
+
+			// init namespaces, as being used by self / reflection information
+			SelfNamespaces = new NamespaceMap();
+			SelfNamespaces.AddOrIgnore("bamm:", "urn:bamm:io.openmanufacturing:meta-model:1.0.0#");
+			SelfNamespaces.AddOrIgnore("bamm-c:", "urn:bamm:io.openmanufacturing:characteristic:1.0.0#");
+			SelfNamespaces.AddOrIgnore("bamm-e:", "urn:bamm:io.openmanufacturing:entity:1.0.0#");
+			SelfNamespaces.AddOrIgnore("unit:", "urn:bamm:io.openmanufacturing:unit:1.0.0#");
+			SelfNamespaces.AddOrIgnore("rdf:", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+			SelfNamespaces.AddOrIgnore("rdfs:", "http://www.w3.org/2000/01/rdf-schema#");
+			SelfNamespaces.AddOrIgnore("xsd:", "http://www.w3.org/2001/XMLSchema#");
 		}
 
 		public static uint RenderBackground = 0xFFEFEFF0;
+
+		public static readonly string[] SammXsdDataTypes =
+		{
+			"xsd:anyURI",
+			"xsd:base64Binary",
+			"xsd:boolean",
+			"xsd:byte",
+			"xsd:date",
+			"xsd:dateTime",
+			"xsd:decimal",
+			"xsd:double",
+			"xsd:duration",
+			"xsd:float",
+			"xsd:gDay",
+			"xsd:gMonth",
+			"xsd:gMonthDay",
+			"xsd:gYear",
+			"xsd:gYearMonth",
+			"xsd:hexBinary",
+			"xsd:int",
+			"xsd:integer",
+			"xsd:long",
+			"xsd:negativeInteger",
+			"xsd:nonNegativeInteger",
+			"xsd:nonPositiveInteger",
+			"xsd:positiveInteger",
+			"xsd:short",
+			"xsd:string",
+			"xsd:time",
+			"xsd:unsignedByte",
+			"xsd:unsignedInt",
+			"xsd:unsignedLong",
+			"xsd:unsignedShort",
+			"langString"
+		};
+
+		public static readonly string[] CharacteristicsFixTypes =
+		{
+			"samm-c:Timestamp",
+			"samm-c:Text",
+			"samm-c:Boolean",
+			"samm-c:Locale",
+			"samm-c:Language",
+			"samm-c:UnitReference",
+			"samm-c:ResourcePath",
+			"samm-c:MimeType"
+		};
+
+		public static string[]? GetPresetsForListName(string listName)
+		{
+			if (listName == null)
+				return null;
+			listName = listName.Trim().ToLower();
+			if (listName == "SammXsdDataTypes".ToLower())
+				return SammXsdDataTypes;
+			if (listName == "Characteristics".ToLower())
+				return CharacteristicsFixTypes;
+			return null;
+		}
 	}
 
 	public static class Util

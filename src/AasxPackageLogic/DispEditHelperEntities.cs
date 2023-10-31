@@ -2104,106 +2104,115 @@ namespace AasxPackageLogic
             }
 
             // IReferable
-            this.DisplayOrEditEntityReferable(
-                stack, parentContainer: parentContainer, referable: cd,
-                indexPosition: 0,
-                injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
-                    new[] { "Sync" },
-                    new[] { "Copy (if target is empty) idShort to preferredName and SubmodelElement idShort." },
-                    (v) =>
-                    {
-                        AnyUiLambdaActionBase la = new AnyUiLambdaActionNone();
-                        if ((int)v != 0)
-                            return la;
-
-                        var ds = cd.GetIEC61360();
-                        if (ds != null && (ds.PreferredName == null || ds.PreferredName.Count < 1
-                            // the following absurd case happens in reality ..
-                            || (ds.PreferredName.Count == 1 && ds.PreferredName[0].Text?.HasContent() != true)))
+            Action<bool> lambdaRf = (hideExtensions) =>
+            {
+                this.DisplayOrEditEntityReferable(
+                    stack, parentContainer: parentContainer, referable: cd,
+                    indexPosition: 0,
+                    hideExtensions: hideExtensions,
+                    injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
+                        new[] { "Sync" },
+                        new[] { "Copy (if target is empty) idShort to preferredName and SubmodelElement idShort." },
+                        (v) =>
                         {
-                            ds.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>
+                            AnyUiLambdaActionBase la = new AnyUiLambdaActionNone();
+                            if ((int)v != 0)
+                                return la;
+
+                            var ds = cd.GetIEC61360();
+                            if (ds != null && (ds.PreferredName == null || ds.PreferredName.Count < 1
+                                // the following absurd case happens in reality ..
+                                || (ds.PreferredName.Count == 1 && ds.PreferredName[0].Text?.HasContent() != true)))
                             {
+                                ds.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>
+                                {
                                 new Aas.LangStringPreferredNameTypeIec61360(
                                     AdminShellUtil.GetDefaultLngIso639(), cd.IdShort)
-                            };
-                            this.AddDiaryEntry(cd, new DiaryEntryStructChange());
-                            la = new AnyUiLambdaActionRedrawEntity();
-                        }
-
-                        if (parentContainer != null & parentContainer is Aas.ISubmodelElement)
-                        {
-                            var sme = parentContainer as Aas.ISubmodelElement;
-                            if (sme.IdShort == null || sme.IdShort.Trim() == "")
-                            {
-                                sme.IdShort = cd.IdShort;
-                                this.AddDiaryEntry(sme, new DiaryEntryStructChange());
+                                };
+                                this.AddDiaryEntry(cd, new DiaryEntryStructChange());
                                 la = new AnyUiLambdaActionRedrawEntity();
                             }
-                        }
-                        return la;
-                    }));
+
+                            if (parentContainer != null & parentContainer is Aas.ISubmodelElement)
+                            {
+                                var sme = parentContainer as Aas.ISubmodelElement;
+                                if (sme.IdShort == null || sme.IdShort.Trim() == "")
+                                {
+                                    sme.IdShort = cd.IdShort;
+                                    this.AddDiaryEntry(sme, new DiaryEntryStructChange());
+                                    la = new AnyUiLambdaActionRedrawEntity();
+                                }
+                            }
+                            return la;
+                        }));
+            };
 
             // Identifiable
 
-            this.DisplayOrEditEntityIdentifiable(
-                stack, cd,
-                Options.Curr.TemplateIdConceptDescription,
-                new DispEditHelperModules.DispEditInjectAction(
-                new[] { "Rename" },
-                (i) =>
-                {
-                    if (i == 0 && env != null)
+            Action lambdaIdf = () =>
+            {
+                this.DisplayOrEditEntityIdentifiable(
+                    stack, cd,
+                    Options.Curr.TemplateIdConceptDescription,
+                    new DispEditHelperModules.DispEditInjectAction(
+                    new[] { "Rename" },
+                    (i) =>
                     {
-                        var uc = new AnyUiDialogueDataTextBox(
-                            "New ID:",
-                            symbol: AnyUiMessageBoxImage.Question,
-                            maxWidth: 1400,
-                            text: cd.Id);
-                        if (this.context.StartFlyoverModal(uc))
+                        if (i == 0 && env != null)
                         {
-                            var res = false;
-
-                            try
+                            var uc = new AnyUiDialogueDataTextBox(
+                                "New ID:",
+                                symbol: AnyUiMessageBoxImage.Question,
+                                maxWidth: 1400,
+                                text: cd.Id);
+                            if (this.context.StartFlyoverModal(uc))
                             {
-                                // rename
-                                var lrf = env.RenameIdentifiable<Aas.ConceptDescription>(
-                                    cd.Id, uc.Text);
+                                var res = false;
 
-                                // use this information to emit events
-                                if (lrf != null)
+                                try
                                 {
-                                    res = true;
-                                    foreach (var rf in lrf)
+                                    // rename
+                                    var lrf = env.RenameIdentifiable<Aas.ConceptDescription>(
+                                        cd.Id, uc.Text);
+
+                                    // use this information to emit events
+                                    if (lrf != null)
                                     {
-                                        var rfi = rf.FindParentFirstIdentifiable();
-                                        if (rfi != null)
-                                            this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                        res = true;
+                                        foreach (var rf in lrf)
+                                        {
+                                            var rfi = rf.FindParentFirstIdentifiable();
+                                            if (rfi != null)
+                                                this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                        }
                                     }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                            }
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
 
-                            if (!res)
-                                this.context.MessageBoxFlyoutShow(
-                                    "The renaming of the ConceptDescription or some referring elements has not " +
-                                        "performed successfully! Please review your inputs and the AAS " +
-                                        "structure for any inconsistencies.",
-                                        "Warning",
-                                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
-                            return new AnyUiLambdaActionRedrawAllElements(cd);
+                                if (!res)
+                                    this.context.MessageBoxFlyoutShow(
+                                        "The renaming of the ConceptDescription or some referring elements has not " +
+                                            "performed successfully! Please review your inputs and the AAS " +
+                                            "structure for any inconsistencies.",
+                                            "Warning",
+                                            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+                                return new AnyUiLambdaActionRedrawAllElements(cd);
+                            }
                         }
-                    }
-                    return new AnyUiLambdaActionNone();
-                }));
+                        return new AnyUiLambdaActionNone();
+                    }));
+            };
 
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
-                (ico) => { cd.IsCaseOf = ico; },
-                "isCaseOf", relatedReferable: cd, superMenu: superMenu);
-
+            Action lambdaIsCaseOf = () =>
+            {
+                this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
+                    (ico) => { cd.IsCaseOf = ico; },
+                    "isCaseOf", relatedReferable: cd, superMenu: superMenu);
+            };
 
 #if OLD
             // joint header for data spec ref and content
@@ -2261,32 +2270,65 @@ namespace AasxPackageLogic
 #else
 
             // new apprpoach: model distinct sections with [Reference + Content]
-            DisplayOrEditEntityHasEmbeddedSpecification(
-                env, stack, cd.EmbeddedDataSpecifications,
-                (v) => { cd.EmbeddedDataSpecifications = v; },
-                addPresetNames: new[] { "IEC61360" /* , "Physical Unit" */ },
-                addPresetKeyLists: new[] {
+            Action<bool> lambdaEDS = (suppressWarning) =>
+            {
+                DisplayOrEditEntityHasEmbeddedSpecification(
+                    env, stack, cd.EmbeddedDataSpecifications,
+                    (v) => { cd.EmbeddedDataSpecifications = v; },
+                    addPresetNames: new[] { "IEC61360" /* , "Physical Unit" */ },
+                    addPresetKeyLists: new[] {
                     new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() /* ,
                     new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() */ }
-                },
-                relatedReferable: cd, superMenu: superMenu);
-
+                    },
+                    relatedReferable: cd, superMenu: superMenu,
+                    suppressNoEdsWarning: suppressWarning);
+            };
 #endif
 
-			// experimental: SAMM elements
+            // experimental: SAMM elements
 
-			DisplayOrEditEntitySammExtensions(
-				env, stack, cd.Extensions,
-				(v) => { cd.Extensions = v; },
-				addPresetNames: new[] { "IEC61360" /* , "Physical Unit" */ },
-				addPresetKeyLists: new[] {
-					new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() /* ,
+            Action lambdaSammExt = () =>
+            {
+                DisplayOrEditEntitySammExtensions(
+                    env, stack, cd.Extensions,
+                    (v) => { cd.Extensions = v; },
+                    addPresetNames: new[] { "IEC61360" /* , "Physical Unit" */ },
+                    addPresetKeyLists: new[] {
+                    new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() /* ,
                     new List<Aas.IKey>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() */ }
-				},
-				relatedReferable: cd, superMenu: superMenu);
+                    },
+                    relatedReferable: cd, superMenu: superMenu);
+            };
+
+			// check if to display special order for SAMM
+			var specialOrderSAMM = DispEditHelperModules.CheckReferableForSammExtensionType(cd) != null;
+            if (specialOrderSAMM)
+            {
+				lambdaIdf();
+				lambdaRf(true);
+				lambdaSammExt();
+
+				this.AddGroup(stack, "Continue Referable:", levelColors.MainSection);
+				lambdaIsCaseOf();
+
+				DisplayOrEditEntityListOfExtension(
+	                stack: stack, extensions: cd.Extensions,
+	                setOutput: (v) => { cd.Extensions = v; },
+	                relatedReferable: cd);
+
+				lambdaEDS(true);
+			}
+			else
+            {
+                lambdaRf(false);
+                lambdaIdf();
+                lambdaIsCaseOf();
+                lambdaEDS(false);
+                lambdaSammExt();
+            }
 		}
 
-        public void DisplayOrEditAasEntityValueReferencePair(
+		public void DisplayOrEditAasEntityValueReferencePair(
             PackageCentral.PackageCentral packages, Aas.Environment env,
             Aas.IReferable parentContainer, Aas.IConceptDescription cd, Aas.IValueReferencePair vlp, bool editMode,
             ModifyRepo repo,

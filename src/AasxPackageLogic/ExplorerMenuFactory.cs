@@ -152,7 +152,11 @@ namespace AasxPackageExplorer
                         help: "Import Thing Description (TD) file in JSON LD format into an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "JSON LD file with TD data."))
-                    .AddWpfBlazor(name: "CSVImport", header: "Import CSV-file into SubModel …",
+					.AddWpfBlazor(name: "SammAspectImport", header: "Import SAMM aspect into ConceptDescriptions …",
+						help: "Import SAMM (Semantic Aspect Meta Model) aspect data into dedicated ConceptDescriptions.",
+						args: new AasxMenuListOfArgDefs()
+							.Add("File", "SAMM file (*.ttl, ..) with aspect model."))
+					.AddWpfBlazor(name: "CSVImport", header: "Import CSV-file into SubModel …",
                         help: "Import comma separated values (CSV) into an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "CSV file with data."))

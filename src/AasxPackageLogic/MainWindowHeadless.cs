@@ -25,6 +25,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using VDS.RDF.Parsing;
+using VDS.RDF;
 using Aas = AasCore.Aas3_0;
 
 // ReSharper disable MethodHasAsyncOverload
@@ -515,7 +517,30 @@ namespace AasxPackageLogic
                 }
             }
 
-            if (cmd == "submodeltdexport")
+			if (cmd == "sammaspectimport")
+			{
+				// arguments
+				if (ticket.Env == null ||
+					!(ticket["File"] is string fn) || fn.HasContent() != true)
+				{
+					LogErrorToTicket(ticket,
+						"SAMM aspect model file import: No valid AAS environment available.");
+					return;
+				}
+
+				// do it
+				try
+				{
+                     DispEditHelperModules.ImportSammModelToConceptDescriptions(ticket.Env, fn);
+				}
+				catch (Exception ex)
+				{
+					LogErrorToTicket(ticket, ex,
+						"When importing SAMM aspect model file, an error occurred");
+				}
+			}
+
+			if (cmd == "submodeltdexport")
             {
                 // arguments
                 if (ticket.Submodel == null ||
