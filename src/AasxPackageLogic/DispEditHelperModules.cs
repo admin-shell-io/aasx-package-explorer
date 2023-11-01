@@ -31,6 +31,7 @@ using Samm = AasCore.Samm2_2_0;
 using System.Text.RegularExpressions;
 using System.Runtime.Intrinsics.X86;
 using Lucene.Net.Tartarus.Snowball.Ext;
+using Lucene.Net.Util;
 
 namespace AasxPackageLogic
 {
@@ -2467,13 +2468,14 @@ namespace AasxPackageLogic
 			se.ValueType = DataTypeDefXsd.String;
 		}
 
-		public AnyUiLambdaActionBase SammExtensionHelperSammReferenceAction(
+		public AnyUiLambdaActionBase SammExtensionHelperSammReferenceAction<T>(
 			Aas.Environment env,
 			Aas.IReferable relatedReferable,
-			Samm.SammReference sr,
-			Action<Samm.SammReference> setValue,
 			int actionIndex,
-			string[] presetList = null)
+			T sr,
+			Action<T> setValue,
+			Func<string, T> createInstance,
+			string[] presetList = null) where T : SammReference
         {
             if (actionIndex == 0 && presetList != null && presetList.Length > 0)
             {
@@ -2485,7 +2487,7 @@ namespace AasxPackageLogic
                 if (uc.Result && uc.ResultItem != null && uc.ResultItem.Tag != null &&
                     uc.ResultItem.Tag is string prs)
                 {
-					setValue?.Invoke(new Samm.SammReference("" + prs));
+					setValue?.Invoke(createInstance?.Invoke("" + prs));
 					return new AnyUiLambdaActionRedrawEntity();
 				}
 			}
@@ -2498,7 +2500,7 @@ namespace AasxPackageLogic
 					"ConceptDescription");
 				if (k2 != null && k2.Count >= 1)
 				{
-					setValue?.Invoke(new Samm.SammReference("" + k2[0].Value));
+					setValue?.Invoke(createInstance?.Invoke("" + k2[0].Value));
 					return new AnyUiLambdaActionRedrawEntity();
 				}
 			}
@@ -2547,7 +2549,7 @@ namespace AasxPackageLogic
 				}
 
 				// add the new name to the current element
-				setValue?.Invoke(new Samm.SammReference(newUri));
+				setValue?.Invoke(createInstance?.Invoke(newUri));
 
 				// now create a new CD for the new SAMM element
 				var newCD = new Aas.ConceptDescription(
@@ -2564,7 +2566,7 @@ namespace AasxPackageLogic
 						name: "" + newSammSsd?.GetSelfName(),
 						semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
 							(new[] { new Aas.Key(KeyTypes.GlobalReference,
-																 newSammSsd.GetSelfUrn()) })
+								     newSammSsd.GetSelfUrn()) })
 								.Cast<Aas.IKey>().ToList()),
 						value: "");
 				newCD.Extensions = new List<IExtension> { newSammExt };
@@ -2592,24 +2594,31 @@ namespace AasxPackageLogic
 			return new AnyUiLambdaActionNone();
 		}
 
-		public void SammExtensionHelperAddSammReference(
+		public void SammExtensionHelperAddSammReference<T>(
 			Aas.Environment env, AnyUiStackPanel stack, string caption,
             Samm.ModelElement sammInst,
             Aas.IReferable relatedReferable,
-			Samm.SammReference sr,
-            Action<Samm.SammReference> setValue,
+			T sr,
+            Action<T> setValue,
+			Func<string, T> createInstance,
 			bool noFirstColumnWidth = false,
 			string[] presetList = null,
-            bool showButtons = true)
-        {
+            bool showButtons = true,
+			bool editOptionalFlag = false) where T : SammReference
+		{
+            var grid = AddSmallGrid(1, 2, colWidths: new[] { "*", "#" });
+            stack.Add(grid);
+            var g1stack = AddSmallStackPanelTo(grid, 0, 0, margin: new AnyUiThickness(0));
+
 			AddKeyValueExRef(
-				stack, "" + caption, sammInst,
+				g1stack, "" + caption, sammInst,
 				value: "" + sr?.Value, null, repo,
 				setValue: v =>
 				{
-                    setValue?.Invoke(new Samm.SammReference((string)v));
+                    setValue?.Invoke(createInstance?.Invoke((string)v));
 					return new AnyUiLambdaActionNone();
 				},
+                keyVertCenter: true,
                 noFirstColumnWidth: noFirstColumnWidth,
 				auxButtonTitles: !showButtons ? null : new[] { "Preset", "Existing", "New", "Jump" },
 				auxButtonToolTips: !showButtons ? null : new[] {
@@ -2620,16 +2629,176 @@ namespace AasxPackageLogic
 				},
 				auxButtonLambda: (i) =>
 				{
-                    return SammExtensionHelperSammReferenceAction(
-                        env, relatedReferable, sr, setValue, i,
-                        presetList: presetList);
+                    return SammExtensionHelperSammReferenceAction<T>(
+                        env, relatedReferable, 
+                        i,
+                        sr: sr, 
+                        setValue: setValue, 
+                        createInstance: createInstance,
+						presetList: presetList);
 				});
+
+            if (editOptionalFlag && sr is OptionalSammReference osr)
+            {
+				AnyUiUIElement.RegisterControl(
+					AddSmallCheckBoxTo(grid, 0, 1,
+					    margin: new AnyUiThickness(2, 2, 2, 2),
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center,
+					    content: "Opt.",
+                        isChecked: osr.Optional),
+					    (v) =>
+					    {
+                            osr.Optional = (bool) v;
+						    setValue?.Invoke(sr);
+						    return new AnyUiLambdaActionNone();
+					    });
+			}
 		}
 
-        /// <summary>
-        /// Shall provide rather quick access to information ..
-        /// </summary>
-        public static Type CheckReferableForSammExtensionType(Aas.IReferable rf)
+		public void SammExtensionHelperAddListOfSammReference<T>(
+			Aas.Environment env, AnyUiStackPanel stack, string caption,
+			Samm.ModelElement sammInst,
+			Aas.IReferable relatedReferable,
+			List<T> value,
+			Action<List<T>> setValue,
+            Func<string,T> createInstance,
+            bool editOptionalFlag) where T : SammReference
+        {
+			this.AddVerticalSpace(stack);
+
+			if (this.SafeguardAccess(stack, repo, value, "" + caption + ":",
+				"Create data element!",
+				v => {
+					setValue?.Invoke(new List<T>(new T[] { createInstance?.Invoke("") }));
+					return new AnyUiLambdaActionRedrawEntity();
+				}))
+			{
+				// Head
+				var sg = this.AddSubGrid(stack, "" + caption + ":",
+				rows: 1 + value.Count, cols: 2,
+				minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+				paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+				colWidths: new[] { "*", "#" });
+
+				AnyUiUIElement.RegisterControl(
+					AddSmallButtonTo(sg, 0, 1,
+					margin: new AnyUiThickness(2, 2, 2, 2),
+					padding: new AnyUiThickness(1, 0, 1, 0),
+					content: "\u2795"),
+					(v) =>
+					{
+						value.Add(createInstance?.Invoke(""));
+						setValue?.Invoke(value);
+						return new AnyUiLambdaActionRedrawEntity();
+					});
+
+				// individual references
+				for (int lsri = 0; lsri < value.Count; lsri++)
+				{
+					// remember lambda safe
+					var theLsri = lsri;
+
+					// Stack in the 1st column
+					var sp1 = AddSmallStackPanelTo(sg, 1 + lsri, 0);
+					SammExtensionHelperAddSammReference(
+						env, sp1, $"[{1 + lsri}]",
+						(Samm.ModelElement)sammInst, relatedReferable,
+						value[lsri],
+						noFirstColumnWidth: true,
+						showButtons: false,
+                        editOptionalFlag: editOptionalFlag,
+						setValue: (v) => {
+							value[theLsri] = v;
+							setValue?.Invoke(value);
+						},
+                        createInstance: createInstance);
+
+					if (false)
+					{
+						// remove button
+						AnyUiUIElement.RegisterControl(
+						    AddSmallButtonTo(sg, 1 + lsri, 1,
+						    margin: new AnyUiThickness(2, 2, 2, 2),
+						    padding: new AnyUiThickness(5, 0, 5, 0),
+						    content: "-"),
+						    (v) =>
+						    {
+							    value.RemoveAt(theLsri);
+							    setValue?.Invoke(value);
+							    return new AnyUiLambdaActionRedrawEntity();
+						    });
+					}
+					else
+					{
+						// button [hamburger]
+						AddSmallContextMenuItemTo(
+							sg, 1 + lsri, 1,
+							"\u22ee",
+							repo, new[] {
+								"\u2702", "Delete",
+								"\u25b2", "Move Up",
+								"\u25bc", "Move Down",
+								"\U0001F4D1", "Select from preset",
+								"\U0001F517", "Select from existing CDs",
+								"\U0001f516", "Create new CD for SAMM",
+								"\U0001f872", "Jump to"
+							},
+							margin: new AnyUiThickness(2, 2, 2, 2),
+							padding: new AnyUiThickness(5, 0, 5, 0),
+							menuItemLambda: (o) =>
+							{
+								var action = false;
+
+								if (o is int ti)
+									switch (ti)
+									{
+										case 0:
+											value.RemoveAt(theLsri);
+											action = true;
+											break;
+										case 1:
+											MoveElementInListUpwards<T>(value, value[theLsri]);
+											action = true;
+											break;
+										case 2:
+											MoveElementInListDownwards<T>(value, value[theLsri]);
+											action = true;
+											break;
+										case 3:
+										case 4:
+										case 5:
+										case 6:
+											return SammExtensionHelperSammReferenceAction<T>(
+												env, relatedReferable,
+												sr: value[theLsri],
+												actionIndex: ti - 3,
+												presetList: null,
+												setValue: (srv) =>
+												{
+													value[theLsri] = srv;
+													setValue?.Invoke(value);
+												},
+                                                createInstance: createInstance);
+									}
+
+								if (action)
+								{
+									setValue?.Invoke(value);
+									return new AnyUiLambdaActionRedrawEntity();
+								}
+								return new AnyUiLambdaActionNone();
+							});
+					}
+				}
+			}
+
+		}
+
+		/// <summary>
+		/// Shall provide rather quick access to information ..
+		/// </summary>
+		public static Type CheckReferableForSammExtensionType(Aas.IReferable rf)
         {
             // access
             if (rf?.Extensions == null)
@@ -2919,143 +3088,39 @@ namespace AasxPackageLogic
                             // List of SammReference?
                             if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.SammReference>)))
                             {
-                                this.AddVerticalSpace(stack);
-
-								var lsr = (List<Samm.SammReference>)pii.GetValue(sammInst);
-
-                                Action<List<Samm.SammReference>> lambdaSetValue = (v) =>
-                                {
-                                    pii.SetValue(sammInst, v);
-                                    WriteSammInstBack();
-                                };
-
-								if (this.SafeguardAccess(stack, repo, lsr, "" + pii.Name + ":", 
-                                    "Create data element!", 
-                                    v => {
-                                        lambdaSetValue(new List<Samm.SammReference>());
-									    return new AnyUiLambdaActionRedrawEntity();
-								    }))
-								{
-									// Head
-									var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
-									rows: 1 + lsr.Count, cols: 2,
-									minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
-									paddingCaption: new AnyUiThickness(5, 0, 0, 0),
-									colWidths: new[] { "*", "#" });
-
-									AnyUiUIElement.RegisterControl(
-										AddSmallButtonTo(sg, 0, 1,
-										margin: new AnyUiThickness(2, 2, 2, 2),
-										padding: new AnyUiThickness(1, 0, 1, 0),
-										content: "\u2795"),
-										(v) =>
-										{
-											lsr.Add(new Samm.SammReference());
-											lambdaSetValue(lsr);
-											return new AnyUiLambdaActionRedrawEntity();
-										});
-
-                                    // individual references
-                                    for (int lsri = 0; lsri < lsr.Count; lsri++)
+                                SammExtensionHelperAddListOfSammReference<Samm.SammReference>(
+                                    env, stack, caption: "" + pii.Name,
+                                    (ModelElement)sammInst,
+                                    relatedReferable,
+                                    editOptionalFlag: false,
+                                    value: (List<Samm.SammReference>)pii.GetValue(sammInst),
+                                    setValue: (v) =>
                                     {
-                                        // remember lambda safe
-                                        var theLsri = lsri;
-
-                                        // Stack in the 1st column
-                                        var sp1 = AddSmallStackPanelTo(sg, 1 + lsri, 0);
-                                        SammExtensionHelperAddSammReference(
-                                            env, sp1, $"[{lsri}]", 
-                                            (Samm.ModelElement)sammInst, relatedReferable,
-											lsr[lsri],
-                                            noFirstColumnWidth: true,
-									        showButtons: false,
-											setValue: (v) => {
-                                                lsr[theLsri] = v;
-                                                lambdaSetValue(lsr);
-									        });
-
-                                        if (false)
-                                        {
-                                            // remove button
-                                            AnyUiUIElement.RegisterControl(
-                                            AddSmallButtonTo(sg, 1 + lsri, 1,
-                                            margin: new AnyUiThickness(2, 2, 2, 2),
-                                            padding: new AnyUiThickness(5, 0, 5, 0),
-                                            content: "-"),
-                                            (v) =>
-                                            {
-                                                lsr.RemoveAt(theLsri);
-                                                lambdaSetValue(lsr);
-                                                return new AnyUiLambdaActionRedrawEntity();
-                                            });
-                                        }
-                                        else
-                                        {
-											// button [hamburger]
-											AddSmallContextMenuItemTo(
-												sg, 1 + lsri, 1,
-												"\u22ee",
-												repo, new[] {
-								                    "\u2702", "Delete",
-								                    "\u25b2", "Move Up",
-								                    "\u25bc", "Move Down",
-                                                    "\U0001F4D1", "Select from preset",
-                                                    "\U0001F517", "Select from existing CDs",
-                                                    "\U0001f516", "Create new CD for SAMM",
-                                                    "\U0001f872", "Jump to"
-												},
-												margin: new AnyUiThickness(2, 2, 2, 2),
-												padding: new AnyUiThickness(5, 0, 5, 0),
-												menuItemLambda: (o) =>
-												{
-													var action = false;
-
-													if (o is int ti)
-														switch (ti)
-														{
-															case 0:
-																lsr.RemoveAt(theLsri);
-																action = true;
-																break;
-															case 1:
-																MoveElementInListUpwards<Samm.SammReference>(lsr, lsr[theLsri]);
-																action = true;
-																break;
-															case 2:
-																MoveElementInListDownwards<Samm.SammReference>(lsr, lsr[theLsri]);
-																action = true;
-																break;
-															case 3:
-															case 4:
-															case 5:
-															case 6:
-                                                                return SammExtensionHelperSammReferenceAction(
-                                                                    env, relatedReferable,
-                                                                    sr: lsr[theLsri],
-                                                                    actionIndex: ti - 3,
-                                                                    presetList: null,
-                                                                    setValue: (srv) =>
-                                                                    {
-                                                                        lsr[theLsri] = srv;
-																		lambdaSetValue(lsr);
-
-																	});
-														}
-
-													if (action)
-                                                    {
-                                                        lambdaSetValue(lsr);
-                                                        return new AnyUiLambdaActionRedrawEntity();
-                                                    }
-													return new AnyUiLambdaActionNone();
-												});
-										}
-									}
-								}
+                                        pii.SetValue(sammInst, v);
+                                        WriteSammInstBack();
+                                    },
+                                    createInstance: (sr) => new SammReference(sr));
 							}
 
-                            // NamespaceMap
-                            if (pii.PropertyType.IsAssignableTo(typeof(Samm.NamespaceMap)))
+							// List of optional SammReference?
+							if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.OptionalSammReference>)))
+							{
+								SammExtensionHelperAddListOfSammReference<Samm.OptionalSammReference>(
+									env, stack, caption: "" + pii.Name,
+									(ModelElement)sammInst,
+									relatedReferable,
+                                    editOptionalFlag: true,
+									value: (List<Samm.OptionalSammReference>)pii.GetValue(sammInst),
+									setValue: (v) =>
+									{
+										pii.SetValue(sammInst, v);
+										WriteSammInstBack();
+									},
+									createInstance: (sr) => new OptionalSammReference(sr));
+							}
+
+							// NamespaceMap
+							if (pii.PropertyType.IsAssignableTo(typeof(Samm.NamespaceMap)))
                             {
 								this.AddVerticalSpace(stack);
 								
@@ -3163,14 +3228,15 @@ namespace AasxPackageLogic
                                     presetValues = Samm.Constants.GetPresetsForListName(x3.PresetListName);
                                 }
 
-                                SammExtensionHelperAddSammReference(
+                                SammExtensionHelperAddSammReference<SammReference>(
                                     env, stack, "" + pii.Name, (Samm.ModelElement) sammInst, relatedReferable,
                                     sr,
                                     presetList: presetValues,
                                     setValue: (v) => {
 										pii.SetValue(sammInst, v);
 										WriteSammInstBack();
-									});
+									},
+                                    createInstance: (sr) => new SammReference(sr));
 							}
 
 							// List of string?
@@ -3255,11 +3321,15 @@ namespace AasxPackageLogic
                                 } 
                                 else
                                 {
+                                    // makes sense to have a bit vertical space
+                                    AddVerticalSpace(stack);
+
 									// multi line
 									AddKeyValueExRef(
 										stack, "" + pii.Name, sammInst, (string)pii.GetValue(sammInst), null, repo,
 										setValue: setValueLambda,
                                         limitToOneRowForNoEdit: true,
+                                        maxLines: isMultiLineAttr.MaxLines.Value,
 						                auxButtonTitles: new[] { "\u2261" },
 						                auxButtonToolTips: new[] { "Edit in multiline editor" },
 						                auxButtonLambda: (buttonNdx) =>
@@ -3286,6 +3356,79 @@ namespace AasxPackageLogic
 				}
 			}
 		}
+
+		/// <summary>
+		/// Parses an rdf:Collection and reads out either <c>SammReference</c> or <c>OptionalSammReference</c>
+		/// </summary>
+		public static List<T> ImportSammModelParseRdfCollection<T>(
+            IGraph g,
+			INode collectionStart,
+            Func<string, bool, T> createInstance) where T : SammReference
+        {
+            // Try parse a rdf:Collection
+            // see: https://ontola.io/blog/ordered-data-in-rdf
+
+            var lsr = new List<T>();
+			INode collPtr = collectionStart;
+			while (collPtr != null && collPtr.NodeType == NodeType.Blank)
+			{
+				// the collection pointer needs to have a first relationship
+				var firstRel = g.GetTriplesWithSubjectPredicate(
+					subj: collPtr,
+					pred: new UriNode(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#first")))
+								.FirstOrDefault();
+				if (firstRel?.Object == null)
+					break;
+
+				// investigate, if first.object is a automatic/composite or an end node
+				if (firstRel.Object.NodeType == NodeType.Uri
+					|| firstRel.Object.NodeType == NodeType.Literal)
+				{
+                    // first.object is something tangible
+                    lsr.Add(createInstance?.Invoke(firstRel.Object.ToSafeString(), false));
+				}
+				else
+				{
+					// crawl firstRel.Object further to get individual end notes
+					string propElem = null;
+					bool? optional = null;
+
+					foreach (var x3 in g.GetTriplesWithSubject(firstRel.Object))
+					{
+						if (x3.Predicate.Equals(new UriNode(
+								new Uri("urn:bamm:io.openmanufacturing:meta-model:1.0.0#property"))))
+							propElem = x3.Object.ToSafeString();
+						if (x3.Predicate.Equals(
+								new UriNode(new Uri("urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional"))))
+							optional = x3.Object.ToSafeString() == "true^^http://www.w3.org/2001/XMLSchema#boolean";
+					}
+
+					if (propElem != null)
+						lsr.Add(createInstance?.Invoke(propElem, optional.Value));
+				}
+
+				// iterate further
+				var restRel = g.GetTriplesWithSubjectPredicate(
+					subj: collPtr,
+					pred: new UriNode(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest")))
+							.FirstOrDefault();
+				collPtr = restRel?.Object;
+			}
+
+            return lsr;
+		}
+
+        public static class RdfHelper
+        {
+            public static string GetLiteralStrValue(INode node)
+            {
+                if (node == null)
+                    return "";
+                if (node is LiteralNode ln)
+                    return ln.Value;
+                return node.ToSafeString();
+            }
+        }
 
         public static void ImportSammModelToConceptDescriptions(
 			Aas.Environment env, 
@@ -3365,7 +3508,7 @@ namespace AasxPackageLogic
                         // now let the property type decide, how to 
                         // put in the property
 
-                        var objStr = trpProp.Object.ToSafeString();
+                        var objStr = RdfHelper.GetLiteralStrValue(trpProp.Object);
 
 						// List of Samm.LangString
 						if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.LangString>)))
@@ -3402,66 +3545,43 @@ namespace AasxPackageLogic
 							if (lsr == null)
 								lsr = new List<Samm.SammReference>();
 
-							//                    if (trpProp.Object.NodeType == NodeType.Blank)
-							//                    {
-							//                        foreach (var x1 in g.GetTriplesWithSubject(trpProp.Object))
-							//                        {
-							//                            ;
-							//	foreach (var x2 in g.GetTriplesWithSubject(x1.Object))
-							//	{
-							//		;
-							//	}
-							//}
-							//                    }
-
-
-							// Try parse a rdf:Collection
-							// see: https://ontola.io/blog/ordered-data-in-rdf
-
-							INode collPtr = trpProp.Object;
-                            while (collPtr != null && collPtr.NodeType == NodeType.Blank)
-                            {
-                                // the collection pointer needs to have a first relationship
-                                var firstRel = g.GetTriplesWithSubjectPredicate(
-                                    subj: collPtr,
-                                    pred: new UriNode(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"))).FirstOrDefault();
-                                if (firstRel?.Object == null)
-                                    break;
-
-								// investigate, if first.object is a automatic/composite or an end node
-								if (firstRel.Object.NodeType == NodeType.Uri
-                                    || firstRel.Object.NodeType == NodeType.Literal)
-                                {
-                                    // first.object is something tangible
-                                    lsr.Add(new SammReference(firstRel.Object.ToSafeString()));
-								}
-                                else
-                                {
-                                    // crawl firstRel.Object further to get individual end notes
-                                    string propElem = null;
-                                    bool? optional = null;
-
-                                    foreach (var x3 in g.GetTriplesWithSubject(firstRel.Object))
-                                    {
-                                        if (x3.Predicate.Equals(new UriNode(new Uri("urn:bamm:io.openmanufacturing:meta-model:1.0.0#property"))))
-                                            propElem = x3.Object.ToSafeString();
-                                        if (x3.Predicate.Equals(new UriNode(new Uri("urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional"))))
-                                            optional = x3.Object.ToSafeString() == "true^^http://www.w3.org/2001/XMLSchema#boolean";
-									}
-
-                                    if (propElem != null)
-										lsr.Add(new SammReference(propElem));
-								}
-
-								// iterate further
-								var restRel = g.GetTriplesWithSubjectPredicate(
-									subj: collPtr,
-									pred: new UriNode(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest"))).FirstOrDefault();
-                                collPtr = restRel?.Object;
-							}
+                            lsr.AddRange(
+                                ImportSammModelParseRdfCollection(
+                                    g, collectionStart: trpProp.Object,
+                                    createInstance: (sr, opt) => new SammReference(sr)));
 
                             // write found references back
 							pii.SetValue(sammInst, lsr);
+						}
+
+						// List of OptionalSammReference
+						if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.OptionalSammReference>)))
+						{
+							var lsr = (List<Samm.OptionalSammReference>)pii.GetValue(sammInst);
+							if (lsr == null)
+								lsr = new List<Samm.OptionalSammReference>();
+
+							lsr.AddRange(
+								ImportSammModelParseRdfCollection(
+									g, collectionStart: trpProp.Object,
+									createInstance: (sr, opt) => new OptionalSammReference(sr, opt)));
+
+							// write found references back
+							pii.SetValue(sammInst, lsr);
+						}
+
+						// just SammReference
+						if (pii.PropertyType.IsAssignableTo(typeof(Samm.SammReference)))
+						{
+                            // simply set the value
+							pii.SetValue(sammInst, new SammReference(objStr));
+						}
+
+						// just string
+						if (pii.PropertyType.IsAssignableTo(typeof(string)))
+						{
+							// simply set the value
+							pii.SetValue(sammInst, objStr);
 						}
 					}
 				}
@@ -3488,12 +3608,12 @@ namespace AasxPackageLogic
 
                 // name of elements is a special case. Can become idShort
                 string elemName = null;
-				var delemPred = Samm.Constants.SelfNamespaces.ExtendUri("bamm:name");
+				var elemPred = Samm.Constants.SelfNamespaces.ExtendUri("bamm:name");
                 foreach (var trpProp in g.GetTriplesWithSubjectPredicate(
                         subj: trpSammElem.Subject,
-                        pred: new VDS.RDF.UriNode(new Uri(descPred))))
+                        pred: new VDS.RDF.UriNode(new Uri(elemPred))))
                 {
-                    elemName = trpProp.Object.ToSafeString();
+                    elemName = RdfHelper.GetLiteralStrValue(trpProp.Object);
 				}
 
 				// Aspect is another special case

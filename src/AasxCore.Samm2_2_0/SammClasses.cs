@@ -331,6 +331,23 @@ namespace AasCore.Samm2_2_0
 	}
 
 	/// <summary>
+	/// When Properties are used in Aspects and Entities, they can be marked as optional 
+	/// (not possible for properties of Abstract Entities). 
+	/// This means that a Property’s usage is optional, not the Property itself, which 
+	/// would make reusing a Property more difficult.
+	/// </summary>
+	public class OptionalSammReference : SammReference
+	{
+		public bool Optional { get; set; } = false;
+
+		public OptionalSammReference(string val = "", bool optional = false)
+		{
+			Value = val;
+			Optional = optional;
+		}
+	}
+
+	/// <summary>
 	/// Single item for <c>NamespaceMap</c>.
 	/// </summary>
 	public class NamespaceMapItem
@@ -417,7 +434,7 @@ namespace AasCore.Samm2_2_0
 	/// Base class for other constraints that constrain a Characteristic in some way, e.g., the Range Constraint 
 	/// limits the value range for a Property.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#constraint"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Constraint"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Constraint"/>
 	/// </summary>
 	public class Constraint : ModelElement
 	{		
@@ -426,7 +443,7 @@ namespace AasCore.Samm2_2_0
 	/// <summary>
 	/// Restricts a value to a specific language.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#language-constraint"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#LanguageConstraint"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#LanguageConstraint"/>
 	/// </summary>
 	public class LanguageConstraint : Constraint
 	{
@@ -434,19 +451,21 @@ namespace AasCore.Samm2_2_0
 		/// An ISO 639-1 [iso639] language code for the language of the value of the constrained Property, 
 		/// e.g., "de".
 		/// </summary>
+		[SammPropertyUri("bamm-c:languageCode")]
 		public string? LanguageCode; 
 	}
 
 	/// <summary>
 	/// Restricts a value to a specific locale, i.e., a language with additional region information.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#locale-constraint"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#LocaleConstraint"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#LocaleConstraint"/>
 	/// </summary>
 	public class LocaleConstraint : Constraint
 	{
 		/// <summary>
 		/// An IETF BCP 47 language code for the locale of the value of the constrained Property, e.g., "de-DE".
 		/// </summary>
+		[SammPropertyUri("bamm-c:localeCode")]
 		public string? LocaleCode;
 	}
 
@@ -459,30 +478,34 @@ namespace AasCore.Samm2_2_0
 		/// <summary>
 		/// The upper bound of a range.
 		/// </summary>
+		[SammPropertyUri("bamm-c:maxValue")]
 		public string? MaxValue;
 
 		/// <summary>
 		/// The lower bound of a range.
 		/// </summary>
+		[SammPropertyUri("bamm-c:minValue")]
 		public string? MinValue;
 
 		/// <summary>
 		/// Defines whether the upper bound of a range is inclusive or exclusive. Possible values are 
 		/// <c>AT_MOST</c> and <c>LESS_THAN</c>.
 		/// </summary>
+		[SammPropertyUri("bamm-c:upperBoundDefinition")]
 		public SammUpperBoundDefinition? UpperBoundDefinition;
 
 		/// <summary>
 		/// Defines whether the lower bound of a range is inclusive or exclusive. Possible values are 
 		/// <c>AT_LEAST</c> and <c>GREATER_THAN</c>.
 		/// </summary>
+		[SammPropertyUri("bamm-c:lowerBoundDefinition")]
 		public SammLowerBoundDefinition? LowerBoundDefinition;
 	}
 
 	/// <summary>
 	/// Restricts the encoding of a Property.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#encoding-constraint"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#EncodingConstraint"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#EncodingConstraint"/>
 	/// </summary>
 	public class EncodingConstraint : Constraint
 	{
@@ -490,6 +513,7 @@ namespace AasCore.Samm2_2_0
 		/// Configures the encoding. This must be one of the following: 
 		/// <c>US-ASCII</c>, <c>ISO-8859-1</c>, <c>UTF-8</c>, <c>UTF-16</c>, <c>UTF-16BE</c> or <c>UTF-16LE</c>.
 		/// </summary>
+		[SammPropertyUri("bamm:value")]
 		public SammEncoding? Value;
 	}
 
@@ -500,18 +524,20 @@ namespace AasCore.Samm2_2_0
 	/// Collection Characteristics (Collection, Set, Sorted Set, List). In this case the Constraint restricts the 
 	/// number of elements in the collection.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#length-constraint"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#LengthConstraint"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#LengthConstraint"/>
 	/// </summary>
 	public class LengthConstraint : Constraint
 	{
 		/// <summary>
 		/// The maximum length. Must be given as xsd:nonNegativeInteger.
 		/// </summary>
+		[SammPropertyUri("bamm-c:maxValue")]
 		public uint? MaxValue;
 
 		/// <summary>
 		/// The minimum length. Must be given as xsd:nonNegativeInteger.
 		/// </summary>
+		[SammPropertyUri("bamm-c:minValue")]
 		public uint? MinValue;
 	}
 
@@ -520,7 +546,7 @@ namespace AasCore.Samm2_2_0
 	/// and Operators [xpath-functions].
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#regular-expression-constraint"/>
 	/// <see href="https://www.w3.org/TR/xpath-functions-3/#regex-syntax"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#RegularExpressionConstraint"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#RegularExpressionConstraint"/>
 	/// </summary>
 	public class RegularExpressionConstraint : Constraint
 	{
@@ -528,6 +554,7 @@ namespace AasCore.Samm2_2_0
 		/// The regular expression.
 		/// <see href="https://www.w3.org/TR/xpath-functions-3/#regex-syntax"/>
 		/// </summary>
+		[SammPropertyUri("bamm-c:value")]
 		public string? Value;
 	}
 
@@ -535,7 +562,7 @@ namespace AasCore.Samm2_2_0
 	/// Defines the scaling factor as well as the amount of integral numbers for a fixed point number. 
 	/// The constraint may only be used in conjunction with Characteristics which use the xsd:decimal data type.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#fixed-point-constraint"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#FixedPointConstraint"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#FixedPointConstraint"/>
 	/// </summary>
 	public class FixedPointConstraint : Constraint
 	{
@@ -544,6 +571,7 @@ namespace AasCore.Samm2_2_0
 		/// scaling factor is 2 (the number of digits after the decimal point). 
 		/// Must be given as xsd:positiveInteger.
 		/// </summary>
+		[SammPropertyUri("bamm-c:scale")]
 		public uint? Scale;
 
 		/// <summary>
@@ -551,6 +579,7 @@ namespace AasCore.Samm2_2_0
 		/// is 123.04, the integer factor is 3 (the number of digits before the decimal point). 
 		/// Must be given as xsd:positiveInteger.
 		/// </summary>
+		[SammPropertyUri("bamm-c:integer")]
 		public uint? Integer;
 	}
 
@@ -558,13 +587,15 @@ namespace AasCore.Samm2_2_0
 	/// Base class of all characteristics. This Characteristics Class can also be instantiated directly 
 	/// (i.e., without creating a subclass).
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#characteristic-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Characteristic"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Characteristic"/>
 	/// </summary>
 	public class Characteristic : ModelElement, ISammSelfDescription, ISammStructureModel
 	{
 		// self description
 		public string GetSelfName() => "samm-characteristic";
-		public string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Characteristic";
+		// public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Characteristic";
+		// FIX: seems to use bamm: instead of bamm-c: !!
+		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Characteristic";
 
 		// structure model
 		public bool IsTopElement() => false;
@@ -577,8 +608,9 @@ namespace AasCore.Samm2_2_0
 		/// <summary>
 		/// Reference to a scalar or complex (Entity) data type. See Section "Type System" in the Aspect Meta Model.
 		/// Also the scalar data types (e.g. xsd:decimal) are treated as references in the first degree.
-		/// </summary>
+		/// </summary>	
 		[SammPresetList("SammXsdDataTypes")]
+		[SammPropertyUri("bamm:dataType")]
 		public SammReference DataType { get; set; }
 
 		public Characteristic()
@@ -592,24 +624,26 @@ namespace AasCore.Samm2_2_0
 	/// referred to as the "base Characteristic". A Trait itself has no samm:dataType, 
 	/// because it inherits the type of its samm-c:baseCharacteristic.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#trait-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Trait"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Trait"/>
 	/// </summary>
 	public class Trait : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-trait";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Trait";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Trait";
 
 		/// <summary>
 		/// The Characterstic that is being constrained.
 		/// Identified via <c>preferredName</c> in any language
 		/// </summary>
+		[SammPropertyUri("bamm-c:baseCharacteristic")]
 		public SammReference? BaseCharacteristic { get; set; }
 
 		/// <summary>
 		/// A Constraint that is applicable to the base Characteristic. This attribute may be used multiple times, 
 		/// to add multiple Constraints to the base Characteristic.
 		/// </summary>
+		[SammPropertyUri("bamm-c:constraint")]
 		public List<Constraint>? Constraint { get; set; }
 	}
 
@@ -617,34 +651,36 @@ namespace AasCore.Samm2_2_0
 	/// A value which can be quantified and may have a unit, e.g., the number of bolts required for a 
 	/// processing step or the expected torque with which these bolts should be tightened.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#quantifiable-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Quantifiable"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Quantifiable"/>
 	/// </summary>
 	public class Quantifiable : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-quantifiable";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Quantifiable";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Quantifiable";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog
 		/// </summary>
+		[SammPropertyUri("bamm-c:unit")]
 		public SammReference? Unit { get; set; }
 	}
 
 	/// <summary>
 	/// A measurement is a numeric value with an associated unit and quantity kind.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#measurement-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Measurement"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Measurement"/>
 	/// </summary>
 	public class Measurement : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-measurement";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Measurement";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Measurement";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog
 		/// </summary>
+		[SammPropertyUri("bamm-c:unit")]
 		public SammReference Unit { get; set; }
 
 		public Measurement()
@@ -656,18 +692,19 @@ namespace AasCore.Samm2_2_0
 	/// <summary>
 	/// An enumeration represents a list of possible values.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#enumeration-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Enumeration"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Enumeration"/>
 	/// </summary>
 	public class Enumeration : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-enumeration";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Enumeration";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Enumeration";
 
 		/// <summary>
 		/// List of possible values. The dataType of each of the values must match the 
 		/// dataType of the Enumeration.
 		/// </summary>
+		[SammPropertyUri("bamm-c:values")]
 		public List<string> Values { get; set; }
 
 		public Enumeration()
@@ -679,17 +716,18 @@ namespace AasCore.Samm2_2_0
 	/// <summary>
 	/// A state is subclass of Enumeration with a default value.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#state-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#State"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#State"/>
 	/// </summary>
 	public class State : Enumeration, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-state";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#State";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#State";
 
 		/// <summary>
 		/// The default value for the state.
 		/// </summary>
+		[SammPropertyUri("bamm-c:defaultValue")]
 		public string DefaultValue { get; set; }
 
 		public State()
@@ -701,13 +739,13 @@ namespace AasCore.Samm2_2_0
 	/// <summary>
 	/// A time duration.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#duration-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Duration"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Duration"/>
 	/// </summary>
 	public class Duration : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-duration";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Duration";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Duration";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog. The referenced unit or its referenceUnit 
@@ -719,6 +757,7 @@ namespace AasCore.Samm2_2_0
 		/// unit:poisePerBar unit:poisePerPascal unit:reciprocalMinute unit:secondUnitOfTime 
 		/// unit:shake unit:siderealYear unit:tropicalYear unit:week unit:year
 		/// </summary>
+		[SammPropertyUri("bamm-c:unit")]
 		public SammReference Unit { get; set; }
 
 		public Duration()
@@ -731,17 +770,18 @@ namespace AasCore.Samm2_2_0
 	/// A group of values which may be either of a scalar or Entity type. The values may be duplicated and 
 	/// are not ordered (i.e., bag semantics).
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#collection-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Collection"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Collection"/>
 	/// </summary>
 	public class Collection : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-collection";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Collection";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Collection";
 
 		/// <summary>
 		/// Reference to a Characteristic which describes the individual elements contained in the Collection.
 		/// </summary>
+		[SammPropertyUri("bamm-c:elementCharacteristic")]
 		public SammReference ElementCharacteristic { get; set; }
 
 		public Collection()
@@ -753,49 +793,49 @@ namespace AasCore.Samm2_2_0
 	/// <summary>
 	/// A subclass of Collection which may contain duplicates and is ordered.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#list-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#List"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#List"/>
 	/// </summary>
 	public class List : Collection, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-list";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#List";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#List";
 	}
 
 	/// <summary>
 	/// A subclass of Collection which may not contain duplicates and is unordered.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#set-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Set"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Set"/>
 	/// </summary>
 	public class Set : Collection, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-set";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Set";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Set";
 	}
 
 	/// <summary>
 	/// A subclass of Collection which may not contain duplicates and is ordered.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#sorted-set-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#SortedSet"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#SortedSet"/>
 	/// </summary>
 	public class SortedSet : Collection, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-sorted-set";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#SortedSet";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#SortedSet";
 	}
 
 	/// <summary>
 	/// A subclass of Sorted Set containing values with the exact point in time when the values where recorded.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#time-series-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#TimeSeries"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#TimeSeries"/>
 	/// </summary>
 	public class TimeSeries : SortedSet, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-time-series";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#TimeSeries";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#TimeSeries";
 
 		// For DataType
 		// Set to samm-e:TimeSeriesEntity. This Entity consists of two Properties, namely samm-e:timestamp
@@ -810,13 +850,13 @@ namespace AasCore.Samm2_2_0
 	/// Describes a Property which contains any kind of code. Note that this Characteristic does not 
 	/// define a samm:dataType, this must therefore be done when instantiating the Characteristic.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#code-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Code"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Code"/>
 	/// </summary>
 	public class Code : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-code";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Code";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Code";
 	}
 
 	/// <summary>
@@ -824,22 +864,24 @@ namespace AasCore.Samm2_2_0
 	/// This Characteristic does not have one explicit samm:dataType, as it can be the datatype of either 
 	/// the left or the right.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#either-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Either"/>"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Either"/>"/>
 	/// </summary>
 	public class Either : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-either";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#Either";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Either";
 
 		/// <summary>
 		/// The left side of the Either. The attribute references another Characteristic which describes the value.
 		/// </summary>
+		[SammPropertyUri("bamm-c:left")]
 		public string Left { get; set; }
 
 		/// <summary>
 		/// The right side of the Either. The attribute references another Characteristic which describes the value.
 		/// </summary>
+		[SammPropertyUri("bamm-c:right")]
 		public string Right { get; set; }
 
 		public Either()
@@ -853,13 +895,13 @@ namespace AasCore.Samm2_2_0
 	/// Describes a Property whose data type is an Entity. The Entity used as data type could be defined in the 
 	/// same Aspect Model or the shared Entity namespace of the Semantic Aspect Meta Model.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#single-entity-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#SingleEntity"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#SingleEntity"/>
 	/// </summary>
 	public class SingleEntity : Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-single-entity";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#SingleEntity";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#SingleEntity";
 	}
 
 	/// <summary>
@@ -868,13 +910,13 @@ namespace AasCore.Samm2_2_0
 	/// linking to a separate Property definition for each part. To define the parts, the value must be 
 	/// deconstructed using a regular expression.
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#structured-value-characteristic"/>
-	/// <seealso href="urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#StructuredValue"/>
+	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#StructuredValue"/>
 	/// </summary>
 	public class StructuredValue: Characteristic, ISammSelfDescription
 	{
 		// self description
 		public new string GetSelfName() => "samm-structured-value";
-		public new string GetSelfUrn() => "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#StructuredValue";
+		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#StructuredValue";
 
 		/// <summary>
 		/// The regular expression used to deconstruct the value into parts that are mapped to separate 
@@ -882,12 +924,14 @@ namespace AasCore.Samm2_2_0
 		/// are Properties given in the elements list. The n​th capture group maps to the n​th Property 
 		/// in the elements list.
 		/// </summary>
+		[SammPropertyUri("bamm-c:deconstructionRule")]
 		public string DeconstructionRule { get; set; }
 
 		/// <summary>
 		/// A list of entries each of which can either be a Property reference or a string literal. 
 		/// The list must contain at least one Property reference.
 		/// </summary>
+		[SammPropertyUri("bamm-c:elements")]
 		public List<string> Elements { get; set; }
 
 		public StructuredValue()
@@ -921,12 +965,14 @@ namespace AasCore.Samm2_2_0
 		/// in a corresponding Characteristic. It is important to ensure that the data type has the correct format. 
 		/// Find the Data Types (SAMM 2.1.0) with an example value.
 		/// </summary>
+		[SammPropertyUri("bamm:exampleValue")]
 		public string? ExampleValue { get; set; }
 
 		/// <summary>
 		/// One Property has exactly one Characteristic.
 		/// </summary>
 		[SammPresetList("Characteristics")]
+		[SammPropertyUri("bamm:characteristic")]
 		public SammReference Characteristic { get; set; }
 
 		public Property()
@@ -954,6 +1000,7 @@ namespace AasCore.Samm2_2_0
 		}
 
 		// own
+		[SammPropertyUri("bamm:properties")]
 		public List<SammReference> Properties { get; set; }
 
 		public Entity()
@@ -995,18 +1042,71 @@ namespace AasCore.Samm2_2_0
 		[SammMultiLine(maxLines: 5)]
 		public string Comments { get; set; } = "";
 
+		/// <summary>
+		/// A Property represents a named value. This element is optional and can appear 
+		/// multiple times in a model ([0..n]). 
+		/// </summary>
 		[SammPropertyUri("bamm:properties")]
-		public List<SammReference> Properties { get; set; }
-		
-		public List<SammReference> Events { get; set; }
-		public List<SammReference> Operations { get; set; }
+		public List<OptionalSammReference> Properties { get; set; } = new List<OptionalSammReference>();
 
-		public Aspect()
-		{
-			Properties = new List<SammReference>();
-			Events = new List<SammReference>();
-			Operations = new List<SammReference>();
-		}
+		/// <summary>
+		/// An Event is a model element that represents a single occurence where the timing is important. 
+		/// </summary>
+		[SammPropertyUri("bamm:events")]
+		public List<SammReference> Events { get; set; } = new List<SammReference>();
+
+		/// <summary>
+		/// An Operation represents an action that can be triggered on the Aspect. 
+		/// </summary>
+		[SammPropertyUri("bamm:operations")]
+		public List<SammReference> Operations { get; set; } = new List<SammReference>();
+	}
+
+	public class Unit : ModelElement, ISammSelfDescription
+	{
+		// self description
+		public string GetSelfName() => "samm-unit";
+		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Unit";
+
+		/// <summary>
+		/// Normalized short code for unit; please refer to the original 
+		/// specification for more details.
+		/// </summary>
+		[SammPropertyUri("bamm:commonCode")]
+		public string? CommonCode { get; set; } = null;
+
+		/// <summary>
+		/// If the unit is derived from a reference unit, the human readable 
+		/// multiplication factor, e.g., "10⁻²⁸ m²"
+		/// </summary>
+		[SammPropertyUri("bamm:conversionFactor")]
+		public string? ConversionFactor { get; set; } = null;
+
+		/// <summary>
+		/// If the unit is derived from a reference unit, the numeric 
+		/// multiplication factor, e.g., "1.0E-28"
+		/// </summary>
+		[SammPropertyUri("bamm:numericConversionFactor")]
+		public string? NumericConversionFactor { get; set; } = null;
+
+		/// <summary>
+		/// The list of quantity kinds, for example unit litre has quantity kind volume, unit 
+		/// metre has quantity kinds length, distance, diameter etc.
+		/// </summary>
+		[SammPropertyUri("bamm:quantityKind")]
+		public string? QuantityKind { get; set; } = null;
+
+		/// <summary>
+		/// The unit this unit is derived from, e.g., centimetre is derived from metre.
+		/// </summary>
+		[SammPropertyUri("bamm:referenceUnit")]
+		public SammReference? ReferenceUnit { get; set; } = null;
+
+		/// <summary>
+		/// The unit’s symbol, e.g., for centimetre the symbol is cm
+		/// </summary>
+		[SammPropertyUri("bamm:symbol")]
+		public string? symbol { get; set; } = null;
 	}
 
 	/// <summary>
@@ -1262,7 +1362,8 @@ namespace AasCore.Samm2_2_0
 			{
 				if (Activator.CreateInstance(st, new object[] { }) is ISammSelfDescription ssd)
 				{
-					SammUrnToType.Add(ssd.GetSelfUrn().ToLower(), st);
+					// assumption: RDF matching is case sensitive?!
+					SammUrnToType.Add(ssd.GetSelfUrn(), st);
 					SammTypeToName.Add(st, "" + ssd.GetSelfName());
 				}
 			}
@@ -1272,8 +1373,8 @@ namespace AasCore.Samm2_2_0
 		{
 			if (urn == null)
 				return null;
-			if (SammUrnToType.ContainsKey(urn.ToLower()))
-				return SammUrnToType[urn.ToLower()];
+			if (SammUrnToType.ContainsKey(urn))
+				return SammUrnToType[urn];
 			return null;
 		}
 
