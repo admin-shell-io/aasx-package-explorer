@@ -595,7 +595,7 @@ namespace AasCore.Samm2_2_0
 		public string GetSelfName() => "samm-characteristic";
 		// public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Characteristic";
 		// FIX: seems to use bamm: instead of bamm-c: !!
-		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Characteristic";
+		public string GetSelfUrn() => "bamm:Characteristic";
 
 		// structure model
 		public bool IsTopElement() => false;
@@ -630,7 +630,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-trait";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Trait";
+		public new string GetSelfUrn() => "bamm-c:Trait";
 
 		/// <summary>
 		/// The Characterstic that is being constrained.
@@ -644,7 +644,7 @@ namespace AasCore.Samm2_2_0
 		/// to add multiple Constraints to the base Characteristic.
 		/// </summary>
 		[SammPropertyUri("bamm-c:constraint")]
-		public List<Constraint>? Constraint { get; set; }
+		public List<SammReference>? Constraint { get; set; }
 	}
 
 	/// <summary>
@@ -657,7 +657,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-quantifiable";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Quantifiable";
+		public new string GetSelfUrn() => "bamm-c:Quantifiable";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog
@@ -675,7 +675,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-measurement";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Measurement";
+		public new string GetSelfUrn() => "bamm-c:Measurement";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog
@@ -698,7 +698,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-enumeration";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Enumeration";
+		public new string GetSelfUrn() => "bamm-c:Enumeration";
 
 		/// <summary>
 		/// List of possible values. The dataType of each of the values must match the 
@@ -722,7 +722,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-state";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#State";
+		public new string GetSelfUrn() => "bamm-c:State";
 
 		/// <summary>
 		/// The default value for the state.
@@ -745,7 +745,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-duration";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Duration";
+		public new string GetSelfUrn() => "bamm-c:Duration";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog. The referenced unit or its referenceUnit 
@@ -776,7 +776,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-collection";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Collection";
+		public new string GetSelfUrn() => "bamm-c:Collection";
 
 		/// <summary>
 		/// Reference to a Characteristic which describes the individual elements contained in the Collection.
@@ -799,7 +799,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-list";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#List";
+		public new string GetSelfUrn() => "bamm-c:List";
 	}
 
 	/// <summary>
@@ -811,7 +811,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-set";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Set";
+		public new string GetSelfUrn() => "bamm-c:Set";
 	}
 
 	/// <summary>
@@ -823,7 +823,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-sorted-set";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#SortedSet";
+		public new string GetSelfUrn() => "bamm-c:SortedSet";
 	}
 
 	/// <summary>
@@ -835,7 +835,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-time-series";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#TimeSeries";
+		public new string GetSelfUrn() => "bamm-c:TimeSeries";
 
 		// For DataType
 		// Set to samm-e:TimeSeriesEntity. This Entity consists of two Properties, namely samm-e:timestamp
@@ -856,7 +856,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-code";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Code";
+		public new string GetSelfUrn() => "bamm-c:Code";
 	}
 
 	/// <summary>
@@ -870,7 +870,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-either";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Either";
+		public new string GetSelfUrn() => "bamm-c:Either";
 
 		/// <summary>
 		/// The left side of the Either. The attribute references another Characteristic which describes the value.
@@ -901,7 +901,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-single-entity";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#SingleEntity";
+		public new string GetSelfUrn() => "bamm-c:SingleEntity";
 	}
 
 	/// <summary>
@@ -916,7 +916,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-structured-value";
-		public new string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#StructuredValue";
+		public new string GetSelfUrn() => "bamm-c:StructuredValue";
 
 		/// <summary>
 		/// The regular expression used to deconstruct the value into parts that are mapped to separate 
@@ -950,7 +950,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-property";
-		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Property";
+		public string GetSelfUrn() => "bamm:Property";
 
 		// structure model
 		public bool IsTopElement() => false;
@@ -988,7 +988,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-entity";
-		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Entity";
+		public string GetSelfUrn() => "bamm:Entity";
 
 		// structure model
 		public bool IsTopElement() => false;
@@ -1018,7 +1018,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-aspect";
-		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Aspect";
+		public string GetSelfUrn() => "bamm:Aspect";
 
 		// structure model
 		public bool IsTopElement() => true;
@@ -1066,7 +1066,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-unit";
-		public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:meta-model:1.0.0#Unit";
+		public string GetSelfUrn() => "bamm:Unit";
 
 		/// <summary>
 		/// Normalized short code for unit; please refer to the original 
@@ -1435,8 +1435,13 @@ namespace AasCore.Samm2_2_0
 				if (Activator.CreateInstance(st, new object[] { }) is ISammSelfDescription ssd)
 				{
 					// assumption: RDF matching is case sensitive?!
-					SammUrnToType.Add(ssd.GetSelfUrn(), st);
-					SammTypeToName.Add(st, "" + ssd.GetSelfName());
+					var fullUri = Constants.SelfNamespaces.ExtendUri(ssd.GetSelfUrn());
+
+					if (fullUri != null)
+					{
+						SammUrnToType.Add(fullUri, st);
+						SammTypeToName.Add(st, "" + ssd.GetSelfName());
+					}
 				}
 			}
 		}

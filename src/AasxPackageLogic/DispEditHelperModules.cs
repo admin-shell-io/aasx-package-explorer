@@ -2565,8 +2565,10 @@ namespace AasxPackageLogic
 				var newSammExt = new Aas.Extension(
 						name: "" + newSammSsd?.GetSelfName(),
 						semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-							(new[] { new Aas.Key(KeyTypes.GlobalReference,
-								     newSammSsd.GetSelfUrn()) })
+							(new[] { 
+                                new Aas.Key(KeyTypes.GlobalReference,
+								"" + Samm.Constants.SelfNamespaces.ExtendUri(newSammSsd.GetSelfUrn())) 
+                            })
 								.Cast<Aas.IKey>().ToList()),
 						value: "");
 				newCD.Extensions = new List<IExtension> { newSammExt };
@@ -2958,9 +2960,11 @@ namespace AasxPackageLogic
                                         new Aas.Extension(
                                             name: ssd.GetSelfName(),
                                             semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-                                                (new[] { new Aas.Key(KeyTypes.GlobalReference,
-                                                    ssd.GetSelfUrn()) })
-                                                    .Cast<Aas.IKey>().ToList()),
+                                                (new[] { 
+                                                    new Aas.Key(KeyTypes.GlobalReference,
+													"" + Samm.Constants.SelfNamespaces.ExtendUri(ssd.GetSelfUrn())) 
+                                                })
+                                                .Cast<Aas.IKey>().ToList()),
                                             value: ""));
 							}
 
@@ -3370,50 +3374,60 @@ namespace AasxPackageLogic
 
             var lsr = new List<T>();
 			INode collPtr = collectionStart;
-			while (collPtr != null && collPtr.NodeType == NodeType.Blank)
-			{
-				// the collection pointer needs to have a first relationship
-				var firstRel = g.GetTriplesWithSubjectPredicate(
-					subj: collPtr,
-					pred: new UriNode(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#first")))
-								.FirstOrDefault();
-				if (firstRel?.Object == null)
-					break;
 
-				// investigate, if first.object is a automatic/composite or an end node
-				if (firstRel.Object.NodeType == NodeType.Uri
-					|| firstRel.Object.NodeType == NodeType.Literal)
-				{
-                    // first.object is something tangible
-                    lsr.Add(createInstance?.Invoke(firstRel.Object.ToSafeString(), false));
-				}
-				else
-				{
-					// crawl firstRel.Object further to get individual end notes
-					string propElem = null;
-					bool? optional = null;
-
-					foreach (var x3 in g.GetTriplesWithSubject(firstRel.Object))
-					{
-						if (x3.Predicate.Equals(new UriNode(
-								new Uri("urn:bamm:io.openmanufacturing:meta-model:1.0.0#property"))))
-							propElem = x3.Object.ToSafeString();
-						if (x3.Predicate.Equals(
-								new UriNode(new Uri("urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional"))))
-							optional = x3.Object.ToSafeString() == "true^^http://www.w3.org/2001/XMLSchema#boolean";
-					}
-
-					if (propElem != null)
-						lsr.Add(createInstance?.Invoke(propElem, optional.Value));
-				}
-
-				// iterate further
-				var restRel = g.GetTriplesWithSubjectPredicate(
-					subj: collPtr,
-					pred: new UriNode(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest")))
-							.FirstOrDefault();
-				collPtr = restRel?.Object;
+            if (collPtr != null && (collPtr.NodeType == NodeType.Uri || collPtr.NodeType == NodeType.Literal))
+            {
+				// only a single member is given
+				lsr.Add(createInstance?.Invoke(RdfHelper.GetLiteralStrValue(collPtr), false));
 			}
+            else
+            {
+                // a chain of instances is given
+                while (collPtr != null && collPtr.NodeType == NodeType.Blank)
+                {
+                    // the collection pointer needs to have a first relationship
+                    var firstRel = g.GetTriplesWithSubjectPredicate(
+                        subj: collPtr,
+                        pred: new UriNode(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#first")))
+                                    .FirstOrDefault();
+                    if (firstRel?.Object == null)
+                        break;
+
+                    // investigate, if first.object is a automatic/composite or an end node
+                    if (firstRel.Object.NodeType == NodeType.Uri
+                        || firstRel.Object.NodeType == NodeType.Literal)
+                    {
+                        // first.object is something tangible
+                        lsr.Add(createInstance?.Invoke(firstRel.Object.ToSafeString(), false));
+                    }
+                    else
+                    {
+                        // crawl firstRel.Object further to get individual end notes
+                        string propElem = null;
+                        bool? optional = null;
+
+                        foreach (var x3 in g.GetTriplesWithSubject(firstRel.Object))
+                        {
+                            if (x3.Predicate.Equals(new UriNode(
+                                    new Uri("urn:bamm:io.openmanufacturing:meta-model:1.0.0#property"))))
+                                propElem = x3.Object.ToSafeString();
+                            if (x3.Predicate.Equals(
+                                    new UriNode(new Uri("urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional"))))
+                                optional = x3.Object.ToSafeString() == "true^^http://www.w3.org/2001/XMLSchema#boolean";
+                        }
+
+                        if (propElem != null)
+                            lsr.Add(createInstance?.Invoke(propElem, optional.Value));
+                    }
+
+                    // iterate further
+                    var restRel = g.GetTriplesWithSubjectPredicate(
+                        subj: collPtr,
+                        pred: new UriNode(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest")))
+                                .FirstOrDefault();
+                    collPtr = restRel?.Object;
+                }
+            }
 
             return lsr;
 		}
@@ -3640,16 +3654,18 @@ namespace AasxPackageLogic
 				var newCD = new Aas.ConceptDescription(
 					id: newId,
 					idShort: newIdShort,
-                    description: cdDesc.Cast<Aas.ILangStringTextType>().ToList());
+                    description: cdDesc?.Cast<Aas.ILangStringTextType>().ToList());
 
 				// create new SAMM element 
 				var newSammSsd = sammInst as Samm.ISammSelfDescription;
 				var newSammExt = new Aas.Extension(
 						name: "" + newSammSsd?.GetSelfName(),
 						semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-							(new[] { new Aas.Key(KeyTypes.GlobalReference,
-									 newSammSsd.GetSelfUrn()) })
-								.Cast<Aas.IKey>().ToList()),
+							(new[] { 
+                                new Aas.Key(KeyTypes.GlobalReference,
+								"" + Samm.Constants.SelfNamespaces.ExtendUri(newSammSsd.GetSelfUrn()))
+                            })
+							.Cast<Aas.IKey>().ToList()),
 						value: "");
 				newCD.Extensions = new List<IExtension> { newSammExt };
 
