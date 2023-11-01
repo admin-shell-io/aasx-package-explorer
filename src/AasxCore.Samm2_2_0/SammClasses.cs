@@ -1171,8 +1171,28 @@ namespace AasCore.Samm2_2_0
 			public uint Background = 0x00000000;
 		}
 
-		private static Dictionary<Type, SammElementRenderInfo> _renderInfo = 
-			      new Dictionary<Type, SammElementRenderInfo>();
+		public class SammElementRenderInfoDict : Dictionary<Type, SammElementRenderInfo>
+		{
+			public void Add(
+				Type[] types, 
+				SammElementRenderInfo value,
+				string[]? displayNames = null,
+				string[]? abbreviations = null)
+			{
+				for (int i = 0; i < types.Length; i++)
+				{
+					var mv = value.Copy();
+					if (displayNames != null && displayNames.Length > i)
+						mv.DisplayName = displayNames[i];
+					if (abbreviations != null && abbreviations.Length > i)
+						mv.Abbreviation = abbreviations[i];
+					Add(types[i], mv);
+				}
+			}
+		}
+
+		private static SammElementRenderInfoDict _renderInfo = 
+			      new SammElementRenderInfoDict();
 
 		public static SammElementRenderInfo? GetRenderInfo(Type t)
 		{
@@ -1200,13 +1220,65 @@ namespace AasCore.Samm2_2_0
 				Background = 0xFFC5C8D4
 			});
 
-			_renderInfo.Add(typeof(Characteristic), new SammElementRenderInfo()
-			{
-				DisplayName = "Characteristic",
-				Abbreviation = "C",
-				Foreground = 0xFF000000,
-				Background = 0xFFD6E2A6
-			});
+			_renderInfo.Add(
+				types: new[] { 
+					typeof(Characteristic),
+					typeof(Quantifiable),
+					typeof(Measurement),
+					typeof(Enumeration),
+					typeof(State),
+					typeof(Duration),
+					typeof(Collection),
+					typeof(List),
+					typeof(Set),
+					typeof(SortedSet),
+					typeof(TimeSeries),
+					typeof(Code),
+					typeof(Either),
+					typeof(SingleEntity),
+					typeof(StructuredValue)
+				},
+				displayNames: new[] {
+					"Characteristic",
+					"Quantifiable",
+					"Measurement",
+					"Enumeration",
+					"State",
+					"Duration",
+					"Collection",
+					"List",
+					"Set",
+					"SortedSet",
+					"TimeSeries",
+					"Code",
+					"Either",
+					"SingleEntity",
+					"StructuredValue"
+				},
+				abbreviations: new[] {
+					"C",
+					"QN",
+					"ME",
+					"EN",
+					"ST",
+					"DU",
+					"CL",
+					"LI",
+					"SE",
+					"SS",
+					"TS",
+					"CO",
+					"EI",
+					"SE",
+					"SV"
+				},
+				value: new SammElementRenderInfo()
+				{
+					DisplayName = "Characteristic",
+					Abbreviation = "C",
+					Foreground = 0xFF000000,
+					Background = 0xFFD6E2A6
+				});
 
 			_renderInfo.Add(typeof(Entity), new SammElementRenderInfo()
 			{
