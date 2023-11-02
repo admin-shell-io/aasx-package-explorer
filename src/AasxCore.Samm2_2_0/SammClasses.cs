@@ -1171,6 +1171,8 @@ namespace AasCore.Samm2_2_0
 	{
 		public static string NamespaceURN = "urn:samm:org.eclipse.esmf.samm:";
 
+		public static string PredicateA = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+
 		public static Type[] AddableCharacteristic =
 		{ 
 			typeof(Trait),
