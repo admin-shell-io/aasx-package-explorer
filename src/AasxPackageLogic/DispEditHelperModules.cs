@@ -3778,23 +3778,6 @@ namespace AasxPackageLogic
 									// set the enum type, even if it is a Nullable enum type ..
 									pii.SetValue(sammInst, em.MemberInstance);
 								}
-
-							//                     foreach (var enumMemberInfo in underlyingType.GetFields())
-							//                     {
-							//                         var enumMemberValue = enumMemberInfo.GetCustomAttribute<EnumMemberAttribute>();
-							//                         if (enumMemberValue?.Value != null
-							//                             && objStr.Contains(enumMemberValue?.Value))
-							//                         {
-							//                             // how to get the enum value?
-							//                             // (bad) solution is to iterate over values and compare types ..
-							//                             foreach (var ev in Enum.GetValues(underlyingType))
-							//                                 if (ev.GetType() == enumMemberInfo.FieldType)
-							//                                 {
-							//                                     // set the enum type, even if it is a Nullable enum type ..
-							//				pii.SetValue(sammInst, ev);
-							//			}
-							//                         }
-							//}
 						}
 					}
 				}

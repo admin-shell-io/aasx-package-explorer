@@ -546,7 +546,7 @@ namespace AasCore.Samm2_2_0
 		/// Configures the encoding. This must be one of the following: 
 		/// <c>US-ASCII</c>, <c>ISO-8859-1</c>, <c>UTF-8</c>, <c>UTF-16</c>, <c>UTF-16BE</c> or <c>UTF-16LE</c>.
 		/// </summary>
-		[SammPropertyUri("bamm:value")]
+		[SammPropertyUri("bamm-c:value")]
 		public SammEncoding? Value { get; set; }
 	}
 
