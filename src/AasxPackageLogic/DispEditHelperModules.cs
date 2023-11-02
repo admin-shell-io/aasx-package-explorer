@@ -32,6 +32,8 @@ using System.Text.RegularExpressions;
 using System.Runtime.Intrinsics.X86;
 using Lucene.Net.Tartarus.Snowball.Ext;
 using Lucene.Net.Util;
+using System.Runtime.Serialization;
+using J2N.Text;
 
 namespace AasxPackageLogic
 {
@@ -732,18 +734,18 @@ namespace AasxPackageLogic
                     // let the user control the number of references
                     this.AddActionPanel(
                         stack, "Spec. records:", repo: repo,
-						superMenu: superMenu,
-				        ticketMenu: new AasxMenu()
-					        .AddAction("add-record", "Add record",
-						        "Adds a record for data specification reference and content.")
-							.AddAction("add-iec61360", "Add IEC61360",
-								"Adds a record initialized for IEC 61360 content.")
-							.AddAction("auto-detect", "Auto detect content",
-								"Auto dectects known data specification contents and sets valid references.")
-							.AddAction("delete-last", "Delete last record",
-								"Deletes last record (data specification reference and content)."),
-						ticketAction: (buttonNdx, ticket) =>
-						{
+                        superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-record", "Add record",
+                                "Adds a record for data specification reference and content.")
+                            .AddAction("add-iec61360", "Add IEC61360",
+                                "Adds a record initialized for IEC 61360 content.")
+                            .AddAction("auto-detect", "Auto detect content",
+                                "Auto dectects known data specification contents and sets valid references.")
+                            .AddAction("delete-last", "Delete last record",
+                                "Deletes last record (data specification reference and content)."),
+                        ticketAction: (buttonNdx, ticket) =>
+                        {
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
                                     new Aas.EmbeddedDataSpecification(
@@ -2411,13 +2413,50 @@ namespace AasxPackageLogic
 
         }
 
-		//
-		//
-		// SAMM
-		//
-		//
+        //
+        //
+        // SAMM
+        //
+        //
 
-        public Type SammExtensionHelperSelectSammType(Type[] addableElements)
+        public class EnumHelperMemberInfo
+        {
+            public string MemberValue = "";
+            public object MemberInstance;
+		}
+
+        public static IEnumerable<EnumHelperMemberInfo> EnumHelperGetMemberInfo(Type underlyingType)
+		{
+			foreach (var enumMemberInfo in underlyingType.GetFields(BindingFlags.Public | BindingFlags.Static))
+			{
+                var enumInst = Activator.CreateInstance(underlyingType);
+
+				var enumMemberStrValue = enumMemberInfo.GetCustomAttribute<EnumMemberAttribute>();
+				if (enumMemberStrValue?.Value != null)
+				{
+                    var ev = enumMemberInfo.GetValue(enumInst);
+
+					yield return new EnumHelperMemberInfo()
+					{
+                        MemberValue = enumMemberStrValue?.Value,
+                        MemberInstance = ev
+                    };
+
+                    //// how to get the enum value?
+                    //// (bad) solution is to iterate over values and compare types ..
+                    //foreach (var ev in Enum.GetValues(underlyingType))
+                    //	if (ev.GetType() == enumMemberInfo.FieldType)
+                    //	{
+                    //                       yield return new EnumHelperMemberInfo() {
+                    //			MemberValue = enumMemberStrValue?.Value,
+                    //                           MemberInstance = ev
+                    //		};
+                    //	}
+                }
+			}
+		}
+
+		public Type SammExtensionHelperSelectSammType(Type[] addableElements)
         {
 			// create choices
 			var fol = new List<AnyUiDialogueListItem>();
@@ -2475,7 +2514,8 @@ namespace AasxPackageLogic
 			T sr,
 			Action<T> setValue,
 			Func<string, T> createInstance,
-			string[] presetList = null) where T : SammReference
+			string[] presetList = null,
+            Type[] addableElements = null) where T : SammReference
         {
             if (actionIndex == 0 && presetList != null && presetList.Length > 0)
             {
@@ -2508,7 +2548,9 @@ namespace AasxPackageLogic
 			if (actionIndex == 2)
 			{
 				// select type
-				var sammTypeToCreate = SammExtensionHelperSelectSammType(Samm.Constants.AddableElements);
+				var sammTypeToCreate = SammExtensionHelperSelectSammType(
+                        addableElements: (addableElements != null) 
+                            ? addableElements : Samm.Constants.AddableElements);
 				if (sammTypeToCreate == null)
 					return new AnyUiLambdaActionNone();
 
@@ -2606,7 +2648,8 @@ namespace AasxPackageLogic
 			bool noFirstColumnWidth = false,
 			string[] presetList = null,
             bool showButtons = true,
-			bool editOptionalFlag = false) where T : SammReference
+			bool editOptionalFlag = false,
+			Type[] addableElements = null) where T : SammReference
 		{
             var grid = AddSmallGrid(1, 2, colWidths: new[] { "*", "#" });
             stack.Add(grid);
@@ -2637,7 +2680,8 @@ namespace AasxPackageLogic
                         sr: sr, 
                         setValue: setValue, 
                         createInstance: createInstance,
-						presetList: presetList);
+						presetList: presetList, 
+                        addableElements: addableElements);
 				});
 
             if (editOptionalFlag && sr is OptionalSammReference osr)
@@ -2665,7 +2709,8 @@ namespace AasxPackageLogic
 			List<T> value,
 			Action<List<T>> setValue,
             Func<string,T> createInstance,
-            bool editOptionalFlag) where T : SammReference
+            bool editOptionalFlag,
+			Type[] addableElements = null) where T : SammReference
         {
 			this.AddVerticalSpace(stack);
 
@@ -2681,7 +2726,7 @@ namespace AasxPackageLogic
 				rows: 1 + value.Count, cols: 2,
 				minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
 				paddingCaption: new AnyUiThickness(5, 0, 0, 0),
-				colWidths: new[] { "*", "#" });
+				colWidths: new[] { "*", "#" });				
 
 				AnyUiUIElement.RegisterControl(
 					AddSmallButtonTo(sg, 0, 1,
@@ -2710,6 +2755,7 @@ namespace AasxPackageLogic
 						noFirstColumnWidth: true,
 						showButtons: false,
                         editOptionalFlag: editOptionalFlag,
+                        addableElements: addableElements,
 						setValue: (v) => {
 							value[theLsri] = v;
 							setValue?.Invoke(value);
@@ -2795,6 +2841,390 @@ namespace AasxPackageLogic
 				}
 			}
 
+		}
+
+        public void SammExtensionHelperAddCompleteModelElement(
+            Aas.Environment env, AnyUiStackPanel stack, 
+            Samm.ModelElement sammInst,
+            Aas.IReferable relatedReferable,
+            Action<Samm.ModelElement> setValue)
+        {
+            // access
+            if (env == null || stack == null || sammInst == null)
+                return;
+
+            // visually ease
+            this.AddVerticalSpace(stack);
+
+			// okay, try to build up a edit field by reflection
+			var propInfo = sammInst.GetType().GetProperties();
+			for (int pi = 0; pi < propInfo.Length; pi++)
+			{
+                // access
+				var pii = propInfo[pi];
+
+                // some type investigation
+				var propType = pii.PropertyType;
+				var underlyingType = Nullable.GetUnderlyingType(propType);
+
+				// try to access flags
+				var propFlags = "" + pii.GetCustomAttribute<Samm.SammPropertyFlagsAttribute>()?.Flags;
+                var propFlagsLC = propFlags.ToLower();
+
+				// List of SammReference?
+				if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.SammReference>)))
+				{
+                    var addableElements = Samm.Constants.AddableElements;
+                    if (propFlagsLC.Contains("contraints"))
+                        addableElements = Samm.Constants.AddableConstraints;
+
+					SammExtensionHelperAddListOfSammReference<Samm.SammReference>(
+						env, stack, caption: "" + pii.Name,
+						(ModelElement)sammInst,
+						relatedReferable,
+						editOptionalFlag: false,
+						value: (List<Samm.SammReference>)pii.GetValue(sammInst),
+						setValue: (v) =>
+						{
+							pii.SetValue(sammInst, v);
+                            setValue?.Invoke(sammInst);
+						},
+						createInstance: (sr) => new SammReference(sr));
+				}
+
+				// List of optional SammReference?
+				if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.OptionalSammReference>)))
+				{
+					SammExtensionHelperAddListOfSammReference<Samm.OptionalSammReference>(
+						env, stack, caption: "" + pii.Name,
+						(ModelElement)sammInst,
+						relatedReferable,
+						editOptionalFlag: true,
+						value: (List<Samm.OptionalSammReference>)pii.GetValue(sammInst),
+						setValue: (v) =>
+						{
+							pii.SetValue(sammInst, v);
+							setValue?.Invoke(sammInst);
+						},
+						createInstance: (sr) => new OptionalSammReference(sr));
+				}
+
+				// NamespaceMap
+				if (pii.PropertyType.IsAssignableTo(typeof(Samm.NamespaceMap)))
+				{
+					this.AddVerticalSpace(stack);
+
+					var lsr = (Samm.NamespaceMap)pii.GetValue(sammInst);
+
+					Action<Samm.NamespaceMap> lambdaSetValue = (v) =>
+					{
+						pii.SetValue(sammInst, v);
+						setValue?.Invoke(sammInst);
+					};
+
+					if (this.SafeguardAccess(stack, repo, lsr, "" + pii.Name + ":",
+						"Create data element!",
+						v =>
+						{
+							lambdaSetValue(new Samm.NamespaceMap());
+							return new AnyUiLambdaActionRedrawEntity();
+						}))
+					{
+						// Head
+						var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
+									rows: 1 + lsr.Count(), cols: 3,
+									minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+									paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+									colWidths: new[] { "80:", "*", "#" });
+
+						AnyUiUIElement.RegisterControl(
+							AddSmallButtonTo(sg, 0, 2,
+							margin: new AnyUiThickness(2, 2, 2, 2),
+							padding: new AnyUiThickness(1, 0, 1, 0),
+							content: "\u2795"),
+							(v) =>
+							{
+								lsr.AddOrIgnore(":", "");
+								lambdaSetValue(lsr);
+								return new AnyUiLambdaActionRedrawEntity();
+							});
+
+						// individual references
+						for (int lsri = 0; lsri < lsr.Count(); lsri++)
+						{
+							var theLsri = lsri;
+
+							// prefix										
+							AnyUiUIElement.RegisterControl(
+								AddSmallTextBoxTo(sg, 1 + theLsri, 0,
+									text: lsr[theLsri].Prefix,
+									margin: new AnyUiThickness(4, 2, 2, 2)),
+									(v) =>
+									{
+										lsr[theLsri].Prefix = (string)v;
+										pii.SetValue(sammInst, lsr);
+										setValue?.Invoke(sammInst);
+										return new AnyUiLambdaActionNone();
+									});
+
+							// uri										
+							AnyUiUIElement.RegisterControl(
+								AddSmallTextBoxTo(sg, 1 + theLsri, 1,
+									text: lsr[theLsri].Uri,
+									margin: new AnyUiThickness(2, 2, 2, 2)),
+									(v) =>
+									{
+										lsr[theLsri].Uri = (string)v;
+										pii.SetValue(sammInst, lsr);
+										setValue?.Invoke(sammInst);
+										return new AnyUiLambdaActionNone();
+									});
+
+							// minus
+							AnyUiUIElement.RegisterControl(
+								AddSmallButtonTo(sg, 1 + theLsri, 2,
+								margin: new AnyUiThickness(2, 2, 2, 2),
+								padding: new AnyUiThickness(5, 0, 5, 0),
+								content: "-"),
+								(v) =>
+								{
+									lsr.RemoveAt(theLsri);
+									pii.SetValue(sammInst, lsr);
+									setValue?.Invoke(sammInst);
+									return new AnyUiLambdaActionRedrawEntity();
+								});
+						}
+					}
+				}
+
+				// List of Constraint?
+				if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.Constraint>)))
+				{
+					;
+				}
+
+				// single SammReference?
+				if (pii.PropertyType.IsAssignableTo(typeof(Samm.SammReference)))
+				{
+					this.AddVerticalSpace(stack);
+
+					var sr = (Samm.SammReference)pii.GetValue(sammInst);
+
+					// preset attribute
+					string[] presetValues = null;
+					var x3 = pii.GetCustomAttribute<Samm.SammPresetListAttribute>();
+					if (x3 != null)
+					{
+						presetValues = Samm.Constants.GetPresetsForListName(x3.PresetListName);
+					}
+
+					SammExtensionHelperAddSammReference<SammReference>(
+						env, stack, "" + pii.Name, (Samm.ModelElement)sammInst, relatedReferable,
+						sr,
+						presetList: presetValues,
+						setValue: (v) => {
+							pii.SetValue(sammInst, v);
+							setValue?.Invoke(sammInst);
+						},
+						createInstance: (sr) => new SammReference(sr));
+				}
+
+				// List of string?
+				if (pii.PropertyType.IsAssignableTo(typeof(List<string>)))
+				{
+					this.AddVerticalSpace(stack);
+
+					var ls = (List<string>)pii.GetValue(sammInst);
+					if (ls == null)
+					{
+						// Log.Singleton.Error("Internal error in SAMM element. Aborting.");
+						continue;
+					}
+
+					var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
+						rows: 1 + ls.Count, cols: 2,
+						minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+						paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+						colWidths: new[] { "*", "#" });
+
+					AnyUiUIElement.RegisterControl(
+						AddSmallButtonTo(sg, 0, 1,
+							margin: new AnyUiThickness(2, 2, 2, 2),
+							padding: new AnyUiThickness(5, 0, 5, 0),
+							content: "Add blank"),
+							(v) =>
+							{
+								ls.Add("");
+								pii.SetValue(sammInst, ls);
+								setValue?.Invoke(sammInst);
+								return new AnyUiLambdaActionRedrawEntity();
+							});
+
+					for (int lsi = 0; lsi < ls.Count; lsi++)
+					{
+						var theLsi = lsi;
+						var tb = AnyUiUIElement.RegisterControl(
+							AddSmallTextBoxTo(sg, 1 + lsi, 0,
+								text: ls[lsi],
+								margin: new AnyUiThickness(2, 2, 2, 2)),
+								(v) =>
+								{
+									ls[theLsi] = (string)v;
+									pii.SetValue(sammInst, ls);
+									setValue?.Invoke(sammInst);
+									return new AnyUiLambdaActionRedrawEntity();
+								});
+
+						AnyUiUIElement.RegisterControl(
+							AddSmallButtonTo(sg, 1 + lsi, 1,
+								margin: new AnyUiThickness(2, 2, 2, 2),
+								padding: new AnyUiThickness(5, 0, 5, 0),
+								content: "-"),
+								(v) =>
+								{
+									ls.RemoveAt(theLsi);
+									pii.SetValue(sammInst, ls);
+									setValue?.Invoke(sammInst);
+									return new AnyUiLambdaActionRedrawEntity();
+								});
+					}
+				}
+
+				// single string?
+				if (pii.PropertyType.IsAssignableTo(typeof(string)))
+				{
+					var isMultiLineAttr = pii.GetCustomAttribute<Samm.SammMultiLineAttribute>();
+
+					Func<object, AnyUiLambdaActionBase> setValueLambda = (v) =>
+					{
+						pii.SetValue(sammInst, v);
+						setValue?.Invoke(sammInst);
+						return new AnyUiLambdaActionNone();
+					};
+
+					if (isMultiLineAttr == null)
+					{
+						// 1 line
+						AddKeyValueExRef(
+							stack, "" + pii.Name, sammInst, (string)pii.GetValue(sammInst), null, repo,
+							setValue: setValueLambda);
+					}
+					else
+					{
+						// makes sense to have a bit vertical space
+						AddVerticalSpace(stack);
+
+						// multi line
+						AddKeyValueExRef(
+							stack, "" + pii.Name, sammInst, (string)pii.GetValue(sammInst), null, repo,
+							setValue: setValueLambda,
+							limitToOneRowForNoEdit: true,
+							maxLines: isMultiLineAttr.MaxLines.Value,
+							auxButtonTitles: new[] { "\u2261" },
+							auxButtonToolTips: new[] { "Edit in multiline editor" },
+							auxButtonLambda: (buttonNdx) =>
+							{
+								if (buttonNdx == 0)
+								{
+									var uc = new AnyUiDialogueDataTextEditor(
+										caption: $"Edit " + pii.Name,
+										mimeType: System.Net.Mime.MediaTypeNames.Text.Plain,
+										text: (string)pii.GetValue(sammInst));
+									if (this.context.StartFlyoverModal(uc))
+									{
+										pii.SetValue(sammInst, uc.Text);
+										setValue?.Invoke(sammInst);
+										return new AnyUiLambdaActionRedrawEntity();
+									}
+								}
+								return new AnyUiLambdaActionNone();
+							});
+					}
+				}
+
+				// single uint?
+				if (pii.PropertyType.IsAssignableTo(typeof(uint?)))
+				{
+					Func<object, AnyUiLambdaActionBase> setValueLambda = (v) =>
+					{
+                        if (v == null || ((string)v).Trim().Length < 1)
+							pii.SetValue(sammInst, null);
+                        else
+						    if (uint.TryParse((string) v, out var result))
+						        pii.SetValue(sammInst, result);
+						setValue?.Invoke(sammInst);
+						return new AnyUiLambdaActionNone();
+					};
+
+                    var input = (uint?) pii.GetValue(sammInst);
+                    string value = "";
+                    if (input.HasValue)
+                        value = input.Value.ToString();
+
+					// 1 line
+					AddKeyValueExRef(
+						stack, "" + pii.Name, sammInst, 
+                        value, 
+                        null, repo,
+						setValue: setValueLambda, 
+                        maxLines: 1);
+				}
+
+                // nullable enum?
+                if (underlyingType != null && underlyingType.IsEnum)
+                {
+                    // a little space
+                    AddVerticalSpace(stack);
+
+                    // current enum member
+                    var currEM = pii.GetValue(sammInst);
+
+					// generate a list for combo box
+					var eMems = EnumHelperGetMemberInfo(underlyingType).ToList();
+
+                    // find selected index
+                    int? selectedIndex = null;
+                    for (int emi=0; emi < eMems.Count; emi++)
+                    {
+                        if (((int)eMems[emi].MemberInstance) == ((int)currEM))
+                            selectedIndex = emi;
+                    }
+
+                    // add a container
+					var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
+                        rows: 1, cols: 2,
+						minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+						paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+						marginGrid: new AnyUiThickness(4, 0, 0, 0),
+						colWidths: new[] { "*", "#" });
+
+                    // and combobox inside
+                    AnyUiComboBox cb = null;
+                    cb = AnyUiUIElement.RegisterControl(
+                        AddSmallComboBoxTo(
+                            sg, 0, 0,
+                            minWidth: 120,
+                            margin: NormalOrCapa(
+                                new AnyUiThickness(4, 1, 2, 3),
+                                AnyUiContextCapability.Blazor, new AnyUiThickness(4, 2, 2, 0)),
+                            padding: NormalOrCapa(
+                                new AnyUiThickness(2, 1, 2, 1),
+                                AnyUiContextCapability.Blazor, new AnyUiThickness(0, 4, 0, 4)),
+                            selectedIndex: selectedIndex,
+                            items: eMems.Select((mi) => mi.MemberValue).ToArray()),
+                        setValue: (o) =>
+                        {
+                            if (cb.SelectedIndex.HasValue
+                                && cb.SelectedIndex.Value >= 0
+                                && cb.SelectedIndex.Value < eMems.Count)
+                            {
+								pii.SetValue(sammInst, eMems[cb.SelectedIndex.Value].MemberInstance);
+								setValue?.Invoke(sammInst);
+							}
+                            return new AnyUiLambdaActionNone();
+                        });
+				}
+			}
 		}
 
 		/// <summary>
@@ -3041,11 +3471,11 @@ namespace AasxPackageLogic
                             iconElement: iconElem);
 
 						// get instance data
-						object sammInst = null;
+						Samm.ModelElement sammInst = null;
                         if (false)
                         {
                             // Note: right now, create fresh instance
-                            sammInst = Activator.CreateInstance(sammType, new object[] { });
+                            sammInst = Activator.CreateInstance(sammType, new object[] { }) as Samm.ModelElement;
                             if (sammInst == null)
                             {
                                 stack.Add(new AnyUiLabel() { Content = "(unable to create instance data)" });
@@ -3058,7 +3488,7 @@ namespace AasxPackageLogic
 							try
 							{
                                 if (se.Value != null)
-                                    sammInst = JsonConvert.DeserializeObject(se.Value, sammType);
+                                    sammInst = JsonConvert.DeserializeObject(se.Value, sammType) as Samm.ModelElement;
 							}
 							catch (Exception ex)
 							{
@@ -3068,294 +3498,19 @@ namespace AasxPackageLogic
 
                             if (sammInst == null)
                             {
-								sammInst = Activator.CreateInstance(sammType, new object[] { });
+								sammInst = Activator.CreateInstance(sammType, new object[] { }) as Samm.ModelElement;
 							}
 						}
 
-                        // editing actions need to asynchronously write back values
-                        Action WriteSammInstBack = () =>
-                        {
-                            SammExtensionHelperUpdateJson(se, sammType, sammInst as Samm.ModelElement);
-                        };
-
-                        // okay, try to build up a edit field by reflection
-                        var propInfo = sammInst.GetType().GetProperties();
-                        for (int pi=0; pi < propInfo.Length; pi++)
-                        {
-                            //// is the object marked to be skipped?
-                            //var x3 = pi.GetCustomAttribute<AdminShell.SkipForReflection>();
-                            //if (x3 != null)
-                            //	continue;
-
-                            var pii = propInfo[pi];
-
-                            // List of SammReference?
-                            if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.SammReference>)))
+                        SammExtensionHelperAddCompleteModelElement(
+                            env, stack,
+                            sammInst: sammInst,
+                            relatedReferable: relatedReferable,
+                            setValue: (si) =>
                             {
-                                SammExtensionHelperAddListOfSammReference<Samm.SammReference>(
-                                    env, stack, caption: "" + pii.Name,
-                                    (ModelElement)sammInst,
-                                    relatedReferable,
-                                    editOptionalFlag: false,
-                                    value: (List<Samm.SammReference>)pii.GetValue(sammInst),
-                                    setValue: (v) =>
-                                    {
-                                        pii.SetValue(sammInst, v);
-                                        WriteSammInstBack();
-                                    },
-                                    createInstance: (sr) => new SammReference(sr));
-							}
+								SammExtensionHelperUpdateJson(se, si.GetType(), si);
+							});
 
-							// List of optional SammReference?
-							if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.OptionalSammReference>)))
-							{
-								SammExtensionHelperAddListOfSammReference<Samm.OptionalSammReference>(
-									env, stack, caption: "" + pii.Name,
-									(ModelElement)sammInst,
-									relatedReferable,
-                                    editOptionalFlag: true,
-									value: (List<Samm.OptionalSammReference>)pii.GetValue(sammInst),
-									setValue: (v) =>
-									{
-										pii.SetValue(sammInst, v);
-										WriteSammInstBack();
-									},
-									createInstance: (sr) => new OptionalSammReference(sr));
-							}
-
-							// NamespaceMap
-							if (pii.PropertyType.IsAssignableTo(typeof(Samm.NamespaceMap)))
-                            {
-								this.AddVerticalSpace(stack);
-								
-                                var lsr = (Samm.NamespaceMap)pii.GetValue(sammInst);
-
-                                Action<Samm.NamespaceMap> lambdaSetValue = (v) =>
-                                {
-                                    pii.SetValue(sammInst, v);
-                                    WriteSammInstBack();
-                                };
-
-                                if (this.SafeguardAccess(stack, repo, lsr, "" + pii.Name + ":",
-                                    "Create data element!",
-                                    v =>
-                                    {
-                                        lambdaSetValue(new Samm.NamespaceMap());
-                                        return new AnyUiLambdaActionRedrawEntity();
-                                    }))
-                                {
-                                    // Head
-                                    var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
-                                                rows: 1 + lsr.Count(), cols: 3,
-                                                minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
-												paddingCaption: new AnyUiThickness(5, 0, 0, 0),
-												colWidths: new[] { "80:", "*", "#" });
-
-                                    AnyUiUIElement.RegisterControl(
-                                        AddSmallButtonTo(sg, 0, 2,
-                                        margin: new AnyUiThickness(2, 2, 2, 2),
-                                        padding: new AnyUiThickness(1, 0, 1, 0),
-                                        content: "\u2795"),
-                                        (v) =>
-                                        {
-                                            lsr.AddOrIgnore(":", "");
-                                            lambdaSetValue(lsr);
-                                            return new AnyUiLambdaActionRedrawEntity();
-                                        });
-
-                                    // individual references
-                                    for (int lsri = 0; lsri < lsr.Count(); lsri++)
-                                    {
-										var theLsri = lsri;
-
-                                        // prefix										
-                                        AnyUiUIElement.RegisterControl(
-											AddSmallTextBoxTo(sg, 1 + theLsri, 0,
-											    text: lsr[theLsri].Prefix,
-											    margin: new AnyUiThickness(4, 2, 2, 2)),
-											    (v) =>
-											    {
-													lsr[theLsri].Prefix = (string)v;
-												    pii.SetValue(sammInst, lsr);
-												    WriteSammInstBack();
-												    return new AnyUiLambdaActionNone();
-											    });
-
-										// uri										
-										AnyUiUIElement.RegisterControl(
-											AddSmallTextBoxTo(sg, 1 + theLsri, 1,
-												text: lsr[theLsri].Uri,
-												margin: new AnyUiThickness(2, 2, 2, 2)),
-												(v) =>
-												{
-													lsr[theLsri].Uri = (string)v;
-													pii.SetValue(sammInst, lsr);
-													WriteSammInstBack();
-													return new AnyUiLambdaActionNone();
-												});
-
-                                        // minus
-										AnyUiUIElement.RegisterControl(
-										    AddSmallButtonTo(sg, 1 + theLsri, 2,
-										    margin: new AnyUiThickness(2, 2, 2, 2),
-										    padding: new AnyUiThickness(5, 0, 5, 0),
-										    content: "-"),
-										    (v) =>
-										    {
-											    lsr.RemoveAt(theLsri);
-											    pii.SetValue(sammInst, lsr);
-											    WriteSammInstBack();
-											    return new AnyUiLambdaActionRedrawEntity();
-										    });
-									}
-								}
-                            }
-
-							// List of Constraint?
-							if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.Constraint>)))
-							{
-								;
-							}
-
-							// single SammReference?
-							if (pii.PropertyType.IsAssignableTo(typeof(Samm.SammReference)))
-							{
-								this.AddVerticalSpace(stack);
-								
-                                var sr = (Samm.SammReference)pii.GetValue(sammInst);
-
-                                // preset attribute
-                                string[] presetValues = null;
-                                var x3 = pii.GetCustomAttribute<Samm.SammPresetListAttribute>();
-                                if (x3 != null)
-                                {
-                                    presetValues = Samm.Constants.GetPresetsForListName(x3.PresetListName);
-                                }
-
-                                SammExtensionHelperAddSammReference<SammReference>(
-                                    env, stack, "" + pii.Name, (Samm.ModelElement) sammInst, relatedReferable,
-                                    sr,
-                                    presetList: presetValues,
-                                    setValue: (v) => {
-										pii.SetValue(sammInst, v);
-										WriteSammInstBack();
-									},
-                                    createInstance: (sr) => new SammReference(sr));
-							}
-
-							// List of string?
-							if (pii.PropertyType.IsAssignableTo(typeof(List<string>)))
-							{
-								this.AddVerticalSpace(stack);
-								
-                                var ls = (List<string>)pii.GetValue(sammInst);
-                                if (ls == null)
-                                {
-                                    // Log.Singleton.Error("Internal error in SAMM element. Aborting.");
-                                    continue;
-                                }
-
-                                var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
-                                    rows: 1 + ls.Count, cols: 2,
-                                    minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
-									paddingCaption: new AnyUiThickness(5, 0, 0, 0),
-									colWidths: new[] { "*", "#" });
-
-                                AnyUiUIElement.RegisterControl(
-                                    AddSmallButtonTo(sg, 0, 1, 
-									    margin: new AnyUiThickness(2, 2, 2, 2),
-						                padding: new AnyUiThickness(5, 0, 5, 0),
-									    content: "Add blank"),
-                                        (v) =>
-                                        {
-                                            ls.Add("");
-                                            pii.SetValue(sammInst, ls);
-                                            WriteSammInstBack();
-                                            return new AnyUiLambdaActionRedrawEntity();
-                                        });
-
-                                for (int lsi=0; lsi<ls.Count; lsi++)
-                                {
-                                    var theLsi = lsi;
-									var tb = AnyUiUIElement.RegisterControl(
-									    AddSmallTextBoxTo(sg, 1+lsi, 0, 
-                                            text: ls[lsi],
-										    margin: new AnyUiThickness(2, 2, 2, 2)),
-										    (v) =>
-										    {
-                                                ls[theLsi] = (string)v;
-											    pii.SetValue(sammInst, ls);
-											    WriteSammInstBack();
-											    return new AnyUiLambdaActionRedrawEntity();
-										    });
-
-									AnyUiUIElement.RegisterControl(
-									    AddSmallButtonTo(sg, 1 + lsi, 1,
-									        margin: new AnyUiThickness(2, 2, 2, 2),
-									        padding: new AnyUiThickness(5, 0, 5, 0),
-									        content: "-"),
-									        (v) =>
-									        {
-                                                ls.RemoveAt(theLsi);
-										        pii.SetValue(sammInst, ls);
-										        WriteSammInstBack();
-										        return new AnyUiLambdaActionRedrawEntity();
-									        });
-								}
-							}
-
-							// single string?
-							if (pii.PropertyType.IsAssignableTo(typeof(string)))
-							{
-								var isMultiLineAttr = pii.GetCustomAttribute<Samm.SammMultiLineAttribute>();
-
-                                Func<object, AnyUiLambdaActionBase> setValueLambda = (v) =>
-                                {
-                                    pii.SetValue(sammInst, v);
-                                    WriteSammInstBack();
-                                    return new AnyUiLambdaActionNone();
-                                };
-
-                                if (isMultiLineAttr == null)
-                                {
-                                    // 1 line
-                                    AddKeyValueExRef(
-                                        stack, "" + pii.Name, sammInst, (string)pii.GetValue(sammInst), null, repo,
-                                        setValue: setValueLambda);
-                                } 
-                                else
-                                {
-                                    // makes sense to have a bit vertical space
-                                    AddVerticalSpace(stack);
-
-									// multi line
-									AddKeyValueExRef(
-										stack, "" + pii.Name, sammInst, (string)pii.GetValue(sammInst), null, repo,
-										setValue: setValueLambda,
-                                        limitToOneRowForNoEdit: true,
-                                        maxLines: isMultiLineAttr.MaxLines.Value,
-						                auxButtonTitles: new[] { "\u2261" },
-						                auxButtonToolTips: new[] { "Edit in multiline editor" },
-						                auxButtonLambda: (buttonNdx) =>
-						                {
-							                if (buttonNdx == 0)
-							                {
-								                var uc = new AnyUiDialogueDataTextEditor(
-													caption: $"Edit " + pii.Name,
-													mimeType: System.Net.Mime.MediaTypeNames.Text.Plain,
-													text: (string)pii.GetValue(sammInst));
-								                if (this.context.StartFlyoverModal(uc))
-								                {
-													pii.SetValue(sammInst, uc.Text);
-													WriteSammInstBack();
-													return new AnyUiLambdaActionRedrawEntity();
-								                }
-							                }
-							                return new AnyUiLambdaActionNone();
-						                });
-								}
-							}
-						}
 					}
 				}
 			}
@@ -3504,6 +3659,9 @@ namespace AasxPackageLogic
                     //	continue;
                     var pii = propInfo[pi];
 
+                    var propType = pii.PropertyType;
+                    var underlyingType = Nullable.GetUnderlyingType(propType);
+
                     // need to have a custom attribute to identify the subject uri of the turtle triples
                     var propSearchUri = pii.GetCustomAttribute<Samm.SammPropertyUriAttribute>()?.Uri;
                     if (propSearchUri == null)
@@ -3596,6 +3754,47 @@ namespace AasxPackageLogic
 						{
 							// simply set the value
 							pii.SetValue(sammInst, objStr);
+						}
+
+						// just int?
+						if (pii.PropertyType.IsAssignableTo(typeof(uint?)))
+						{
+                            // simply set the value
+                            if (uint.TryParse(objStr, out var result))
+                            {
+                                uint? value = result;
+								pii.SetValue(sammInst, value);
+                            }
+						}
+
+						// first check: any kind of enum?
+						if (underlyingType != null && underlyingType.IsEnum)
+						{
+
+                            var eMems = EnumHelperGetMemberInfo(underlyingType);
+                            foreach (var em in eMems)
+                                if (objStr.Contains(em.MemberValue))
+                                {
+									// set the enum type, even if it is a Nullable enum type ..
+									pii.SetValue(sammInst, em.MemberInstance);
+								}
+
+							//                     foreach (var enumMemberInfo in underlyingType.GetFields())
+							//                     {
+							//                         var enumMemberValue = enumMemberInfo.GetCustomAttribute<EnumMemberAttribute>();
+							//                         if (enumMemberValue?.Value != null
+							//                             && objStr.Contains(enumMemberValue?.Value))
+							//                         {
+							//                             // how to get the enum value?
+							//                             // (bad) solution is to iterate over values and compare types ..
+							//                             foreach (var ev in Enum.GetValues(underlyingType))
+							//                                 if (ev.GetType() == enumMemberInfo.FieldType)
+							//                                 {
+							//                                     // set the enum type, even if it is a Nullable enum type ..
+							//				pii.SetValue(sammInst, ev);
+							//			}
+							//                         }
+							//}
 						}
 					}
 				}

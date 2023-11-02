@@ -96,6 +96,20 @@ namespace AasCore.Samm2_2_0
 	}
 
 	/// <summary>
+	/// Some string based flags to attach to the property
+	/// </summary>
+	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
+	public class SammPropertyFlagsAttribute : System.Attribute
+	{
+		public string Flags = "";
+
+		public SammPropertyFlagsAttribute(string flags)
+		{
+			Flags = flags;
+		}
+	}
+
+	/// <summary>
 	/// Shall be implemented by all non-abstract model elements
 	/// </summary>
 	public interface ISammSelfDescription
@@ -436,8 +450,11 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#constraint"/>
 	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Constraint"/>
 	/// </summary>
-	public class Constraint : ModelElement
-	{		
+	public class Constraint : ModelElement, ISammSelfDescription
+	{
+		// self description
+		public string GetSelfName() => "samm-constraint";
+		public string GetSelfUrn() => "bamm-c:Constraint";
 	}
 
 	/// <summary>
@@ -445,14 +462,18 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#language-constraint"/>
 	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#LanguageConstraint"/>
 	/// </summary>
-	public class LanguageConstraint : Constraint
+	public class LanguageConstraint : Constraint, ISammSelfDescription
 	{
+		// self description
+		public new string GetSelfName() => "samm-language-constraint";
+		public new string GetSelfUrn() => "bamm-c:LanguageConstraint";
+
 		/// <summary>
 		/// An ISO 639-1 [iso639] language code for the language of the value of the constrained Property, 
 		/// e.g., "de".
 		/// </summary>
 		[SammPropertyUri("bamm-c:languageCode")]
-		public string? LanguageCode; 
+		public string? LanguageCode { get; set; }
 	}
 
 	/// <summary>
@@ -460,46 +481,54 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#locale-constraint"/>
 	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#LocaleConstraint"/>
 	/// </summary>
-	public class LocaleConstraint : Constraint
+	public class LocaleConstraint : Constraint, ISammSelfDescription
 	{
+		// self description
+		public new string GetSelfName() => "samm-locale-constraint";
+		public new string GetSelfUrn() => "bamm-c:LocaleConstraint";
+
 		/// <summary>
 		/// An IETF BCP 47 language code for the locale of the value of the constrained Property, e.g., "de-DE".
 		/// </summary>
 		[SammPropertyUri("bamm-c:localeCode")]
-		public string? LocaleCode;
+		public string? LocaleCode { get; set; }
 	}
 
 	/// <summary>
 	/// Restricts the value range of a Property. At least one of <c>maxValue</c> or <c>minValue</c> must be present in a 
 	/// Range Constraint.
 	/// </summary>
-	public class RangeConstraint : Constraint
+	public class RangeConstraint : Constraint, ISammSelfDescription
 	{
+		// self description
+		public new string GetSelfName() => "samm-range-constraint";
+		public new string GetSelfUrn() => "bamm-c:RangeConstraint";
+
 		/// <summary>
 		/// The upper bound of a range.
 		/// </summary>
 		[SammPropertyUri("bamm-c:maxValue")]
-		public string? MaxValue;
+		public string? MaxValue { get; set; }
 
 		/// <summary>
 		/// The lower bound of a range.
 		/// </summary>
 		[SammPropertyUri("bamm-c:minValue")]
-		public string? MinValue;
+		public string? MinValue { get; set; }
 
 		/// <summary>
 		/// Defines whether the upper bound of a range is inclusive or exclusive. Possible values are 
 		/// <c>AT_MOST</c> and <c>LESS_THAN</c>.
 		/// </summary>
 		[SammPropertyUri("bamm-c:upperBoundDefinition")]
-		public SammUpperBoundDefinition? UpperBoundDefinition;
+		public SammUpperBoundDefinition? UpperBoundDefinition { get; set; }
 
 		/// <summary>
 		/// Defines whether the lower bound of a range is inclusive or exclusive. Possible values are 
 		/// <c>AT_LEAST</c> and <c>GREATER_THAN</c>.
 		/// </summary>
 		[SammPropertyUri("bamm-c:lowerBoundDefinition")]
-		public SammLowerBoundDefinition? LowerBoundDefinition;
+		public SammLowerBoundDefinition? LowerBoundDefinition { get; set; }
 	}
 
 	/// <summary>
@@ -507,14 +536,18 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#encoding-constraint"/>
 	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#EncodingConstraint"/>
 	/// </summary>
-	public class EncodingConstraint : Constraint
+	public class EncodingConstraint : Constraint, ISammSelfDescription
 	{
+		// self description
+		public new string GetSelfName() => "samm-encoding-constraint";
+		public new string GetSelfUrn() => "bamm-c:EncodingConstraint";
+
 		/// <summary>
 		/// Configures the encoding. This must be one of the following: 
 		/// <c>US-ASCII</c>, <c>ISO-8859-1</c>, <c>UTF-8</c>, <c>UTF-16</c>, <c>UTF-16BE</c> or <c>UTF-16LE</c>.
 		/// </summary>
 		[SammPropertyUri("bamm:value")]
-		public SammEncoding? Value;
+		public SammEncoding? Value { get; set; }
 	}
 
 	/// <summary>
@@ -526,19 +559,23 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#length-constraint"/>
 	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#LengthConstraint"/>
 	/// </summary>
-	public class LengthConstraint : Constraint
+	public class LengthConstraint : Constraint, ISammSelfDescription
 	{
+		// self description
+		public new string GetSelfName() => "samm-length-constraint";
+		public new string GetSelfUrn() => "bamm-c:LengthConstraint";
+
 		/// <summary>
 		/// The maximum length. Must be given as xsd:nonNegativeInteger.
 		/// </summary>
 		[SammPropertyUri("bamm-c:maxValue")]
-		public uint? MaxValue;
+		public uint? MaxValue { get; set; }
 
 		/// <summary>
 		/// The minimum length. Must be given as xsd:nonNegativeInteger.
 		/// </summary>
 		[SammPropertyUri("bamm-c:minValue")]
-		public uint? MinValue;
+		public uint? MinValue { get; set; }
 	}
 
 	/// <summary>
@@ -548,14 +585,18 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://www.w3.org/TR/xpath-functions-3/#regex-syntax"/>
 	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#RegularExpressionConstraint"/>
 	/// </summary>
-	public class RegularExpressionConstraint : Constraint
+	public class RegularExpressionConstraint : Constraint, ISammSelfDescription
 	{
+		// self description
+		public new string GetSelfName() => "samm-regular-expression-constraint";
+		public new string GetSelfUrn() => "bamm-c:RegularExpressionConstraint";
+
 		/// <summary>
 		/// The regular expression.
 		/// <see href="https://www.w3.org/TR/xpath-functions-3/#regex-syntax"/>
 		/// </summary>
 		[SammPropertyUri("bamm-c:value")]
-		public string? Value;
+		public string? Value { get; set; }
 	}
 
 	/// <summary>
@@ -564,15 +605,19 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#fixed-point-constraint"/>
 	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#FixedPointConstraint"/>
 	/// </summary>
-	public class FixedPointConstraint : Constraint
+	public class FixedPointConstraint : Constraint, ISammSelfDescription
 	{
+		// self description
+		public new string GetSelfName() => "samm-fixed-point-constraint";
+		public new string GetSelfUrn() => "bamm-c:FixedPointConstraint";
+
 		/// <summary>
 		/// The scaling factor for a fixed point number. E.g., if a fixedpoint number is 123.04, the 
 		/// scaling factor is 2 (the number of digits after the decimal point). 
 		/// Must be given as xsd:positiveInteger.
 		/// </summary>
 		[SammPropertyUri("bamm-c:scale")]
-		public uint? Scale;
+		public uint? Scale { get; set; }
 
 		/// <summary>
 		/// The number of integral digits for a fixed point number. E.g., if a fixedpoint number 
@@ -580,7 +625,7 @@ namespace AasCore.Samm2_2_0
 		/// Must be given as xsd:positiveInteger.
 		/// </summary>
 		[SammPropertyUri("bamm-c:integer")]
-		public uint? Integer;
+		public uint? Integer { get; set; }
 	}
 
 	/// <summary>
@@ -593,8 +638,6 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-characteristic";
-		// public string GetSelfUrn() => "urn:bamm:io.openmanufacturing:characteristic:1.0.0#Characteristic";
-		// FIX: seems to use bamm: instead of bamm-c: !!
 		public string GetSelfUrn() => "bamm:Characteristic";
 
 		// structure model
@@ -626,11 +669,22 @@ namespace AasCore.Samm2_2_0
 	/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#trait-characteristic"/>
 	/// <seealso href="urn:bamm:io.openmanufacturing:characteristic:1.0.0#Trait"/>
 	/// </summary>
-	public class Trait : Characteristic, ISammSelfDescription
+	public class Trait : Characteristic, ISammSelfDescription, ISammStructureModel
 	{
 		// self description
 		public new string GetSelfName() => "samm-trait";
 		public new string GetSelfUrn() => "bamm-c:Trait";
+
+		// structure model
+		public new bool IsTopElement() => false;
+		public new IEnumerable<SammReference> DescendOnce()
+		{
+			if (BaseCharacteristic != null)
+				yield return BaseCharacteristic;
+			if (Constraint != null)
+				foreach (var cn in Constraint)
+					yield return cn;
+		}
 
 		/// <summary>
 		/// The Characterstic that is being constrained.
@@ -644,6 +698,7 @@ namespace AasCore.Samm2_2_0
 		/// to add multiple Constraints to the base Characteristic.
 		/// </summary>
 		[SammPropertyUri("bamm-c:constraint")]
+		[SammPropertyFlags("constraints")]
 		public List<SammReference>? Constraint { get; set; }
 	}
 
@@ -1135,12 +1190,25 @@ namespace AasCore.Samm2_2_0
 			typeof(StructuredValue)
 		};
 
+		public static Type[] AddableConstraints =
+		{
+			typeof(Constraint),
+			typeof(LanguageConstraint),
+			typeof(LocaleConstraint),
+			typeof(RangeConstraint),
+			typeof(EncodingConstraint),
+			typeof(LengthConstraint),
+			typeof(RegularExpressionConstraint),
+			typeof(FixedPointConstraint)
+		};
+
 		public static Type[] AddableElements =
 		{
 			// Top level
 			typeof(Aspect),
 			typeof(Property),
 			typeof(Entity),
+			typeof(Unit),
 			// Characteristic
 			typeof(Characteristic),
 			typeof(Trait),
@@ -1157,7 +1225,16 @@ namespace AasCore.Samm2_2_0
 			typeof(Code),
 			typeof(Either),
 			typeof(SingleEntity),
-			typeof(StructuredValue)
+			typeof(StructuredValue),
+			// Constraints
+			typeof(Constraint),
+			typeof(LanguageConstraint),
+			typeof(LocaleConstraint),
+			typeof(RangeConstraint),
+			typeof(EncodingConstraint),
+			typeof(LengthConstraint),
+			typeof(RegularExpressionConstraint),
+			typeof(FixedPointConstraint)
 		};
 
 		/// <summary>
@@ -1296,13 +1373,43 @@ namespace AasCore.Samm2_2_0
 				Background = 0xFFB9AB50
 			});
 
-			_renderInfo.Add(typeof(Constraint), new SammElementRenderInfo()
-			{
-				DisplayName = "Constraint",
-				Abbreviation = "C",
-				Foreground = 0xFF000000,
-				Background = 0xFF74AEAF
-			});
+			_renderInfo.Add(
+				types: new[] {
+					typeof(Constraint),
+					typeof(LanguageConstraint),
+					typeof(LocaleConstraint),
+					typeof(RangeConstraint),
+					typeof(EncodingConstraint),
+					typeof(LengthConstraint),
+					typeof(RegularExpressionConstraint),
+					typeof(FixedPointConstraint)
+				}, 
+				displayNames: new[] {
+					"Constraint",
+					"LanguageConstraint",
+					"LocaleConstraint",
+					"RangeConstraint",
+					"EncodingConstraint",
+					"LengthConstraint",
+					"RegularExpressionConstraint",
+					"FixedPointConstraint"
+				},
+				abbreviations: new[] {
+					"C",
+					"LGC",
+					"LOC",
+					"RGC",
+					"ENC",
+					"LNC",
+					"REC",
+					"FPC"
+				},
+				value: new SammElementRenderInfo() {
+					DisplayName = "Constraint",
+					Abbreviation = "C",
+					Foreground = 0xFF000000,
+					Background = 0xFF74AEAF
+				});
 
 			_renderInfo.Add(typeof(Trait), new SammElementRenderInfo()
 			{
