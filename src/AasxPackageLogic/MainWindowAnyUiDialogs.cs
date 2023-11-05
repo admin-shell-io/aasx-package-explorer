@@ -1529,7 +1529,26 @@ namespace AasxPackageLogic
                     MainWindow.RedrawAllElementsAndFocus();
             }
 
-            if (cmd == "convertelement")
+			if (cmd == "submodelinstancefromsammaspect")
+			{
+				// simply pass on
+				try
+				{
+					// delegate futher
+					await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+				}
+				catch (Exception ex)
+				{
+					LogErrorToTicket(ticket, ex,
+						$"When executing command {cmd}, an error occurred");
+				}
+
+				// redisplay
+				if (ticket.Success)
+					MainWindow.RedrawAllElementsAndFocus();
+			}
+
+			if (cmd == "convertelement")
             {
                 // check
                 var rf = ticket.DereferencedMainDataObject as Aas.IReferable;

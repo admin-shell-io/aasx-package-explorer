@@ -40,6 +40,7 @@ using AngleSharp.Text;
 using System.Web.Services.Description;
 using static AasxPackageLogic.DispEditHelperBasics;
 using System.Collections;
+using static Lucene.Net.Documents.Field;
 
 namespace AasxPackageLogic
 {
@@ -500,6 +501,46 @@ namespace AasxPackageLogic
 							setValue?.Invoke(sammInst);
 						},
 						createInstance: (sr) => new OptionalSammReference(sr));
+				}
+
+				// List of LangString
+				if (pii.PropertyType.IsAssignableTo(typeof(List<LangString>)))
+				{
+					// space
+					this.AddVerticalSpace(stack);
+
+					// get data
+					var lls = (List<LangString>)pii.GetValue(sammInst);
+
+					// handle null
+					Action<List<Aas.ILangStringTextType>> lambdaSetValue = (v) =>
+					{
+						var back = v?.Select((ls) => new Samm.LangString(ls)).ToList();
+						pii.SetValue(sammInst, back);
+						setValue?.Invoke(sammInst);
+					};
+
+					if (this.SafeguardAccess(stack, repo, lls, "" + pii.Name + ":",
+						"Create data element!",
+						v =>
+						{
+							lambdaSetValue(new List<Aas.ILangStringTextType>());
+							return new AnyUiLambdaActionRedrawEntity();
+						}))
+					{
+						// get values
+						var forth = lls?.Select(
+								(ls) => (new Aas.LangStringTextType(ls.Language, ls.Text)) 
+								as Aas.ILangStringTextType).ToList();
+
+						// edit fields
+						AddKeyListLangStr<Aas.ILangStringTextType>(
+							stack, "" + pii.Name, forth, repo, relatedReferable,
+							emitCustomEvent: (rf) =>
+							{
+								lambdaSetValue(forth);
+							});
+					}
 				}
 
 				// NamespaceMap
@@ -1258,7 +1299,10 @@ namespace AasxPackageLogic
 			if (collPtr != null && (collPtr.NodeType == NodeType.Uri || collPtr.NodeType == NodeType.Literal))
 			{
 				// only a single member is given
-				lsr.Add(createInstance?.Invoke(RdfHelper.GetTerminalStrValue(collPtr), false));
+				var litVal = RdfHelper.GetTerminalStrValue(collPtr);
+				if (litVal?.HasContent() == true
+					&& litVal != Samm.Constants.RdfCollNil)
+					lsr.Add(createInstance?.Invoke(litVal, false));
 			}
 			else			
 			{
@@ -2185,6 +2229,343 @@ namespace AasxPackageLogic
 				+ System.Environment.NewLine
 				+ globalGraph;
 			System.IO.File.WriteAllText(fn, textAll);
+		}
+	}
+
+	/// <summary>
+	/// This class provides generators for Qualifiers, Extension etc.
+	/// in order to express preset-based information e.g. Cardinality
+	/// </summary>
+	public static class AasPresetHelper
+	{
+		/// <summary>
+		/// Semantically different, but factually equal to <c>FormMultiplicity</c>
+		/// </summary>
+		public enum SmtCardinality { ZeroToOne = 0, One, ZeroToMany, OneToMany };
+
+		public static Aas.IQualifier CreateQualifierSmtCardinality(SmtCardinality card)
+		{
+			return new Aas.Qualifier(
+				type: "SMT/Cardinality",
+				valueType: DataTypeDefXsd.String,
+				kind: QualifierKind.TemplateQualifier,
+				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
+					(new Aas.IKey[] {
+						new Aas.Key(KeyTypes.GlobalReference,
+							"https://admin-shell.io/SubmodelTemplates/Cardinality/1/0")
+					}).ToList()),
+				value: "" + card);
+		}
+	}
+
+	/// <summary>
+	/// This class provides a layered access to a list (a <c>IEnumerable</c>) of
+	/// <c>Aas.IIdentifiable</c>. This access could be provided by each time
+	/// blindly iterating through the list or by caching the <c>Id</c>s in a
+	/// dictionary. Result can be access immedeatily or selected by an
+	/// lambda, so that only portions of the Identifiable are directly available 
+	/// and strongly typed.
+	/// </summary>
+	/// <typeparam name="I">Subtype of <c>Aas.IIdentifiable</c></typeparam>
+	/// <typeparam name="ME">Result type, selected by an lambda</typeparam>
+	public class IdentifiableLookupStore<I,ME> where I : Aas.IIdentifiable where ME : class
+	{
+		protected IEnumerable<I> _originalData = null;
+
+		protected Func<I, ME> _lambdaSelectResult = null;
+
+		protected MultiValueDictionary<string, I> _lookup = null;
+
+		protected bool IsValidForDict() =>
+			_originalData != null && _lambdaSelectResult != null && _lookup != null;
+
+		public void StartDictionaryAccess(
+			IEnumerable<I> originalData,
+			Func<I, ME> lambdaSelectResult)
+		{
+			// remember
+			_originalData = originalData;
+			_lambdaSelectResult = lambdaSelectResult;			
+
+			// create the dictionary
+			_lookup = new MultiValueDictionary<string, I>();
+			if (!IsValidForDict())
+			{
+				_lookup = null;
+				return;
+			}
+
+			// populate
+			foreach (var idf in _originalData)
+				if (idf?.Id != null)
+					_lookup.Add(idf.Id, idf);
+		}
+
+		/// <summary>
+		/// Lookup all elements for id <c>idKey</c> and 
+		/// return the declared Identifiable subtype.
+		/// </summary>
+		public IEnumerable<I> LookupAllIdent(string idKey)
+		{
+			if (idKey == null || !IsValidForDict() || !_lookup.ContainsKey(idKey))
+				yield break;
+
+			foreach (var idf in _lookup[idKey])
+				yield return idf;
+		}
+
+		/// <summary>
+		/// Lookup first element for id <c>idKey</c> and 
+		/// return the declared Identifiable subtype. Else: return <c>null</c>
+		/// </summary>
+		public I LookupFirstIdent(string idKey)
+		{
+			return LookupAllIdent(idKey).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Lookup all elements for id <c>idKey</c> and 
+		/// return the result of the given lambda selection.
+		/// </summary>
+		public IEnumerable<ME> LookupAllResult(string idKey)
+		{
+			foreach (var idf in LookupAllIdent(idKey))
+			{
+				var res = _lambdaSelectResult?.Invoke(idf);
+				if (res != null)
+					yield return res;
+			}
+		}
+
+		/// <summary>
+		/// Lookup first element for id <c>idKey</c> and 
+		/// return the result of the given lambda selection.
+		/// </summary>
+		public ME LookupFirstResult(string idKey)
+		{
+			return LookupAllResult(idKey).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Lookup first element for id <c>idKey</c> and 
+		/// return the result of the given lambda selection.
+		/// Note: just a shortcut to <c>LookupFirstResult()</c>
+		/// </summary>
+		public ME Lookup(string idKey)
+		{
+			return LookupFirstResult(idKey);
+		}		
+
+		public IEnumerable<ME> LookupFor(IEnumerable<Samm.SammReference> references)
+		{
+			// access
+			if (references == null)
+				yield break;
+
+			// translare
+			foreach (var inref in references)
+			{
+				yield return LookupFirstResult(inref?.Value);
+			}
+		}
+	}
+
+	public class SammIdfTuple
+	{
+		public Aas.IConceptDescription CD;
+		public Samm.ModelElement ME;
+
+		public SammIdfTuple() { }
+
+		public SammIdfTuple(
+			Aas.IConceptDescription cd,
+			Samm.ModelElement me)
+		{
+			CD = cd;
+			ME = me;
+		}
+	}
+
+	/// <summary>
+	/// Dedicated <c>IdentifiableLookupStore</c> for <c>Samm.ModelElements</c> in <c>ConceptDescriptions.</c>
+	/// </summary>
+	public class SammModelElementLookupStore : IdentifiableLookupStore<Aas.IConceptDescription, SammIdfTuple>
+	{
+		/// <summary>
+		/// Lookup first element for id <c>idKey</c> and 
+		/// return the result of the given lambda selection.
+		/// Note: just a shortcut to <c>LookupFirstResult()</c>
+		/// </summary>
+		public SammIdfTuple Lookup(SammReference sr)
+		{
+			return LookupFirstResult(sr?.Value);
+		}
+
+		/// <summary>
+		/// Lookup first element for id <c>idKey</c> and 
+		/// return the result of the given lambda selection.
+		/// Note: just a shortcut to <c>LookupFirstResult()</c>
+		/// </summary>
+		public T Lookup<T>(SammReference sr) where T : Samm.ModelElement
+		{
+			return LookupFirstResult(sr?.Value) as T;
+		}
+	}
+
+	/// <summary>
+	/// This class provides transformation from SAMM models to other models, 
+	/// e.g Submodel instances.
+	/// </summary>
+	public class SammTransformation
+	{
+		public Aas.IReference CreateSemanticId(string id)
+		{
+			return new Aas.Reference(
+				ReferenceTypes.ExternalReference, 
+				(new Aas.IKey[] { 
+					new Aas.Key(KeyTypes.GlobalReference, id)
+				}).ToList());
+		}
+
+		public void CreateSubmodelElementsInto(
+			Aas.IEnvironment env,
+			SammModelElementLookupStore store,
+			Samm.Aspect aspect,
+			List<Aas.ISubmodelElement> aasElems,
+			IEnumerable<OptionalSammReference> sammElems)
+		{
+			// access
+			if (env == null || aasElems == null || sammElems == null || aspect == null)
+				return;
+
+			// iterate over SAMM properties 
+			foreach (var osrProp in sammElems)
+			{
+				var sitProp = store.Lookup(osrProp);
+				var meProp = sitProp?.ME as Samm.Property;
+				if (meProp == null)
+					continue;
+
+				// keep track for later use
+				Aas.ISubmodelElement addedElem = null;
+				
+				// ok, a Submodel element shall be created.
+				// But more details (SMC? Property?) are only avilable via 
+				// Characteristic -> dataType ..
+				var sitChar = store.Lookup(meProp.Characteristic);
+				var meChar = sitChar?.ME as Samm.Characteristic;
+
+				// first check the case, that the Characteristic -> dataType goes to an entity
+				var meDt = store.Lookup(meChar?.DataType);
+				if (meDt != null && meDt.ME is Samm.Entity meDtEnt)
+				{
+					// make a SMC and add directl
+					var newSmc = new Aas.SubmodelElementCollection(
+						idShort: "" + sitProp.CD.IdShort,
+						semanticId: CreateSemanticId(meDt.CD.Id),
+						value: new List<ISubmodelElement>());
+					addedElem = newSmc;
+					aasElems.Add(newSmc);
+
+					// recurse into it ..
+					CreateSubmodelElementsInto(
+						env, store, aspect,
+						newSmc.Value,
+						meDtEnt.Properties);
+				}
+				else
+				{
+					// if in doubt, create a Property with xsd:string
+					Aas.DataTypeDefXsd valueType = DataTypeDefXsd.String;
+
+					// get a "handy" uri from Characteristic -> dataType
+					var dataTypeChar = aspect.Namespaces?.PrefixUri(meChar?.DataType?.Value);
+					if (dataTypeChar?.StartsWith("xsd:") == true)
+					{
+						// be a bit carefull with de-serialization
+						try
+						{
+							dataTypeChar = dataTypeChar.Replace("xsd:", "xs:");
+							var x = Aas.Stringification.DataTypeDefXsdFromString(dataTypeChar);
+							if (x.HasValue)
+								valueType = x.Value;
+						}
+						catch (Exception ex)
+						{
+							Log.Singleton.Error(ex, $"when using XSD datatype {dataTypeChar}");
+						}
+					}
+
+					// make a Property
+					var newProp = new Aas.Property(
+						valueType: valueType,
+						semanticId: CreateSemanticId(sitProp.CD.Id),
+						idShort: "" + sitProp.CD?.IdShort);
+					addedElem = newProp;
+					aasElems.Add(newProp);
+				}
+
+				// elaborate added element further
+				if (addedElem != null)
+				{
+					if (osrProp.Optional)
+					{
+						// add [0..1]
+						addedElem.Qualifiers = new List<IQualifier>
+						{
+							AasPresetHelper.CreateQualifierSmtCardinality(AasPresetHelper.SmtCardinality.ZeroToOne)
+						};
+					}
+				}
+			}
+		}
+
+		public void CreateSubmodelInstanceFromAspectCD(
+			Aas.IEnvironment env,
+			Aas.IConceptDescription cdAspect)
+		{
+			// access
+			if (env?.ConceptDescriptions == null || cdAspect == null)
+				return;
+
+			// create store
+			var store = new SammModelElementLookupStore();
+			store.StartDictionaryAccess(
+				env.ConceptDescriptions, 
+				lambdaSelectResult: (cd) => {
+					var me = DispEditHelperSammModules.CheckReferableForSammElements(cd).FirstOrDefault();
+					return new SammIdfTuple(cd, me);
+				});
+
+			// access Aspect
+			if (!(store.Lookup(cdAspect.Id)?.ME is Samm.Aspect meAspect))
+			{
+				Log.Singleton.Error("Cannot access the SAMM Aspect. Aborting!");
+				return;
+			}
+
+			// create Submodel
+			var submodel = new Aas.Submodel(
+					idShort: "From_SAMM_" + cdAspect.IdShort,
+					id: "" + AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance),
+					description: cdAspect.Description?.Copy(),
+					semanticId: CreateSemanticId(cdAspect.Id),
+					submodelElements: new List<ISubmodelElement>());
+
+			// iterate over elements
+			CreateSubmodelElementsInto(
+				env, store, meAspect,
+				submodel.SubmodelElements,
+				meAspect.Properties);
+
+			// add Submodel
+			env.Add(submodel);
+
+			// for convenience, add to first aas
+			var firstAas = env.AssetAdministrationShells?.FirstOrDefault();
+			if (firstAas != null)
+				firstAas.AddSubmodelReference(
+					submodel.GetModelReference());
 		}
 	}
 }

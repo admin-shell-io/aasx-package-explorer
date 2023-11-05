@@ -1267,7 +1267,35 @@ namespace AasxPackageLogic
                 ticket.Success = true;
             }
 
-            if (cmd == "convertelement")
+			if (cmd == "submodelinstancefromsammaspect")
+			{
+				// arguments
+				if (ticket.Env == null
+					|| ticket.ConceptDescription == null)
+				{
+					LogErrorToTicket(ticket,
+						"Create Submodel instance form SAMM aspect model: No valid AAS environment or " +
+						"no ConceptDescription selected available.");
+					return;
+				}
+
+				// use utility
+				try
+				{
+                    var trans = new SammTransformation();
+                    trans.CreateSubmodelInstanceFromAspectCD(ticket.Env, ticket.ConceptDescription);
+				}
+				catch (Exception ex)
+				{
+					Log.Singleton.Error(
+						ex, $"When creating Submodel instance from SAMM Aspect model.");
+				}
+
+				Log.Singleton.Info($"Done.");
+				ticket.Success = true;
+			}
+
+			if (cmd == "convertelement")
             {
                 // arguments
                 var rf = ticket.DereferencedMainDataObject as Aas.IReferable;

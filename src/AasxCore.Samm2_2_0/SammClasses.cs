@@ -489,8 +489,6 @@ namespace AasCore.Samm2_2_0
 				if (input.StartsWith(mi.Uri))
 				{
 					var pf = mi.Prefix;
-					if (pf == ":")
-						pf = "this:";
 					return pf + input.Substring(mi.Uri.Length);
 				}
 
@@ -1115,12 +1113,8 @@ namespace AasCore.Samm2_2_0
 		// own
 		[SammPropertyUri("bamm:properties")]
 		[SammCollectionContentUri("bamm:property")]
-		public List<SammReference> Properties { get; set; }
-
-		public Entity()
-		{
-			Properties = new List<SammReference>();
-		}
+		public List<OptionalSammReference> Properties { get; set; } 
+			   = new List<OptionalSammReference>();
 	}
 
 	/// <summary>
@@ -1169,14 +1163,14 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:events")]
 		[SammCollectionContentUri("bamm:event")]
-		public List<SammReference> Events { get; set; } = new List<SammReference>();
+		public List<OptionalSammReference> Events { get; set; } = new List<OptionalSammReference>();
 
 		/// <summary>
 		/// An Operation represents an action that can be triggered on the Aspect. 
 		/// </summary>
 		[SammPropertyUri("bamm:operations")]
 		[SammCollectionContentUri("bamm:operation")]
-		public List<SammReference> Operations { get; set; } = new List<SammReference>();
+		public List<OptionalSammReference> Operations { get; set; } = new List<OptionalSammReference>();
 	}
 
 	public class Unit : ModelElement, ISammSelfDescription

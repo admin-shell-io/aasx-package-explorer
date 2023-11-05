@@ -14,4 +14,5 @@ Select("ConceptDescription", "First");
 // Select("ConceptDescription", "Next");
 // Select("ConceptDescription", "Next");
 // Select("ConceptDescription", "Next");
-Tool("sammaspectexport", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\out.ttl");
+// Tool("sammaspectexport", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\out.ttl");
+Tool("submodelinstancefromsammaspect");
