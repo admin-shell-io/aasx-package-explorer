@@ -21,7 +21,7 @@ namespace Extensions
 
         #region AasxPackageExplorer
 
-        public static void RecurseOnReferables(this AasCore.Aas3_0.Environment environment,
+        public static void RecurseOnReferables(this AasCore.Aas3_0.IEnvironment environment,
                 object state, Func<object, List<IReferable>, IReferable, bool> lambda, bool includeThis = false)
         {
             // includeThis does not make sense, as no Referable
@@ -35,7 +35,7 @@ namespace Extensions
         /// <summary>
         /// Deprecated? Not compatible with AAS core?
         /// </summary>
-        public static AasValidationRecordList ValidateAll(this AasCore.Aas3_0.Environment environment)
+        public static AasValidationRecordList ValidateAll(this AasCore.Aas3_0.IEnvironment environment)
         {
             // collect results
             var results = new AasValidationRecordList();
@@ -51,7 +51,7 @@ namespace Extensions
         /// <summary>
         /// Deprecated? Not compatible with AAS core?
         /// </summary>
-        public static int AutoFix(this AasCore.Aas3_0.Environment environment, IEnumerable<AasValidationRecord> records)
+        public static int AutoFix(this AasCore.Aas3_0.IEnvironment environment, IEnumerable<AasValidationRecord> records)
         {
             // access
             if (records == null)
@@ -93,7 +93,7 @@ namespace Extensions
         /// are parts of it to be properly serilaized.
         /// </summary>
         /// <returns>Number of fixes taken</returns>
-        public static int SilentFix30(this AasCore.Aas3_0.Environment env)
+        public static int SilentFix30(this AasCore.Aas3_0.IEnvironment env)
         {
             // access
             int res = 0;
@@ -126,7 +126,7 @@ namespace Extensions
             return res;
         }
 
-        public static IEnumerable<IReferable> FindAllReferable(this AasCore.Aas3_0.Environment environment, bool onlyIdentifiables = false)
+        public static IEnumerable<IReferable> FindAllReferable(this AasCore.Aas3_0.IEnvironment environment, bool onlyIdentifiables = false)
         {
             if (environment.AssetAdministrationShells != null)
                 foreach (var aas in environment.AssetAdministrationShells)
@@ -163,7 +163,7 @@ namespace Extensions
 
 #if !DoNotUseAasxCompatibilityModels
 
-        public static AasCore.Aas3_0.Environment ConvertFromV10(this AasCore.Aas3_0.Environment environment, AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv sourceEnvironement)
+        public static AasCore.Aas3_0.IEnvironment ConvertFromV10(this AasCore.Aas3_0.IEnvironment environment, AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv sourceEnvironement)
         {
             //Convert Administration Shells
             if (sourceEnvironement.AdministrationShells != null)
@@ -222,7 +222,7 @@ namespace Extensions
         }
 
 
-        public static AasCore.Aas3_0.Environment ConvertFromV20(this AasCore.Aas3_0.Environment environment, AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv sourceEnvironement)
+        public static AasCore.Aas3_0.IEnvironment ConvertFromV20(this AasCore.Aas3_0.IEnvironment environment, AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv sourceEnvironement)
         {
             //Convert Administration Shells
             if (sourceEnvironement.AdministrationShells != null)
@@ -284,8 +284,8 @@ namespace Extensions
 #endif
 
         //TODO (jtikekar, 0000-00-00): to test
-        public static AasCore.Aas3_0.Environment CreateFromExistingEnvironment(this AasCore.Aas3_0.Environment environment,
-            AasCore.Aas3_0.Environment sourceEnvironment, List<IAssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<ISubmodel> filterForSubmodel = null,
+        public static AasCore.Aas3_0.IEnvironment CreateFromExistingEnvironment(this AasCore.Aas3_0.IEnvironment environment,
+            AasCore.Aas3_0.IEnvironment sourceEnvironment, List<IAssetAdministrationShell> filterForAas = null, List<AssetInformation> filterForAssets = null, List<ISubmodel> filterForSubmodel = null,
             List<IConceptDescription> filterForConceptDescriptions = null)
         {
             if (filterForAas == null)
@@ -354,7 +354,7 @@ namespace Extensions
 
         }
 
-        public static void CreateFromExistingEnvRecurseForCDs(this AasCore.Aas3_0.Environment environment, AasCore.Aas3_0.Environment sourceEnvironment,
+        public static void CreateFromExistingEnvRecurseForCDs(this AasCore.Aas3_0.IEnvironment environment, AasCore.Aas3_0.IEnvironment sourceEnvironment,
             List<ISubmodelElement> submodelElements, ref List<IConceptDescription> filterForConceptDescription)
         {
             if (submodelElements == null || submodelElements.Count == 0 || filterForConceptDescription == null || filterForConceptDescription.Count == 0)
@@ -427,7 +427,7 @@ namespace Extensions
             }
         }
 
-        public static ConceptDescription Add(this AasCore.Aas3_0.Environment env, ConceptDescription cd)
+        public static ConceptDescription Add(this AasCore.Aas3_0.IEnvironment env, ConceptDescription cd)
         {
             if (cd == null)
                 return null;
@@ -437,7 +437,7 @@ namespace Extensions
             return cd;
         }
 
-        public static Submodel Add(this AasCore.Aas3_0.Environment env, Submodel sm)
+        public static Submodel Add(this AasCore.Aas3_0.IEnvironment env, Submodel sm)
         {
             if (sm == null)
                 return null;
@@ -447,7 +447,7 @@ namespace Extensions
             return sm;
         }
 
-        public static AssetAdministrationShell Add(this AasCore.Aas3_0.Environment env, AssetAdministrationShell aas)
+        public static AssetAdministrationShell Add(this AasCore.Aas3_0.IEnvironment env, AssetAdministrationShell aas)
         {
             if (aas == null)
                 return null;
@@ -457,7 +457,7 @@ namespace Extensions
             return aas;
         }
 
-        public static JsonWriter SerialiazeJsonToStream(this AasCore.Aas3_0.Environment environment, StreamWriter streamWriter, bool leaveJsonWriterOpen = false)
+        public static JsonWriter SerialiazeJsonToStream(this AasCore.Aas3_0.IEnvironment environment, StreamWriter streamWriter, bool leaveJsonWriterOpen = false)
         {
             streamWriter.AutoFlush = true;
 
@@ -480,7 +480,7 @@ namespace Extensions
 
         #region Submodel Queries
 
-        public static IEnumerable<ISubmodel> FindAllSubmodelGroupedByAAS(this AasCore.Aas3_0.Environment environment, Func<IAssetAdministrationShell, ISubmodel, bool> p = null)
+        public static IEnumerable<ISubmodel> FindAllSubmodelGroupedByAAS(this AasCore.Aas3_0.IEnvironment environment, Func<IAssetAdministrationShell, ISubmodel, bool> p = null)
         {
             if (environment.AssetAdministrationShells == null || environment.Submodels == null)
                 yield break;
@@ -496,7 +496,7 @@ namespace Extensions
                 }
             }
         }
-        public static ISubmodel FindSubmodel(this AasCore.Aas3_0.Environment environment, IReference submodelReference)
+        public static ISubmodel FindSubmodel(this AasCore.Aas3_0.IEnvironment environment, IReference submodelReference)
         {
             if (environment == null || submodelReference == null)
             {
@@ -523,7 +523,7 @@ namespace Extensions
             return null;
         }
 
-        public static ISubmodel FindSubmodelById(this AasCore.Aas3_0.Environment environment, string submodelId)
+        public static ISubmodel FindSubmodelById(this AasCore.Aas3_0.IEnvironment environment, string submodelId)
         {
             if (string.IsNullOrEmpty(submodelId))
             {
@@ -556,7 +556,7 @@ namespace Extensions
         //    }
         //}
 
-        public static IEnumerable<ISubmodel> FindAllSubmodelBySemanticId(this AasCore.Aas3_0.Environment environment, string semanticId)
+        public static IEnumerable<ISubmodel> FindAllSubmodelBySemanticId(this AasCore.Aas3_0.IEnvironment environment, string semanticId)
         {
             if (semanticId == null)
                 yield break;
@@ -569,7 +569,7 @@ namespace Extensions
         #endregion
 
         #region AssetAdministrationShell Queries
-        public static IAssetAdministrationShell FindAasWithSubmodelId(this AasCore.Aas3_0.Environment environment, string submodelId)
+        public static IAssetAdministrationShell FindAasWithSubmodelId(this AasCore.Aas3_0.IEnvironment environment, string submodelId)
         {
             if (submodelId == null)
             {
@@ -581,7 +581,7 @@ namespace Extensions
             return aas;
         }
 
-        public static IAssetAdministrationShell FindAasById(this AasCore.Aas3_0.Environment environment, string aasId)
+        public static IAssetAdministrationShell FindAasById(this AasCore.Aas3_0.IEnvironment environment, string aasId)
         {
             if (string.IsNullOrEmpty(aasId))
             {
@@ -598,7 +598,7 @@ namespace Extensions
         #region ConceptDescription Queries
 
         public static IConceptDescription FindConceptDescriptionById(
-            this AasCore.Aas3_0.Environment env, string cdId)
+            this AasCore.Aas3_0.IEnvironment env, string cdId)
         {
             if (string.IsNullOrEmpty(cdId))
                 return null;
@@ -608,7 +608,7 @@ namespace Extensions
         }
 
         public static IConceptDescription FindConceptDescriptionByReference(
-            this AasCore.Aas3_0.Environment env, IReference rf)
+            this AasCore.Aas3_0.IEnvironment env, IReference rf)
         {
             if (rf == null)
                 return null;
@@ -643,7 +643,7 @@ namespace Extensions
 
         //TODO (jtikekar, 0000-00-00): Need to test
         public static IReferable FindReferableByReference(
-            this AasCore.Aas3_0.Environment environment,
+            this AasCore.Aas3_0.IEnvironment environment,
             IReference reference,
             int keyIndex = 0,
             IEnumerable<ISubmodelElement> submodelElems = null,
@@ -787,7 +787,7 @@ namespace Extensions
 
         #region AasxPackageExplorer
 
-        public static IEnumerable<T> FindAllSubmodelElements<T>(this AasCore.Aas3_0.Environment environment,
+        public static IEnumerable<T> FindAllSubmodelElements<T>(this AasCore.Aas3_0.IEnvironment environment,
                 Predicate<T> match = null, AssetAdministrationShell onlyForAAS = null) where T : ISubmodelElement
         {
             // more or less two different schemes
@@ -813,7 +813,7 @@ namespace Extensions
             }
         }
 
-        public static IEnumerable<LocatedReference> FindAllReferences(this AasCore.Aas3_0.Environment environment)
+        public static IEnumerable<LocatedReference> FindAllReferences(this AasCore.Aas3_0.IEnvironment environment)
         {
             if (environment.AssetAdministrationShells != null)
                 foreach (var aas in environment.AssetAdministrationShells)
@@ -840,7 +840,7 @@ namespace Extensions
         /// Currently supported: ConceptDescriptions
         /// Returns a list of Referables, which were changed or <c>null</c> in case of error
         /// </summary>
-        public static List<IReferable> RenameIdentifiable<T>(this AasCore.Aas3_0.Environment environment, string oldId, string newId)
+        public static List<IReferable> RenameIdentifiable<T>(this AasCore.Aas3_0.IEnvironment environment, string oldId, string newId)
             where T : IClass
         {
             // access
@@ -953,7 +953,7 @@ namespace Extensions
             return null;
         }
 
-        public static IAssetAdministrationShell FindAasWithAssetInformation(this AasCore.Aas3_0.Environment environment, string globalAssetId)
+        public static IAssetAdministrationShell FindAasWithAssetInformation(this AasCore.Aas3_0.IEnvironment environment, string globalAssetId)
         {
             if (string.IsNullOrEmpty(globalAssetId))
             {
@@ -971,7 +971,7 @@ namespace Extensions
             return null;
         }
 
-        public static ComparerIndexed CreateIndexedComparerCdsForSmUsage(this AasCore.Aas3_0.Environment environment)
+        public static ComparerIndexed CreateIndexedComparerCdsForSmUsage(this AasCore.Aas3_0.IEnvironment environment)
         {
             var cmp = new ComparerIndexed();
             int nr = 0;
@@ -990,8 +990,8 @@ namespace Extensions
             return cmp;
         }
 
-        public static ISubmodelElement CopySubmodelElementAndCD(this AasCore.Aas3_0.Environment environment,
-                AasCore.Aas3_0.Environment srcEnv, ISubmodelElement srcElem, bool copyCD = false, bool shallowCopy = false)
+        public static ISubmodelElement CopySubmodelElementAndCD(this AasCore.Aas3_0.IEnvironment environment,
+                AasCore.Aas3_0.IEnvironment srcEnv, ISubmodelElement srcElem, bool copyCD = false, bool shallowCopy = false)
         {
             // access
             if (srcEnv == null || srcElem == null)
@@ -1008,8 +1008,8 @@ namespace Extensions
             return res;
         }
 
-        public static IReference CopySubmodelRefAndCD(this AasCore.Aas3_0.Environment environment,
-                AasCore.Aas3_0.Environment srcEnv, IReference srcSubRef, bool copySubmodel = false, bool copyCD = false,
+        public static IReference CopySubmodelRefAndCD(this AasCore.Aas3_0.IEnvironment environment,
+                AasCore.Aas3_0.IEnvironment srcEnv, IReference srcSubRef, bool copySubmodel = false, bool copyCD = false,
                 bool shallowCopy = false)
         {
             // access
@@ -1058,8 +1058,8 @@ namespace Extensions
             return dstSubRef;
         }
 
-        private static void CopyConceptDescriptionsFrom(this AasCore.Aas3_0.Environment environment,
-                AasCore.Aas3_0.Environment srcEnv, ISubmodelElement src, bool shallowCopy = false)
+        private static void CopyConceptDescriptionsFrom(this AasCore.Aas3_0.IEnvironment environment,
+                AasCore.Aas3_0.IEnvironment srcEnv, ISubmodelElement src, bool shallowCopy = false)
         {
             // access
             if (srcEnv == null || src == null || src.SemanticId == null)

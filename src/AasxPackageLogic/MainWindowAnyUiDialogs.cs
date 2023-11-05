@@ -1017,6 +1017,36 @@ namespace AasxPackageLogic
 				}
 			}
 
+			if (cmd == "sammaspectexport")
+			{
+				// filename
+				if (!(await DisplayContextPlus.MenuSelectSaveFilenameToTicketAsync(
+					ticket, "File",
+					"SAMM aspect model export",
+					"Aspect_" + (ticket.MainDataObject as Aas.IConceptDescription)?.IdShort + ".ttl",
+					"SAMM/Turtle (*.ttl)|*.ttl",
+					"SAMM aspect model file export: No valid filename.",
+					reworkSpecialFn: true,
+					argLocation: "Location")))
+					return;
+
+				// do it
+				try
+				{
+					// delegate futher
+					await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+
+					// redisplay
+					MainWindow.RedrawAllAasxElements();
+					MainWindow.RedrawElementView();
+				}
+				catch (Exception ex)
+				{
+					LogErrorToTicket(ticket, ex,
+						"When export SAMM aspect model from ConceptDescription, an error occurred");
+				}
+			}
+
 			if (cmd == "submodeltdexport")
             {
                 // filename

@@ -226,7 +226,12 @@ namespace AasxPackageExplorer
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "JSON LD file with TD data.")
                             .Add("Location", "Location selection", hidden: true))
-                    .AddWpfBlazor(name: "PrintAsset", header: "Print Asset as code sheet …",
+					.AddWpfBlazor(name: "SammAspectExport", header: "Export SAMM aspect model by selected CD",
+						help: "Export SAMM aspect model in Turtle (.ttl) format from an selected ConceptDescription.",
+						args: new AasxMenuListOfArgDefs()
+							.Add("File", "Turtle file with SAMM data.")
+							.Add("Location", "Location selection", hidden: true))
+					.AddWpfBlazor(name: "PrintAsset", header: "Print Asset as code sheet …",
                         help: "Prints a sheet with 2D codes for the selected asset.")
                     .AddWpfBlazor(name: "ExportSMD", header: "Export TeDZ Simulation Model Description (SMD) …",
                         help: "Export TeDZ Simulation Model Description (SMD).",

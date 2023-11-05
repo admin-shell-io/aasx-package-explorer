@@ -26,7 +26,7 @@ using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
 {
-    public class DispEditHelperEntities : DispEditHelperModules
+    public class DispEditHelperEntities : DispEditHelperSammModules
     {
         static string PackageSourcePath = "";
         static string PackageTargetFn = "";
@@ -2301,7 +2301,7 @@ namespace AasxPackageLogic
             };
 
 			// check if to display special order for SAMM
-			var specialOrderSAMM = DispEditHelperModules.CheckReferableForSammExtensionType(cd) != null;
+			var specialOrderSAMM = DispEditHelperSammModules.CheckReferableForSammExtensionType(cd) != null;
             if (specialOrderSAMM)
             {
 				lambdaIdf();

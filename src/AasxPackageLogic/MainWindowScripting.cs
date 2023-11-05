@@ -61,14 +61,18 @@ namespace AasxPackageLogic
             if (firstSm != null && firstSm.SubmodelElements != null && firstSm.SubmodelElements.Count > 0)
                 firstSme = firstSm.SubmodelElements[0];
 
-            // TODO (MIHO, 2022-12-16): Some cases are not implemented
+			var firstCd = pm.ConceptDescriptions.FirstOrDefault();
 
-            // selected items by user
-            var siThis = MainWindow?.GetDisplayElements()?.GetSelectedItem();
+			// TODO (MIHO, 2022-12-16): Some cases are not implemented
+
+			// selected items by user
+			var siThis = MainWindow?.GetDisplayElements()?.GetSelectedItem();
             var siSM = siThis?.FindFirstParent(
                     (ve) => ve is VisualElementSubmodelRef, includeThis: true) as VisualElementSubmodelRef;
             var siAAS = siThis?.FindFirstParent(
                     (ve) => ve is VisualElementAdminShell, includeThis: true) as VisualElementAdminShell;
+			var siCD = siThis?.FindFirstParent(
+					(ve) => ve is VisualElementConceptDescription, includeThis: true) as VisualElementConceptDescription;
 #if later
             var siSME = siThis?.FindFirstParent(
                     (ve) => ve is VisualElementSubmodelElement, includeThis: true);
@@ -76,11 +80,11 @@ namespace AasxPackageLogic
                     (ve) => ve is VisualElementConceptDescription, includeThis: true);
 #endif
 
-            //
-            // This
-            //
+			//
+			// This
+			//
 
-            if (refType == ScriptSelectRefType.This)
+			if (refType == ScriptSelectRefType.This)
             {
                 // just return as Referable
                 return new Tuple<Aas.IReferable, object>(
@@ -147,7 +151,17 @@ namespace AasxPackageLogic
                         return new Tuple<Aas.IReferable, object>(firstSme, firstSme);
                     }
                 }
-            }
+
+				if (refType == ScriptSelectRefType.CD)
+				{
+					if (firstCd == null)
+					{
+						Log.Singleton.Error("Script: Select: No ConceptDescriptions available!");
+						return null;
+					}
+					return new Tuple<Aas.IReferable, object>(firstCd, firstCd);
+				}
+			}
 
             //
             // Next
@@ -199,7 +213,21 @@ namespace AasxPackageLogic
                     }
                     return new Tuple<Aas.IReferable, object>(sm, smr);
                 }
-            }
+
+				if (refType == ScriptSelectRefType.CD)
+				{
+					var idx = pm?.ConceptDescriptions?.IndexOf(siCD?.theCD);
+					if (siCD?.theCD == null || idx == null
+						|| idx.Value < 0 || idx.Value >= pm.ConceptDescriptions.Count - 1)
+					{
+						Log.Singleton.Error("Script: For next CD, the selected CD is unknown " +
+							"or no next CD can be determined!");
+						return null;
+					}
+					var cd = pm?.ConceptDescriptions[idx.Value + 1];
+					return new Tuple<Aas.IReferable, object>(cd, cd);
+				}
+			}
 
             //
             // Prev
@@ -251,7 +279,21 @@ namespace AasxPackageLogic
                     }
                     return new Tuple<Aas.IReferable, object>(sm, smr);
                 }
-            }
+
+				if (refType == ScriptSelectRefType.CD)
+				{
+					var idx = pm?.ConceptDescriptions?.IndexOf(siCD?.theCD);
+					if (siCD?.theCD == null || idx == null
+						|| idx.Value < 1 || idx.Value >= pm.ConceptDescriptions.Count)
+					{
+						Log.Singleton.Error("Script: For previous CD, the selected CD is unknown " +
+							"or no previous CD can be determined!");
+						return null;
+					}
+					var cd = pm?.ConceptDescriptions[idx.Value - 1];
+					return new Tuple<Aas.IReferable, object>(cd, cd);
+				}
+			}
 
             // Oops!
             return null;
@@ -327,7 +369,10 @@ namespace AasxPackageLogic
             // well-defined result?
             if (selEval != null && selEval.Item1 != null && selEval.Item2 != null)
             {
-                MainWindow?.GetDisplayElements()?.ClearSelection();
+                if (refType == ScriptSelectRefType.CD)
+                    MainWindow?.GetDisplayElements()?.ExpandAllItems();
+
+				MainWindow?.GetDisplayElements()?.ClearSelection();
                 MainWindow?.GetDisplayElements()?.TrySelectMainDataObject(selEval.Item2, wishExpanded: true);
                 return selEval.Item1;
             }

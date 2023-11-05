@@ -870,11 +870,16 @@ namespace AasxIntegrationBase
         /// </summary>
         public Aas.ISubmodelElement SubmodelElement;
 
-        /// <summary>
-        /// Gives the calling function the possibility to better handle messages
-        /// to/ from the user.
-        /// </summary>
-        public AnyUiMinimalInvokeMessageDelegate InvokeMessage = null;
+		/// <summary>
+		/// Filled by the currently selected element.
+		/// </summary>
+		public Aas.IConceptDescription ConceptDescription;
+
+		/// <summary>
+		/// Gives the calling function the possibility to better handle messages
+		/// to/ from the user.
+		/// </summary>
+		public AnyUiMinimalInvokeMessageDelegate InvokeMessage = null;
 
         /// <summary>
         /// In special cases, the ticket execution does require a post-process.

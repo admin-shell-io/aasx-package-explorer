@@ -137,7 +137,15 @@ namespace AasxPackageLogic
                     ticket.SubmodelElement = vesme.theWrapper;
                 }
             }
-        }
+
+			if (firstItem is VisualElementConceptDescription vecd)
+			{
+				ticket.Package = PackageCentral?.Main;
+				ticket.Env = vecd.theEnv;
+				if (selectedItem != null)
+					ticket.ConceptDescription = vecd.theCD;
+			}
+		}
 
 #pragma warning disable CS1998
         // ReSharper disable CSharpWarnings::CS1998
@@ -524,19 +532,56 @@ namespace AasxPackageLogic
 					!(ticket["File"] is string fn) || fn.HasContent() != true)
 				{
 					LogErrorToTicket(ticket,
-						"SAMM aspect model file import: No valid AAS environment available.");
+						"SAMM aspect model file export: No valid AAS environment available.");					
 					return;
 				}
 
 				// do it
 				try
 				{
-                     DispEditHelperModules.ImportSammModelToConceptDescriptions(ticket.Env, fn);
+                    Log.Singleton.Info($"Import SAMM aspect meta model from {fn} ..");
+					var sammImEx = new SammImportExport();
+					sammImEx.ImportSammModelToConceptDescriptions(ticket.Env, fn);
+                    if (sammImEx.AnyInfoMessages)
+                        Log.Singleton.Info(StoredPrint.Color.Blue,
+                            "When importing SAMM aspect meta model, some important messages occured. " +
+                            "See log for details.");
 				}
 				catch (Exception ex)
 				{
 					LogErrorToTicket(ticket, ex,
 						"When importing SAMM aspect model file, an error occurred");
+				}
+			}
+
+			if (cmd == "sammaspectexport")
+			{
+				// arguments
+				if (ticket.Env == null 
+                    || ticket.ConceptDescription == null
+                    ||!(ticket["File"] is string fn) || fn.HasContent() != true)
+				{
+					LogErrorToTicket(ticket,
+						"SAMM aspect model file import: No valid AAS environment or " +
+						"no ConceptDescription selected available.");
+					return;
+				}
+
+				// do it
+				try
+				{
+					Log.Singleton.Info($"Export SAMM aspect meta model from {fn} ..");
+					var sammImEx = new SammImportExport();
+					sammImEx.ExportSammModelFromConceptDescription(ticket.Env, ticket.ConceptDescription, fn);
+					if (sammImEx.AnyInfoMessages)
+						Log.Singleton.Info(StoredPrint.Color.Blue,
+							"When exporting SAMM aspect meta model, some important messages occured. " +
+							"See log for details.");
+				}
+				catch (Exception ex)
+				{
+					LogErrorToTicket(ticket, ex,
+						"When exporting SAMM aspect model file, an error occurred");
 				}
 			}
 

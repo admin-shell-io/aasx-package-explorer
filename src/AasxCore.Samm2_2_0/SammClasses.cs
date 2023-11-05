@@ -46,6 +46,12 @@ namespace AasCore.Samm2_2_0
 			Language = language;
 			Text = text;
 		}
+
+		public LangString(Aas.ILangStringTextType ls)
+		{
+			Language = ls.Language;
+			Text = ls.Text;
+		}
 	}
 
 	/// <summary>
@@ -81,8 +87,7 @@ namespace AasCore.Samm2_2_0
 	}
 
 	/// <summary>
-	/// This attribute gives a list of given presets to an field or property.
-	/// in order to avoid cycles
+	/// This attribute identifies the uri of a single property within a class.
 	/// </summary>
 	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
 	public class SammPropertyUriAttribute : System.Attribute
@@ -90,6 +95,21 @@ namespace AasCore.Samm2_2_0
 		public string Uri = "";
 
 		public SammPropertyUriAttribute(string uri)
+		{
+			Uri = uri;
+		}
+	}
+
+	/// <summary>
+	/// If a RDF collection is parsed, this attribute identifies the uri of 
+	/// the relationship pointing to the content node.
+	/// </summary>
+	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
+	public class SammCollectionContentUriAttribute : System.Attribute
+	{
+		public string Uri = "";
+
+		public SammCollectionContentUriAttribute(string uri)
 		{
 			Uri = uri;
 		}
@@ -106,6 +126,20 @@ namespace AasCore.Samm2_2_0
 		public SammPropertyFlagsAttribute(string flags)
 		{
 			Flags = flags;
+		}
+	}
+
+	/// <summary>
+	/// Enum string representation need a namespace prefix to be serialized to Turtle
+	/// </summary>
+	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
+	public class SammPropertyPrefixAttribute : System.Attribute
+	{
+		public string Prefix = "";
+
+		public SammPropertyPrefixAttribute(string prefix)
+		{
+			Prefix = prefix;
 		}
 	}
 
@@ -176,6 +210,7 @@ namespace AasCore.Samm2_2_0
 		/// The datatype is xsd:anyURI. This attribute may be defined multiple times.
 		/// </summary>
 		[SammPropertyUri("bamm:see")]
+		[SammPropertyFlags("anyuri")]
 		public List<string>? See { get; set; } = null;
 	}
 
@@ -437,10 +472,30 @@ namespace AasCore.Samm2_2_0
 			if (p < 0)
 				return input;
 			var ask = input.Substring(0, p) + ':';
-			if (!Map.ContainsKey(ask) || (p+1) >= input.Length)
+			if (!Map.ContainsKey(ask) || (p+1) > input.Length)
 				return input;
 			var res = Map[ask].Uri + input.Substring(p + 1);
 			return res;
+		}
+
+		public string? PrefixUri(string input)
+		{
+			// access
+			if (input == null)
+				return null;
+
+			// tedious searching
+			foreach (var mi in Map.Values)
+				if (input.StartsWith(mi.Uri))
+				{
+					var pf = mi.Prefix;
+					if (pf == ":")
+						pf = "this:";
+					return pf + input.Substring(mi.Uri.Length);
+				}
+
+			// not found .. give whole back
+			return input;
 		}
 	}
 
@@ -521,6 +576,7 @@ namespace AasCore.Samm2_2_0
 		/// <c>AT_MOST</c> and <c>LESS_THAN</c>.
 		/// </summary>
 		[SammPropertyUri("bamm-c:upperBoundDefinition")]
+		[SammPropertyPrefix("bamm-c:")]
 		public SammUpperBoundDefinition? UpperBoundDefinition { get; set; }
 
 		/// <summary>
@@ -528,6 +584,7 @@ namespace AasCore.Samm2_2_0
 		/// <c>AT_LEAST</c> and <c>GREATER_THAN</c>.
 		/// </summary>
 		[SammPropertyUri("bamm-c:lowerBoundDefinition")]
+		[SammPropertyPrefix("bamm-c:")]
 		public SammLowerBoundDefinition? LowerBoundDefinition { get; set; }
 	}
 
@@ -547,6 +604,7 @@ namespace AasCore.Samm2_2_0
 		/// <c>US-ASCII</c>, <c>ISO-8859-1</c>, <c>UTF-8</c>, <c>UTF-16</c>, <c>UTF-16BE</c> or <c>UTF-16LE</c>.
 		/// </summary>
 		[SammPropertyUri("bamm-c:value")]
+		[SammPropertyPrefix("bamm-c:")]
 		public SammEncoding? Value { get; set; }
 	}
 
@@ -1056,6 +1114,7 @@ namespace AasCore.Samm2_2_0
 
 		// own
 		[SammPropertyUri("bamm:properties")]
+		[SammCollectionContentUri("bamm:property")]
 		public List<SammReference> Properties { get; set; }
 
 		public Entity()
@@ -1102,18 +1161,21 @@ namespace AasCore.Samm2_2_0
 		/// multiple times in a model ([0..n]). 
 		/// </summary>
 		[SammPropertyUri("bamm:properties")]
+		[SammCollectionContentUri("bamm:property")]
 		public List<OptionalSammReference> Properties { get; set; } = new List<OptionalSammReference>();
 
 		/// <summary>
 		/// An Event is a model element that represents a single occurence where the timing is important. 
 		/// </summary>
 		[SammPropertyUri("bamm:events")]
+		[SammCollectionContentUri("bamm:event")]
 		public List<SammReference> Events { get; set; } = new List<SammReference>();
 
 		/// <summary>
 		/// An Operation represents an action that can be triggered on the Aspect. 
 		/// </summary>
 		[SammPropertyUri("bamm:operations")]
+		[SammCollectionContentUri("bamm:operation")]
 		public List<SammReference> Operations { get; set; } = new List<SammReference>();
 	}
 
@@ -1171,7 +1233,65 @@ namespace AasCore.Samm2_2_0
 	{
 		public static string NamespaceURN = "urn:samm:org.eclipse.esmf.samm:";
 
+		/// <summary>
+		/// XSD uri for "a"
+		/// </summary>
 		public static string PredicateA = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+
+		/// <summary>
+		/// XSD datatype of uint
+		/// </summary>
+		public static string XsdNonNegInt = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
+
+		/// <summary>
+		/// XSD datatype of bool
+		/// </summary>
+		public static string XsdBoolean = "http://www.w3.org/2001/XMLSchema#boolean";
+
+		/// <summary>
+		/// XSD datatype of string
+		/// </summary>
+		public static string XsdString = "http://www.w3.org/2001/XMLSchema#string";
+
+		/// <summary>
+		/// Accordng to standard of RDF collection, the first element relationship
+		/// </summary>
+		public static string RdfCollFirst = "http://www.w3.org/1999/02/22-rdf-syntax-ns#first";
+
+		/// <summary>
+		/// Accordng to standard of RDF collection, the res element relationship
+		/// </summary>
+		public static string RdfCollRest = "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest";
+
+		/// <summary>
+		/// Accordng to standard of RDF collection, the end element
+		/// </summary>
+		public static string RdfCollNil = "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil";
+
+		/// <summary>
+		/// In RDF collections of SAMM references, the pointer to the content itself
+		/// </summary>
+		public static string RdfCollProperty = "urn:bamm:io.openmanufacturing:meta-model:1.0.0#property";
+
+		/// <summary>
+		/// In RDF collections of SAMM references, the optional flag
+		/// </summary>
+		public static string RdfCollOptional = "urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional";
+
+		/// <summary>
+		/// The head to be used for auto generated instances
+		/// </summary>
+		public static string DefaultInstanceURN = "https://admin-shell.io/samm-import#";
+
+		/// <summary>
+		/// Holds attribute URI name with prefix for the description attribute of a SAMM element.
+		/// </summary>
+		public static string SammDescription = "bamm:description";
+
+		/// <summary>
+		/// Holds attribute URI name with prefix for the name attribute of a SAMM element.
+		/// </summary>
+		public static string SammName = "bamm:name";
 
 		public static Type[] AddableCharacteristic =
 		{ 
