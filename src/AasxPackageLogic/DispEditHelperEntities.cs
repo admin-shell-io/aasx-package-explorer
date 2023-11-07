@@ -23,6 +23,7 @@ using System.Text;
 using System.Windows.Documents;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using Aas = AasCore.Aas3_0;
+using AasCore.Samm2_2_0;
 
 namespace AasxPackageLogic
 {
@@ -464,7 +465,7 @@ namespace AasxPackageLogic
                     ticketMenu: new AasxMenu()
                         .AddAction("add-aas", "Add AAS",
                             "Adds an AAS with blank information.")
-                        .AddAction("add-cd", "Add AasConceptDescription",
+                        .AddAction("add-cd", "Add ConceptDescription",
                             "Adds an ConceptDescription with blank information.")
                         .AddAction("add-sm-inst", "Add Submodel instance",
                             "Adds an Submodel instance without direct reference in AAS.",

@@ -7,9 +7,11 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using System;
 using System.Collections;
 using System.Drawing;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Runtime.Serialization;
 using AasCore.Aas3_0;
@@ -93,10 +95,12 @@ namespace AasCore.Samm2_2_0
 	public class SammPropertyUriAttribute : System.Attribute
 	{
 		public string Uri = "";
+		public SammVersion Version = SammVersion.V_1_0_0;
 
-		public SammPropertyUriAttribute(string uri)
+		public SammPropertyUriAttribute(string uri, SammVersion version)
 		{
 			Uri = uri;
+			Version = version;
 		}
 	}
 
@@ -108,10 +112,12 @@ namespace AasCore.Samm2_2_0
 	public class SammCollectionContentUriAttribute : System.Attribute
 	{
 		public string Uri = "";
+		public SammVersion Version = SammVersion.V_1_0_0;
 
-		public SammCollectionContentUriAttribute(string uri)
+		public SammCollectionContentUriAttribute(string uri, SammVersion version)
 		{
 			Uri = uri;
+			Version = version;
 		}
 	}
 
@@ -136,10 +142,12 @@ namespace AasCore.Samm2_2_0
 	public class SammPropertyPrefixAttribute : System.Attribute
 	{
 		public string Prefix = "";
+		public SammVersion Version = SammVersion.V_1_0_0;
 
-		public SammPropertyPrefixAttribute(string prefix)
+		public SammPropertyPrefixAttribute(string prefix, SammVersion version)
 		{
 			Prefix = prefix;
+			Version = version;
 		}
 	}
 
@@ -157,7 +165,7 @@ namespace AasCore.Samm2_2_0
 		/// <summary>
 		/// Get URN of this element class.
 		/// </summary>
-		string GetSelfUrn();
+		string GetSelfUrn(SammVersion version);
 	}
 
 	/// <summary>
@@ -193,7 +201,8 @@ namespace AasCore.Samm2_2_0
 		/// times for different languages but only once for a specific language. There should 
 		/// be at least one preferredName defined with an "en" language tag.
 		/// </summary>
-		[SammPropertyUri("bamm:preferredName")]
+		[SammPropertyUri("bamm:preferredName", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:preferredName", SammVersion.V_2_0_0)]
 		public List<LangString>? PreferredName { get; set; } = null;
 
 		// Note: Description is already in the Referable
@@ -209,7 +218,8 @@ namespace AasCore.Samm2_2_0
 		/// A reference to a related element in an external taxonomy, ontology or other standards document. 
 		/// The datatype is xsd:anyURI. This attribute may be defined multiple times.
 		/// </summary>
-		[SammPropertyUri("bamm:see")]
+		[SammPropertyUri("bamm:see", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:see", SammVersion.V_2_0_0)]
 		[SammPropertyFlags("anyuri")]
 		public List<string>? See { get; set; } = null;
 	}
@@ -495,6 +505,10 @@ namespace AasCore.Samm2_2_0
 			// not found .. give whole back
 			return input;
 		}
+
+		public bool ContainsPrefix(string prefix) => Map.ContainsKey(prefix);
+
+		public NamespaceMapItem GetFromPrefix(string prefix) => Map[prefix];
 	}
 
 	/// <summary>
@@ -507,7 +521,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-constraint";
-		public string GetSelfUrn() => "bamm-c:Constraint";
+		public string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Constraint" : "samm-c:Constraint";
 	}
 
 	/// <summary>
@@ -519,13 +533,14 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-language-constraint";
-		public new string GetSelfUrn() => "bamm-c:LanguageConstraint";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:LanguageConstraint" : "samm-c:LanguageConstraint";
 
 		/// <summary>
 		/// An ISO 639-1 [iso639] language code for the language of the value of the constrained Property, 
 		/// e.g., "de".
 		/// </summary>
-		[SammPropertyUri("bamm-c:languageCode")]
+		[SammPropertyUri("bamm-c:languageCode", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:languageCode", SammVersion.V_2_0_0)]
 		public string? LanguageCode { get; set; }
 	}
 
@@ -538,12 +553,13 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-locale-constraint";
-		public new string GetSelfUrn() => "bamm-c:LocaleConstraint";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:LocaleConstraint" : "samm-c:LocaleConstraint";
 
 		/// <summary>
 		/// An IETF BCP 47 language code for the locale of the value of the constrained Property, e.g., "de-DE".
 		/// </summary>
-		[SammPropertyUri("bamm-c:localeCode")]
+		[SammPropertyUri("bamm-c:localeCode", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:localeCode", SammVersion.V_2_0_0)]
 		public string? LocaleCode { get; set; }
 	}
 
@@ -555,34 +571,40 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-range-constraint";
-		public new string GetSelfUrn() => "bamm-c:RangeConstraint";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:RangeConstraint" : "samm-c:RangeConstraint";
 
 		/// <summary>
 		/// The upper bound of a range.
 		/// </summary>
-		[SammPropertyUri("bamm-c:maxValue")]
+		[SammPropertyUri("bamm-c:maxValue", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:maxValue", SammVersion.V_2_0_0)]
 		public string? MaxValue { get; set; }
 
 		/// <summary>
 		/// The lower bound of a range.
 		/// </summary>
-		[SammPropertyUri("bamm-c:minValue")]
+		[SammPropertyUri("bamm-c:minValue", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:minValue", SammVersion.V_2_0_0)]
 		public string? MinValue { get; set; }
 
 		/// <summary>
 		/// Defines whether the upper bound of a range is inclusive or exclusive. Possible values are 
 		/// <c>AT_MOST</c> and <c>LESS_THAN</c>.
 		/// </summary>
-		[SammPropertyUri("bamm-c:upperBoundDefinition")]
-		[SammPropertyPrefix("bamm-c:")]
+		[SammPropertyUri("bamm-c:upperBoundDefinition", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:upperBoundDefinition", SammVersion.V_2_0_0)]
+		[SammPropertyPrefix("bamm-c:", SammVersion.V_1_0_0)]
+		[SammPropertyPrefix("samm-c:", SammVersion.V_2_0_0)]
 		public SammUpperBoundDefinition? UpperBoundDefinition { get; set; }
 
 		/// <summary>
 		/// Defines whether the lower bound of a range is inclusive or exclusive. Possible values are 
 		/// <c>AT_LEAST</c> and <c>GREATER_THAN</c>.
 		/// </summary>
-		[SammPropertyUri("bamm-c:lowerBoundDefinition")]
-		[SammPropertyPrefix("bamm-c:")]
+		[SammPropertyUri("bamm-c:lowerBoundDefinition", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:lowerBoundDefinition", SammVersion.V_2_0_0)]
+		[SammPropertyPrefix("bamm-c:", SammVersion.V_1_0_0)]
+		[SammPropertyPrefix("samm-c:", SammVersion.V_2_0_0)]
 		public SammLowerBoundDefinition? LowerBoundDefinition { get; set; }
 	}
 
@@ -595,14 +617,16 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-encoding-constraint";
-		public new string GetSelfUrn() => "bamm-c:EncodingConstraint";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:EncodingConstraint" : "samm-c:EncodingConstraint";
 
 		/// <summary>
 		/// Configures the encoding. This must be one of the following: 
 		/// <c>US-ASCII</c>, <c>ISO-8859-1</c>, <c>UTF-8</c>, <c>UTF-16</c>, <c>UTF-16BE</c> or <c>UTF-16LE</c>.
 		/// </summary>
-		[SammPropertyUri("bamm-c:value")]
-		[SammPropertyPrefix("bamm-c:")]
+		[SammPropertyUri("bamm-c:value", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:value", SammVersion.V_2_0_0)]
+		[SammPropertyPrefix("bamm-c:", SammVersion.V_1_0_0)]
+		[SammPropertyPrefix("samm-c:", SammVersion.V_2_0_0)]
 		public SammEncoding? Value { get; set; }
 	}
 
@@ -619,18 +643,20 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-length-constraint";
-		public new string GetSelfUrn() => "bamm-c:LengthConstraint";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:LengthConstraint" : "samm-c:LengthConstraint";
 
 		/// <summary>
 		/// The maximum length. Must be given as xsd:nonNegativeInteger.
 		/// </summary>
-		[SammPropertyUri("bamm-c:maxValue")]
+		[SammPropertyUri("bamm-c:maxValue", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:maxValue", SammVersion.V_2_0_0)]
 		public uint? MaxValue { get; set; }
 
 		/// <summary>
 		/// The minimum length. Must be given as xsd:nonNegativeInteger.
 		/// </summary>
-		[SammPropertyUri("bamm-c:minValue")]
+		[SammPropertyUri("bamm-c:minValue", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:minValue", SammVersion.V_2_0_0)]
 		public uint? MinValue { get; set; }
 	}
 
@@ -645,13 +671,14 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-regular-expression-constraint";
-		public new string GetSelfUrn() => "bamm-c:RegularExpressionConstraint";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:RegularExpressionConstraint" : "samm-c:RegularExpressionConstraint";
 
 		/// <summary>
 		/// The regular expression.
 		/// <see href="https://www.w3.org/TR/xpath-functions-3/#regex-syntax"/>
 		/// </summary>
-		[SammPropertyUri("bamm-c:value")]
+		[SammPropertyUri("bamm:value", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:value", SammVersion.V_2_0_0)]
 		public string? Value { get; set; }
 	}
 
@@ -665,14 +692,15 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-fixed-point-constraint";
-		public new string GetSelfUrn() => "bamm-c:FixedPointConstraint";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:FixedPointConstraint" : "samm-c:FixedPointConstraint";
 
 		/// <summary>
 		/// The scaling factor for a fixed point number. E.g., if a fixedpoint number is 123.04, the 
 		/// scaling factor is 2 (the number of digits after the decimal point). 
 		/// Must be given as xsd:positiveInteger.
 		/// </summary>
-		[SammPropertyUri("bamm-c:scale")]
+		[SammPropertyUri("bamm-c:scale", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:scale", SammVersion.V_2_0_0)]
 		public uint? Scale { get; set; }
 
 		/// <summary>
@@ -680,7 +708,8 @@ namespace AasCore.Samm2_2_0
 		/// is 123.04, the integer factor is 3 (the number of digits before the decimal point). 
 		/// Must be given as xsd:positiveInteger.
 		/// </summary>
-		[SammPropertyUri("bamm-c:integer")]
+		[SammPropertyUri("bamm-c:integer", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:integer", SammVersion.V_2_0_0)]
 		public uint? Integer { get; set; }
 	}
 
@@ -694,7 +723,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-characteristic";
-		public string GetSelfUrn() => "bamm:Characteristic";
+		public string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm:Characteristic" : "samm:Characteristic";
 
 		// structure model
 		public bool IsTopElement() => false;
@@ -709,7 +738,8 @@ namespace AasCore.Samm2_2_0
 		/// Also the scalar data types (e.g. xsd:decimal) are treated as references in the first degree.
 		/// </summary>	
 		[SammPresetList("SammXsdDataTypes")]
-		[SammPropertyUri("bamm:dataType")]
+		[SammPropertyUri("bamm:dataType", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:dataType", SammVersion.V_2_0_0)]
 		public SammReference DataType { get; set; }
 
 		public Characteristic()
@@ -729,7 +759,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-trait";
-		public new string GetSelfUrn() => "bamm-c:Trait";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Trait" : "samm-c:Trait";
 
 		// structure model
 		public new bool IsTopElement() => false;
@@ -746,14 +776,16 @@ namespace AasCore.Samm2_2_0
 		/// The Characterstic that is being constrained.
 		/// Identified via <c>preferredName</c> in any language
 		/// </summary>
-		[SammPropertyUri("bamm-c:baseCharacteristic")]
+		[SammPropertyUri("bamm-c:baseCharacteristic", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:baseCharacteristic", SammVersion.V_2_0_0)]
 		public SammReference? BaseCharacteristic { get; set; }
 
 		/// <summary>
 		/// A Constraint that is applicable to the base Characteristic. This attribute may be used multiple times, 
 		/// to add multiple Constraints to the base Characteristic.
 		/// </summary>
-		[SammPropertyUri("bamm-c:constraint")]
+		[SammPropertyUri("bamm-c:constraint", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:constraint", SammVersion.V_2_0_0)]
 		[SammPropertyFlags("constraints")]
 		public List<SammReference>? Constraint { get; set; }
 	}
@@ -768,12 +800,13 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-quantifiable";
-		public new string GetSelfUrn() => "bamm-c:Quantifiable";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Quantifiable" : "samm-c:Quantifiable";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog
 		/// </summary>
-		[SammPropertyUri("bamm-c:unit")]
+		[SammPropertyUri("bamm-c:unit", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:unit", SammVersion.V_2_0_0)]
 		public SammReference? Unit { get; set; }
 	}
 
@@ -786,12 +819,13 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-measurement";
-		public new string GetSelfUrn() => "bamm-c:Measurement";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Measurement" : "samm-c:Measurement";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog
 		/// </summary>
-		[SammPropertyUri("bamm-c:unit")]
+		[SammPropertyUri("bamm-c:unit", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:unit", SammVersion.V_2_0_0)]
 		public SammReference Unit { get; set; }
 
 		public Measurement()
@@ -809,13 +843,14 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-enumeration";
-		public new string GetSelfUrn() => "bamm-c:Enumeration";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Enumeration" : "samm-c:Enumeration";
 
 		/// <summary>
 		/// List of possible values. The dataType of each of the values must match the 
 		/// dataType of the Enumeration.
 		/// </summary>
-		[SammPropertyUri("bamm-c:values")]
+		[SammPropertyUri("bamm-c:values", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:values", SammVersion.V_2_0_0)]
 		public List<string> Values { get; set; }
 
 		public Enumeration()
@@ -833,12 +868,13 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-state";
-		public new string GetSelfUrn() => "bamm-c:State";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:State" : "samm-c:State";
 
 		/// <summary>
 		/// The default value for the state.
 		/// </summary>
-		[SammPropertyUri("bamm-c:defaultValue")]
+		[SammPropertyUri("bamm-c:defaultValue", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:defaultValue", SammVersion.V_2_0_0)]
 		public string DefaultValue { get; set; }
 
 		public State()
@@ -856,7 +892,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-duration";
-		public new string GetSelfUrn() => "bamm-c:Duration";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Duration" : "samm-c:Duration";
 
 		/// <summary>
 		/// Reference to a Unit as defined in the Unit catalog. The referenced unit or its referenceUnit 
@@ -868,7 +904,8 @@ namespace AasCore.Samm2_2_0
 		/// unit:poisePerBar unit:poisePerPascal unit:reciprocalMinute unit:secondUnitOfTime 
 		/// unit:shake unit:siderealYear unit:tropicalYear unit:week unit:year
 		/// </summary>
-		[SammPropertyUri("bamm-c:unit")]
+		[SammPropertyUri("bamm-c:unit", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:unit", SammVersion.V_2_0_0)]
 		public SammReference Unit { get; set; }
 
 		public Duration()
@@ -887,12 +924,13 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-collection";
-		public new string GetSelfUrn() => "bamm-c:Collection";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Collection" : "samm-c:Collection";
 
 		/// <summary>
 		/// Reference to a Characteristic which describes the individual elements contained in the Collection.
 		/// </summary>
-		[SammPropertyUri("bamm-c:elementCharacteristic")]
+		[SammPropertyUri("bamm-c:elementCharacteristic", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:elementCharacteristic", SammVersion.V_2_0_0)]
 		public SammReference ElementCharacteristic { get; set; }
 
 		public Collection()
@@ -910,7 +948,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-list";
-		public new string GetSelfUrn() => "bamm-c:List";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:List" : "samm-c:List";
 	}
 
 	/// <summary>
@@ -922,7 +960,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-set";
-		public new string GetSelfUrn() => "bamm-c:Set";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Set" : "samm-c:Set";
 	}
 
 	/// <summary>
@@ -934,7 +972,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-sorted-set";
-		public new string GetSelfUrn() => "bamm-c:SortedSet";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:SortedSet" : "samm-c:SortedSet";
 	}
 
 	/// <summary>
@@ -946,7 +984,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-time-series";
-		public new string GetSelfUrn() => "bamm-c:TimeSeries";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:TimeSeries" : "samm-c:TimeSeries";
 
 		// For DataType
 		// Set to samm-e:TimeSeriesEntity. This Entity consists of two Properties, namely samm-e:timestamp
@@ -967,7 +1005,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-code";
-		public new string GetSelfUrn() => "bamm-c:Code";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Code" : "samm-c:Code";
 	}
 
 	/// <summary>
@@ -981,18 +1019,20 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-either";
-		public new string GetSelfUrn() => "bamm-c:Either";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:Either" : "samm-c:Either";
 
 		/// <summary>
 		/// The left side of the Either. The attribute references another Characteristic which describes the value.
 		/// </summary>
-		[SammPropertyUri("bamm-c:left")]
+		[SammPropertyUri("bamm-c:left", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:left", SammVersion.V_2_0_0)]
 		public string Left { get; set; }
 
 		/// <summary>
 		/// The right side of the Either. The attribute references another Characteristic which describes the value.
 		/// </summary>
-		[SammPropertyUri("bamm-c:right")]
+		[SammPropertyUri("bamm-c:right", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:right", SammVersion.V_2_0_0)]
 		public string Right { get; set; }
 
 		public Either()
@@ -1012,7 +1052,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-single-entity";
-		public new string GetSelfUrn() => "bamm-c:SingleEntity";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:SingleEntity" : "samm-c:SingleEntity";
 	}
 
 	/// <summary>
@@ -1027,7 +1067,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public new string GetSelfName() => "samm-structured-value";
-		public new string GetSelfUrn() => "bamm-c:StructuredValue";
+		public new string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm-c:StructuredValue" : "samm-c:StructuredValue";
 
 		/// <summary>
 		/// The regular expression used to deconstruct the value into parts that are mapped to separate 
@@ -1035,14 +1075,16 @@ namespace AasCore.Samm2_2_0
 		/// are Properties given in the elements list. The n​th capture group maps to the n​th Property 
 		/// in the elements list.
 		/// </summary>
-		[SammPropertyUri("bamm-c:deconstructionRule")]
+		[SammPropertyUri("bamm-c:deconstructionRule", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:deconstructionRule", SammVersion.V_2_0_0)]
 		public string DeconstructionRule { get; set; }
 
 		/// <summary>
 		/// A list of entries each of which can either be a Property reference or a string literal. 
 		/// The list must contain at least one Property reference.
 		/// </summary>
-		[SammPropertyUri("bamm-c:elements")]
+		[SammPropertyUri("bamm-c:elements", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm-c:elements", SammVersion.V_2_0_0)]
 		public List<string> Elements { get; set; }
 
 		public StructuredValue()
@@ -1062,6 +1104,7 @@ namespace AasCore.Samm2_2_0
 		// self description
 		public string GetSelfName() => "samm-property";
 		public string GetSelfUrn() => "bamm:Property";
+		public string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm:Property" : "samm:Property";
 
 		// structure model
 		public bool IsTopElement() => false;
@@ -1076,14 +1119,16 @@ namespace AasCore.Samm2_2_0
 		/// in a corresponding Characteristic. It is important to ensure that the data type has the correct format. 
 		/// Find the Data Types (SAMM 2.1.0) with an example value.
 		/// </summary>
-		[SammPropertyUri("bamm:exampleValue")]
+		[SammPropertyUri("bamm:exampleValue", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:exampleValue", SammVersion.V_2_0_0)]
 		public string? ExampleValue { get; set; }
 
 		/// <summary>
 		/// One Property has exactly one Characteristic.
 		/// </summary>
 		[SammPresetList("Characteristics")]
-		[SammPropertyUri("bamm:characteristic")]
+		[SammPropertyUri("bamm:characteristic", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:characteristic", SammVersion.V_2_0_0)]
 		public SammReference Characteristic { get; set; }
 
 		public Property()
@@ -1099,7 +1144,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-entity";
-		public string GetSelfUrn() => "bamm:Entity";
+		public string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm:Entity" : "samm:Entity";
 
 		// structure model
 		public bool IsTopElement() => false;
@@ -1111,8 +1156,10 @@ namespace AasCore.Samm2_2_0
 		}
 
 		// own
-		[SammPropertyUri("bamm:properties")]
-		[SammCollectionContentUri("bamm:property")]
+		[SammPropertyUri("bamm:properties", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:properties", SammVersion.V_2_0_0)]
+		[SammCollectionContentUri("bamm:property", SammVersion.V_1_0_0)]
+		[SammCollectionContentUri("samm:property", SammVersion.V_2_0_0)]
 		public List<OptionalSammReference> Properties { get; set; } 
 			   = new List<OptionalSammReference>();
 	}
@@ -1126,7 +1173,7 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-aspect";
-		public string GetSelfUrn() => "bamm:Aspect";
+		public string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm:Aspect" : "samm:Aspect";
 
 		// structure model
 		public bool IsTopElement() => true;
@@ -1154,22 +1201,28 @@ namespace AasCore.Samm2_2_0
 		/// A Property represents a named value. This element is optional and can appear 
 		/// multiple times in a model ([0..n]). 
 		/// </summary>
-		[SammPropertyUri("bamm:properties")]
-		[SammCollectionContentUri("bamm:property")]
+		[SammPropertyUri("bamm:properties", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:properties", SammVersion.V_2_0_0)]
+		[SammCollectionContentUri("bamm:property", SammVersion.V_1_0_0)]
+		[SammCollectionContentUri("samm:property", SammVersion.V_2_0_0)]
 		public List<OptionalSammReference> Properties { get; set; } = new List<OptionalSammReference>();
 
 		/// <summary>
 		/// An Event is a model element that represents a single occurence where the timing is important. 
 		/// </summary>
-		[SammPropertyUri("bamm:events")]
-		[SammCollectionContentUri("bamm:event")]
+		[SammPropertyUri("bamm:events", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:events", SammVersion.V_2_0_0)]
+		[SammCollectionContentUri("bamm:event", SammVersion.V_1_0_0)]
+		[SammCollectionContentUri("samm:event", SammVersion.V_2_0_0)]
 		public List<OptionalSammReference> Events { get; set; } = new List<OptionalSammReference>();
 
 		/// <summary>
 		/// An Operation represents an action that can be triggered on the Aspect. 
 		/// </summary>
-		[SammPropertyUri("bamm:operations")]
-		[SammCollectionContentUri("bamm:operation")]
+		[SammPropertyUri("bamm:operations", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:operations", SammVersion.V_2_0_0)]
+		[SammCollectionContentUri("bamm:operation", SammVersion.V_1_0_0)]
+		[SammCollectionContentUri("samm:operation", SammVersion.V_2_0_0)]
 		public List<OptionalSammReference> Operations { get; set; } = new List<OptionalSammReference>();
 	}
 
@@ -1177,47 +1230,315 @@ namespace AasCore.Samm2_2_0
 	{
 		// self description
 		public string GetSelfName() => "samm-unit";
-		public string GetSelfUrn() => "bamm:Unit";
+		public string GetSelfUrn(SammVersion v) => (v == SammVersion.V_1_0_0) ? "bamm:Unit" : "samm:Unit";
 
 		/// <summary>
 		/// Normalized short code for unit; please refer to the original 
 		/// specification for more details.
 		/// </summary>
-		[SammPropertyUri("bamm:commonCode")]
+		[SammPropertyUri("bamm:commonCode", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:commonCode", SammVersion.V_2_0_0)]
 		public string? CommonCode { get; set; } = null;
 
 		/// <summary>
 		/// If the unit is derived from a reference unit, the human readable 
 		/// multiplication factor, e.g., "10⁻²⁸ m²"
 		/// </summary>
-		[SammPropertyUri("bamm:conversionFactor")]
+		[SammPropertyUri("bamm:conversionFactor", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:conversionFactor", SammVersion.V_2_0_0)]
 		public string? ConversionFactor { get; set; } = null;
 
 		/// <summary>
 		/// If the unit is derived from a reference unit, the numeric 
 		/// multiplication factor, e.g., "1.0E-28"
 		/// </summary>
-		[SammPropertyUri("bamm:numericConversionFactor")]
+		[SammPropertyUri("bamm:numericConversionFactor", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:numericConversionFactor", SammVersion.V_2_0_0)]
 		public string? NumericConversionFactor { get; set; } = null;
 
 		/// <summary>
 		/// The list of quantity kinds, for example unit litre has quantity kind volume, unit 
 		/// metre has quantity kinds length, distance, diameter etc.
 		/// </summary>
-		[SammPropertyUri("bamm:quantityKind")]
+		[SammPropertyUri("bamm:quantityKind", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:quantityKind", SammVersion.V_2_0_0)]
 		public string? QuantityKind { get; set; } = null;
 
 		/// <summary>
 		/// The unit this unit is derived from, e.g., centimetre is derived from metre.
 		/// </summary>
-		[SammPropertyUri("bamm:referenceUnit")]
+		[SammPropertyUri("bamm:referenceUnit", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:referenceUnit", SammVersion.V_2_0_0)]
 		public SammReference? ReferenceUnit { get; set; } = null;
 
 		/// <summary>
 		/// The unit’s symbol, e.g., for centimetre the symbol is cm
 		/// </summary>
-		[SammPropertyUri("bamm:symbol")]
+		[SammPropertyUri("bamm:symbol", SammVersion.V_1_0_0)]
+		[SammPropertyUri("samm:symbol", SammVersion.V_2_0_0)]
 		public string? symbol { get; set; } = null;
+	}
+
+	public enum SammVersion { V_1_0_0, V_2_0_0 };
+
+	/// <summary>
+	/// This class hold all prefixes/ namespaces, which are "switched" on a version
+	/// change.
+	/// </summary>
+	public class SammIdSet
+	{
+		/// <summary>
+		/// SAMM version, which is to be matched.
+		/// "Key" of the record.
+		/// </summary>
+		public SammVersion Version = SammVersion.V_1_0_0;
+
+		/// <summary>
+		/// When matching the version of a turtle file, this key/ value will
+		/// be checked for identity.
+		/// </summary>
+		public NamespaceMapItem Detector = new NamespaceMapItem(
+			"bamm:", "urn:bamm:io.openmanufacturing:meta-model:1.0.0#");
+
+		/// <summary>
+		/// XSD uri for "a"
+		/// </summary>
+		public string PredicateA = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+
+		/// <summary>
+		/// XSD datatype of uint
+		/// </summary>
+		public string XsdNonNegInt = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
+
+		/// <summary>
+		/// XSD datatype of bool
+		/// </summary>
+		public string XsdBoolean = "http://www.w3.org/2001/XMLSchema#boolean";
+
+		/// <summary>
+		/// XSD datatype of string
+		/// </summary>
+		public string XsdString = "http://www.w3.org/2001/XMLSchema#string";
+
+		/// <summary>
+		/// Accordng to standard of RDF collection, the first element relationship
+		/// </summary>
+		public string RdfCollFirst = "http://www.w3.org/1999/02/22-rdf-syntax-ns#first";
+
+		/// <summary>
+		/// Accordng to standard of RDF collection, the res element relationship
+		/// </summary>
+		public string RdfCollRest = "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest";
+
+		/// <summary>
+		/// Accordng to standard of RDF collection, the end element
+		/// </summary>
+		public string RdfCollNil = "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil";
+
+		/// <summary>
+		/// In RDF collections of SAMM references, the pointer to the content itself
+		/// </summary>
+		public string RdfCollProperty = "urn:bamm:io.openmanufacturing:meta-model:1.0.0#property";
+
+		/// <summary>
+		/// In RDF collections of SAMM references, the optional flag
+		/// </summary>
+		public string RdfCollOptional = "urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional";
+
+		/// <summary>
+		/// The head to be used for auto generated instances
+		/// </summary>
+		public string DefaultInstanceURN = "https://admin-shell.io/samm-import#";
+
+		/// <summary>
+		/// Holds attribute URI name with prefix for the description attribute of a SAMM element.
+		/// </summary>
+		public string SammDescription = "bamm:description";
+
+		/// <summary>
+		/// Holds attribute URI name with prefix for the name attribute of a SAMM element.
+		/// </summary>
+		public string SammName = "bamm:name";
+
+		/// <summary>
+		/// The namespaces/ prefixes used by the own functionality
+		/// </summary>
+		public NamespaceMap SelfNamespaces = new NamespaceMap();
+
+		public SammIdSet()
+		{
+			// init namespaces, as being used by self / reflection information
+			SelfNamespaces = new NamespaceMap();
+			SelfNamespaces.AddOrIgnore("bamm:", "urn:bamm:io.openmanufacturing:meta-model:1.0.0#");
+			SelfNamespaces.AddOrIgnore("bamm-c:", "urn:bamm:io.openmanufacturing:characteristic:1.0.0#");
+			SelfNamespaces.AddOrIgnore("bamm-e:", "urn:bamm:io.openmanufacturing:entity:1.0.0#");
+			SelfNamespaces.AddOrIgnore("unit:", "urn:bamm:io.openmanufacturing:unit:1.0.0#");
+			SelfNamespaces.AddOrIgnore("rdf:", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+			SelfNamespaces.AddOrIgnore("rdfs:", "http://www.w3.org/2000/01/rdf-schema#");
+			SelfNamespaces.AddOrIgnore("xsd:", "http://www.w3.org/2001/XMLSchema#");
+		}
+
+		public Dictionary<string, Type> SammUrnToType = new Dictionary<string, Type>();
+
+		public Dictionary<Type, string> SammTypeToName = new Dictionary<Type, string>();
+
+		public SammIdSet Init()
+		{
+			// dictionary from URN to type
+			foreach (var st in Constants.AddableElements)
+			{
+				if (Activator.CreateInstance(st, new object[] { }) is ISammSelfDescription ssd)
+				{
+					// assumption: RDF matching is case sensitive?!
+					var fullUri = SelfNamespaces.ExtendUri(ssd.GetSelfUrn(Version));
+
+					if (fullUri != null)
+					{
+						SammUrnToType.Add(fullUri, st);
+						SammTypeToName.Add(st, "" + ssd.GetSelfName());
+					}
+				}
+			}
+
+			return this;
+		}
+
+		/// <summary>
+		/// This function assumes, that the idSet is on version 1.0.0
+		/// with all attributes and wants to be upgraded.
+		/// </summary>
+		public SammIdSet? SwitchToVersion(SammVersion version)
+		{
+			// initial version?
+			if (version == SammVersion.V_1_0_0)
+				return this;
+
+			//
+			// 2.0.0
+			//
+
+			if (version == SammVersion.V_2_0_0)
+			{
+				// individual attributes
+				Version = SammVersion.V_2_0_0;
+				RdfCollProperty = "urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#property";
+				RdfCollOptional = "urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#optional";
+
+				// init namespaces, as being used by self / reflection information
+				SelfNamespaces = new NamespaceMap();
+				SelfNamespaces.AddOrIgnore("samm:", "urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#");
+				SelfNamespaces.AddOrIgnore("samm-c:", "urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#");
+				SelfNamespaces.AddOrIgnore("samm-e:", "urn:samm:org.eclipse.esmf.samm:entity:2.0.0#");
+				SelfNamespaces.AddOrIgnore("unit:", "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#");
+				SelfNamespaces.AddOrIgnore("rdf:", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+				SelfNamespaces.AddOrIgnore("rdfs:", "http://www.w3.org/2000/01/rdf-schema#");
+				SelfNamespaces.AddOrIgnore("xsd:", "http://www.w3.org/2001/XMLSchema#");
+
+				Detector = new NamespaceMapItem(
+					"samm:", "urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#");
+
+				// ok
+				return this;
+			}
+
+			//
+			// not found?
+			return null;
+		}
+
+		public Type? GetTypeFromUrn(string? urn)
+		{
+			if (urn == null)
+				return null;
+			if (SammUrnToType.ContainsKey(urn))
+				return SammUrnToType[urn];
+			return null;
+		}
+
+		public string? GetNameFromSammType(Type? sammType)
+		{
+			if (sammType == null)
+				return null;
+			if (SammTypeToName.ContainsKey(sammType))
+				return SammTypeToName[sammType];
+			return null;
+		}
+	}
+
+	/// <summary>
+	/// This class holds predefined id sets for all relevant SAMM versions
+	/// </summary>
+	public static class SammIdSets
+	{
+		public static Dictionary<SammVersion, SammIdSet> IdSets
+			          = new Dictionary<SammVersion, SammIdSet>();
+
+		public static void AddSet(SammIdSet? set)
+		{
+			if (set == null)
+				return;
+			IdSets.Add(set.Version, set);
+		}
+
+		public static SammIdSet? GetDefaultVersion()
+		{
+			return IdSets.Values.LastOrDefault();
+		}
+
+		static SammIdSets()
+		{
+			AddSet(new SammIdSet().Init());
+			AddSet(new SammIdSet().SwitchToVersion(SammVersion.V_2_0_0)?.Init());
+		}
+
+		public static Tuple<SammIdSet, Type>? GetAnyIdSetTypeFromUrn(string? urn)
+		{
+			if (urn == null)
+				return null;
+			foreach (var idset in IdSets.Values)
+			{
+				var found = idset.GetTypeFromUrn(urn);
+				if (found != null)
+					return new Tuple<SammIdSet, Type>(idset, found);
+			}
+			return null;
+		}
+
+		public static string? GetAnyNameFromSammType(Type? sammType)
+		{
+			if (sammType == null)
+				return null;
+			foreach (var idset in IdSets.Values)
+			{
+				var found = idset.GetNameFromSammType(sammType);
+				if (found != null)
+					return found;
+			}
+			return null;
+		}
+
+		public static SammIdSet? DetectVersion(NamespaceMap external)
+		{
+			// access
+			if (external == null)
+				return null;
+
+			// loop
+			foreach (var idSet in IdSets.Values)
+			{
+				// need a prefix to compare
+				var pf = idSet?.Detector?.Prefix;
+				if (pf == null)
+					continue;
+
+				// now compare
+				if (external.ContainsPrefix(pf) && idSet?.SelfNamespaces.ContainsPrefix(pf) == true
+					&& external.GetFromPrefix(pf)?.Uri == idSet.SelfNamespaces.GetFromPrefix(pf)?.Uri)
+					return idSet;
+			}
+
+			return null;
+		}
 	}
 
 	/// <summary>
@@ -1225,67 +1546,13 @@ namespace AasCore.Samm2_2_0
 	/// </summary>
 	public static class Constants
 	{
-		public static string NamespaceURN = "urn:samm:org.eclipse.esmf.samm:";
-
 		/// <summary>
-		/// XSD uri for "a"
+		/// Start of namespace(s) to efficiently recognize a SAMM element.
 		/// </summary>
-		public static string PredicateA = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-
-		/// <summary>
-		/// XSD datatype of uint
-		/// </summary>
-		public static string XsdNonNegInt = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
-
-		/// <summary>
-		/// XSD datatype of bool
-		/// </summary>
-		public static string XsdBoolean = "http://www.w3.org/2001/XMLSchema#boolean";
-
-		/// <summary>
-		/// XSD datatype of string
-		/// </summary>
-		public static string XsdString = "http://www.w3.org/2001/XMLSchema#string";
-
-		/// <summary>
-		/// Accordng to standard of RDF collection, the first element relationship
-		/// </summary>
-		public static string RdfCollFirst = "http://www.w3.org/1999/02/22-rdf-syntax-ns#first";
-
-		/// <summary>
-		/// Accordng to standard of RDF collection, the res element relationship
-		/// </summary>
-		public static string RdfCollRest = "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest";
-
-		/// <summary>
-		/// Accordng to standard of RDF collection, the end element
-		/// </summary>
-		public static string RdfCollNil = "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil";
-
-		/// <summary>
-		/// In RDF collections of SAMM references, the pointer to the content itself
-		/// </summary>
-		public static string RdfCollProperty = "urn:bamm:io.openmanufacturing:meta-model:1.0.0#property";
-
-		/// <summary>
-		/// In RDF collections of SAMM references, the optional flag
-		/// </summary>
-		public static string RdfCollOptional = "urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional";
-
-		/// <summary>
-		/// The head to be used for auto generated instances
-		/// </summary>
-		public static string DefaultInstanceURN = "https://admin-shell.io/samm-import#";
-
-		/// <summary>
-		/// Holds attribute URI name with prefix for the description attribute of a SAMM element.
-		/// </summary>
-		public static string SammDescription = "bamm:description";
-
-		/// <summary>
-		/// Holds attribute URI name with prefix for the name attribute of a SAMM element.
-		/// </summary>
-		public static string SammName = "bamm:name";
+		public static string[] PossibleNamespaceURN = { 
+			"urn:samm:org.eclipse.esmf.samm:",
+			"urn:bamm:io.openmanufacturing:"
+		};
 
 		public static Type[] AddableCharacteristic =
 		{ 
@@ -1394,7 +1661,7 @@ namespace AasCore.Samm2_2_0
 			return null;
 		}
 
-		public static NamespaceMap SelfNamespaces = new NamespaceMap();
+		
 
 		static Constants()
 		{
@@ -1549,17 +1816,7 @@ namespace AasCore.Samm2_2_0
 				Abbreviation = "E",
 				Foreground = 0xFF000000,
 				Background = 0xFFB9D8FA
-			});
-
-			// init namespaces, as being used by self / reflection information
-			SelfNamespaces = new NamespaceMap();
-			SelfNamespaces.AddOrIgnore("bamm:", "urn:bamm:io.openmanufacturing:meta-model:1.0.0#");
-			SelfNamespaces.AddOrIgnore("bamm-c:", "urn:bamm:io.openmanufacturing:characteristic:1.0.0#");
-			SelfNamespaces.AddOrIgnore("bamm-e:", "urn:bamm:io.openmanufacturing:entity:1.0.0#");
-			SelfNamespaces.AddOrIgnore("unit:", "urn:bamm:io.openmanufacturing:unit:1.0.0#");
-			SelfNamespaces.AddOrIgnore("rdf:", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-			SelfNamespaces.AddOrIgnore("rdfs:", "http://www.w3.org/2000/01/rdf-schema#");
-			SelfNamespaces.AddOrIgnore("xsd:", "http://www.w3.org/2001/XMLSchema#");
+			});			
 		}
 
 		public static uint RenderBackground = 0xFFEFEFF0;
@@ -1632,9 +1889,12 @@ namespace AasCore.Samm2_2_0
 				return false;
 			if (hasSem.SemanticId.Count() != 1)
 				return false;
-			if (!hasSem.SemanticId.Keys[0].Value.StartsWith(Constants.NamespaceURN))
-				return false;
-			return true;
+
+			foreach (var ns in Constants.PossibleNamespaceURN)
+				if (!hasSem.SemanticId.Keys[0].Value.StartsWith(ns))
+					return true;
+					
+			return false;
 		}
 
 		public static string? GetSammUrn(Aas.IHasSemantics hasSem)
@@ -1644,47 +1904,6 @@ namespace AasCore.Samm2_2_0
 			if (hasSem.SemanticId.Count() != 1)
 				return null;
 			return hasSem.SemanticId.Keys[0].Value;
-		}
-
-		public static Dictionary<string, Type> SammUrnToType = new Dictionary<string, Type>();
-
-		public static Dictionary<Type, string> SammTypeToName = new Dictionary<Type, string>();
-
-		static Util()
-		{
-			// dictionary from URN to type
-			foreach (var st in Constants.AddableElements)
-			{
-				if (Activator.CreateInstance(st, new object[] { }) is ISammSelfDescription ssd)
-				{
-					// assumption: RDF matching is case sensitive?!
-					var fullUri = Constants.SelfNamespaces.ExtendUri(ssd.GetSelfUrn());
-
-					if (fullUri != null)
-					{
-						SammUrnToType.Add(fullUri, st);
-						SammTypeToName.Add(st, "" + ssd.GetSelfName());
-					}
-				}
-			}
-		}
-
-		public static Type? GetTypeFromUrn(string? urn)
-		{
-			if (urn == null)
-				return null;
-			if (SammUrnToType.ContainsKey(urn))
-				return SammUrnToType[urn];
-			return null;
-		}
-
-		public static string? GetNameFromSammType(Type? sammType)
-		{
-			if (sammType == null)
-				return null;
-			if (SammTypeToName.ContainsKey(sammType))
-				return SammTypeToName[sammType];
-			return null;
 		}
 
 		/// <summary>
@@ -1735,5 +1954,24 @@ namespace AasCore.Samm2_2_0
 				return uri.Substring(li + 1);
 			return elseStr;
 		}
+
+		public static SammPropertyUriAttribute? FindAnySammPropertyUriAttribute(
+			PropertyInfo pi, SammVersion version)
+		{
+			foreach (var attr in pi.GetCustomAttributes(typeof(SammPropertyUriAttribute)))
+				if (attr is SammPropertyUriAttribute pua && pua.Version == version)
+					return pua;
+			return null;
+		}
+
+		public static SammCollectionContentUriAttribute? FindAnySammCollectionContentUriAttribute(
+			PropertyInfo pi, SammVersion version)
+		{
+			foreach (var attr in pi.GetCustomAttributes(typeof(SammCollectionContentUriAttribute)))
+				if (attr is SammCollectionContentUriAttribute pua && pua.Version == version)
+					return pua;
+			return null;
+		}
+
 	}
 }

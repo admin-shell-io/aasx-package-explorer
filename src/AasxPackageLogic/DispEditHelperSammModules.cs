@@ -50,6 +50,24 @@ namespace AasxPackageLogic
 	/// </summary>
 	public class DispEditHelperSammModules : DispEditHelperModules
 	{
+		public SammIdSet SammExtensionHelperSelectSammVersion(IEnumerable<SammIdSet> idsets)
+		{
+			// create choices
+			var fol = new List<AnyUiDialogueListItem>();
+			foreach (var idset in idsets)
+				fol.Add(new AnyUiDialogueListItem("" + idset.Version, idset));
+
+			// prompt for this list
+			var uc = new AnyUiDialogueDataSelectFromList(
+				caption: "Select SAMM version to use ..");
+			uc.ListOfItems = fol;
+			this.context.StartFlyoverModal(uc);
+			if (uc.Result && uc.ResultItem != null && uc.ResultItem.Tag != null &&
+				uc.ResultItem.Tag.GetType().IsAssignableTo(typeof(Samm.SammIdSet)))
+				return (SammIdSet)uc.ResultItem.Tag;
+			return null;
+		}
+
 		public Type SammExtensionHelperSelectSammType(Type[] addableElements)
 		{
 			// create choices
@@ -103,6 +121,7 @@ namespace AasxPackageLogic
 
 		public AnyUiLambdaActionBase SammExtensionHelperSammReferenceAction<T>(
 			Aas.Environment env,
+			SammIdSet idSet,
 			Aas.IReferable relatedReferable,
 			int actionIndex,
 			T sr,
@@ -203,7 +222,7 @@ namespace AasxPackageLogic
 						semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
 							(new[] {
 								new Aas.Key(KeyTypes.GlobalReference,
-								"" + Samm.Constants.SelfNamespaces.ExtendUri(newSammSsd.GetSelfUrn()))
+								"" + idSet?.SelfNamespaces.ExtendUri(newSammSsd.GetSelfUrn(idSet.Version)))
 							})
 								.Cast<Aas.IKey>().ToList()),
 						value: "");
@@ -233,7 +252,8 @@ namespace AasxPackageLogic
 		}
 
 		public void SammExtensionHelperAddSammReference<T>(
-			Aas.Environment env, AnyUiStackPanel stack, string caption,
+			Aas.Environment env, SammIdSet idSet,
+			AnyUiStackPanel stack, string caption,
 			Samm.ModelElement sammInst,
 			Aas.IReferable relatedReferable,
 			T sr,
@@ -269,7 +289,8 @@ namespace AasxPackageLogic
 				auxButtonLambda: (i) =>
 				{
 					return SammExtensionHelperSammReferenceAction<T>(
-						env, relatedReferable,
+						env, idSet, 
+						relatedReferable,
 						i,
 						sr: sr,
 						setValue: setValue,
@@ -297,7 +318,8 @@ namespace AasxPackageLogic
 		}
 
 		public void SammExtensionHelperAddListOfSammReference<T>(
-			Aas.Environment env, AnyUiStackPanel stack, string caption,
+			Aas.Environment env, SammIdSet idSet,
+			AnyUiStackPanel stack, string caption,
 			Samm.ModelElement sammInst,
 			Aas.IReferable relatedReferable,
 			List<T> value,
@@ -343,7 +365,8 @@ namespace AasxPackageLogic
 					// Stack in the 1st column
 					var sp1 = AddSmallStackPanelTo(sg, 1 + lsri, 0);
 					SammExtensionHelperAddSammReference(
-						env, sp1, $"[{1 + lsri}]",
+						env, idSet,
+						sp1, $"[{1 + lsri}]",
 						(Samm.ModelElement)sammInst, relatedReferable,
 						value[lsri],
 						noFirstColumnWidth: true,
@@ -412,7 +435,7 @@ namespace AasxPackageLogic
 										case 5:
 										case 6:
 											return SammExtensionHelperSammReferenceAction<T>(
-												env, relatedReferable,
+												env, idSet, relatedReferable,
 												sr: value[theLsri],
 												actionIndex: ti - 3,
 												presetList: null,
@@ -438,7 +461,8 @@ namespace AasxPackageLogic
 		}
 
 		public void SammExtensionHelperAddCompleteModelElement(
-			Aas.Environment env, AnyUiStackPanel stack,
+			Aas.Environment env, SammIdSet idSet,
+			AnyUiStackPanel stack,
 			Samm.ModelElement sammInst,
 			Aas.IReferable relatedReferable,
 			Action<Samm.ModelElement> setValue)
@@ -473,7 +497,7 @@ namespace AasxPackageLogic
 						addableElements = Samm.Constants.AddableConstraints;
 
 					SammExtensionHelperAddListOfSammReference<Samm.SammReference>(
-						env, stack, caption: "" + pii.Name,
+						env, idSet, stack, caption: "" + pii.Name,
 						(ModelElement)sammInst,
 						relatedReferable,
 						editOptionalFlag: false,
@@ -490,7 +514,7 @@ namespace AasxPackageLogic
 				if (pii.PropertyType.IsAssignableTo(typeof(List<Samm.OptionalSammReference>)))
 				{
 					SammExtensionHelperAddListOfSammReference<Samm.OptionalSammReference>(
-						env, stack, caption: "" + pii.Name,
+						env, idSet, stack, caption: "" + pii.Name,
 						(ModelElement)sammInst,
 						relatedReferable,
 						editOptionalFlag: true,
@@ -653,7 +677,8 @@ namespace AasxPackageLogic
 					}
 
 					SammExtensionHelperAddSammReference<SammReference>(
-						env, stack, "" + pii.Name, (Samm.ModelElement)sammInst, relatedReferable,
+						env, idSet, 
+						stack, "" + pii.Name, (Samm.ModelElement)sammInst, relatedReferable,
 						sr,
 						presetList: presetValues,
 						setValue: (v) => {
@@ -873,9 +898,9 @@ namespace AasxPackageLogic
 			// find any?
 			foreach (var se in rf.Extensions)
 			{
-				var sammType = Samm.Util.GetTypeFromUrn(Samm.Util.GetSammUrn(se));
-				if (sammType != null)
-					return sammType;
+				var sammIdSetType = Samm.SammIdSets.GetAnyIdSetTypeFromUrn(Samm.Util.GetSammUrn(se));
+				if (sammIdSetType != null)
+					return sammIdSetType.Item2;
 			}
 
 			// no?
@@ -892,8 +917,8 @@ namespace AasxPackageLogic
 			foreach (var se in rf.Extensions)
 			{
 				// get type 
-				var sammType = Samm.Util.GetTypeFromUrn(Samm.Util.GetSammUrn(se));
-				if (sammType == null)
+				var sammIdSetType = Samm.SammIdSets.GetAnyIdSetTypeFromUrn(Samm.Util.GetSammUrn(se));
+				if (sammIdSetType == null)
 					continue;
 
 				// get instance data
@@ -903,7 +928,7 @@ namespace AasxPackageLogic
 				try
 				{
 					if (se.Value != null)
-						sammInst = JsonConvert.DeserializeObject(se.Value, sammType) as ModelElement;
+						sammInst = JsonConvert.DeserializeObject(se.Value, sammIdSetType.Item2) as ModelElement;
 				}
 				catch (Exception ex)
 				{
@@ -925,11 +950,12 @@ namespace AasxPackageLogic
 		/// <returns>Null, if not a SAMM model element</returns>
 		public static string CheckReferableForSammExtensionTypeName(Type sammType)
 		{
-			return Samm.Util.GetNameFromSammType(sammType);
+			return Samm.SammIdSets.GetAnyNameFromSammType(sammType);
 		}
 
 		public void DisplayOrEditEntitySammExtensions(
-			Aas.Environment env, AnyUiStackPanel stack,
+			Aas.Environment env, 
+			AnyUiStackPanel stack,
 			List<Aas.IExtension> sammExtension,
 			Action<List<Aas.IExtension>> setOutput,
 			string[] addPresetNames = null, List<Aas.IKey>[] addPresetKeyLists = null,
@@ -968,6 +994,10 @@ namespace AasxPackageLogic
 						return new AnyUiLambdaActionRedrawEntity();
 					}))
 			{
+				// Note: the buttons will use a "detected version" (see below)
+				// of the id set
+				SammIdSet detectedIdSet = null;
+
 				// head control
 				if (editMode)
 				{
@@ -1008,9 +1038,10 @@ namespace AasxPackageLogic
 							}
 
 							if (buttonNdx == 4)
-							{
+							{							
 								// select
-								var sammTypeToCreate = SammExtensionHelperSelectSammType(Samm.Constants.AddableElements);
+								var sammTypeToCreate = SammExtensionHelperSelectSammType(
+									Samm.Constants.AddableElements);
 
 								if (sammTypeToCreate != null)
 								{
@@ -1018,20 +1049,33 @@ namespace AasxPackageLogic
 									newChar = Activator.CreateInstance(
 										sammTypeToCreate, new object[] { }) as Samm.ModelElement;
 								}
-
-								if (newChar != null && newChar is Samm.ISammSelfDescription ssd)
-									sammExtension.Add(
-										new Aas.Extension(
-											name: ssd.GetSelfName(),
-											semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-												(new[] {
-													new Aas.Key(KeyTypes.GlobalReference,
-													"" + Samm.Constants.SelfNamespaces.ExtendUri(ssd.GetSelfUrn()))
-												})
-												.Cast<Aas.IKey>().ToList()),
-											value: ""));
 							}
 
+							// create a new element
+							if (newChar != null && newChar is Samm.ISammSelfDescription ssd)
+							{
+								// which id set to use
+								if (detectedIdSet == null)
+									detectedIdSet = SammExtensionHelperSelectSammVersion(
+										Samm.SammIdSets.IdSets.Values);
+								if (detectedIdSet == null)
+									return new AnyUiLambdaActionNone();
+
+								// now add
+								sammExtension.Add(
+									new Aas.Extension(
+										name: ssd.GetSelfName(),
+										semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
+											(new[] {
+												new Aas.Key(KeyTypes.GlobalReference,
+												"" + detectedIdSet.SelfNamespaces.ExtendUri(
+														ssd.GetSelfUrn(detectedIdSet.Version)))
+											})
+											.Cast<Aas.IKey>().ToList()),
+										value: ""));
+							}
+							
+							// remove
 							if (buttonNdx == 5)
 							{
 								if (sammExtension.Count > 0)
@@ -1054,11 +1098,15 @@ namespace AasxPackageLogic
 					{
 						// get type 
 						var se = sammExtension[i];
-						var sammType = Samm.Util.GetTypeFromUrn(Samm.Util.GetSammUrn(se));
-						if (sammType == null)
-						{
+						var idSetType = Samm.SammIdSets.GetAnyIdSetTypeFromUrn(Samm.Util.GetSammUrn(se));
+						if (idSetType?.Item1 == null || idSetType.Item2 == null)
 							continue;
-						}
+						var sammType = idSetType.Item2;
+						var idSet = idSetType.Item1;
+
+						// remeber as detected .. (for later dialogs described above!)
+						if (detectedIdSet == null)
+							detectedIdSet = idSet;
 
 						// more then one?
 						this.AddHintBubble(
@@ -1137,7 +1185,7 @@ namespace AasxPackageLogic
 						}
 
 						SammExtensionHelperAddCompleteModelElement(
-							env, stack,
+							env, idSet, stack,
 							sammInst: sammInst,
 							relatedReferable: relatedReferable,
 							setValue: (si) =>
@@ -1226,16 +1274,18 @@ namespace AasxPackageLogic
 			return g.CreateLiteralNode(text, l2);
 		}
 
-		public static INode CreateUriOrLiteralNode(IGraph g, string text, bool isUri)
+		public static INode CreateUriOrLiteralNode(
+			IGraph g, SammIdSet idSet,
+			string text, bool isUri)
 		{
 			// access
-			if (g == null || text == null)
+			if (g == null || idSet == null || text == null)
 				return null;
 
 			if (isUri)
 				return g.CreateUriNode(new Uri(text, UriKind.RelativeOrAbsolute));
 			else
-				return g.CreateLiteralNode(text, datatype: new Uri(Samm.Constants.XsdString));
+				return g.CreateLiteralNode(text, datatype: new Uri(idSet.XsdString));
 		}
 
 		public static Aas.LangStringTextType ParseLangStringFromNode(INode node)
@@ -1279,13 +1329,13 @@ namespace AasxPackageLogic
 		/// Note: this string will be changed, when the Aspect element is visited
 		/// and prefixes are known better.
 		/// </summary>
-		public string AutoFillHeadId = Samm.Constants.DefaultInstanceURN;
+		public string AutoFillHeadId = "<TO BE FILLED>";
 
 		/// <summary>
 		/// Parses an rdf:Collection and reads out either <c>SammReference</c> or <c>OptionalSammReference</c>
 		/// </summary>
 		public List<T> ImportRdfCollection<T>(
-			IGraph g,
+			IGraph g, SammIdSet idSet,
 			INode collectionStart,
 			string contentRelationshipUri,
 			Func<string, bool, T> createInstance) where T : SammReference
@@ -1293,6 +1343,11 @@ namespace AasxPackageLogic
 			// Try parse a rdf:Collection
 			// see: https://ontola.io/blog/ordered-data-in-rdf
 
+			// access
+			if (g == null || idSet == null)
+				return null;
+
+			// start
 			var lsr = new List<T>();
 			INode collPtr = collectionStart;
 
@@ -1301,10 +1356,10 @@ namespace AasxPackageLogic
 				// only a single member is given
 				var litVal = RdfHelper.GetTerminalStrValue(collPtr);
 				if (litVal?.HasContent() == true
-					&& litVal != Samm.Constants.RdfCollNil)
+					&& litVal != idSet.RdfCollNil)
 					lsr.Add(createInstance?.Invoke(litVal, false));
 			}
-			else			
+			else
 			{
 				// a chain of instances is given
 				while (collPtr != null && collPtr.NodeType == NodeType.Blank)
@@ -1312,7 +1367,7 @@ namespace AasxPackageLogic
 					// the collection pointer needs to have a first relationship
 					var firstRel = g.GetTriplesWithSubjectPredicate(
 						subj: collPtr,
-						pred: new UriNode(new Uri(Samm.Constants.RdfCollFirst)))
+						pred: new UriNode(new Uri(idSet.RdfCollFirst)))
 									.FirstOrDefault();
 					if (firstRel?.Object == null)
 						break;
@@ -1337,8 +1392,8 @@ namespace AasxPackageLogic
 									new Uri(contentRelationshipUri))))
 								propElem = x3.Object.ToSafeString();
 							if (x3.Predicate.Equals(
-									new UriNode(new Uri(Samm.Constants.RdfCollOptional))))
-								optional = x3.Object.ToSafeString() == 
+									new UriNode(new Uri(idSet.RdfCollOptional))))
+								optional = x3.Object.ToSafeString() ==
 									"true^^http://www.w3.org/2001/XMLSchema#boolean";
 						}
 
@@ -1349,7 +1404,7 @@ namespace AasxPackageLogic
 					// iterate further
 					var restRel = g.GetTriplesWithSubjectPredicate(
 						subj: collPtr,
-						pred: new UriNode(new Uri(Samm.Constants.RdfCollRest)))
+						pred: new UriNode(new Uri(idSet.RdfCollRest)))
 								.FirstOrDefault();
 					collPtr = restRel?.Object;
 				}
@@ -1395,9 +1450,13 @@ namespace AasxPackageLogic
 		/// </summary>
 		public SammReference ImportParseSingleSammReference(
 			Aas.IEnvironment env,
-			IGraph g,
+			IGraph g, SammIdSet idSet,
 			INode subjectNode)
 		{
+			// access
+			if (g == null || idSet == null)
+				return null;
+
 			// anonymous node or note
 			if (RdfHelper.IsTerminalNode(subjectNode))
 			{
@@ -1410,21 +1469,21 @@ namespace AasxPackageLogic
 				// the "a" relationship behind it
 				var trpA = g.GetTriplesWithSubjectPredicate(
 					subj: subjectNode,
-					pred: new UriNode(new Uri(Samm.Constants.PredicateA)))?.FirstOrDefault();
+					pred: new UriNode(new Uri(idSet.PredicateA)))?.FirstOrDefault();
 
 				if (trpA == null)
 					return null;
 
 				// create an samm instance
 				var sammInfo = ImportCreateSubjectAndFill(
-					env, g, trpA.Subject, trpA.Object);
+					env, g, idSet, trpA.Subject, trpA.Object);
 
 				if (sammInfo?.IsValidInst() != true)
 					return null;
 
 				// create CD for this
 				ImportCreateCDandIds(
-					env, sammInfo, autoFillIdShortAndId: true);
+					env, idSet, sammInfo, autoFillIdShortAndId: true);
 				// set this as reference ..
 				return new SammReference(sammInfo.NewId);
 			}
@@ -1433,6 +1492,7 @@ namespace AasxPackageLogic
 		public ImportSammInfo ImportCreateSubjectAndFill(
 			Aas.IEnvironment env,
 			IGraph g,
+			SammIdSet idSet,
 			INode subjectNode,
 			INode typeObjNode)
 		{
@@ -1442,7 +1502,7 @@ namespace AasxPackageLogic
 
 			// check, if there is a SAMM type behind the object
 			var sammElemUri = RdfHelper.GetTerminalStrValue(typeObjNode);
-			var sammType = Samm.Util.GetTypeFromUrn(sammElemUri);
+			var sammType = idSet.GetTypeFromUrn(sammElemUri);
 			if (sammType == null)
 			{
 				Log.Singleton.Info($"Potential SAMM element found but unknown URI={sammElemUri}");
@@ -1462,22 +1522,19 @@ namespace AasxPackageLogic
 			var propInfo = sammInst.GetType().GetProperties();
 			for (int pi = 0; pi < propInfo.Length; pi++)
 			{
-				//// is the object marked to be skipped?
-				//var x3 = pi.GetCustomAttribute<AdminShell.SkipForReflection>();
-				//if (x3 != null)
-				//	continue;
+				// reflection
 				var pii = propInfo[pi];
 
 				var propType = pii.PropertyType;
 				var underlyingType = Nullable.GetUnderlyingType(propType);
 
 				// need to have a custom attribute to identify the subject uri of the turtle triples
-				var propSearchUri = pii.GetCustomAttribute<Samm.SammPropertyUriAttribute>()?.Uri;
+				var propSearchUri = Samm.Util.FindAnySammPropertyUriAttribute(pii, idSet.Version)?.Uri;
 				if (propSearchUri == null)
 					continue;
 
 				// extend this
-				propSearchUri = Samm.Constants.SelfNamespaces.ExtendUri(propSearchUri);
+				propSearchUri = idSet.SelfNamespaces.ExtendUri(propSearchUri);
 
 				//// now try to find triples with:
 				//// Subject = trpSammElem.Subject and
@@ -1528,21 +1585,22 @@ namespace AasxPackageLogic
 
 						// need a special uri for each content element
 						// but not fully mandatory
-						var collContentUri = pii.GetCustomAttribute<Samm.SammCollectionContentUriAttribute>()?.Uri;
+						var collContentUri = Samm.Util.FindAnySammCollectionContentUriAttribute(
+								pii, idSet.Version)?.Uri;
 
 						// there are two possibilities, by spec/ knowledge not
 						// easy to distinguish: an optional _single_ SammReference, which 
 						// should be added to the list or a _list_ of SammReferences.
 						// Approach: be open for the first, if not, check the second.
-						var sr = ImportParseSingleSammReference(env, g, trpProp.Object);
+						var sr = ImportParseSingleSammReference(env, g, idSet, trpProp.Object);
 						if (sr != null)
 							lsr.Add(sr);
 						else
 							lsr.AddRange(
 								ImportRdfCollection(
-									g, collectionStart: trpProp.Object,
+									g, idSet, collectionStart: trpProp.Object,
 									contentRelationshipUri: 
-										Samm.Constants.SelfNamespaces.ExtendUri(collContentUri), 
+										idSet.SelfNamespaces.ExtendUri(collContentUri), 
 									createInstance: (sr, opt) => new SammReference(sr)));
 
 						// write found references back
@@ -1558,16 +1616,15 @@ namespace AasxPackageLogic
 							lsr = new List<Samm.OptionalSammReference>();
 
 						// need a special uri for each content element
-						var collContentUri = pii.GetCustomAttribute<Samm.SammCollectionContentUriAttribute>()?.Uri;
-						if (collContentUri == null)
-							continue;
+						var collContentUri = Samm.Util.FindAnySammCollectionContentUriAttribute(
+								pii, idSet.Version)?.Uri;
 
 						// put it
 						lsr.AddRange(
 							ImportRdfCollection(
-								g, collectionStart: trpProp.Object,
+								g, idSet, collectionStart: trpProp.Object,
 								contentRelationshipUri: 
-									Samm.Constants.SelfNamespaces.ExtendUri(collContentUri),
+									idSet.SelfNamespaces.ExtendUri(collContentUri),
 								createInstance: (sr, opt) => new OptionalSammReference(sr, opt)));
 
 						// write found references back
@@ -1577,7 +1634,7 @@ namespace AasxPackageLogic
 					// just SammReference
 					if (pii.PropertyType.IsAssignableTo(typeof(Samm.SammReference)))
 					{
-						var sr = ImportParseSingleSammReference(env, g, trpProp.Object);
+						var sr = ImportParseSingleSammReference(env, g, idSet, trpProp.Object);
 						if (sr != null)
 							pii.SetValue(sammInst, sr);
 					}
@@ -1625,6 +1682,7 @@ namespace AasxPackageLogic
 
 		public void ImportCreateCDandIds(
 			Aas.IEnvironment env,
+			SammIdSet idSet,
 			ImportSammInfo si,
 			string givenUriId = null,
 			string overIdShort = null,
@@ -1632,7 +1690,7 @@ namespace AasxPackageLogic
 			List<ILangStringTextType> cdDesc = null)
 		{
 			// access
-			if (si?.IsValidInst() != true)
+			if (si?.IsValidInst() != true || idSet == null)
 				return;
 
 			// which identifiers?
@@ -1677,7 +1735,7 @@ namespace AasxPackageLogic
 					semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
 						(new[] {
 							new Aas.Key(KeyTypes.GlobalReference,
-							"" + Samm.Constants.SelfNamespaces.ExtendUri(newSammSsd.GetSelfUrn()))
+							"" + idSet.SelfNamespaces.ExtendUri(newSammSsd.GetSelfUrn(idSet.Version)))
 						})
 						.Cast<Aas.IKey>().ToList()),
 					value: "");
@@ -1691,7 +1749,7 @@ namespace AasxPackageLogic
 		}		
 
 		public void ImportSammModelToConceptDescriptions(
-			Aas.IEnvironment env,
+			Aas.IEnvironment env, 
 			string fn)
 		{
 			// do it
@@ -1719,8 +1777,17 @@ namespace AasxPackageLogic
 					globalNamespaces.AddOrIgnore(prefix, g.NamespaceMap.GetNamespaceUri(pf).ToSafeString());
 				}
 
+			// figure out, which idSet to be used
+			// var idSet = Samm.SammIdSets.IdSets.Values.Last();
+			var idSet = Samm.SammIdSets.DetectVersion(globalNamespaces);
+			if (idSet == null)
+			{
+				Log.Singleton.Error("Cannot determine SAMM version for the model file. Aborting!");
+				return;
+			}
+
 			// find all potential SAMM elements " :xxx a bamm:XXXX"
-			foreach (var trpSammElem in g.GetTriplesWithPredicate(new Uri(Samm.Constants.PredicateA)))
+			foreach (var trpSammElem in g.GetTriplesWithPredicate(new Uri(idSet.PredicateA)))
 			{
 				// it only make sense, that the subject of the found triples is a
 				// UriNode. A anonymous node would NOT make sense, here
@@ -1731,14 +1798,14 @@ namespace AasxPackageLogic
 
 				// create the samm element 
 				var sammInfo = ImportCreateSubjectAndFill(
-					env, g, trpSammElem.Subject, trpSammElem.Object);
+					env, g, idSet, trpSammElem.Subject, trpSammElem.Object);
 
 				if (sammInfo?.IsValidInst() != true)
 					continue;
 
 				// description of Referable is a special case
 				List<Aas.LangStringTextType> cdDesc = null;
-				var descPred = Samm.Constants.SelfNamespaces.ExtendUri(Samm.Constants.SammDescription);
+				var descPred = idSet.SelfNamespaces.ExtendUri(idSet.SammDescription);
 				foreach (var trpProp in g.GetTriplesWithSubjectPredicate(
 						subj: trpSammElem.Subject,
 						pred: new VDS.RDF.UriNode(new Uri(descPred))))
@@ -1755,7 +1822,7 @@ namespace AasxPackageLogic
 
 				// name of elements is a special case. Can become idShort
 				string elemName = null;
-				var elemPred = Samm.Constants.SelfNamespaces.ExtendUri(Samm.Constants.SammName);
+				var elemPred = idSet.SelfNamespaces.ExtendUri(idSet.SammName);
 				foreach (var trpProp in g.GetTriplesWithSubjectPredicate(
 						subj: trpSammElem.Subject,
 						pred: new VDS.RDF.UriNode(new Uri(elemPred))))
@@ -1769,6 +1836,7 @@ namespace AasxPackageLogic
 					siAspect.Namespaces = globalNamespaces;
 					siAspect.Comments = globalComments;
 
+					AutoFillHeadId = idSet.DefaultInstanceURN;
 					var afid = globalNamespaces.ExtendUri(":");
 					if (afid?.HasContent() == true)
 						AutoFillHeadId = afid;
@@ -1776,7 +1844,7 @@ namespace AasxPackageLogic
 
 				// after this, the sammInst is fine; we need to prepare the outside
 				ImportCreateCDandIds(
-					env, sammInfo,
+					env, idSet, sammInfo,
 					givenUriId: RdfHelper.GetTerminalStrValue(trpSammElem.Subject),
 					overIdShort: elemName,
 					cdDesc: cdDesc?.Cast<Aas.ILangStringTextType>().ToList());
@@ -1822,12 +1890,13 @@ namespace AasxPackageLogic
 		protected INode ExportSammOptionalReference(
 			Aas.IEnvironment env,
 			IGraph g,
+			SammIdSet idSet,
 			Samm.Aspect asp,
 			Samm.OptionalSammReference osr,
 			string contentRelationshipUri)
 		{
 			// access
-			if (g == null || asp?.Namespaces == null || osr == null)
+			if (g == null || idSet == null || asp?.Namespaces == null || osr == null)
 				return null;
 
 			// make a blank node
@@ -1842,10 +1911,10 @@ namespace AasxPackageLogic
 			// add optional
 			g.Assert(new Triple(
 				orNode,
-				g.CreateUriNode(new Uri(Samm.Constants.RdfCollOptional)),
+				g.CreateUriNode(new Uri(idSet.RdfCollOptional)),
 				g.CreateLiteralNode(
 					osr.Optional ? "true" : "false",
-					datatype: new Uri(Samm.Constants.XsdBoolean))));
+					datatype: new Uri(idSet.XsdBoolean))));
 
 			// result
 			return orNode;
@@ -1854,12 +1923,13 @@ namespace AasxPackageLogic
 		protected INode ExportRdfCollection<T>(
 			Aas.IEnvironment env,
 			IGraph g,
+			SammIdSet idSet,
 			Samm.Aspect asp,
 			List<T> coll,
 			Func<T, INode> lambdaCreateContentNode)
 		{
 			// access
-			if (g == null || asp?.Namespaces == null || coll == null)
+			if (g == null || idSet == null || asp?.Namespaces == null || coll == null)
 				return null;
 
 			// make a blank node and start
@@ -1875,7 +1945,7 @@ namespace AasxPackageLogic
 				{
 					g.Assert(
 						currNode,
-						g.CreateUriNode(new Uri(Samm.Constants.RdfCollFirst)),
+						g.CreateUriNode(new Uri(idSet.RdfCollFirst)),
 						contentNode);
 				}
 
@@ -1888,7 +1958,7 @@ namespace AasxPackageLogic
 					// link to this
 					g.Assert(
 						currNode,
-						g.CreateUriNode(new Uri(Samm.Constants.RdfCollRest)),
+						g.CreateUriNode(new Uri(idSet.RdfCollRest)),
 						nextNode);
 
 					// increment
@@ -1900,8 +1970,8 @@ namespace AasxPackageLogic
 					// finalize
 					g.Assert(
 						currNode,
-						g.CreateUriNode(new Uri(Samm.Constants.RdfCollRest)),
-						g.CreateUriNode(new Uri(Samm.Constants.RdfCollNil)));
+						g.CreateUriNode(new Uri(idSet.RdfCollRest)),
+						g.CreateUriNode(new Uri(idSet.RdfCollNil)));
 					break;
 				}
 			}
@@ -1912,18 +1982,19 @@ namespace AasxPackageLogic
 		public void ExportSammOneElement(
 			Aas.IEnvironment env,
 			IGraph g,
+			SammIdSet idSet,
 			Samm.Aspect asp,
 			Aas.IConceptDescription cd,
 			ModelElement me)
 		{
 			// access
-			if (g == null || me == null || cd == null || asp?.Namespaces == null)
+			if (g == null || idSet == null || me == null || cd == null || asp?.Namespaces == null)
 				return;
 
 			// check self description and add triple type
 			if (!(me is Samm.ISammSelfDescription ssd))
 				return;
-			var meUrn = ssd.GetSelfUrn();
+			var meUrn = ssd.GetSelfUrn(idSet.Version);
 			if (meUrn?.HasContent() != true)
 				return;
 
@@ -1943,7 +2014,7 @@ namespace AasxPackageLogic
 				// special case: name
 				g.Assert(new Triple(
 					subjectNode,
-					g.CreateUriNode(Samm.Constants.SammName),
+					g.CreateUriNode(idSet.SammName),
 					g.CreateLiteralNode(cd.IdShort)));
 
 				// special case: description
@@ -1952,7 +2023,7 @@ namespace AasxPackageLogic
 					{
 						g.Assert(new Triple(
 							g.CreateUriNode(asp.Namespaces.PrefixUri(cd.Id)),
-							g.CreateUriNode(Samm.Constants.SammDescription),
+							g.CreateUriNode(idSet.SammDescription),
 							RdfHelper.SafeCreateLiteralNode(g, ls.Text, ls.Language)));
 					}
 
@@ -1961,7 +2032,7 @@ namespace AasxPackageLogic
 				{
 					// the property needs to have a custom attribute to
 					// identify the predicate uri of the turtle triples
-					var propUri = pi.GetCustomAttribute<Samm.SammPropertyUriAttribute>()?.Uri;
+					var propUri = Samm.Util.FindAnySammPropertyUriAttribute(pi, idSet.Version)?.Uri;
 					if (propUri == null)
 						continue;
 
@@ -1982,7 +2053,7 @@ namespace AasxPackageLogic
 							g.Assert(new Triple(
 								g.CreateUriNode(asp.Namespaces.PrefixUri(cd.Id)),
 								g.CreateUriNode(propUri),
-								RdfHelper.CreateUriOrLiteralNode(g, s.ToSafeString(), isUri)));
+								RdfHelper.CreateUriOrLiteralNode(g, idSet, s.ToSafeString(), isUri)));
 						}
 					}
 
@@ -1997,7 +2068,7 @@ namespace AasxPackageLogic
 								g.CreateUriNode(asp.Namespaces.PrefixUri(cd.Id)),
 								g.CreateUriNode(propUri),
 								g.CreateLiteralNode(ui.Value.ToSafeString(),
-									datatype: new Uri(Samm.Constants.XsdNonNegInt))));
+									datatype: new Uri(idSet.XsdNonNegInt))));
 						}
 					}
 
@@ -2046,7 +2117,7 @@ namespace AasxPackageLogic
 								g.Assert(new Triple(
 									g.CreateUriNode(asp.Namespaces.PrefixUri(cd.Id)),
 									g.CreateUriNode(propUri),
-									RdfHelper.CreateUriOrLiteralNode(g, ls.ToSafeString(), isUri)));
+									RdfHelper.CreateUriOrLiteralNode(g, idSet, ls.ToSafeString(), isUri)));
 							}
 					}
 
@@ -2097,7 +2168,7 @@ namespace AasxPackageLogic
 						if (losr != null && losr.Count >= 1)
 						{
 							// do a collection
-							var collNode = ExportRdfCollection(env, g, asp, losr, (osr) =>
+							var collNode = ExportRdfCollection(env, g, idSet, asp, losr, (osr) =>
 							{								
 								if (osr.Optional == false)
 									// direct content
@@ -2105,7 +2176,7 @@ namespace AasxPackageLogic
 										asp.Namespaces.PrefixUri(osr?.Value.ToSafeString()));
 								else
 									// anonymous node
-									return ExportSammOptionalReference(env, g, asp, osr,
+									return ExportSammOptionalReference(env, g, idSet, asp, osr,
 										collContentUri);
 							});
 							if (collNode != null)
@@ -2125,7 +2196,7 @@ namespace AasxPackageLogic
 						if (lsr != null && lsr.Count >= 1)
 						{
 							// do a collection
-							var collNode = ExportRdfCollection(env, g, asp, lsr, (sr) =>
+							var collNode = ExportRdfCollection(env, g, idSet, asp, lsr, (sr) =>
 							{
 								return g.CreateUriNode(
 									asp.Namespaces.PrefixUri(sr?.Value.ToSafeString()));
@@ -2153,7 +2224,7 @@ namespace AasxPackageLogic
 				var me2 = DispEditHelperSammModules.CheckReferableForSammElements(cd2).FirstOrDefault();
 				if (cd2 != null && me2 != null)
 					if (cd2?.Id?.HasContent() == true && !_visitedCdIds.ContainsKey(cd2.Id))
-						ExportSammOneElement(env, g, asp, cd2, me2);
+						ExportSammOneElement(env, g, idSet, asp, cd2, me2);
 			}
 		}
 
@@ -2169,6 +2240,9 @@ namespace AasxPackageLogic
 			// Reserve the graph, but make only by Aspect
 			Graph g = null;
 
+			// choose the right idSet
+			var idSet = new SammIdSet();
+
 			// Reserve text for comments
 			string globalComments = "";
 			Samm.Aspect globalAspect = null;
@@ -2180,7 +2254,7 @@ namespace AasxPackageLogic
 				// determine base uri
 				var buri = asp.Namespaces.ExtendUri(":");
 				if (buri?.HasContent() != true)
-					buri = Samm.Constants.DefaultInstanceURN;
+					buri = idSet.DefaultInstanceURN;
 
 				// globals
 				globalAspect = asp;
@@ -2205,7 +2279,7 @@ namespace AasxPackageLogic
 				g.NamespaceMap.AddNamespace("this", new Uri(buri));
 
 				// export
-				ExportSammOneElement(env, g, globalAspect, aspectCd, asp);
+				ExportSammOneElement(env, g, idSet, globalAspect, aspectCd, asp);
 			}
 			else
 				Log.Singleton.Error($"ConceptDescription {aspectCd?.IdShort} is missing SAMM model element " +
@@ -2255,6 +2329,76 @@ namespace AasxPackageLogic
 							"https://admin-shell.io/SubmodelTemplates/Cardinality/1/0")
 					}).ToList()),
 				value: "" + card);
+		}
+
+		public static Aas.IQualifier CreateQualifierSmtAllowedValue(string regex)
+		{
+			return new Aas.Qualifier(
+				type: "SMT/AllowedValue",
+				valueType: DataTypeDefXsd.String,
+				kind: QualifierKind.TemplateQualifier,
+				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
+					(new Aas.IKey[] {
+						new Aas.Key(KeyTypes.GlobalReference,
+							"https://admin-shell.io/SubmodelTemplates/AllowedValue/1/0")
+					}).ToList()),
+				value: "" + regex);
+		}
+
+		public static Aas.IQualifier CreateQualifierSmtExampleValue(string exampleValue)
+		{
+			return new Aas.Qualifier(
+				type: "SMT/ExampleValue",
+				valueType: DataTypeDefXsd.String,
+				kind: QualifierKind.TemplateQualifier,
+				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
+					(new Aas.IKey[] {
+						new Aas.Key(KeyTypes.GlobalReference,
+							"https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0")
+					}).ToList()),
+				value: "" + exampleValue);
+		}
+
+		public static Aas.IQualifier CreateQualifierSmtDefaultValue(string defaultValue)
+		{
+			return new Aas.Qualifier(
+				type: "SMT/DefaultValue",
+				valueType: DataTypeDefXsd.String,
+				kind: QualifierKind.TemplateQualifier,
+				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
+					(new Aas.IKey[] {
+						new Aas.Key(KeyTypes.GlobalReference,
+							"https://admin-shell.io/SubmodelTemplates/DefaultValue/1/0")
+					}).ToList()),
+				value: "" + defaultValue);
+		}
+
+		public static Aas.IQualifier CreateQualifierSmtEitherOr(string equivalencyClass)
+		{
+			return new Aas.Qualifier(
+				type: "SMT/EitherOr",
+				valueType: DataTypeDefXsd.String,
+				kind: QualifierKind.TemplateQualifier,
+				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
+					(new Aas.IKey[] {
+						new Aas.Key(KeyTypes.GlobalReference,
+							"https://admin-shell.io/SubmodelTemplates/Cardinality/1/0")
+					}).ToList()),
+				value: "" + equivalencyClass);
+		}
+
+		public static Aas.IQualifier CreateQualifierSmtRequiredLang(string reqLang)
+		{
+			return new Aas.Qualifier(
+				type: "SMT/RequiredLang",
+				valueType: DataTypeDefXsd.String,
+				kind: QualifierKind.TemplateQualifier,
+				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
+					(new Aas.IKey[] {
+						new Aas.Key(KeyTypes.GlobalReference,
+							"https://admin-shell.io/SubmodelTemplates/RequiredLang/1/0")
+					}).ToList()),
+				value: "" + reqLang);
 		}
 	}
 
@@ -2446,20 +2590,29 @@ namespace AasxPackageLogic
 				if (meProp == null)
 					continue;
 
+				if (sitProp?.CD?.IdShort == "catenaXId")
+					;
+
 				// keep track for later use
 				Aas.ISubmodelElement addedElem = null;
-				
+				var qualiferToAdd = new List<Aas.IQualifier>();
+
+				// may be already 1st qualifer
+				if (osrProp.Optional)
+					// Cardinality
+					qualiferToAdd.Add(
+						AasPresetHelper.CreateQualifierSmtCardinality(AasPresetHelper.SmtCardinality.ZeroToOne));
+
 				// ok, a Submodel element shall be created.
 				// But more details (SMC? Property?) are only avilable via 
 				// Characteristic -> dataType ..
 				var sitChar = store.Lookup(meProp.Characteristic);
 				var meChar = sitChar?.ME as Samm.Characteristic;
-
-				// first check the case, that the Characteristic -> dataType goes to an entity
 				var meDt = store.Lookup(meChar?.DataType);
 				if (meDt != null && meDt.ME is Samm.Entity meDtEnt)
 				{
-					// make a SMC and add directl
+					// Characteristic -> dataType goes to an entity
+					// make a SMC and add directly
 					var newSmc = new Aas.SubmodelElementCollection(
 						idShort: "" + sitProp.CD.IdShort,
 						semanticId: CreateSemanticId(meDt.CD.Id),
@@ -2472,7 +2625,7 @@ namespace AasxPackageLogic
 						env, store, aspect,
 						newSmc.Value,
 						meDtEnt.Properties);
-				}
+				}				
 				else
 				{
 					// if in doubt, create a Property with xsd:string
@@ -2505,18 +2658,24 @@ namespace AasxPackageLogic
 					aasElems.Add(newProp);
 				}
 
-				// elaborate added element further
-				if (addedElem != null)
+				// add further information
+				
+				if (sitChar?.ME is Samm.Trait charTrait)
 				{
-					if (osrProp.Optional)
+					foreach (var sitCons in store.LookupFor(charTrait.Constraint))
 					{
-						// add [0..1]
-						addedElem.Qualifiers = new List<IQualifier>
+						if (sitCons.ME is Samm.RegularExpressionConstraint regexCons)
 						{
-							AasPresetHelper.CreateQualifierSmtCardinality(AasPresetHelper.SmtCardinality.ZeroToOne)
-						};
+							// AllowedValue == Regex
+							qualiferToAdd.Add(
+								AasPresetHelper.CreateQualifierSmtAllowedValue(regexCons.Value));
+						}
 					}
 				}
+
+				// elaborate added element further
+				if (addedElem != null && qualiferToAdd.Count > 0)
+					addedElem.Qualifiers = qualiferToAdd;
 			}
 		}
 
