@@ -2590,9 +2590,6 @@ namespace AasxPackageLogic
 				if (meProp == null)
 					continue;
 
-				if (sitProp?.CD?.IdShort == "catenaXId")
-					;
-
 				// keep track for later use
 				Aas.ISubmodelElement addedElem = null;
 				var qualiferToAdd = new List<Aas.IQualifier>();
@@ -2602,6 +2599,12 @@ namespace AasxPackageLogic
 					// Cardinality
 					qualiferToAdd.Add(
 						AasPresetHelper.CreateQualifierSmtCardinality(AasPresetHelper.SmtCardinality.ZeroToOne));
+
+				// example value directly associated with the property
+				if (meProp.ExampleValue != null)
+					// ExampleValue
+					qualiferToAdd.Add(
+						AasPresetHelper.CreateQualifierSmtExampleValue(meProp.ExampleValue));
 
 				// ok, a Submodel element shall be created.
 				// But more details (SMC? Property?) are only avilable via 
@@ -2670,8 +2673,23 @@ namespace AasxPackageLogic
 							qualiferToAdd.Add(
 								AasPresetHelper.CreateQualifierSmtAllowedValue(regexCons.Value));
 						}
+
+						if (sitCons.ME is Samm.LanguageConstraint langCons)
+						{
+							// RequiredLanguage
+							qualiferToAdd.Add(
+								AasPresetHelper.CreateQualifierSmtRequiredLang(langCons.LanguageCode));
+						}
 					}
 				}
+
+				if (sitChar?.ME is Samm.State charState)
+				{
+					if (charState.DefaultValue?.HasContent() == true)
+						// Default value .. only for States
+						qualiferToAdd.Add(
+							AasPresetHelper.CreateQualifierSmtDefaultValue(charState.DefaultValue));
+				}		
 
 				// elaborate added element further
 				if (addedElem != null && qualiferToAdd.Count > 0)
