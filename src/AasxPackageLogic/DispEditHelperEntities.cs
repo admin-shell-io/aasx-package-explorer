@@ -2301,13 +2301,27 @@ namespace AasxPackageLogic
                     relatedReferable: cd, superMenu: superMenu);
             };
 
-			// check if to display special order for SAMM
-			var specialOrderSAMM = DispEditHelperSammModules.CheckReferableForSammExtensionType(cd) != null;
-            if (specialOrderSAMM)
+			// experimental: SMT elements
+
+			Action lambdaSmtExt = () =>
+			{
+				DisplayOrEditEntitySmtExtensions(
+					env, stack, cd.Extensions,
+					(v) => { cd.Extensions = v; },
+					relatedReferable: cd, superMenu: superMenu);
+			};
+
+			// check if to display special order for SAMM, SMT
+			var specialOrderSAMM_SMT = 
+                DispEditHelperSammModules.CheckReferableForSammExtensionType(cd) != null
+                || DispEditHelperExtensions.CheckReferableForSmtExtensionType(cd) != null;
+
+			if (specialOrderSAMM_SMT)
             {
 				lambdaIdf();
 				lambdaRf(true);
 				lambdaSammExt();
+				lambdaSmtExt();
 
 				this.AddGroup(stack, "Continue Referable:", levelColors.MainSection);
 				lambdaIsCaseOf();
@@ -2326,7 +2340,8 @@ namespace AasxPackageLogic
                 lambdaIsCaseOf();
                 lambdaEDS(false);
                 lambdaSammExt();
-            }
+				lambdaSmtExt();
+			}
 		}
 
 		public void DisplayOrEditAasEntityValueReferencePair(

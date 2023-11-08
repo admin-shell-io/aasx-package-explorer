@@ -48,7 +48,7 @@ namespace AasxPackageLogic
 	/// This class extends the AAS meta model editing function for those related to
 	/// SAMM (Semantic Aspect Meta Model) elements. 
 	/// </summary>
-	public class DispEditHelperSammModules : DispEditHelperModules
+	public class DispEditHelperSammModules : DispEditHelperExtensions
 	{
 		public SammIdSet SammExtensionHelperSelectSammVersion(IEnumerable<SammIdSet> idsets)
 		{
@@ -2303,102 +2303,6 @@ namespace AasxPackageLogic
 				+ System.Environment.NewLine
 				+ globalGraph;
 			System.IO.File.WriteAllText(fn, textAll);
-		}
-	}
-
-	/// <summary>
-	/// This class provides generators for Qualifiers, Extension etc.
-	/// in order to express preset-based information e.g. Cardinality
-	/// </summary>
-	public static class AasPresetHelper
-	{
-		/// <summary>
-		/// Semantically different, but factually equal to <c>FormMultiplicity</c>
-		/// </summary>
-		public enum SmtCardinality { ZeroToOne = 0, One, ZeroToMany, OneToMany };
-
-		public static Aas.IQualifier CreateQualifierSmtCardinality(SmtCardinality card)
-		{
-			return new Aas.Qualifier(
-				type: "SMT/Cardinality",
-				valueType: DataTypeDefXsd.String,
-				kind: QualifierKind.TemplateQualifier,
-				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-					(new Aas.IKey[] {
-						new Aas.Key(KeyTypes.GlobalReference,
-							"https://admin-shell.io/SubmodelTemplates/Cardinality/1/0")
-					}).ToList()),
-				value: "" + card);
-		}
-
-		public static Aas.IQualifier CreateQualifierSmtAllowedValue(string regex)
-		{
-			return new Aas.Qualifier(
-				type: "SMT/AllowedValue",
-				valueType: DataTypeDefXsd.String,
-				kind: QualifierKind.TemplateQualifier,
-				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-					(new Aas.IKey[] {
-						new Aas.Key(KeyTypes.GlobalReference,
-							"https://admin-shell.io/SubmodelTemplates/AllowedValue/1/0")
-					}).ToList()),
-				value: "" + regex);
-		}
-
-		public static Aas.IQualifier CreateQualifierSmtExampleValue(string exampleValue)
-		{
-			return new Aas.Qualifier(
-				type: "SMT/ExampleValue",
-				valueType: DataTypeDefXsd.String,
-				kind: QualifierKind.TemplateQualifier,
-				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-					(new Aas.IKey[] {
-						new Aas.Key(KeyTypes.GlobalReference,
-							"https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0")
-					}).ToList()),
-				value: "" + exampleValue);
-		}
-
-		public static Aas.IQualifier CreateQualifierSmtDefaultValue(string defaultValue)
-		{
-			return new Aas.Qualifier(
-				type: "SMT/DefaultValue",
-				valueType: DataTypeDefXsd.String,
-				kind: QualifierKind.TemplateQualifier,
-				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-					(new Aas.IKey[] {
-						new Aas.Key(KeyTypes.GlobalReference,
-							"https://admin-shell.io/SubmodelTemplates/DefaultValue/1/0")
-					}).ToList()),
-				value: "" + defaultValue);
-		}
-
-		public static Aas.IQualifier CreateQualifierSmtEitherOr(string equivalencyClass)
-		{
-			return new Aas.Qualifier(
-				type: "SMT/EitherOr",
-				valueType: DataTypeDefXsd.String,
-				kind: QualifierKind.TemplateQualifier,
-				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-					(new Aas.IKey[] {
-						new Aas.Key(KeyTypes.GlobalReference,
-							"https://admin-shell.io/SubmodelTemplates/Cardinality/1/0")
-					}).ToList()),
-				value: "" + equivalencyClass);
-		}
-
-		public static Aas.IQualifier CreateQualifierSmtRequiredLang(string reqLang)
-		{
-			return new Aas.Qualifier(
-				type: "SMT/RequiredLang",
-				valueType: DataTypeDefXsd.String,
-				kind: QualifierKind.TemplateQualifier,
-				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
-					(new Aas.IKey[] {
-						new Aas.Key(KeyTypes.GlobalReference,
-							"https://admin-shell.io/SubmodelTemplates/RequiredLang/1/0")
-					}).ToList()),
-				value: "" + reqLang);
 		}
 	}
 

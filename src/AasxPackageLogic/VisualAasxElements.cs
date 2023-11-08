@@ -1251,6 +1251,21 @@ namespace AasxPackageLogic
 					}
 				}
 
+                // SMT
+                var smtTypeInst = DispEditHelperExtensions.CheckReferableForSmtExtensionType(theCD);
+                if (smtTypeInst != null && smtTypeInst is ISmtSelfDescription ssd)
+                {
+					// completely reformat the Caption
+					this.Caption = $"\"{"" + theCD.IdShort}\" \u29fc{ssd.GetSelfName()}\u29fd {"" + theCD.Id}";
+
+					// see https://colors.muz.li/palette/0028CD/004190/2915cd/00cd90/009064
+					this.TagString = "SMT";
+					this.Border = new AnyUiColor(0xff009064);
+					this.Background = new AnyUiColor(0xff00cd90);
+					this.TagBg = new AnyUiColor(0xff009064);
+					this.TagFg = new AnyUiColor(0xffffffff);
+				}
+
 				//TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
 #if SupportDataSpecificationPhysicalUnit
                 var dspu = theCD.GetPhysicalUnit();
