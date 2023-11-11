@@ -35,6 +35,7 @@ using Lucene.Net.Util;
 using System.Runtime.Serialization;
 using J2N.Text;
 using Lucene.Net.Codecs;
+using System.Text;
 
 namespace AasxPackageLogic
 {
@@ -42,7 +43,7 @@ namespace AasxPackageLogic
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
     /// editing disting modules of the GUI, such as the different (re-usable) Interfaces of the AAS entities
     /// </summary>
-    public class DispEditHelperModules : DispEditHelperMiniModules
+    public class DispEditHelperModules : DispEditHelperExtensions
     {
         //
         // Members
@@ -110,7 +111,8 @@ namespace AasxPackageLogic
         // IReferable
         //
 
-        public void DisplayOrEditEntityReferable(AnyUiStackPanel stack,
+        public void DisplayOrEditEntityReferable(
+			Aas.Environment env, AnyUiStackPanel stack,
             Aas.IReferable parentContainer,
             Aas.IReferable referable,
             int indexPosition,
@@ -296,13 +298,47 @@ namespace AasxPackageLogic
 
             if (!hideExtensions)
             {
-                // Extensions (at the end to make them not so much impressive!)
-                DisplayOrEditEntityListOfExtension(
+				// before extension, some helpful records
+				DisplayOrEditEntityExtensionRecords(
+					env, stack, referable.Extensions,
+					(v) => { referable.Extensions = v; },
+					relatedReferable: referable);
+
+				// Extensions (at the end to make them not so much impressive!)
+				DisplayOrEditEntityListOfExtension(
                     stack: stack, extensions: referable.Extensions,
                     setOutput: (v) => { referable.Extensions = v; },
                     relatedReferable: referable);
             }
         }
+
+        public void DisplayOrEditEntityReferableContinue(
+            Aas.Environment env, AnyUiStackPanel stack,
+            Aas.IReferable parentContainer,
+            Aas.IReferable referable,
+            int indexPosition,
+            DispEditInjectAction injectToIdShort = null,
+            bool hideExtensions = false)
+        {
+            // access
+            if (stack == null || referable == null)
+                return;
+
+            // members
+            this.AddGroup(stack, "Referable (continue):", levelColors.SubSection);
+
+			// before extension, some helpful records
+			DisplayOrEditEntityExtensionRecords(
+				env, stack, referable.Extensions,
+				(v) => { referable.Extensions = v; },
+				relatedReferable: referable);
+
+			// Extensions (at the end to make them not so much impressive!)
+			DisplayOrEditEntityListOfExtension(
+				stack: stack, extensions: referable.Extensions,
+				setOutput: (v) => { referable.Extensions = v; },
+				relatedReferable: referable);
+		}
 
         //
         // Extensions
@@ -2413,6 +2449,181 @@ namespace AasxPackageLogic
             }
 
         }
+
+        //
+        // Values checking
+        //
+
+        /// <summary>
+        /// Infomration carrying from the functionbelow to the main application
+        /// </summary>
+        public class DisplayOrEditEntityCheckValueHandle
+        {
+            public Aas.IReferable Referable = null;
+
+            public List<SmtAttributeCheckItem> CheckItems = new List<SmtAttributeCheckItem>();
+
+			public AnyUiBorder Border = null;
+            public AnyUiTextBlock TextBlock = null;
+        }
+
+        public List<SmtAttributeCheckItem> DisplayOrEditEntityCheckValueEvalItems(
+            Aas.IReferable rf)
+        {
+            // access
+            var checkItems = new List<SmtAttributeCheckItem>();
+            if (rf == null)
+                return checkItems;
+
+            // what to check
+            var rec = CheckReferableForExtensionRecords<SmtAttributeRecord>(rf).FirstOrDefault();
+            if (rec == null)
+            {
+                // can analyze qualifiers?
+                rec = AasSmtQualifiers.FindSmtQualifiers(rf, removeQualifers: false);
+            }            
+
+			// some checks can be done on the static record function, as record entities might
+			// be only on subordinate elements
+
+			Func<Aas.IReferable, SmtAttributeRecord> lambdaLookupSmtRec = (rf2) =>
+			{
+				return CheckReferableForExtensionRecords<SmtAttributeRecord>(rf2).FirstOrDefault();
+			};
+
+			if (rf is Aas.ISubmodel sm)
+				checkItems = SmtAttributeRecord.PerformAttributeCheck(sm.SubmodelElements, inList: checkItems,
+					lambdaLookupSmtRec: lambdaLookupSmtRec);
+
+			if (rf is Aas.ISubmodelElementCollection smc)
+				checkItems = SmtAttributeRecord.PerformAttributeCheck(smc.Value, inList: checkItems,
+					lambdaLookupSmtRec: lambdaLookupSmtRec);
+
+			// perform the check on factual record of this element
+			if (rec != null)
+            {                
+                if (rf is Aas.IProperty prop)
+					checkItems = rec.PerformAttributeCheck(rf.IdShort, prop.Value, checkItems);
+                
+                if (rf is Aas.IMultiLanguageProperty mlp)
+					checkItems = rec.PerformAttributeCheck(mlp, checkItems);                
+			}
+
+            // okay
+            return checkItems;
+
+        }
+
+        /// <summary>
+        /// this handle is used to link edit value field and status fields together
+        /// </summary>
+        protected DisplayOrEditEntityCheckValueHandle _checkValueHandle = new DisplayOrEditEntityCheckValueHandle();
+
+		public void DisplayOrEditEntityCheckValue(
+            Aas.Environment env, AnyUiStackPanel stack,
+			DisplayOrEditEntityCheckValueHandle handle,
+			Aas.IReferable rf,
+			bool update = false)
+        {
+            // access
+            if (stack == null || rf == null || handle == null)
+                return;
+
+            // evaluate
+            bool? alarmState = null; 
+            var evalText = "Idle (no SMT spec)";
+            var indicatorBg = AnyUiBrushes.White;
+            var indicatorFg = AnyUiBrushes.Black;
+
+            // test
+            handle.CheckItems = DisplayOrEditEntityCheckValueEvalItems(rf);
+            if (handle.CheckItems != null)
+            {
+                // evaluate alarm
+                alarmState = handle.CheckItems.Where((aci) => aci.Fail).Count() > 0;
+
+                if (alarmState == true)
+                {
+                    var distinctMsg = handle.CheckItems.GroupBy((ci) => ci.ShortText).Select((gr) => gr.First().ShortText);
+                    evalText = "Fail: " + string.Join(" ", distinctMsg);
+                    indicatorBg = new AnyUiBrush(0xffFF4F0E);
+                    indicatorFg = new AnyUiBrush(0xFF541805);
+				}
+                else
+                {
+                    evalText = "PASS!";
+					indicatorBg = new AnyUiBrush(0xff00cd90);
+					indicatorFg = new AnyUiBrush(0xff009064);
+				}
+			}
+
+			// update
+			if (update && handle.Referable == rf)
+            {
+                if (handle.Border != null)
+                {
+					handle.Border.Background = indicatorBg;
+					handle.Border.BorderBrush = indicatorFg;
+					handle.Border.Touch();
+				}
+
+                if (handle.TextBlock != null)
+                {
+					handle.TextBlock.Text = evalText;
+					handle.Border.Touch();
+				}
+
+				// stop here
+				return;
+            }
+
+            // NO update, rebuild
+            handle.Referable = rf;
+
+			// add grid
+			var g = AddSubGrid(stack, "SMT value check:",
+				rows: 1, cols: 2, new[] { "*", "#" },
+				paddingCaption: new AnyUiThickness(6, 0, 0, 0),
+				minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
+
+            g.DebugTag = "TEST2";
+
+			// indicator
+			handle.Border = AddSmallBorderTo(g, 0, 0,
+                margin: new AnyUiThickness(5, 2, 2, 2),
+                background: indicatorBg,
+                borderBrush: indicatorFg,
+                borderThickness: new AnyUiThickness(1));
+            handle.TextBlock = new AnyUiTextBlock()
+            {
+                Text = "" + evalText,
+                HorizontalAlignment = AnyUiHorizontalAlignment.Center,
+                VerticalAlignment = AnyUiVerticalAlignment.Center,
+                Foreground = AnyUiBrushes.White,
+                Background = AnyUi.AnyUiBrushes.Transparent,
+                FontSize = 1.0,
+                FontWeight = AnyUiFontWeight.Bold
+            };
+			handle.Border.Child = handle.TextBlock;
+
+			AnyUiUIElement.RegisterControl(
+				AddSmallButtonTo(g, 0, 1,
+					margin: new AnyUiThickness(2, 2, 2, 2),
+					padding: new AnyUiThickness(5, 0, 5, 0),
+					content: "\u2261"),
+					setValue: (v) =>
+					{
+                        // re-evaluate
+                        Log.Singleton.Info("Starting check.");
+						var ci2 = DisplayOrEditEntityCheckValueEvalItems(rf);
+                        if (ci2 != null)
+						    foreach (var aci in handle.CheckItems)
+                                Log.Singleton.Info("" + aci.LongText);
+                        Log.Singleton.Info(StoredPrint.Color.Blue,
+                            "SMT value check: " + ((alarmState == true) ? "FAIL!" : "PASS / IDLE!") + " See log for details.");
+						return new AnyUiLambdaActionNone();
+					});            
+		}
 
 	}
 }

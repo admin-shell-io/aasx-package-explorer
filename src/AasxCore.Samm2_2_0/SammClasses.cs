@@ -1659,9 +1659,7 @@ namespace AasCore.Samm2_2_0
 			if (t != null && _renderInfo.ContainsKey(t))
 				return _renderInfo[t];
 			return null;
-		}
-
-		
+		}		
 
 		static Constants()
 		{

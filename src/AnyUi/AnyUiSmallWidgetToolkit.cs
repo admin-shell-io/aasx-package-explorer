@@ -20,7 +20,7 @@ namespace AnyUi
     public class AnyUiSmallWidgetToolkit
     {
         /// <summary>
-        /// Automatically replace labes starting with IRI with active links
+        /// Automatically replace labels starting with IRI with active links
         /// </summary>
         public bool showIriMode = false;
 

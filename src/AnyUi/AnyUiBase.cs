@@ -509,10 +509,28 @@ namespace AnyUi
         }
     }
 
-    /// <summary>
-    /// Requests the main application to display a content file or external link
-    /// </summary>
-    public class AnyUiLambdaActionDisplayContentFile : AnyUiLambdaActionBase
+	/// <summary>
+	/// ReRender the main enitity panel
+	/// </summary>
+	public class AnyUiLambdaActionEntityPanelReRender : AnyUiLambdaActionBase
+	{
+        public AnyUiRenderMode Mode = AnyUiRenderMode.StatusToUi;
+        public bool UseInnerGrid = false;
+        public Dictionary<AnyUiUIElement, bool> UpdateElemsOnly = null;
+
+		public AnyUiLambdaActionEntityPanelReRender(AnyUiRenderMode mode, bool useInnerGrid = false,
+			Dictionary<AnyUiUIElement, bool> updateElemsOnly = null)
+		{
+            Mode = mode;
+            UseInnerGrid = useInnerGrid;
+            UpdateElemsOnly = updateElemsOnly;
+		}
+	}
+
+	/// <summary>
+	/// Requests the main application to display a content file or external link
+	/// </summary>
+	public class AnyUiLambdaActionDisplayContentFile : AnyUiLambdaActionBase
     {
         public AnyUiLambdaActionDisplayContentFile() { }
         public AnyUiLambdaActionDisplayContentFile(

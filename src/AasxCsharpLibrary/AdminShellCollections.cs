@@ -8,6 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AdminShellNS
 {
@@ -41,7 +42,7 @@ namespace AdminShellNS
 
         public List<V> this[K key] => dict[key];
 
-        public IEnumerable<List<V>> Keys
+        public IEnumerable<List<V>> Values
         {
             get
             {
@@ -49,7 +50,23 @@ namespace AdminShellNS
             }
         }
 
-        public void Clear() => dict.Clear();
+		public IEnumerable<K> Keys
+		{
+			get
+			{
+				return dict.Keys;
+			}
+		}
+
+		public void Clear() => dict.Clear();
+
+        public IEnumerable<V> All(K key)
+        {
+            if (!dict.ContainsKey(key))
+                yield break;
+            foreach (var x in dict[key])
+                yield return x;
+        }
     }
 
     public class DoubleSidedDict<T1, T2>

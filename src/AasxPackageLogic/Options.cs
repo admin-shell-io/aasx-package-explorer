@@ -543,7 +543,11 @@ namespace AasxPackageLogic
             "the editor. ")]
         public bool CompressEvents = false;
 
-        [OptionDescription(Description = "Default value for the StayConnected options of PackageContainer. " +
+		[OptionDescription(Description = "When activated, the UI will detect presence of SMT attributes and " +
+            "will perform value checks on AAS elements. This might be slow!")]
+		public bool CheckSmtElements = false;
+
+		[OptionDescription(Description = "Default value for the StayConnected options of PackageContainer. " +
             "That is, a loaded container will automatically try receive events, e.g. for value update.",
             Cmd = "-stay-connected")]
         public bool DefaultStayConnected = false;

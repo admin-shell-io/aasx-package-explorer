@@ -48,7 +48,7 @@ namespace AasxPackageLogic
 	/// This class extends the AAS meta model editing function for those related to
 	/// SAMM (Semantic Aspect Meta Model) elements. 
 	/// </summary>
-	public class DispEditHelperSammModules : DispEditHelperExtensions
+	public class DispEditHelperSammModules : DispEditHelperModules
 	{
 		public SammIdSet SammExtensionHelperSelectSammVersion(IEnumerable<SammIdSet> idsets)
 		{
@@ -563,6 +563,7 @@ namespace AasxPackageLogic
 							emitCustomEvent: (rf) =>
 							{
 								lambdaSetValue(forth);
+								return new AnyUiLambdaActionNone();
 							});
 					}
 				}
@@ -1209,6 +1210,7 @@ namespace AasxPackageLogic
 		public class EnumHelperMemberInfo
 		{
 			public string MemberValue = "";
+			public string MemberDisplay = "";
 			public object MemberInstance;
 		}
 
@@ -1218,18 +1220,29 @@ namespace AasxPackageLogic
 			{
 				var enumInst = Activator.CreateInstance(underlyingType);
 
-				var enumMemberStrValue = enumMemberInfo.GetCustomAttribute<EnumMemberAttribute>();
-				if (enumMemberStrValue?.Value != null)
+				var memVal = enumMemberInfo.GetCustomAttribute<EnumMemberAttribute>()?.Value;
+				var memDisp = enumMemberInfo.GetCustomAttribute<EnumMemberDisplayAttribute>()?.Text;				
+
+				if (memVal?.HasContent() == true)
 				{
 					var ev = enumMemberInfo.GetValue(enumInst);
 
 					yield return new EnumHelperMemberInfo()
 					{
-						MemberValue = enumMemberStrValue?.Value,
+						MemberValue = memVal,
+						MemberDisplay = (memDisp?.HasContent() == true) ? memDisp : memVal,
 						MemberInstance = ev
 					};
 				}
 			}
+		}
+
+		public static T GetEnumMemberFromValueString<T>(string valStr, T valElse = default(T) ) where T : struct
+		{
+			foreach (var em in EnumHelperGetMemberInfo(typeof(T)))
+				if (em.MemberValue.Equals(valStr?.Trim(), StringComparison.InvariantCultureIgnoreCase))
+					return (T) em.MemberInstance;
+			return (T) valElse;
 		}
 	}
 
@@ -2502,13 +2515,13 @@ namespace AasxPackageLogic
 				if (osrProp.Optional)
 					// Cardinality
 					qualiferToAdd.Add(
-						AasPresetHelper.CreateQualifierSmtCardinality(AasPresetHelper.SmtCardinality.ZeroToOne));
+						AasSmtQualifiers.CreateQualifierSmtCardinality(AasSmtQualifiers.SmtCardinality.ZeroToOne));
 
 				// example value directly associated with the property
 				if (meProp.ExampleValue != null)
 					// ExampleValue
 					qualiferToAdd.Add(
-						AasPresetHelper.CreateQualifierSmtExampleValue(meProp.ExampleValue));
+						AasSmtQualifiers.CreateQualifierSmtExampleValue(meProp.ExampleValue));
 
 				// ok, a Submodel element shall be created.
 				// But more details (SMC? Property?) are only avilable via 
@@ -2575,14 +2588,14 @@ namespace AasxPackageLogic
 						{
 							// AllowedValue == Regex
 							qualiferToAdd.Add(
-								AasPresetHelper.CreateQualifierSmtAllowedValue(regexCons.Value));
+								AasSmtQualifiers.CreateQualifierSmtAllowedValue(regexCons.Value));
 						}
 
 						if (sitCons.ME is Samm.LanguageConstraint langCons)
 						{
 							// RequiredLanguage
 							qualiferToAdd.Add(
-								AasPresetHelper.CreateQualifierSmtRequiredLang(langCons.LanguageCode));
+								AasSmtQualifiers.CreateQualifierSmtRequiredLang(langCons.LanguageCode));
 						}
 					}
 				}
@@ -2592,7 +2605,7 @@ namespace AasxPackageLogic
 					if (charState.DefaultValue?.HasContent() == true)
 						// Default value .. only for States
 						qualiferToAdd.Add(
-							AasPresetHelper.CreateQualifierSmtDefaultValue(charState.DefaultValue));
+							AasSmtQualifiers.CreateQualifierSmtDefaultValue(charState.DefaultValue));
 				}		
 
 				// elaborate added element further

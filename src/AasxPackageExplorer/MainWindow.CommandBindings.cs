@@ -207,7 +207,8 @@ namespace AasxPackageExplorer
 
             if (cmd == "editmenu" || cmd == "editkey"
                 || cmd == "hintsmenu" || cmd == "hintskey"
-                || cmd == "showirimenu" || cmd == "showirikey")
+                || cmd == "showirimenu" || cmd == "showirikey"
+                || cmd == "checksmtelements")
             {
                 // start
                 ticket.StartExec();

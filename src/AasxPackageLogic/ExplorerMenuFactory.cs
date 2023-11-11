@@ -349,7 +349,8 @@ namespace AasxPackageExplorer
                 .AddWpfBlazor(name: "FileRepoLoadWoPrompt", header: "Load without prompt", isCheckable: true)
                 .AddWpfBlazor(name: "AnimateElements", header: "Animate elements", isCheckable: true)
                 .AddWpfBlazor(name: "ObserveEvents", header: "ObserveEvents", isCheckable: true)
-                .AddWpfBlazor(name: "CompressEvents", header: "Compress events", isCheckable: true));
+                .AddWpfBlazor(name: "CompressEvents", header: "Compress events", isCheckable: true)
+				.AddWpfBlazor(name: "CheckSmtElements", header: "Check SMT elements (slow!)", isCheckable: true));
 
             //
             // Help

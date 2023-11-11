@@ -27,7 +27,7 @@ namespace AasxPackageLogic.PackageCentral
     }
 
     /// <summary>
-    /// This is the datat structure which is kept for each indexed significant AAS element.
+    /// This is the data structure which is kept for each indexed significant AAS element.
     /// The idea is record is to be found fast and to index an AAS element in a way, that
     /// is can be found by an AAS reference rather than an object reference, as the AAS
     /// might have been changed (completely) between times of re-indexing it.

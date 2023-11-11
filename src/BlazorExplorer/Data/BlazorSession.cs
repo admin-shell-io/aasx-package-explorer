@@ -132,9 +132,16 @@ namespace BlazorUI.Data
         /// </summary>
         public bool HintMode = true;
 
-        // to be refactored in a class?
+		/// <summary>
+		/// Session allows to check elements for SMT attributes. 
+        /// This setting shall be controlled by the menu / hotkey/ script
+		/// functionality.
+		/// </summary>
+		public bool CheckSmtMode = true;
 
-        public VisualElementGeneric LoadedPluginNode = null;
+		// to be refactored in a class?
+
+		public VisualElementGeneric LoadedPluginNode = null;
         public Plugins.PluginInstance LoadedPluginInstance = null;
         public object LoadedPluginSessionId = null;
 
@@ -487,7 +494,7 @@ namespace BlazorUI.Data
                 var common = helper.DisplayOrEditCommonEntity(
                     PackageCentral,
                     elementPanel,
-                    superMenu, EditMode, HintMode,
+                    superMenu, EditMode, HintMode, CheckSmtMode,
                     tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None,
                     DisplayElements.SelectedItem);
 

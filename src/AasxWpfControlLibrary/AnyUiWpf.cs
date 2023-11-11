@@ -201,7 +201,7 @@ namespace AnyUi
         /// <param name="action"></param>
         public override void EmitOutsideAction(AnyUiLambdaActionBase action)
         {
-            if (action == null)
+            if (action == null || action is AnyUiLambdaActionNone)
                 return;
             WishForOutsideAction.Add(action);
         }
@@ -642,96 +642,108 @@ namespace AnyUi
 
                 new RenderRec(typeof(AnyUiBorder), typeof(Border), (a, b, mode, rd) =>
                 {
-                    if (a is AnyUiBorder cntl && b is Border wpf
-                        && mode == AnyUiRenderMode.All)
+                    if (a is AnyUiBorder cntl && b is Border wpf)
                     {
-                        // members
-                        if (cntl.Background != null)
-                            wpf.Background = GetWpfBrush(cntl.Background);
-                        if (cntl.BorderThickness != null)
-                            wpf.BorderThickness = GetWpfTickness(cntl.BorderThickness);
-                        if (cntl.BorderBrush != null)
-                            wpf.BorderBrush = GetWpfBrush(cntl.BorderBrush);
-                        if (cntl.Padding != null)
-                            wpf.Padding = GetWpfTickness(cntl.Padding);
-                        if (cntl.CornerRadius != null)
-                            wpf.CornerRadius  = new CornerRadius(cntl.CornerRadius.Value);
+                        if (mode == AnyUiRenderMode.All)
+                        {
+                            // members
+                            if (cntl.BorderThickness != null)
+                                wpf.BorderThickness = GetWpfTickness(cntl.BorderThickness);
+                            if (cntl.Padding != null)
+                                wpf.Padding = GetWpfTickness(cntl.Padding);
+                            if (cntl.CornerRadius != null)
+                                wpf.CornerRadius  = new CornerRadius(cntl.CornerRadius.Value);
                         
-                        // callbacks
-                        if (cntl.IsDropBox)
-                        {
-                            wpf.AllowDrop = true;
-                            wpf.DragEnter += (object sender2, DragEventArgs e2) =>
+                            // callbacks
+                            if (cntl.IsDropBox)
                             {
-                                e2.Effects = DragDropEffects.Copy;
-                            };
-                            wpf.PreviewDragOver += (object sender3, DragEventArgs e3) =>
-                            {
-                                e3.Handled = true;
-                            };
-                            wpf.Drop += (object sender4, DragEventArgs e4) =>
-                            {
-                                if (e4.Data.GetDataPresent(DataFormats.FileDrop, true))
+                                wpf.AllowDrop = true;
+                                wpf.DragEnter += (object sender2, DragEventArgs e2) =>
                                 {
-                                    // Note that you can have more than one file.
-                                    string[] files = (string[])e4.Data.GetData(DataFormats.FileDrop);
-
-                                    // Assuming you have one file that you care about, pass it off to whatever
-                                    // handling code you have defined.
-                                    if (files != null && files.Length > 0
-                                        && sender4 is FrameworkElement)
+                                    e2.Effects = DragDropEffects.Copy;
+                                };
+                                wpf.PreviewDragOver += (object sender3, DragEventArgs e3) =>
+                                {
+                                    e3.Handled = true;
+                                };
+                                wpf.Drop += (object sender4, DragEventArgs e4) =>
+                                {
+                                    if (e4.Data.GetDataPresent(DataFormats.FileDrop, true))
                                     {
-                                        // update UI
-                                        if (wpf.Child is TextBlock tb2)
-                                            tb2.Text = "" + files[0];
+                                        // Note that you can have more than one file.
+                                        string[] files = (string[])e4.Data.GetData(DataFormats.FileDrop);
 
-                                        // value changed
-                                        cntl.setValueLambda?.Invoke(files[0]);
+                                        // Assuming you have one file that you care about, pass it off to whatever
+                                        // handling code you have defined.
+                                        if (files != null && files.Length > 0
+                                            && sender4 is FrameworkElement)
+                                        {
+                                            // update UI
+                                            if (wpf.Child is TextBlock tb2)
+                                                tb2.Text = "" + files[0];
 
-                                        // contents changed
-                                        WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
+                                            // value changed
+                                            cntl.setValueLambda?.Invoke(files[0]);
+
+                                            // contents changed
+                                            WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
+                                        }
                                     }
-                                }
 
-                                e4.Handled = true;
-                            };
-                        }
+                                    e4.Handled = true;
+                                };
+                            }
 
-                        // double click
-                        if ((cntl.EmitEvent & AnyUiEventMask.MouseAll) > 0)
-                        {
-                            wpf.MouseDown += (s2,e2) =>
+                            // double click
+                            if ((cntl.EmitEvent & AnyUiEventMask.MouseAll) > 0)
                             {
-                                if (((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0) && (e2.ClickCount == 1))
-                                    cntl.setValueLambda?.Invoke(
-                                        new AnyUiEventData(AnyUiEventMask.LeftDouble, cntl, 2));
+                                wpf.MouseDown += (s2,e2) =>
+                                {
+                                    if (((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0) && (e2.ClickCount == 1))
+                                        cntl.setValueLambda?.Invoke(
+                                            new AnyUiEventData(AnyUiEventMask.LeftDouble, cntl, 2));
 
-                                if (((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0) && (e2.ClickCount == 2))
-                                    cntl.setValueLambda?.Invoke(
-                                        new AnyUiEventData(AnyUiEventMask.LeftDouble, cntl, 2));
-                            };
+                                    if (((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0) && (e2.ClickCount == 2))
+                                        cntl.setValueLambda?.Invoke(
+                                            new AnyUiEventData(AnyUiEventMask.LeftDouble, cntl, 2));
+                                };
+                            }
                         }
+
+                        if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
+                        {
+							if (cntl.Background != null)
+								wpf.Background = GetWpfBrush(cntl.Background);
+							if (cntl.BorderBrush != null)
+								wpf.BorderBrush = GetWpfBrush(cntl.BorderBrush);
+						}
                     }
-                }),
+				}),
 
                 new RenderRec(typeof(AnyUiLabel), typeof(Label), (a, b, mode, rd) =>
                 {
-                   if (a is AnyUiLabel cntl && b is Label wpf
-                       && mode == AnyUiRenderMode.All)
-                   {
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
-                       if (rd?.ForegroundSelfStand != null)
-                           wpf.Foreground = GetWpfBrush(rd.ForegroundSelfStand);
-                       if (cntl.Foreground != null)
-                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                       if (cntl.FontWeight.HasValue)
-                           wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                       if (cntl.Padding != null)
-                           wpf.Padding = GetWpfTickness(cntl.Padding);
-                       wpf.Content = cntl.Content;
-                   }
-                }),
+                    if (a is AnyUiLabel cntl && b is Label wpf)
+                    {
+                        if (mode == AnyUiRenderMode.All)
+                        {
+                            if (cntl.Background != null)
+                                wpf.Background = GetWpfBrush(cntl.Background);
+                            if (rd?.ForegroundSelfStand != null)
+                                wpf.Foreground = GetWpfBrush(rd.ForegroundSelfStand);
+                            if (cntl.Foreground != null)
+                                wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                            if (cntl.FontWeight.HasValue)
+                                wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+                            if (cntl.Padding != null)
+                                wpf.Padding = GetWpfTickness(cntl.Padding);
+                        }
+
+                        if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
+                        {
+							wpf.Content = cntl.Content;
+						}
+                    }
+				}),
 
                 new RenderRec(typeof(AnyUiTextBlock), typeof(TextBlock), (a, b, mode, rd) =>
                 {
@@ -920,8 +932,9 @@ namespace AnyUi
                             // callbacks
                             cntl.originalValue = "" + cntl.Text;
                             wpf.TextChanged += (sender, e) => {
-                                cntl.setValueLambda?.Invoke(wpf.Text);
-                                WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
+                                var la = cntl.setValueLambda?.Invoke(wpf.Text);
+                                EmitOutsideAction(la);
+								EmitOutsideAction(new AnyUiLambdaActionContentsChanged());
                             };
                             wpf.KeyUp += (sender, e) =>
                             {
@@ -989,7 +1002,10 @@ namespace AnyUi
                         System.Windows.Controls.TextChangedEventHandler tceh = (sender, e) => {
                             // for AAS events: only invoke, if required
                             if (cntl.Text != wpf.Text)
-                                cntl.setValueLambda?.Invoke(wpf.Text);
+                            {
+                                var la = cntl.setValueLambda?.Invoke(wpf.Text);
+                                EmitOutsideAction(la);
+                            }
                             cntl.Text = wpf.Text;
                         };
                         wpf.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent, tceh);
@@ -1160,7 +1176,8 @@ namespace AnyUi
             bool allowCreate = true,
             bool allowReUse = true,
             AnyUiRenderMode mode = AnyUiRenderMode.All,
-            RenderDefaults renderDefaults = null)
+            RenderDefaults renderDefaults = null,
+            Dictionary<AnyUiUIElement, bool> updateElemsOnly = null)
         {
             // access
             if (el == null)
@@ -1194,10 +1211,11 @@ namespace AnyUi
                     var bt2 = searchType.BaseType;
                     if (bt2 != null)
                         GetOrCreateWpfElement(el, superType: bt2, allowReUse: true,
-                            mode: AnyUiRenderMode.StatusToUi, renderDefaults: renderDefaults);
+                            mode: AnyUiRenderMode.StatusToUi, renderDefaults: renderDefaults,
+                            updateElemsOnly: updateElemsOnly);
 
-                    foundRR.InitLambda?.Invoke(el, dd.WpfElement, AnyUiRenderMode.StatusToUi, renderDefaults);
-
+                    if (updateElemsOnly == null || updateElemsOnly.ContainsKey(el))
+                        foundRR.InitLambda?.Invoke(el, dd.WpfElement, AnyUiRenderMode.StatusToUi, renderDefaults);
                 }
                 el.Touched = false;
 
@@ -1206,7 +1224,8 @@ namespace AnyUi
                     foreach (var elch in ien.GetChildren())
                         GetOrCreateWpfElement(elch, allowCreate: false, allowReUse: true,
                             mode: AnyUiRenderMode.StatusToUi,
-                            renderDefaults: renderDefaults);
+                            renderDefaults: renderDefaults,
+							updateElemsOnly: updateElemsOnly);
 
                 // return (effectively TOP element)
                 return dd.WpfElement;
@@ -1229,10 +1248,12 @@ namespace AnyUi
             var bt = searchType.BaseType;
             if (bt != null)
                 GetOrCreateWpfElement(el, superType: bt,
-                    allowReUse: allowReUse, renderDefaults: renderDefaults);
+                    allowReUse: allowReUse, renderDefaults: renderDefaults,
+					updateElemsOnly: updateElemsOnly);
 
-            // perform the render action (for this level of attributes, second)
-            foundRR.InitLambda?.Invoke(el, dd.WpfElement, AnyUiRenderMode.All, renderDefaults);
+			// perform the render action (for this level of attributes, second)
+			if (updateElemsOnly == null || updateElemsOnly.ContainsKey(el))
+				foundRR.InitLambda?.Invoke(el, dd.WpfElement, AnyUiRenderMode.All, renderDefaults);
 
             // does the element need child elements?
             // do a special case handling here, unless a more generic handling is required
@@ -1242,7 +1263,8 @@ namespace AnyUi
                     && cntl.Content != null)
                 {
                     wpf.Content = GetOrCreateWpfElement(cntl.Content,
-                        allowReUse: allowReUse, renderDefaults: renderDefaults);
+                        allowReUse: allowReUse, renderDefaults: renderDefaults,
+						updateElemsOnly: updateElemsOnly);
                 }
             }
 

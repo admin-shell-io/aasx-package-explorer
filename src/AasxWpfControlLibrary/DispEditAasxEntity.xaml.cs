@@ -212,14 +212,12 @@ namespace AasxPackageExplorer
         }
 #endif
 
-
-
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
             AnyUiDisplayContextWpf displayContext,
             ListOfVisualElementBasic entities,
-            bool editMode, bool hintMode = false, bool showIriMode = false,
-            VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
+            bool editMode, bool hintMode = false, bool showIriMode = false, bool checkSmt = false,
+			VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
             IPushApplicationEvent appEventProvider = null,
             DispEditHighlight.HighlightFieldInfo hightlightField = null,
@@ -325,7 +323,7 @@ namespace AasxPackageExplorer
 
                 // try to delegate to common routine
                 var common = _helper.DisplayOrEditCommonEntity(
-                    packages, stack, superMenu, editMode, hintMode, cdSortOrder, entity);
+                    packages, stack, superMenu, editMode, hintMode, checkSmt, cdSortOrder, entity);
 
                 if (!common)
                 {
@@ -546,7 +544,8 @@ namespace AasxPackageExplorer
         public void RedisplayRenderedRoot(
             AnyUiUIElement root,
             AnyUiRenderMode mode,
-            bool useInnerGrid = false)
+            bool useInnerGrid = false,
+			Dictionary<AnyUiUIElement, bool> updateElemsOnly = null)
         {
             // safe
             _lastRenderedRootElement = root;
@@ -565,11 +564,13 @@ namespace AasxPackageExplorer
                 && stack.Children.Count == 1
                 && stack.Children[0] is AnyUiGrid grid)
             {
-                spwpf = dcwpf.GetOrCreateWpfElement(grid, allowReUse: allowReUse, mode: mode);
+                spwpf = dcwpf.GetOrCreateWpfElement(grid, allowReUse: allowReUse, mode: mode,
+                    updateElemsOnly: updateElemsOnly);
             }
             else
             {
-                spwpf = dcwpf.GetOrCreateWpfElement(root, allowReUse: allowReUse, mode: mode);
+                spwpf = dcwpf.GetOrCreateWpfElement(root, allowReUse: allowReUse, mode: mode,
+                    updateElemsOnly: updateElemsOnly);
                 DockPanel.SetDock(spwpf, Dock.Top);
             }
 

@@ -1450,7 +1450,8 @@ namespace AasxPackageLogic
             }
 
             // Referable
-            this.DisplayOrEditEntityReferable(stack,
+            this.DisplayOrEditEntityReferable(
+                env, stack,
                 parentContainer: null, referable: aas, indexPosition: 0);
 
             // Identifiable
@@ -1575,8 +1576,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, Aas.Environment env,
             Aas.IAssetAdministrationShell aas,
             Aas.IReference smref, Aas.ISubmodel submodel, bool editMode,
-            AnyUiStackPanel stack, bool hintMode = false,
-            AasxMenu superMenu = null)
+            AnyUiStackPanel stack, bool hintMode = false, bool checkSmt = false,
+			AasxMenu superMenu = null)
         {
             // This panel renders first the SubmodelReference and then the Submodel, below
             if (smref != null)
@@ -1841,7 +1842,9 @@ namespace AasxPackageLogic
                     ticketMenu: new AasxMenu()
                         .AddAction("upgrade-qualifiers", "Upgrade qualifiers",
                             "Upgrades particular qualifiers from V2.0 to V3.0 for selected element.")
-                        .AddAction("remove-qualifiers", "Remove qualifiers",
+						.AddAction("SMT-qualifiers-convert", "Convert SMT qualifiers",
+							"Converts particular SMT qualifiers to SMT extension for selected element.")
+						.AddAction("remove-qualifiers", "Remove qualifiers",
                             "Removes all qualifiers for selected element.")
                         .AddAction("remove-extensions", "Remove extensions",
                             "Removes all extensions for selected element."),
@@ -1895,7 +1898,43 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                         }
 
-                        if (buttonNdx == 1)
+						if (buttonNdx == 1)
+						{
+                            // ask
+							if (ticket?.ScriptMode != true
+								&& AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+									"This operation will move data in particular Qualifiers to Extensions of " +
+									"the Submodel and all of its SubmodelElements. Do you want to proceed?",
+									"Convert SMT qualifiers to SMT extension",
+									AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+								return new AnyUiLambdaActionNone();
+
+                            // do
+                            int anyChanges = 0;
+                            Action<Aas.IReferable> lambdaConvert = (o) => {
+                                if (AasSmtQualifiers.ConvertSmtQualifiersToExtension(o))
+                                    anyChanges++;
+                            };
+
+                            lambdaConvert(submodel);
+							submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+							{
+								// do
+								lambdaConvert(sme);
+								// recurse
+								return true;
+							});
+
+                            // report
+                            Log.Singleton.Info($"Convert SMT qualifiers to SMT extension: {anyChanges} changes done.");
+
+							// emit event for Submodel and children
+							this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
+
+							return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+						}
+
+						if (buttonNdx == 2)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -1923,7 +1962,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                         }
 
-                        if (buttonNdx == 2)
+                        if (buttonNdx == 3)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -1954,17 +1993,23 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-            }
+				// Check for cardinality
+				if (checkSmt)
+					DisplayOrEditEntityCheckValue(env, stack, _checkValueHandle, submodel);
 
-            if (submodel != null)
+			}
+
+			if (submodel != null)
             {
 
                 // Submodel
                 this.AddGroup(stack, "Submodel", this.levelColors.MainSection);
 
-                // IReferable
-                this.DisplayOrEditEntityReferable(stack,
-                    parentContainer: null, referable: submodel, indexPosition: 0);
+                // IReferable (part 1)
+                this.DisplayOrEditEntityReferable(
+                    env, stack,
+                    parentContainer: null, referable: submodel, indexPosition: 0,
+                    hideExtensions: true);
 
                 // Identifiable
                 this.DisplayOrEditEntityIdentifiable(
@@ -2057,8 +2102,14 @@ namespace AasxPackageLogic
                     relatedReferable: submodel,
                     superMenu: superMenu);
 
-            }
-        }
+				// IReferable (part 2)
+				this.DisplayOrEditEntityReferableContinue(
+					env, stack,
+					parentContainer: null, referable: submodel, indexPosition: 0,
+					hideExtensions: true);
+
+			}
+		}
 
         //
         //
@@ -2108,7 +2159,7 @@ namespace AasxPackageLogic
             Action<bool> lambdaRf = (hideExtensions) =>
             {
                 this.DisplayOrEditEntityReferable(
-                    stack, parentContainer: parentContainer, referable: cd,
+                    env, stack, parentContainer: parentContainer, referable: cd,
                     indexPosition: 0,
                     hideExtensions: hideExtensions,
                     injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
@@ -2303,9 +2354,9 @@ namespace AasxPackageLogic
 
 			// experimental: SMT elements
 
-			Action lambdaSmtExt = () =>
+			Action lambdaExtRecs = () =>
 			{
-				DisplayOrEditEntitySmtExtensions(
+				DisplayOrEditEntityExtensionRecords(
 					env, stack, cd.Extensions,
 					(v) => { cd.Extensions = v; },
 					relatedReferable: cd, superMenu: superMenu);
@@ -2313,15 +2364,14 @@ namespace AasxPackageLogic
 
 			// check if to display special order for SAMM, SMT
 			var specialOrderSAMM_SMT = 
-                DispEditHelperSammModules.CheckReferableForSammExtensionType(cd) != null
-                || DispEditHelperExtensions.CheckReferableForSmtExtensionType(cd) != null;
+                DispEditHelperSammModules.CheckReferableForSammExtensionType(cd) != null;
 
 			if (specialOrderSAMM_SMT)
             {
 				lambdaIdf();
 				lambdaRf(true);
 				lambdaSammExt();
-				lambdaSmtExt();
+				lambdaExtRecs();
 
 				this.AddGroup(stack, "Continue Referable:", levelColors.MainSection);
 				lambdaIsCaseOf();
@@ -2340,7 +2390,7 @@ namespace AasxPackageLogic
                 lambdaIsCaseOf();
                 lambdaEDS(false);
                 lambdaSammExt();
-				lambdaSmtExt();
+				lambdaExtRecs();
 			}
 		}
 
@@ -2598,7 +2648,7 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, Aas.Environment env,
             Aas.IReferable parentContainer, Aas.ISubmodelElement wrapper,
             Aas.ISubmodelElement sme, int indexPosition, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
-            bool hintMode = false, bool nestedCds = false,
+            bool hintMode = false, bool checkSmt = false, bool nestedCds = false,
             AasxMenu superMenu = null)
         {
             //
@@ -2943,6 +2993,8 @@ namespace AasxPackageLogic
                 if (sme is Aas.Entity)
                     listOfSME = (sme as Aas.Entity).Statements;
 
+                // adding of SME
+
                 DispSmeListAddNewHelper(env, stack, repo,
                     key: "SubmodelElement:",
                     listOfSME,
@@ -2956,6 +3008,8 @@ namespace AasxPackageLogic
                             (sme as Aas.Entity).Statements = sml;
                     },
                     superMenu: superMenu);
+
+                // Copy
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -3006,7 +3060,11 @@ namespace AasxPackageLogic
 
                         return new AnyUiLambdaActionNone();
                     });
-            }
+
+				// Check for cardinality
+				if (checkSmt)
+					DisplayOrEditEntityCheckValue(env, stack, _checkValueHandle, sme);
+			}
 
             Aas.IConceptDescription jumpToCD = null;
             if (sme?.SemanticId != null && sme.SemanticId.Keys.Count > 0)
@@ -3239,9 +3297,11 @@ namespace AasxPackageLogic
                     $"Submodel Element ({"" + sme?.GetSelfDescription().AasElementName})",
                     this.levelColors.MainSection);
 
-                // IReferable
-                this.DisplayOrEditEntityReferable(stack,
+                // IReferable (part 1)
+                this.DisplayOrEditEntityReferable(
+                    env, stack,
                     parentContainer: parentContainer, referable: sme, indexPosition: indexPosition,
+                    hideExtensions: true,
                     injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
                         auxTitles: new[] { "Sync" },
                         auxToolTips: new[] { "Copy (if target is empty) idShort " +
@@ -3297,11 +3357,17 @@ namespace AasxPackageLogic
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, sme.EmbeddedDataSpecifications,
                 (ds) => { sme.EmbeddedDataSpecifications = ds; }, relatedReferable: sme, superMenu: superMenu);
 
-                //
-                // ConceptDescription <- via semantic ID ?!
-                //
+				// IReferable (part 2)
+				this.DisplayOrEditEntityReferableContinue(
+					env, stack,
+					parentContainer: null, referable: sme, indexPosition: 0,
+					hideExtensions: true);
 
-                if (sme.SemanticId != null && sme.SemanticId.Keys.Count > 0 && !nestedCds)
+				//
+				// ConceptDescription <- via semantic ID ?!
+				//
+
+				if (sme.SemanticId != null && sme.SemanticId.Keys.Count > 0 && !nestedCds)
                 {
                     var cd = env.FindConceptDescriptionByReference(sme.SemanticId);
                     if (cd == null)
@@ -3373,12 +3439,28 @@ namespace AasxPackageLogic
 
                     });
 
-                AddKeyValueExRef(
+				// now: Value
+				AddKeyValueExRef(
                     stack, "value", p, p.Value, null, repo,
                     v =>
                     {
+                        // primary update
                         p.Value = v as string;
                         this.AddDiaryEntry(p, new DiaryEntryUpdateValue());
+                        
+                        // kick off value check?
+                        if (_checkValueHandle != null && checkSmt)
+                        {
+                            DisplayOrEditEntityCheckValue(env, stack, _checkValueHandle, sme, update: true);
+                            return new AnyUiLambdaActionEntityPanelReRender(
+                                mode: AnyUiRenderMode.StatusToUi,
+                                updateElemsOnly: new Dictionary<AnyUiUIElement, bool>() {
+                                    { _checkValueHandle.Border, true },
+									{ _checkValueHandle.TextBlock, true }
+								});
+						}
+                        
+                        // normal
                         return new AnyUiLambdaActionNone();
                     },
                     auxButtonTitles: new[] { "\u2261" },
@@ -3410,7 +3492,10 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                this.AddHintBubble(
+                if (checkSmt)
+				    DisplayOrEditEntityCheckValue(env, stack, _checkValueHandle, sme);
+
+				this.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck(
@@ -3462,7 +3547,6 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "MultiLanguageProperty", this.levelColors.MainSection);
 
                 // Value
-
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -3479,15 +3563,39 @@ namespace AasxPackageLogic
                         stack, repo, mlp.Value, "value:", "Create data element!",
                         v =>
                         {
-                            mlp.Value = new List<Aas.ILangStringTextType>();
+							mlp.Value = new List<Aas.ILangStringTextType>();
                             this.AddDiaryEntry(mlp, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
-
-                    this.AddKeyListLangStr<Aas.ILangStringTextType>(
-                        stack, "value", mlp.Value, repo, 
+                {
+                    // edit
+					this.AddKeyListLangStr<Aas.ILangStringTextType>(
+                        stack, "value", mlp.Value, repo,
                         relatedReferable: mlp,
-						emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
+                        emitCustomEvent: (rf) => {
+                            // primary
+							this.AddDiaryEntry(rf, new DiaryEntryUpdateValue());
+                           
+							// kick off value check?
+							if (_checkValueHandle != null && checkSmt)
+							{
+								DisplayOrEditEntityCheckValue(env, stack, _checkValueHandle, sme, update: true);
+								return new AnyUiLambdaActionEntityPanelReRender(
+									mode: AnyUiRenderMode.StatusToUi,
+									updateElemsOnly: new Dictionary<AnyUiUIElement, bool>() {
+									    { _checkValueHandle.Border, true },
+									    { _checkValueHandle.TextBlock, true }
+									});
+							}
+
+                            // normal
+                            return new AnyUiLambdaActionNone();
+                        });
+
+					// provide check
+                    if (checkSmt)
+					    DisplayOrEditEntityCheckValue(env, stack, _checkValueHandle, sme);
+				}
 
                 // ValueId
 
@@ -4299,8 +4407,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages,
             AnyUiStackPanel stack,
             AasxMenu superMenu,
-            bool editMode, bool hintMode,
-            VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder,
+            bool editMode, bool hintMode, bool checkSmt,
+			VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder,
             VisualElementGeneric entity)
         {
             if (entity is VisualElementEnvironmentItem veei)
@@ -4332,22 +4440,22 @@ namespace AasxPackageLogic
                 // edit
                 DisplayOrEditAasEntitySubmodelOrRef(
                     packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
-                    hintMode: hintMode,
-                    superMenu: superMenu);
+                    hintMode: hintMode, checkSmt: checkSmt,
+					superMenu: superMenu);
             }
             else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
             {
                 DisplayOrEditAasEntitySubmodelOrRef(
                     packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,
-                    hintMode: hintMode,
-                    superMenu: superMenu);
+                    hintMode: hintMode, checkSmt: checkSmt,
+					superMenu: superMenu);
             }
             else if (entity is VisualElementSubmodelElement vesme)
             {
                 DisplayOrEditAasEntitySubmodelElement(
                     packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper,
                     vesme.IndexPosition, editMode,
-                    repo, stack, hintMode: hintMode, superMenu: superMenu,
+                    repo, stack, hintMode: hintMode, checkSmt: checkSmt, superMenu: superMenu,
                     nestedCds: cdSortOrder.HasValue &&
                         cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
             }

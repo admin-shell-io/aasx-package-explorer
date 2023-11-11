@@ -769,7 +769,7 @@ namespace AasxPackageLogic
         public void AddKeyListLangStr<T>(
             AnyUiStackPanel view, string key, List<T> langStr, ModifyRepo repo = null,
             Aas.IReferable relatedReferable = null,
-			Action<Aas.IReferable> emitCustomEvent = null) where T : IAbstractLangString
+			Func<Aas.IReferable, AnyUiLambdaActionBase> emitCustomEvent = null) where T : IAbstractLangString
         {
             // sometimes needless to show
             if (repo == null && (langStr == null || langStr.Count < 1))
@@ -783,7 +783,10 @@ namespace AasxPackageLogic
 
 			// default
 			if (emitCustomEvent == null)
-				emitCustomEvent = (rf) => { this.AddDiaryEntry(rf, new DiaryEntryStructChange()); };
+				emitCustomEvent = (rf) => { 
+                    this.AddDiaryEntry(rf, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                };
 
 			// Grid
 			var g = new AnyUiGrid();
@@ -837,7 +840,6 @@ namespace AasxPackageLogic
                         langStr.Add<T>("", "");
 
 						emitCustomEvent?.Invoke(relatedReferable);
-
 						return new AnyUiLambdaActionRedrawEntity();
                     });
             }
@@ -884,7 +886,9 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 langStr[currentI].Language = o as string;
-								emitCustomEvent?.Invoke(relatedReferable);
+								var evt = emitCustomEvent?.Invoke(relatedReferable);
+								if (evt != null && !(evt is AnyUiLambdaActionNone))
+									return evt;
 								return new AnyUiLambdaActionNone();
                             });
                         // check here, if to hightlight
@@ -909,7 +913,9 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 langStr[currentI].Text = o as string;
-								emitCustomEvent?.Invoke(relatedReferable);
+								var evt = emitCustomEvent?.Invoke(relatedReferable);
+								if (evt != null && !(evt is AnyUiLambdaActionNone))
+									return evt;
 								return new AnyUiLambdaActionNone();
                             });
                         // check here, if to hightlight

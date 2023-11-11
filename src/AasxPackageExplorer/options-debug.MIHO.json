@@ -26,7 +26,7 @@
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_B.aasx",
   // "AuxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_A.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\00_FestoDemoBox-Module-2-Kopie2.aasx",
-  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\samm_spiel_empty.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\samm_spiel_empty-smt.aasx",
   "WindowLeft": 200,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -63,6 +63,7 @@
   "WorkDir": ".\\work",
   "ObserveEvents": true,
   "CompressEvents": true,
+  "CheckSmtElements": false,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
   "StayConnectOptions": "REST-QUEUE", // SIM

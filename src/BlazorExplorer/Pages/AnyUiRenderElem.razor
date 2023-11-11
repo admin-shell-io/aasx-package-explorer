@@ -66,8 +66,8 @@
 
     if (Element is AnyUiControl ctrl)
     {
-        style.Add("color", ctrl.Foreground?.HtmlRgb(), doNotSetIfNull: true);
-        style.Add("background-color", ctrl.Background?.HtmlRgb(), doNotSetIfNull: true);
+        style.Add("color", ctrl.Foreground?.HtmlRgba(), doNotSetIfNull: true);
+        style.Add("background-color", ctrl.Background?.HtmlRgba(), doNotSetIfNull: true);
     }
 
     //
@@ -165,6 +165,7 @@
             style.SetSpecifics(
                 margin: border.Margin,
                 padding: border.Padding,
+                background: border.Background,
                 borderBrush: border.BorderBrush,
                 borderThickness: border.BorderThickness);
 

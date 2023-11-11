@@ -586,7 +586,7 @@ namespace AasxPackageExplorer
 
         public void PrepareDispEditEntity(
             AdminShellPackageEnv package, ListOfVisualElementBasic entities,
-            bool editMode, bool hintMode, bool showIriMode,
+            bool editMode, bool hintMode, bool showIriMode, bool checkSmt,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             // determine some flags
@@ -597,7 +597,7 @@ namespace AasxPackageExplorer
             DynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
                 PackageCentral, DisplayContext,
-                entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
+                entities, editMode, hintMode, showIriMode, checkSmt, tiCds?.CdSortOrder,
                 flyoutProvider: this,
                 appEventProvider: this,
                 hightlightField: hightlightField,
@@ -807,7 +807,8 @@ namespace AasxPackageExplorer
                  MainMenu?.IsChecked("EditMenu") == true,
                  MainMenu?.IsChecked("HintsMenu") == true,
                  MainMenu?.IsChecked("ShowIriMenu") == true,
-                hightlightField: hightlightField);
+				 MainMenu?.IsChecked("CheckSmtElements") == true,
+				hightlightField: hightlightField);
 
         }
 
@@ -1065,9 +1066,10 @@ namespace AasxPackageExplorer
             MainMenu?.SetChecked("AnimateElements", Options.Curr.AnimateElements);
             MainMenu?.SetChecked("ObserveEvents", Options.Curr.ObserveEvents);
             MainMenu?.SetChecked("CompressEvents", Options.Curr.CompressEvents);
+			MainMenu?.SetChecked("CheckSmtElements", Options.Curr.CheckSmtElements);
 
-            // the UI application might receive events from items in the package central
-            PackageCentral.ChangeEventHandler = (data) =>
+			// the UI application might receive events from items in the package central
+			PackageCentral.ChangeEventHandler = (data) =>
             {
                 if (data.Reason == PackCntChangeEventReason.Exception)
                     Log.Singleton.Info("PackageCentral events: " + data.Info);
@@ -1487,6 +1489,11 @@ namespace AasxPackageExplorer
                     currentFlyoutControl.LambdaActionAvailable(lamprr);
             }
 
+            if (lab is AnyUiLambdaActionEntityPanelReRender larrep)
+            {
+                UiHandleReRenderAnyUiInEntityPanel("", larrep.Mode, larrep.UseInnerGrid,
+                    updateElemsOnly: larrep.UpdateElemsOnly);
+            }
         }
 
         private async Task MainTimer_HandleEntityPanel()
@@ -1599,9 +1606,10 @@ namespace AasxPackageExplorer
         }
 
         private void UiHandleReRenderAnyUiInEntityPanel(
-            string pluginName, AnyUiRenderMode mode, bool useInnerGrid = false)
+            string pluginName, AnyUiRenderMode mode, bool useInnerGrid = false,
+			Dictionary<AnyUiUIElement, bool> updateElemsOnly = null)
         {
-            // A plugin asks to re-render an exisiting panel.
+            // A plugin asks to re-render an existing panel.
             // Can get this information?
             var renderedInfo = DispEditEntityPanel.GetLastRenderedRoot();
 
@@ -1632,7 +1640,8 @@ namespace AasxPackageExplorer
                 DispEditEntityPanel.RedisplayRenderedRoot(
                     renderedPanel,
                     mode: mode,
-                    useInnerGrid: useInnerGrid);
+                    useInnerGrid: useInnerGrid,
+                    updateElemsOnly: updateElemsOnly);
             }
             else
             {
