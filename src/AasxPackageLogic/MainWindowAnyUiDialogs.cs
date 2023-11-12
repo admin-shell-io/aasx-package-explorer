@@ -180,6 +180,8 @@ namespace AasxPackageLogic
                         PackageCentral.MainItem.Container.SignificantElements
                             = new IndexOfSignificantAasElements(PackageCentral.MainItem.Container.Env.AasEnv);
 
+                    DisplayContext.EmitOutsideAction(new AnyUiLambdaActionReIndexIdentifiables());
+
                     // may be was saved to flush events
                     MainWindow.CheckIfToFlushEvents();
 

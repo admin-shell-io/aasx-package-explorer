@@ -2475,13 +2475,31 @@ namespace AasxPackageLogic
             if (rf == null)
                 return checkItems;
 
-            // what to check
+            // try gain information from the given referable itself
             var rec = CheckReferableForExtensionRecords<SmtAttributeRecord>(rf).FirstOrDefault();
             if (rec == null)
             {
                 // can analyze qualifiers?
                 rec = AasSmtQualifiers.FindSmtQualifiers(rf, removeQualifers: false);
             }            
+
+            // if not, can access semanticId -> ConcepTdescription?
+            if (rec == null && rf is Aas.IHasSemantics rfsem
+                && rfsem.SemanticId?.IsValid() == true
+                && rfsem.SemanticId.Count() == 1
+                && packages != null)
+            {
+                // try find
+                foreach (var x in packages.LookupAllIdent(rfsem.SemanticId.Keys[0].Value))
+                    if (x.Item2 is Aas.IConceptDescription rfsemCd)
+                    {
+						var rec2 = CheckReferableForExtensionRecords<SmtAttributeRecord>(rfsemCd).FirstOrDefault();
+                        if (rec2 == null)
+                            rec2 = AasSmtQualifiers.FindSmtQualifiers(rf, removeQualifers: false);
+                        if (rec2 != null)
+                            rec = rec2;
+					}
+            }
 
 			// some checks can be done on the static record function, as record entities might
 			// be only on subordinate elements

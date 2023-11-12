@@ -12,6 +12,7 @@ using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -322,10 +323,22 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         //
-        // Event management
+        // Access to identifiables
         //
 
-        private PackageConnectorEventStore _eventStore = null; // replaced by store within AasEventCollectionViewer
+        public IEnumerable<Tuple<PackageContainerBase, Aas.IReferable>> LookupAllIdent(string idKey)
+        {
+            foreach (var cnt in GetAllContainer())
+                if (cnt.IdentifiableLookup != null)
+                    foreach (var idf in cnt.IdentifiableLookup.LookupAllIdent(idKey))
+                        yield return new Tuple<PackageContainerBase, IReferable>(cnt, idf);
+        }
+
+		//
+		// Event management
+		//
+
+		private PackageConnectorEventStore _eventStore = null; // replaced by store within AasEventCollectionViewer
         // reason: update to ObservableCollection needs to be done in DispatcherThread
         public PackageConnectorEventStore EventStore { get { return _eventStore; } }
 

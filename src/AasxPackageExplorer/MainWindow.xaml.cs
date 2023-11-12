@@ -433,6 +433,8 @@ namespace AasxPackageExplorer
                 if (!doNotNavigateAfterLoaded)
                     Logic?.UiCheckIfActivateLoadedNavTo();
 
+                TriggerPendingReIndexElements();
+
                 if (indexItems && packItem?.Container?.Env?.AasEnv != null)
                     packItem.Container.SignificantElements
                         = new IndexOfSignificantAasElements(packItem.Container.Env.AasEnv);
@@ -1167,6 +1169,9 @@ namespace AasxPackageExplorer
             if (Options.Curr.ShowEvents)
                 PanelConcurrentSetVisibleIfRequired(true, targetEvents: true);
 
+            // trigger re-index
+            TriggerPendingReIndexElements();
+
             // script file to launch?
             if (Options.Curr.ScriptFn.HasContent())
             {
@@ -1493,6 +1498,11 @@ namespace AasxPackageExplorer
             {
                 UiHandleReRenderAnyUiInEntityPanel("", larrep.Mode, larrep.UseInnerGrid,
                     updateElemsOnly: larrep.UpdateElemsOnly);
+            }
+
+            if (lab is AnyUiLambdaActionReIndexIdentifiables lareii)
+            {
+                 TriggerPendingReIndexElements();
             }
         }
 
@@ -2492,6 +2502,9 @@ namespace AasxPackageExplorer
         private DateTime _mainTimer_LastCheckForDiaryEvents;
         private DateTime _mainTimer_LastCheckForAnimationElements = DateTime.Now;
 
+        private bool _mainTimer_PendingReIndexElements = false;
+		private DateTime _mainTimer_LastCheckForReIndexElements = DateTime.Now;
+
         private async Task MainTimer_Tick(object sender, EventArgs e)
         {
             MainTimer_HandleLogMessages();
@@ -2518,14 +2531,34 @@ namespace AasxPackageExplorer
                         PackageCentral.MainItem.Container.SignificantElements);
                     _mainTimer_LastCheckForAnimationElements = DateTime.Now;
                 }
-            }
+
+				// do re-index?
+				deltaSecs = (DateTime.Now - _mainTimer_LastCheckForReIndexElements).TotalSeconds;
+                if (deltaSecs >= 1.0 && _mainTimer_PendingReIndexElements)
+                {
+                    // dis-engage
+                    _mainTimer_PendingReIndexElements = false;
+
+                    // be modest for the time being
+                    PackageCentral.MainItem?.Container?.ReIndexIdentifiables();
+
+                    // Info
+                    Log.Singleton.Info("Re-indexing Identifiables for faster access.");
+				}
+			}
 
             MainTimer_PeriodicalTaskForSelectedEntity();
             MainTaimer_HandleIncomingAasEvents();
             DisplayElements.UpdateFromQueuedEvents();
         }
 
-        private void SetProgressBar()
+        public void TriggerPendingReIndexElements()
+        {
+		    _mainTimer_LastCheckForReIndexElements = DateTime.Now;
+			_mainTimer_PendingReIndexElements = true;
+	    }
+
+		private void SetProgressBar()
         {
             SetProgressBar(0.0, "");
         }

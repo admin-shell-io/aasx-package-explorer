@@ -2385,7 +2385,7 @@ namespace AasxPackageLogic
 			}
 			else
             {
-                lambdaRf(false);
+                lambdaRf(true);
                 lambdaIdf();
                 lambdaIsCaseOf();
                 lambdaEDS(false);

@@ -235,14 +235,23 @@ namespace AasxPackageLogic.PackageCentral
 
         [JsonIgnore]
         public AdminShellPackageEnv Env = new AdminShellPackageEnv();
+        
         [JsonIgnore]
         public Format IsFormat = Format.Unknown;
 
         /// <summary>
-        /// To be used by the main application to hold important data about the package.
+        /// To be maintained by the main application to hold important data about the package.
         /// </summary>
         [JsonIgnore]
         public IndexOfSignificantAasElements SignificantElements = null;
+
+		/// <summary>
+		/// To be maintained by the main application to speed up the process of looking up 
+        /// Identifiables, esp. ConceptDescriptions.
+		/// </summary>
+		[JsonIgnore]
+        public IdentifiableLookupStore<Aas.IIdentifiable, Aas.IIdentifiable> IdentifiableLookup 
+               = new IdentifiableLookupStore<IIdentifiable, IIdentifiable>();
 
         /// <summary>
         /// Limks to the PackageCentral. Only on init.
@@ -326,7 +335,6 @@ namespace AasxPackageLogic.PackageCentral
             return res;
         }
 
-
         [JsonIgnore]
         public bool IsOpen { get { return Env != null && Env.IsOpen; } }
 
@@ -382,6 +390,23 @@ namespace AasxPackageLogic.PackageCentral
                 foreach (var conn in ConnectorSecondary)
                     yield return conn;
         }
+
+        //
+        // Identifiable management
+        //
+
+        public void ReIndexIdentifiables()
+        {
+            // emergency
+            if (IdentifiableLookup == null)
+                IdentifiableLookup = new IdentifiableLookupStore<IIdentifiable, IIdentifiable>();
+
+            // just start again
+            IdentifiableLookup.StartDictionaryAccess(
+                new IEnumerable<Aas.IIdentifiable>[] { Env?.AasEnv?.AssetAdministrationShells, Env?.AasEnv.Submodels,
+                        Env?.AasEnv?.ConceptDescriptions},
+                lambdaSelectResult: (idf) => idf );
+		}
 
         //
         // Event management

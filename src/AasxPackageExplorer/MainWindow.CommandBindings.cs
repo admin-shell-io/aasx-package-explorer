@@ -223,6 +223,9 @@ namespace AasxPackageExplorer
                     MainMenu?.SetChecked("HintsMenu", hintsMode);
                 }
 
+                // trigger re-indexing
+                TriggerPendingReIndexElements();
+
                 // try to remember current selected data object
                 object currMdo = null;
                 if (DisplayElements.SelectedItem != null)

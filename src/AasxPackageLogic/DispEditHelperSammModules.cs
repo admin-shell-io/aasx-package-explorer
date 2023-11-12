@@ -2319,117 +2319,6 @@ namespace AasxPackageLogic
 		}
 	}
 
-	/// <summary>
-	/// This class provides a layered access to a list (a <c>IEnumerable</c>) of
-	/// <c>Aas.IIdentifiable</c>. This access could be provided by each time
-	/// blindly iterating through the list or by caching the <c>Id</c>s in a
-	/// dictionary. Result can be access immedeatily or selected by an
-	/// lambda, so that only portions of the Identifiable are directly available 
-	/// and strongly typed.
-	/// </summary>
-	/// <typeparam name="I">Subtype of <c>Aas.IIdentifiable</c></typeparam>
-	/// <typeparam name="ME">Result type, selected by an lambda</typeparam>
-	public class IdentifiableLookupStore<I,ME> where I : Aas.IIdentifiable where ME : class
-	{
-		protected IEnumerable<I> _originalData = null;
-
-		protected Func<I, ME> _lambdaSelectResult = null;
-
-		protected MultiValueDictionary<string, I> _lookup = null;
-
-		protected bool IsValidForDict() =>
-			_originalData != null && _lambdaSelectResult != null && _lookup != null;
-
-		public void StartDictionaryAccess(
-			IEnumerable<I> originalData,
-			Func<I, ME> lambdaSelectResult)
-		{
-			// remember
-			_originalData = originalData;
-			_lambdaSelectResult = lambdaSelectResult;			
-
-			// create the dictionary
-			_lookup = new MultiValueDictionary<string, I>();
-			if (!IsValidForDict())
-			{
-				_lookup = null;
-				return;
-			}
-
-			// populate
-			foreach (var idf in _originalData)
-				if (idf?.Id != null)
-					_lookup.Add(idf.Id, idf);
-		}
-
-		/// <summary>
-		/// Lookup all elements for id <c>idKey</c> and 
-		/// return the declared Identifiable subtype.
-		/// </summary>
-		public IEnumerable<I> LookupAllIdent(string idKey)
-		{
-			if (idKey == null || !IsValidForDict() || !_lookup.ContainsKey(idKey))
-				yield break;
-
-			foreach (var idf in _lookup[idKey])
-				yield return idf;
-		}
-
-		/// <summary>
-		/// Lookup first element for id <c>idKey</c> and 
-		/// return the declared Identifiable subtype. Else: return <c>null</c>
-		/// </summary>
-		public I LookupFirstIdent(string idKey)
-		{
-			return LookupAllIdent(idKey).FirstOrDefault();
-		}
-
-		/// <summary>
-		/// Lookup all elements for id <c>idKey</c> and 
-		/// return the result of the given lambda selection.
-		/// </summary>
-		public IEnumerable<ME> LookupAllResult(string idKey)
-		{
-			foreach (var idf in LookupAllIdent(idKey))
-			{
-				var res = _lambdaSelectResult?.Invoke(idf);
-				if (res != null)
-					yield return res;
-			}
-		}
-
-		/// <summary>
-		/// Lookup first element for id <c>idKey</c> and 
-		/// return the result of the given lambda selection.
-		/// </summary>
-		public ME LookupFirstResult(string idKey)
-		{
-			return LookupAllResult(idKey).FirstOrDefault();
-		}
-
-		/// <summary>
-		/// Lookup first element for id <c>idKey</c> and 
-		/// return the result of the given lambda selection.
-		/// Note: just a shortcut to <c>LookupFirstResult()</c>
-		/// </summary>
-		public ME Lookup(string idKey)
-		{
-			return LookupFirstResult(idKey);
-		}		
-
-		public IEnumerable<ME> LookupFor(IEnumerable<Samm.SammReference> references)
-		{
-			// access
-			if (references == null)
-				yield break;
-
-			// translare
-			foreach (var inref in references)
-			{
-				yield return LookupFirstResult(inref?.Value);
-			}
-		}
-	}
 
 	public class SammIdfTuple
 	{
@@ -2450,7 +2339,7 @@ namespace AasxPackageLogic
 	/// <summary>
 	/// Dedicated <c>IdentifiableLookupStore</c> for <c>Samm.ModelElements</c> in <c>ConceptDescriptions.</c>
 	/// </summary>
-	public class SammModelElementLookupStore : IdentifiableLookupStore<Aas.IConceptDescription, SammIdfTuple>
+	public class SammModelElementLookupStore : PackageCentral.IdentifiableLookupStore<Aas.IConceptDescription, SammIdfTuple>
 	{
 		/// <summary>
 		/// Lookup first element for id <c>idKey</c> and 
@@ -2470,6 +2359,19 @@ namespace AasxPackageLogic
 		public T Lookup<T>(SammReference sr) where T : Samm.ModelElement
 		{
 			return LookupFirstResult(sr?.Value) as T;
+		}
+
+		public IEnumerable<SammIdfTuple> LookupFor(IEnumerable<Samm.SammReference> references)
+		{
+			// access
+			if (references == null)
+				yield break;
+
+			// translare
+			foreach (var inref in references)
+			{
+				yield return LookupFirstResult(inref?.Value);
+			}
 		}
 	}
 
@@ -2625,7 +2527,7 @@ namespace AasxPackageLogic
 			// create store
 			var store = new SammModelElementLookupStore();
 			store.StartDictionaryAccess(
-				env.ConceptDescriptions, 
+				new[] { env.ConceptDescriptions }, 
 				lambdaSelectResult: (cd) => {
 					var me = DispEditHelperSammModules.CheckReferableForSammElements(cd).FirstOrDefault();
 					return new SammIdfTuple(cd, me);

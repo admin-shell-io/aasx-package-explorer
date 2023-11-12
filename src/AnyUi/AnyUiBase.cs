@@ -563,11 +563,16 @@ namespace AnyUi
         public bool RedrawCurrentEntity = false;
     }
 
-    /// <summary>
-    /// This class is the base class for event handlers, which can attached to special
-    /// events of Any UI controls
-    /// </summary>
-    public class AnyUiSpecialActionBase
+	/// <summary>
+	/// Request to re-index all Identifiables.
+	/// </summary>
+	public class AnyUiLambdaActionReIndexIdentifiables : AnyUiLambdaActionBase { }
+
+	/// <summary>
+	/// This class is the base class for event handlers, which can attached to special
+	/// events of Any UI controls
+	/// </summary>
+	public class AnyUiSpecialActionBase
     {
     }
 
