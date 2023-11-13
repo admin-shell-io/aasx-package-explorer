@@ -271,7 +271,7 @@ namespace Extensions
             }
 
             //jtikekar:as per old implementation
-            if (srcCD.embeddedDataSpecification != null)
+            if (srcCD.embeddedDataSpecification != null && srcCD.embeddedDataSpecification.Count > 0)
             {
                 foreach (var sourceEds in srcCD.embeddedDataSpecification)
                 {

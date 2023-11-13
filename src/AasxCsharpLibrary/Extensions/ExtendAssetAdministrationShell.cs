@@ -153,13 +153,10 @@ namespace Extensions
                 }
             }
 
-            if (sourceAas.hasDataSpecification != null)
+            if (sourceAas.hasDataSpecification != null && sourceAas.hasDataSpecification.reference.Count > 0)
             {
                 //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
-                if (assetAdministrationShell.EmbeddedDataSpecifications == null)
-                {
-                    assetAdministrationShell.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
-                }
+                assetAdministrationShell.EmbeddedDataSpecifications ??= new List<IEmbeddedDataSpecification>();
                 foreach (var dataSpecification in sourceAas.hasDataSpecification.reference)
                 {
                     if (!dataSpecification.IsEmpty)

@@ -546,11 +546,10 @@ namespace Extensions
                 }
             }
 
-            if (sourceSubmodelElement.hasDataSpecification != null)
+            if (sourceSubmodelElement.hasDataSpecification != null && sourceSubmodelElement.hasDataSpecification.Count > 0)
             {
                 //TODO (jtikekar, 0000-00-00): EmbeddedDataSpecification?? (as per old implementation)
-                if (submodelElement.EmbeddedDataSpecifications == null)
-                    submodelElement.EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>();
+                submodelElement.EmbeddedDataSpecifications ??= new List<IEmbeddedDataSpecification>();
 
                 //TODO (jtikekar, 0000-00-00): DataSpecificationContent?? (as per old implementation)
                 foreach (var sourceDataSpec in sourceSubmodelElement.hasDataSpecification)
