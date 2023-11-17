@@ -259,7 +259,7 @@ namespace AasxPackageLogic
 			T sr,
 			Action<T> setValue,
 			Func<string, T> createInstance,
-			bool noFirstColumnWidth = false,
+			int firstColumnWidth = -1, // -1 = Standard
 			string[] presetList = null,
 			bool showButtons = true,
 			bool editOptionalFlag = false,
@@ -278,7 +278,7 @@ namespace AasxPackageLogic
 					return new AnyUiLambdaActionNone();
 				},
 				keyVertCenter: true,
-				noFirstColumnWidth: noFirstColumnWidth,
+				firstColumnWidth: firstColumnWidth,
 				auxButtonTitles: !showButtons ? null : new[] { "Preset", "Existing", "New", "Jump" },
 				auxButtonToolTips: !showButtons ? null : new[] {
 					"Select from given presets.",
@@ -369,7 +369,7 @@ namespace AasxPackageLogic
 						sp1, $"[{1 + lsri}]",
 						(Samm.ModelElement)sammInst, relatedReferable,
 						value[lsri],
-						noFirstColumnWidth: true,
+						firstColumnWidth: 40,
 						showButtons: false,
 						editOptionalFlag: editOptionalFlag,
 						addableElements: addableElements,
@@ -2562,6 +2562,75 @@ namespace AasxPackageLogic
 			if (firstAas != null)
 				firstAas.AddSubmodelReference(
 					submodel.GetModelReference());
+		}
+
+		public static IEnumerable<Tuple<Aas.IConceptDescription, SmtAttributeRecord>> 
+			FindChildElementsForConcept(
+				PackageCentral.PackageCentral packages,
+				Aas.IConceptDescription cd,
+				ModelElement me)
+		{
+			// access
+			if (packages == null || cd == null || me == null)
+				yield break;
+
+			// possible childs?
+			var childs = new List<Samm.SammReference>();
+			
+			// Aspect
+			if (me is Samm.Aspect asp)
+			{
+				if (asp.Properties != null)
+					childs.AddRange(asp.Properties);
+				if (asp.Operations != null)
+					childs.AddRange(asp.Operations);
+				if (asp.Events != null)
+					childs.AddRange(asp.Events);
+			}
+
+			// Property -> Charasteristics -> Enitity -> Property
+			if (me is Samm.Property prop)
+			{
+				var propCharCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(prop.Characteristic?.Value);
+				var propCharMe = DispEditHelperSammModules.CheckReferableForSammElements(propCharCd)?.FirstOrDefault();
+				if (propCharMe is Samm.Characteristic propChar)
+				{
+					var propEntCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(propChar.DataType?.Value);
+					var propEntMe = DispEditHelperSammModules.CheckReferableForSammElements(propEntCd)?.FirstOrDefault();
+					if (propEntMe is Samm.Entity ent && ent.Properties != null)
+						foreach (var p in ent.Properties)
+							childs.Add(p);
+				}
+			}
+
+			// try lookup childs
+			foreach (var child in childs)
+			{
+				// access
+				var childCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(child?.Value);
+				var childMe = DispEditHelperSammModules.CheckReferableForSammElements(childCd)?.FirstOrDefault();
+				
+				if (childMe is Samm.Property childProp)
+				{
+					// for the time being, fake a SmtRecord 
+					var smtRec = new SmtAttributeRecord();
+
+					// poor mens cardinality
+					smtRec.Cardinality = AasSmtQualifiers.SmtCardinality.One;
+					if (child is OptionalSammReference osr && osr.Optional)
+						smtRec.Cardinality = AasSmtQualifiers.SmtCardinality.ZeroToOne;
+
+					// poor mens initial / default / example value
+					smtRec.ExampleValue = childProp.ExampleValue;
+
+					// poor mens SME type
+					smtRec.SubmodelElements = new List<AasSubmodelElements>() { AasSubmodelElements.Property };
+
+					// put into intem
+					var item = new Tuple<Aas.IConceptDescription, SmtAttributeRecord>(childCd, smtRec);
+					yield return item;
+				}
+			}
 		}
 	}
 }

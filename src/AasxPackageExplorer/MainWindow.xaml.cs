@@ -857,6 +857,7 @@ namespace AasxPackageExplorer
 
             // display elements has a cache
             DisplayElements.ActivateElementStateCache();
+            VisualElementEnvironmentItem.SetCdSortOrderByString(Options.Curr.CdSortOrder);
 
             // show Logo?
             if (Options.Curr.LogoFile != null)
@@ -2531,20 +2532,20 @@ namespace AasxPackageExplorer
                         PackageCentral.MainItem.Container.SignificantElements);
                     _mainTimer_LastCheckForAnimationElements = DateTime.Now;
                 }
+			}
 
-				// do re-index?
-				deltaSecs = (DateTime.Now - _mainTimer_LastCheckForReIndexElements).TotalSeconds;
-                if (deltaSecs >= 1.0 && _mainTimer_PendingReIndexElements)
-                {
-                    // dis-engage
-                    _mainTimer_PendingReIndexElements = false;
+			// do re-index?
+			var deltaSecs2 = (DateTime.Now - _mainTimer_LastCheckForReIndexElements).TotalSeconds;
+            if (deltaSecs2 >= 1.0 && _mainTimer_PendingReIndexElements)
+            {
+                // dis-engage
+                _mainTimer_PendingReIndexElements = false;
 
-                    // be modest for the time being
-                    PackageCentral.MainItem?.Container?.ReIndexIdentifiables();
+                // be modest for the time being
+                PackageCentral.MainItem?.Container?.ReIndexIdentifiables();
 
-                    // Info
-                    Log.Singleton.Info("Re-indexing Identifiables for faster access.");
-				}
+                // Info
+                Log.Singleton.Info("Re-indexing Identifiables for faster access.");
 			}
 
             MainTimer_PeriodicalTaskForSelectedEntity();

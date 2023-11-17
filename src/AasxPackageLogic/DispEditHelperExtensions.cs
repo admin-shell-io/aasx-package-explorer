@@ -9,8 +9,8 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasCore.Samm2_2_0;
 using AasxIntegrationBase;
+using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
-using Aml.Engine.CAEX;
 using AnyUi;
 using Extensions;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -19,13 +19,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlTypes;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Xaml;
 using static AasxPackageLogic.AasSmtQualifiers;
 using Aas = AasCore.Aas3_0;
@@ -74,15 +75,28 @@ namespace AasxPackageLogic
 		}
 
 		public static bool GeneralExtensionHelperAddJsonExtension(
-			Aas.IHasExtensions ihe, Type recType, ExtensionRecordBase recInst)
+			Aas.IHasExtensions ihe, Type recType, ExtensionRecordBase recInst,
+			bool replaceExistingRecordType = false)
 		{
 			// acces
 			if (ihe == null || recType == null || recInst == null
 				|| !(recInst is IExtensionSelfDescription ssd))
 				return false;
 
-			// create extension
-			var newExt = new Aas.Extension(
+			// create or use extension
+			Aas.IExtension foundExt = null;
+			if (ihe.Extensions != null && recInst is IExtensionSelfDescription esd)
+				foreach (var ex in ihe.Extensions)
+					if (ex?.SemanticId?.Keys != null && ex.SemanticId.Count() == 1
+						&& ex.SemanticId.Keys[0].Value == esd.GetSelfUri())
+					{
+						foundExt = ex;
+						break;
+					}
+
+			var newExt = (replaceExistingRecordType && foundExt != null) 
+					? foundExt
+					: new Aas.Extension(
 				name: ssd.GetSelfName(),
 				semanticId: new Aas.Reference(ReferenceTypes.ExternalReference,
 					(new[] {
@@ -95,9 +109,12 @@ namespace AasxPackageLogic
 			// add JSON
 			GeneralExtensionHelperUpdateJson(newExt, recType, recInst);
 
-			// add to extension
-			ihe.Extensions = ihe.Extensions ?? new List<IExtension>();
-			ihe.Extensions.Add(newExt);
+			// add to extension?
+			if (foundExt == null)
+			{
+				ihe.Extensions = ihe.Extensions ?? new List<IExtension>();
+				ihe.Extensions.Add(newExt);
+			}
 
 			// ok
 			return true;
@@ -182,6 +199,8 @@ namespace AasxPackageLogic
 			foreach (var se in rf.Extensions)
 			{
 				var rec = CheckReferableForSingleExtensionRecord(se);
+				if (rec == null)
+					continue;
 
 				if (typesAllowed != null)
 				{
@@ -239,9 +258,269 @@ namespace AasxPackageLogic
 				maxLines: 1);
 		}
 
+		protected void ExtensionHelperAddEnumField(
+			AnyUiGrid grid,
+			int row, int col,
+			string caption,
+			Type typeForEnum,
+			object enumValue,
+			Func<object, AnyUiLambdaActionBase> setEnumValue)
+		{
+			// access
+			if (grid == null || typeForEnum == null)
+				return;
+
+			// generate a list for combo box
+			var eMems = EnumHelper.EnumHelperGetMemberInfo(typeForEnum).ToList();
+
+			// find selected index
+			int? selectedIndex = null;
+			if (enumValue != null)
+				for (int emi = 0; emi < eMems.Count; emi++)
+				{
+					if (((int)eMems[emi].MemberInstance) == ((int)enumValue))
+						selectedIndex = emi;
+				}
+
+			// and combobox inside
+			AnyUiComboBox cb = null;
+			cb = AnyUiUIElement.RegisterControl(
+				AddSmallComboBoxTo(
+					grid, row + 0, col + 0,
+					minWidth: 120,
+					margin: NormalOrCapa(
+						new AnyUiThickness(4, 1, 2, 3),
+						AnyUiContextCapability.Blazor, new AnyUiThickness(4, 2, 2, 0)),
+					padding: NormalOrCapa(
+						new AnyUiThickness(2, 1, 2, 1),
+						AnyUiContextCapability.Blazor, new AnyUiThickness(0, 4, 0, 4)),
+					selectedIndex: selectedIndex,
+					items: eMems.Select((mi) => mi.MemberDisplay).ToArray()),
+				setValue: (o) =>
+				{
+					if (cb.SelectedIndex.HasValue
+						&& cb.SelectedIndex.Value >= 0
+						&& cb.SelectedIndex.Value < eMems.Count)
+					{
+						return setEnumValue?.Invoke(eMems[cb.SelectedIndex.Value].MemberInstance);
+					}
+					return new AnyUiLambdaActionNone();
+				});
+		}
+
+		public AnyUiLambdaActionBase ExtensionHelperIdfReferenceAction(
+			Aas.Environment env,
+			Aas.IReferable relatedReferable,
+			int actionIndex,
+			ExtIdfReference sr,
+			Action<ExtIdfReference> setValue,
+			Func<string, ExtIdfReference> createInstance)
+		{
+			if (actionIndex == 0)
+			{
+				var k2 = SmartSelectAasEntityKeys(
+					packages,
+					PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+					"ConceptDescription");
+				if (k2 != null && k2.Count >= 1)
+				{
+					setValue?.Invoke(createInstance?.Invoke("" + k2[0].Value));
+					return new AnyUiLambdaActionRedrawEntity();
+				}
+			}
+
+			if (actionIndex == 2 && sr?.Value?.HasContent() == true)
+			{
+				return new AnyUiLambdaActionNavigateTo(
+					new Aas.Reference(
+							Aas.ReferenceTypes.ModelReference,
+							new Aas.IKey[] {
+										new Aas.Key(KeyTypes.ConceptDescription, sr.Value)
+							}.ToList()));
+			}
+
+			return new AnyUiLambdaActionNone();
+		}
+
+		public void ExtensionHelperAddIdfReference(
+			Aas.Environment env, 
+			AnyUiStackPanel stack,
+			string caption,
+			ExtensionRecordBase recInst,
+			Aas.IReferable relatedReferable,
+			ExtIdfReference sr,
+			Action<ExtIdfReference> setValue,
+			Func<string, ExtIdfReference> createInstance,
+			int firstColumnWidth = -1, // -1 = Standard
+			string[] presetList = null,
+			bool showButtons = true) 
+		{
+			var grid = AddSmallGrid(1, 2, colWidths: new[] { "*", "#" });
+			stack.Add(grid);
+			var g1stack = AddSmallStackPanelTo(grid, 0, 0, margin: new AnyUiThickness(0));
+
+			AddKeyValueExRef(
+				g1stack, "" + caption, recInst,
+				value: "" + sr?.Value, null, repo,
+				setValue: v =>
+				{
+					setValue?.Invoke(createInstance?.Invoke((string)v));
+					return new AnyUiLambdaActionNone();
+				},
+				keyVertCenter: true,
+				firstColumnWidth: firstColumnWidth,
+				auxButtonTitles: !showButtons ? null : new[] { "Existing", "New", "Jump" },
+				auxButtonToolTips: !showButtons ? null : new[] {
+					"Select existing ConceptDescription.",
+					"Create a new ConceptDescription for this known extension use.",
+					"Jump to ConceptDescription with given Id."
+				},
+				auxButtonLambda: (i) =>
+				{
+					return ExtensionHelperIdfReferenceAction(
+						env,
+						relatedReferable,
+						i,
+						sr: sr,
+						setValue: setValue,
+						createInstance: createInstance);
+				});
+		}
+
+		public void ExtensionHelperAddListOfIdfReference(
+			Aas.Environment env, 
+			AnyUiStackPanel stack,
+			QuickLookupIdentifiable lookupIdf,
+			string caption,
+			ExtensionRecordBase recInst,
+			Aas.IReferable relatedReferable,
+			List<ExtIdfReference> value,
+			Action<List<ExtIdfReference>> setValue,
+			Func<string, ExtIdfReference> createInstance)
+		{
+			this.AddVerticalSpace(stack);
+
+			if (this.SafeguardAccess(stack, repo, value, "" + caption + ":",
+				"Create data element!",
+				v => {
+					setValue?.Invoke(new List<ExtIdfReference>(new ExtIdfReference[] { createInstance?.Invoke("") }));
+					return new AnyUiLambdaActionRedrawEntity();
+				}))
+			{
+				// Head
+				var sg = this.AddSubGrid(stack, "" + caption + ":",
+				rows: 1 + 2 * value.Count, cols: 2,
+				minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+				paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+				colWidths: new[] { "*", "#" });
+
+				AnyUiUIElement.RegisterControl(
+					AddSmallButtonTo(sg, 0, 1,
+					margin: new AnyUiThickness(2, 2, 2, 2),
+					padding: new AnyUiThickness(1, 0, 1, 0),
+					content: "\u2795"),
+					(v) =>
+					{
+						value.Add(createInstance?.Invoke(""));
+						setValue?.Invoke(value);
+						return new AnyUiLambdaActionRedrawEntity();
+					});
+
+				// individual references
+				for (int lsri = 0; lsri < value.Count; lsri++)
+				{
+					// remember lambda safe
+					var theLsri = lsri;
+
+					// Stack in the 1st column of 1st row
+					var sp1 = AddSmallStackPanelTo(sg, 1 + 2 * lsri, 0);
+					ExtensionHelperAddIdfReference(
+						env,
+						sp1, 
+						$"[{1 + lsri}]",
+						recInst, relatedReferable,
+						value[lsri],
+						firstColumnWidth: 40,
+						showButtons: false,
+						setValue: (v) => {
+							value[theLsri] = v;
+							setValue?.Invoke(value);
+						},
+						createInstance: createInstance);
+
+					// Info on 1st column of 2nd row
+					var idf = lookupIdf?.Invoke(value[lsri]?.Value);
+					if (idf != null)
+						AddSmallBasicLabelTo(sg, 1 + 2 * lsri + 1, 0,
+							padding: new AnyUiThickness(44, 0, 0, 6),
+							content: "" + idf.IdShort,
+							fontSize: 0.8,
+							foreground: AnyUiBrushes.DarkGray);
+
+					// button [hamburger]
+					AddSmallContextMenuItemTo(
+						sg, 1 + 2 * lsri, 1,
+						"\u22ee",
+						repo, new[] {
+							"\u2702", "Delete",
+							"\u25b2", "Move Up",
+							"\u25bc", "Move Down",
+							"\U0001F517", "Select from existing CDs",
+							"\U0001f516", "Create new CD for SAMM",
+							"\U0001f872", "Jump to"
+						},
+						margin: new AnyUiThickness(2, 2, 2, 2),
+						padding: new AnyUiThickness(5, 0, 5, 0),
+						menuItemLambda: (o) =>
+						{
+							var action = false;
+
+							if (o is int ti)
+								switch (ti)
+								{
+									case 0:
+										value.RemoveAt(theLsri);
+										action = true;
+										break;
+									case 1:
+										MoveElementInListUpwards(value, value[theLsri]);
+										action = true;
+										break;
+									case 2:
+										MoveElementInListDownwards(value, value[theLsri]);
+										action = true;
+										break;
+									case 3:
+									case 4:
+									case 5:
+										return ExtensionHelperIdfReferenceAction(
+											env, relatedReferable,
+											sr: value[theLsri],
+											actionIndex: ti - 3,
+											setValue: (srv) =>
+											{
+												value[theLsri] = srv;
+												setValue?.Invoke(value);
+											},
+											createInstance: createInstance);
+								}
+
+							if (action)
+							{
+								setValue?.Invoke(value);
+								return new AnyUiLambdaActionRedrawEntity();
+							}
+							return new AnyUiLambdaActionNone();
+						});
+				}
+			}
+
+		}
+
 		public void ExtensionHelperAddEditFieldsByReflection(
 			Aas.Environment env,
 			AnyUiStackPanel stack,
+			QuickLookupIdentifiable lookupIdf,
 			ExtensionRecordBase recInst,
 			Aas.IReferable relatedReferable,
 			Action<ExtensionRecordBase> setValue)
@@ -392,6 +671,55 @@ namespace AasxPackageLogic
 					}
 				}
 
+				// List of IdfReference?
+				if (pii.PropertyType.IsAssignableTo(typeof(List<ExtIdfReference>)))
+				{
+					// value
+					var lidr = (List<ExtIdfReference>)pii.GetValue(recInst);
+
+					// hint?
+					hintLambda(lidr == null || lidr.Count < 1);
+
+					// edit
+					ExtensionHelperAddListOfIdfReference(
+						env, stack, 
+						lookupIdf,
+						caption: "" + pii.Name,
+						recInst,
+						relatedReferable,
+						value: lidr,
+						setValue: (v) =>
+						{
+							pii.SetValue(recInst, v);
+							setValue?.Invoke(recInst);
+						},
+						createInstance: (eir) => new ExtIdfReference(eir));
+				}
+
+				// single IdfReference?
+				if (pii.PropertyType.IsAssignableTo(typeof(ExtIdfReference)))
+				{
+					this.AddVerticalSpace(stack);
+					
+					// value
+					var idr = (ExtIdfReference)pii.GetValue(recInst);
+
+					// hint?
+					hintLambda(idr == null);
+
+					// edit
+					ExtensionHelperAddIdfReference(
+						env,
+						stack, 
+						"" + pii.Name, recInst, relatedReferable,
+						idr,
+						setValue: (v) => {
+							pii.SetValue(recInst, v);
+							setValue?.Invoke(recInst);
+						},
+						createInstance: (eir) => new ExtIdfReference(eir));
+				}
+
 				// single string?
 				if (pii.PropertyType.IsAssignableTo(typeof(string)))
 				{
@@ -448,10 +776,26 @@ namespace AasxPackageLogic
 					}
 				}
 
+				// single boolean
+				if (pii.PropertyType.IsAssignableTo(typeof(bool)))
+				{
+					// value and hint?
+					var boolVal = (bool)pii.GetValue(recInst);
+
+					this.AddSmallCheckBox(
+					   stack, "" + pii.Name, 
+					   value: boolVal,
+					   additionalInfo: "",
+					   setValue: (b) => {
+						   pii.SetValue(recInst, b);
+						   setValue?.Invoke(recInst);
+						   return new AnyUiLambdaActionNone();
+					   });
+				}
+
 				// scalar value type
 				// Note: for Double, "G17" shall be used according to Microsoft; this is changed
 				// to "G16" in order to round properly before least-significant-bit-precision errors.
-
 				if (underlyingType != null)
 				{
 					if (pii.PropertyType.IsAssignableTo(typeof(uint?)))
@@ -513,7 +857,7 @@ namespace AasxPackageLogic
 							if (double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var res)) 
 								return res; else return null; });
 
-				// nullable enum?
+				// (nullable) enum?
 				var typeForEnum = propType;
 				if (underlyingType != null && underlyingType.IsEnum)
 					typeForEnum = underlyingType;
@@ -523,53 +867,116 @@ namespace AasxPackageLogic
 					AddVerticalSpace(stack);
 
 					// current enum member
-					var currEM = pii.GetValue(recInst);
+					var currEnumValue = pii.GetValue(recInst);
 
-					// generate a list for combo box
-					var eMems = EnumHelper.EnumHelperGetMemberInfo(typeForEnum).ToList();
-
-					// find selected index
-					int? selectedIndex = null;
-					if (currEM != null)
-						for (int emi = 0; emi < eMems.Count; emi++)
-						{
-							if (((int)eMems[emi].MemberInstance) == ((int)currEM))
-								selectedIndex = emi;
-						}
-
-					// add a container
+					// make a grid for this (have one edit function)
 					var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
-						rows: 1, cols: 2,
-						minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
-						paddingCaption: new AnyUiThickness(5, 0, 0, 0),
-						marginGrid: new AnyUiThickness(4, 0, 0, 0),
-						colWidths: new[] { "*", "#" });
+							rows: 1, cols: 2,
+							minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+							paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+							colWidths: new[] { "*", "#" });
 
-					// and combobox inside
-					AnyUiComboBox cb = null;
-					cb = AnyUiUIElement.RegisterControl(
-						AddSmallComboBoxTo(
-							sg, 0, 0,
-							minWidth: 120,
-							margin: NormalOrCapa(
-								new AnyUiThickness(0, 1, 2, 3),
-								AnyUiContextCapability.Blazor, new AnyUiThickness(4, 2, 2, 0)),
-							padding: NormalOrCapa(
-								new AnyUiThickness(2, 1, 2, 1),
-								AnyUiContextCapability.Blazor, new AnyUiThickness(0, 4, 0, 4)),
-							selectedIndex: selectedIndex,
-							items: eMems.Select((mi) => mi.MemberDisplay).ToArray()),
-						setValue: (o) =>
+					// edit
+					ExtensionHelperAddEnumField(
+						sg, 0, 0, 
+						"" + pii.Name, 
+						typeForEnum: typeForEnum, 
+						enumValue: currEnumValue, 
+						setEnumValue: (o) =>
 						{
-							if (cb.SelectedIndex.HasValue
-								&& cb.SelectedIndex.Value >= 0
-								&& cb.SelectedIndex.Value < eMems.Count)
-							{
-								pii.SetValue(recInst, eMems[cb.SelectedIndex.Value].MemberInstance);
-								setValue?.Invoke(recInst);
-							}
+							pii.SetValue(recInst, o);
+							setValue?.Invoke(recInst);
 							return new AnyUiLambdaActionNone();
 						});
+
+				}
+
+				// List of enum?
+
+				// see:https://stackoverflow.com/questions/12617280/how-to-check-if-an-object-is-a-list-enum-type-objects
+				//var testListEnum = pii.PropertyType
+				//		.GetInterface("System.Collections.Generic.IList")?
+				//		.GetGenericArguments()?[0].IsEnum;
+				var testListEnum = pii.PropertyType.IsGenericType
+						&& pii.PropertyType.GetGenericTypeDefinition() != null
+						&& pii.PropertyType.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>)
+						&& pii.PropertyType.GenericTypeArguments != null
+						&& pii.PropertyType.GenericTypeArguments.Length == 1
+						&& pii.PropertyType.GenericTypeArguments[0].IsEnum;
+				if (testListEnum == true)
+				{
+					this.AddVerticalSpace(stack);
+
+					var singleEnumType = pii.PropertyType.GenericTypeArguments[0];
+
+					// var enumList = (List<object>)pii.GetValue(recInst);
+					var enumList = pii.GetValue(recInst) as IList;
+
+					// hint?
+					hintLambda(enumList == null || enumList.Count < 1);
+
+					if (this.SafeguardAccess(stack, repo, enumList, "" + pii.Name + ":",
+						"Create data element!",
+						v =>
+						{
+							var x = Activator.CreateInstance(pii.PropertyType);
+							pii.SetValue(recInst, x);
+							setValue?.Invoke(recInst);
+							return new AnyUiLambdaActionRedrawEntity();
+						}))
+					{
+						// grid
+						var sg = this.AddSubGrid(stack, "" + pii.Name + ":",
+							rows: 1 + enumList.Count, cols: 2,
+							minWidthFirstCol: GetWidth(FirstColumnWidth.Standard),
+							paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+							colWidths: new[] { "*", "#" });
+
+						// add button
+						AnyUiUIElement.RegisterControl(
+							AddSmallButtonTo(sg, 0, 1,
+								margin: new AnyUiThickness(2, 2, 2, 2),
+								padding: new AnyUiThickness(5, 0, 5, 0),
+								content: "Add blank"),
+								(v) =>
+								{
+									enumList.Add((int) 0);
+									pii.SetValue(recInst, enumList);
+									setValue?.Invoke(recInst);
+									return new AnyUiLambdaActionRedrawEntity();
+								});
+
+						for (int enumListItem = 0; enumListItem < enumList.Count; enumListItem++)
+						{
+							var theLsi = enumListItem;
+
+							ExtensionHelperAddEnumField(
+								sg, 1 + enumListItem, 0,
+								"" + pii.Name,
+								typeForEnum: singleEnumType,
+								enumValue: enumList[enumListItem],
+								setEnumValue: (o) =>
+								{
+									enumList[theLsi] = o;
+									pii.SetValue(recInst, enumList);
+									setValue?.Invoke(recInst);
+									return new AnyUiLambdaActionRedrawEntity();
+								});
+
+							AnyUiUIElement.RegisterControl(
+								AddSmallButtonTo(sg, 1 + enumListItem, 1,
+									margin: new AnyUiThickness(2, 2, 2, 2),
+									padding: new AnyUiThickness(5, 0, 5, 0),
+									content: "-"),
+									(v) =>
+									{
+										enumList.RemoveAt(theLsi);
+										pii.SetValue(recInst, enumList);
+										setValue?.Invoke(recInst);
+										return new AnyUiLambdaActionRedrawEntity();
+									});
+						}
+					}
 				}
 			}
 		}
@@ -702,6 +1109,7 @@ namespace AasxPackageLogic
 					// edit
 					ExtensionHelperAddEditFieldsByReflection(
 						env, stack,
+						packages.QuickLookupFirstIdent,
 						recInst: recInst,
 						relatedReferable: relatedReferable,
 						setValue: (si) =>
@@ -1066,6 +1474,56 @@ namespace AasxPackageLogic
 	}
 
 	/// <summary>
+	/// Abstract class for all references, which are based on a string value.
+	/// </summary>
+	public class IdStringReferenceBase
+	{
+		public string Value { get; set; }
+
+		public IdStringReferenceBase(string val = "")
+		{
+			Value = val;
+		}
+	}
+
+	/// <summary>
+	/// This class creates a reference to an Identifiable, which "feels" like a string.
+	/// </summary>
+	public class ExtIdfReference : IdStringReferenceBase
+	{
+		public ExtIdfReference(string val = "")
+		{
+			Value = val;
+		}
+	}
+
+	/// <summary>
+	/// Shall be implemented in order to give hints about the
+	/// (hierarchical) structuring of elements
+	/// </summary>
+	public interface IAbstractStructureModel<T> where T : IdStringReferenceBase
+	{
+		/// <summary>
+		/// True, if a top element of a hierarchy
+		/// </summary>
+		bool IsTopElement();
+
+		/// <summary>
+		/// Iterate over all the SAMM elements referenced from this instance
+		/// without further recursion (see AasCore).
+		/// </summary>
+		IEnumerable<T> DescendOnce();
+	}
+
+	/// <summary>
+	/// Shall be implemented in order to give hints about the
+	/// (hierarchical) structuring of elements
+	/// </summary>
+	public interface IExtensionStructureModel : IAbstractStructureModel<ExtIdfReference>
+	{
+	}
+
+	/// <summary>
 	/// Abstract base class for information for data records of extensions.
 	/// </summary>
 	public class ExtensionRecordBase
@@ -1086,7 +1544,7 @@ namespace AasxPackageLogic
 	/// Holds the possible attributes for an SMT specification per element
 	/// as a whole.
 	/// </summary>
-	public class SmtAttributeRecord : ExtensionRecordBase, IExtensionSelfDescription
+	public class SmtAttributeRecord : ExtensionRecordBase, IExtensionSelfDescription, IExtensionStructureModel
 	{
 		// self description
 		public string GetSelfName() => "smt-attrtibute-set";
@@ -1100,6 +1558,17 @@ namespace AasxPackageLogic
 			Background = 0xff00cd90
 		};
 
+		// hierarchical structure
+
+		bool IAbstractStructureModel<ExtIdfReference>.IsTopElement() => false;
+
+		IEnumerable<ExtIdfReference> IAbstractStructureModel<ExtIdfReference>.DescendOnce()
+		{
+			if (Organizes != null)
+				foreach (var org in Organizes)
+					yield return org;
+		}
+
 		// attributes
 
 		[ExtensionHintAttribute("Specifies, how many SubmodelElement instances of this " +
@@ -1107,7 +1576,7 @@ namespace AasxPackageLogic
 		public AasSmtQualifiers.SmtCardinality Cardinality { get; set; } = AasSmtQualifiers.SmtCardinality.One;
 
 		[ExtensionHintAttribute("Specifies an id of an equivalence class. " +
-			"Only ids in the range[A-Za-z0-9] are allowed.  If multiple SMT elements feature the same equivalency " +
+			"Only ids in the range [A-Za-z0-9] are allowed.  If multiple SMT elements feature the same equivalency " +
 			"class,  only one of these are allowed in the actual collection (hierarchy level of the Submodel). ")]
 		public string EitherOr { get; set; } = "";
 
@@ -1150,6 +1619,118 @@ namespace AasxPackageLogic
 			"When a Submodel is received from another party, if set to Read/Only, then the user " +
 			"shall not change the value.")]
 		public AasSmtQualifiers.AccessMode AccessMode { get; set; } = AasSmtQualifiers.AccessMode.ReadWrite;
+
+		[ExtensionHintAttribute("Specifies that this concept relates to Submodel.")]
+		public bool IsSubmodel { get; set; } = false;
+
+		[ExtensionHintAttribute("\u00ab Experimental \u00bb Specifies a list of types of SubmodelElements " +
+			"which can be used to implement this concept.")]
+		public List<Aas.AasSubmodelElements> SubmodelElements { get; set; } = null;
+
+		[ExtensionHintAttribute("\u00ab Experimental \u00bb Specifies a list of concepts, which are " +
+			"organized, hierarchically structured, within this concept. This does not impose a type-like " +
+			"semantic. A concept might be organized by multiple concepts.")]
+		public List<ExtIdfReference> Organizes { get; set; } = null;
+
+		//
+		// Init
+		//
+
+		protected static string[] CardinalitiesShort = null;
+
+		static SmtAttributeRecord()
+		{
+			// cardinalities
+			CardinalitiesShort = EnumHelper.EnumHelperGetMemberInfo(typeof(AasSmtQualifiers.SmtCardinality))
+					.Select((em) =>
+					{
+						var st = em.MemberDisplay;
+						var p = st.IndexOf('[');
+						if (p > 0)
+							st = st.Substring(p);
+						return st;
+					}).ToArray();
+		}
+
+		public string CardinalityShort()
+		{
+			if (CardinalitiesShort == null)
+				return "";
+			var i = ((int)this.Cardinality) % CardinalitiesShort.Length;
+			return CardinalitiesShort[i];
+		}
+
+		//
+		// Join
+		//
+
+		/// <summary>
+		/// Take over attributes from another <c>SmtAttributeRecord</c>. If present/ cannot joined, the other
+		/// attributes will be dominant.
+		/// </summary>
+		/// <param name="other"></param>
+		public void JoinAttributes(SmtAttributeRecord other)
+		{
+			// access
+			if (other == null)
+				return;
+
+			// define some small lambdas
+			Func<string, string, string, string> JoinStrings = (a, other, delim) =>
+			{
+				if (other?.HasContent() == true && a?.Contains(other) != true)
+				{
+					if (a == null)
+						a = "";
+					if (a.HasContent())
+						a = a + delim;
+					a = a + other;
+				}
+				return a;
+			};
+
+			Func<string, string, string> OverStrings = (a, other) =>
+			{
+				if (other?.HasContent() == true)
+					a = other;
+				return a;
+			};
+
+			// apply
+			Cardinality = other.Cardinality;
+			EitherOr = JoinStrings(EitherOr, other.EitherOr, "|");
+			InitialValue = OverStrings(InitialValue, other.InitialValue);
+			DefaultValue = OverStrings(DefaultValue, other.DefaultValue);
+			ExampleValue = JoinStrings(ExampleValue, other.ExampleValue, ",");
+			AllowedRange = JoinStrings(AllowedRange, other.AllowedRange, "|");
+			AllowedValue = OverStrings(AllowedValue, other.AllowedValue);
+			AllowedIdShort = OverStrings(AllowedIdShort, other.AllowedIdShort);
+			RequiredLang = JoinStrings(RequiredLang, other.RequiredLang, "|");
+			AccessMode = other.AccessMode;
+			IsSubmodel = other.IsSubmodel;
+
+			if (other.SubmodelElements != null && other.SubmodelElements.Count > 0)
+				foreach (var osme in other.SubmodelElements)
+				{
+					SubmodelElements = SubmodelElements ?? new List<AasSubmodelElements>();
+					if (SubmodelElements.Contains(osme))
+						continue;
+					SubmodelElements.Add(osme);
+				}
+
+			if (other.Organizes != null && other.Organizes.Count > 0)
+				foreach (var oorg in other.Organizes)
+				{
+					Organizes = Organizes ?? new List<ExtIdfReference>();
+					var found = false;
+					foreach (var org in Organizes)
+						if (org?.Value == oorg?.Value)
+							found = true;
+					if (found)
+						continue;
+					Organizes.Add(oorg.Copy());
+				}
+		}
 
 		//
 		// Check
@@ -1381,6 +1962,191 @@ namespace AasxPackageLogic
 
 			// okay
 			return res;
+		}
+
+		//
+		// Convert
+		//
+
+		public static bool TakeoverSmOrganizeToCds(
+			Aas.IEnvironment env,
+			Aas.IReferable rf, 
+			bool eachElemDetails)
+		{
+			// access
+			if (env == null || rf == null)
+				return false;
+
+			// the referable shall have a semantic id linking to a local CD
+			if (!(rf is Aas.IHasSemantics ownIhs))
+				return false;
+			var ownCdId = ownIhs.GetConceptDescriptionId();
+			var ownCd = env.FindConceptDescriptionById(ownCdId);
+			if (ownCd == null)
+				return false;
+
+			if (ownCd.IdShort == "Markings")
+				;
+
+			// get or create SMT attributeRecord for the CD
+			var smtRec = DispEditHelperExtensions
+					.CheckReferableForExtensionRecords<SmtAttributeRecord>(ownCd)?.FirstOrDefault();
+			if (smtRec == null)
+				smtRec = new SmtAttributeRecord();
+			var changes = false;
+
+			// check if the SME has an attribute record
+			var smeSmtRec = DispEditHelperExtensions
+					.CheckReferableForExtensionRecords<SmtAttributeRecord>(rf)?.FirstOrDefault();
+			if (smeSmtRec != null)
+			{
+				// the SME attributes are dominant
+				smtRec.JoinAttributes(smeSmtRec);
+				changes = true;
+			}
+
+			// reset
+			if (eachElemDetails)
+			{
+				// touch every record, set Submodel / SME flags
+				smtRec.IsSubmodel = false;
+				changes = true;
+
+				if (rf is Aas.Submodel)
+				{
+					smtRec.IsSubmodel = true;
+				}
+
+				if (rf is Aas.ISubmodelElement sme)
+				{
+					var sd = sme.GetSelfDescription();
+					try
+					{
+						var se = Stringification.AasSubmodelElementsFromString(sd.AasElementName);
+						if (se.HasValue)
+						{
+							smtRec.SubmodelElements = smtRec.SubmodelElements ?? new List<AasSubmodelElements>();
+							smtRec.SubmodelElements.Add(se.Value);
+						}
+					} catch (Exception ex)
+					{
+						LogInternally.That.SilentlyIgnoredError(ex);
+					}
+				}
+			}
+
+			// build a dictionary of descendant's semantic ids ..
+			var dict = new MultiValueDictionary<string, Aas.IReferable>();
+			foreach (var x in rf.DescendOnce())
+				if (x is Aas.ISubmodelElement sme)
+				{
+					var id = sme.GetConceptDescriptionId();
+					if (id != null)
+						dict.Add(id, sme);
+				}
+
+			// now go over these dict's keys!
+			foreach (var dictKey in dict.Keys)
+			{
+				// make really really really clear that the reference is not already contained!!
+				var already = false;
+				if (smtRec.Organizes != null)
+					foreach (var oo in smtRec.Organizes)
+						if (oo?.Value?.Trim() == dictKey?.Trim())
+						{
+							already = true;
+							break;
+						}
+				if (already)
+					continue;
+
+				// without further ado, just put it in!
+				smtRec.Organizes = smtRec.Organizes ?? new List<ExtIdfReference>();
+				smtRec.Organizes.Add(new ExtIdfReference(dictKey));
+				changes = true;
+			}
+
+			// if changes, write back
+			if (changes)
+			{
+				if (ownCd.Extensions != null && ownCd.Extensions.Count > 1)
+					;
+				DispEditHelperExtensions.GeneralExtensionHelperAddJsonExtension(
+					ownCd, smtRec.GetType(), smtRec,
+					replaceExistingRecordType: true);
+			}
+
+			// okay, give back changes
+			return changes;
+		}	
+
+		//
+		// Populate based on attributes
+		//
+
+		public Aas.IReferable PopulateReferable(Aas.IReferable rf, Aas.IConceptDescription cd)
+		{
+			// access
+			if (rf == null || cd == null)
+				return rf;
+
+			// IReferable attributes
+			rf.Description = cd?.Description?.Copy();
+			rf.DisplayName = cd?.DisplayName?.Copy();
+			rf.IdShort = "" + cd?.IdShort;
+
+			// admin info?
+			if (rf is Aas.IIdentifiable idf && cd.Administration != null)
+				idf.Administration = cd.Administration.Copy();
+
+			// semanticId!
+			if (rf is Aas.Submodel sm)
+				sm.SemanticId = new Aas.Reference(ReferenceTypes.ModelReference,
+					(new Aas.IKey[] { new Aas.Key(KeyTypes.Submodel, cd.Id) }).ToList());
+			else
+			if (rf is Aas.IHasSemantics ihs)
+				ihs.SemanticId = new Aas.Reference(ReferenceTypes.ExternalReference,
+					(new Aas.IKey[] { new Aas.Key(KeyTypes.GlobalReference, cd.Id) }).ToList());
+
+			// values
+			var valToUse = this.InitialValue;
+			if (valToUse?.HasContent() != true)
+				valToUse = "" + this.ExampleValue;
+
+			if (rf is Aas.IProperty prop)
+			{
+				prop.Value = "" + valToUse;
+			}
+			else
+			if (rf is Aas.IRange rng)
+			{
+				rng.Max = "" + valToUse;
+				rng.Min = "" + valToUse;
+			}
+			else
+			if (rf is Aas.IMultiLanguageProperty mlp)
+			{
+				if (this.RequiredLang?.HasContent() == true)
+					foreach (var lang in this.RequiredLang.Split("|", 
+						StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+					{
+						mlp.Value = mlp.Value ?? new List<ILangStringTextType>();
+						mlp.Value.Add(new Aas.LangStringTextType(lang, "" + valToUse));
+					}
+			}
+			else
+			if (rf is Aas.IFile file)
+			{
+				file.Value = "" + valToUse;
+			}
+			else 
+			if (rf is Aas.IBlob blob)
+			{
+				blob.Value = Encoding.Default.GetBytes("" + valToUse);
+			}
+
+			// okay
+			return rf;
 		}
 	}
 

@@ -2490,7 +2490,7 @@ namespace AasxPackageLogic
                 && packages != null)
             {
                 // try find
-                foreach (var x in packages.LookupAllIdent(rfsem.SemanticId.Keys[0].Value))
+                foreach (var x in packages.QuickLookupAllIdent(rfsem.SemanticId.Keys[0].Value))
                     if (x.Item2 is Aas.IConceptDescription rfsemCd)
                     {
 						var rec2 = CheckReferableForExtensionRecords<SmtAttributeRecord>(rfsemCd).FirstOrDefault();

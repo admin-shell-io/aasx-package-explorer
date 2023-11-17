@@ -1619,7 +1619,14 @@ namespace AnyUi
                 res = uc;
             }
 
-            if (dialogueData is AnyUiDialogueDataSelectAasEntity ddsa)
+			if (dialogueData is AnyUiDialogueDataSelectFromDataGrid ddsdg)
+			{
+				var uc = new SelectFromDataGridFlyout();
+				uc.DiaData = ddsdg;
+				res = uc;
+			}
+
+			if (dialogueData is AnyUiDialogueDataSelectAasEntity ddsa)
             {
                 var uc = new SelectAasEntityFlyout(Packages);
                 uc.DiaData = ddsa;

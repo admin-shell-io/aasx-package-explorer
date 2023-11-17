@@ -1707,7 +1707,8 @@ namespace AasxPackageLogic
                     key: "SubmodelElement:",
                     submodel.SubmodelElements,
                     setValueLambda: (sml) => submodel.SubmodelElements = sml,
-                    superMenu: superMenu);
+                    superMenu: superMenu,
+                    basedOnSemanticId: submodel.SemanticId);
 
                 this.AddHintBubble(stack, hintMode, new[] {
                     new HintCheck(
@@ -1844,6 +1845,8 @@ namespace AasxPackageLogic
                             "Upgrades particular qualifiers from V2.0 to V3.0 for selected element.")
 						.AddAction("SMT-qualifiers-convert", "Convert SMT qualifiers",
 							"Converts particular SMT qualifiers to SMT extension for selected element.")
+						.AddAction("SMT-set-organize", "Set SMT organize",
+							"Take over Submodel's element relationships to associated concepts.")
 						.AddAction("remove-qualifiers", "Remove qualifiers",
                             "Removes all qualifiers for selected element.")
                         .AddAction("remove-extensions", "Remove extensions",
@@ -1935,6 +1938,63 @@ namespace AasxPackageLogic
 						}
 
 						if (buttonNdx == 2)
+						{
+							// ask 1
+							if (ticket?.ScriptMode != true
+								&& AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+									"This operation analyzes the element relatioships in the Submodel " +
+                                    "and will take over these as organize references into SMT attribute " +
+                                    "records of associated ConceptDescriptions. Do you want to proceed?",
+									"Take over SM element relationships to CDs",
+									AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+								return new AnyUiLambdaActionNone();
+
+							// ask 2
+							var eachElemDetails = true;
+							if (ticket?.ScriptMode != true)
+								eachElemDetails = AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+									"Create detailed SMT attributes for each relevant ConceptDescription, " +
+                                    "include SubmodelElement type list?",
+									"Take over SM element relationships to CDs",
+									AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning);
+
+#if __not_useful
+                            // ask 2
+                            var resetOrganize = true;
+                            if (ticket?.ScriptMode != true)
+                                resetOrganize = AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                    "Reset existing organize references in CDs?",
+                                    "Take over SM element relationships to CDs",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning);
+#endif
+
+							// do
+							int anyChanges = 0;
+							Action<Aas.IReferable> lambdaConvert = (o) => {
+								if (SmtAttributeRecord.TakeoverSmOrganizeToCds(env, o, 
+                                        eachElemDetails: eachElemDetails))
+									anyChanges++;
+							};
+
+							lambdaConvert(submodel);
+							submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+							{
+								// do
+								lambdaConvert(sme);
+								// recurse
+								return true;
+							});
+
+							// report
+							Log.Singleton.Info($"Take over SM element relationships to CDs: {anyChanges} changes done.");
+
+							// emit event for Submodel and children
+							this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
+
+							return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+						}
+
+						if (buttonNdx == 3)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -1962,7 +2022,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                         }
 
-                        if (buttonNdx == 3)
+                        if (buttonNdx == 4)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -2388,7 +2448,13 @@ namespace AasxPackageLogic
                 lambdaRf(true);
                 lambdaIdf();
                 lambdaIsCaseOf();
-                lambdaEDS(false);
+
+				DisplayOrEditEntityListOfExtension(
+					stack: stack, extensions: cd.Extensions,
+					setOutput: (v) => { cd.Extensions = v; },
+					relatedReferable: cd);
+
+				lambdaEDS(false);
                 lambdaSammExt();
 				lambdaExtRecs();
 			}
@@ -3007,7 +3073,8 @@ namespace AasxPackageLogic
                         if (sme is Aas.Entity)
                             (sme as Aas.Entity).Statements = sml;
                     },
-                    superMenu: superMenu);
+                    superMenu: superMenu,
+                    basedOnSemanticId: sme.SemanticId);
 
                 // Copy
 
@@ -3240,7 +3307,8 @@ namespace AasxPackageLogic
                     key: "annotation:",
                     are.Annotations,
                     setValueLambda: (sml) => are.Annotations = sml,
-                    superMenu: superMenu);
+                    superMenu: superMenu,
+                    basedOnSemanticId: are.SemanticId);
 
                 this.AddHintBubble(
                     substack, hintMode,
@@ -4061,9 +4129,10 @@ namespace AasxPackageLogic
                 else
                     this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
 
-                this.AddCheckBox(
-                   stack, "orderRelevant:", sml.OrderRelevant ?? false, " (true if order in list is relevant)",
-                   (b) => { sml.OrderRelevant = b; });
+                this.AddSmallCheckBox(
+                   stack, "orderRelevant:", sml.OrderRelevant ?? false, 
+                   additionalInfo: " (true if order in list is relevant)",
+                   setValue: (b) => { sml.OrderRelevant = b; return new AnyUiLambdaActionNone(); });
 
                 // stats
                 var stats = sml.EvalConstraintStat();

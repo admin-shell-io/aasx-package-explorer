@@ -509,7 +509,12 @@ namespace AasxPackageLogic
             Cmd = "-plugin-prefer")]
         public string PluginPrefer = null;
 
-        [OptionDescription(Description =
+		[OptionDescription(Description =
+			"Sorting order of ConceptDescriptions (ListIndex, IdShort, Id, Submodel, SME, Structured)",
+			Cmd = "-cd-sort-order")]
+		public string CdSortOrder = null;
+
+		[OptionDescription(Description =
             "For such operations as query repository, do load a new AASX file without " +
             "prompting the user.",
             Cmd = "-load-without-prompt")]

@@ -10,7 +10,9 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AdminShellNS;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0;
@@ -470,7 +472,22 @@ namespace AnyUi
         }
     }
 
-    public class AnyUiDialogueDataSelectFromList : AnyUiDialogueDataBase
+	public class AnyUiDialogueDataGridRow
+	{
+		public List<string> Cells { get; set; } = new List<string>();
+		public object Tag = null;
+
+		public AnyUiDialogueDataGridRow() { }
+
+		public AnyUiDialogueDataGridRow(object tag, params string[] cells)
+		{
+			this.Tag = tag;
+            if (cells != null)
+                this.Cells = cells.ToList();
+		}
+	}
+
+	public class AnyUiDialogueDataSelectFromList : AnyUiDialogueDataBase
     {
         // in
         public List<AnyUiDialogueListItem> ListOfItems = null;
@@ -488,7 +505,30 @@ namespace AnyUi
         }
     }
 
-    public class AnyUiDialogueDataProgress : AnyUiDialogueDataBase
+	public class AnyUiDialogueDataSelectFromDataGrid : AnyUiDialogueDataBase
+	{
+        // config
+        public AnyUiListOfGridLength ColumnDefs = null;
+        public string[] ColumnHeaders = null;
+        public string[] AlternativeSelectButtons = null;
+
+		// in
+		public List<AnyUiDialogueDataGridRow> Rows = null;
+		              
+		// out
+		public int ResultIndex = -1;
+		public AnyUiDialogueDataGridRow ResultItem = null;
+		public IList<AnyUiDialogueDataGridRow> ResultItems = null;
+
+		public AnyUiDialogueDataSelectFromDataGrid(
+			string caption = "",
+			double? maxWidth = null)
+			: base(caption, maxWidth)
+		{
+		}
+	}
+
+	public class AnyUiDialogueDataProgress : AnyUiDialogueDataBase
     {
         public event Action<double, string> DataChanged;
 

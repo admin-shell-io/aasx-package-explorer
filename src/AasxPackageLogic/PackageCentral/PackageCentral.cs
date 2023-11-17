@@ -9,10 +9,13 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
+using Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0;
+using AasxIntegrationBase;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -25,6 +28,8 @@ namespace AasxPackageLogic.PackageCentral
         public PackageCentralException(string message, Exception innerException = null)
             : base(message, innerException) { }
     }
+
+    public delegate Aas.IReferable QuickLookupIdentifiable(string idKey);
 
     /// <summary>
     /// This class is an item maintained by the PackageCentral.
@@ -326,13 +331,53 @@ namespace AasxPackageLogic.PackageCentral
         // Access to identifiables
         //
 
-        public IEnumerable<Tuple<PackageContainerBase, Aas.IReferable>> LookupAllIdent(string idKey)
+        /// <summary>
+        /// This provides a "quick" lookup of Identifiables, e.g. based on hashes/ dictionaries.
+        /// May be not 100% reliable, but quick.
+        /// </summary>
+        public IEnumerable<Tuple<PackageContainerBase, Aas.IReferable>> QuickLookupAllIdent(
+            string idKey,
+            bool deepLookup = false)
         {
+            if (idKey?.HasContent() != true)
+                yield break;
+
             foreach (var cnt in GetAllContainer())
+            {
+                var res = new Dictionary<Aas.IReferable, Aas.IReferable>();
+
                 if (cnt.IdentifiableLookup != null)
                     foreach (var idf in cnt.IdentifiableLookup.LookupAllIdent(idKey))
-                        yield return new Tuple<PackageContainerBase, IReferable>(cnt, idf);
+                        if (!res.ContainsKey(idf))
+                            res.Add(idf, idf);
+                
+                if (deepLookup && cnt.Env?.AasEnv != null)
+                    foreach (var rfi in cnt.Env?.AasEnv.FindAllReferable(onlyIdentifiables: true))
+                        if (rfi is Aas.IIdentifiable idf && idf.Id?.Trim() == idKey.Trim())
+                            res.Add(idf, idf);
+                            
+                foreach (var idf in res.Keys)
+                    yield return new Tuple<PackageContainerBase, IReferable>(cnt, idf);
+            }
         }
+
+		/// <summary>
+		/// This provides a "quick" lookup of Identifiables, e.g. based on hashes/ dictionaries.
+		/// May be not 100% reliable, but quick.
+		/// </summary>
+		public Aas.IReferable QuickLookupFirstIdent(string idKey)
+        {
+            return QuickLookupAllIdent(idKey).FirstOrDefault()?.Item2;
+		}
+
+		/// <summary>
+		/// This provides a "quick" lookup of Identifiables, e.g. based on hashes/ dictionaries.
+		/// May be not 100% reliable, but quick.
+		/// </summary>
+		public T QuickLookupFirstIdent<T>(string idKey) where T : class, Aas.IReferable
+		{
+			return QuickLookupAllIdent(idKey).FirstOrDefault()?.Item2 as T;
+		}
 
 		//
 		// Event management

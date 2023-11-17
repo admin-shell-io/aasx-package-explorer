@@ -15,6 +15,7 @@ using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static AnyUi.AnyUiDialogueDataTextEditor;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
@@ -334,6 +335,62 @@ namespace AasxPackageLogic
             }
         }
 
+        public void DispEditMultiElemsRemoveExtensions(IEnumerable<Aas.IReferable> bosObjs)
+        {
+            // idShort or semId?
+            var useSemId = AnyUiMessageBoxResult.Yes ==
+                this.context.MessageBoxFlyoutShow(
+                    "Do you want to select extension based on name (No) or based on" +
+                    "semanticId (Yes)?", "Remove extensions",
+                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question);
+
+            // collect data
+            var dict = new MultiValueDictionary<string, Tuple<Aas.IReferable, Aas.IExtension>>();
+            foreach (var bo in bosObjs)
+                if (bo?.Extensions != null)
+                    foreach (var ext in bo.Extensions)
+                    {
+                        var key = (useSemId) ? "" + ext.SemanticId?.ToStringExtended() : "" + ext.Name;
+                        if (!key.HasContent())
+                            continue;
+                        dict.Add(
+                            key: key,
+                            value: new Tuple<Aas.IReferable, Aas.IExtension>(bo, ext));
+                    }
+            if (dict.Keys.Count() < 1)
+            {
+                Log.Singleton.Error("Remove extension from multiple elements: Could not find valid " +
+                    "selection items. Aborting!");
+                return;
+            }
+
+            // make list
+            var uc = new AnyUiDialogueDataSelectFromList();
+            uc.ListOfItems = dict.Keys.Select((dictKey)
+                    => new AnyUiDialogueListItem()
+                    {
+                        Text = "" + dictKey + $" ({dict[dictKey].Count()})",
+                        Tag = dict[dictKey].ToList()
+                    }).ToList();
+
+            this.context.StartFlyoverModal(uc);
+            if (uc.Result && uc.ResultItem?.Tag is List<Tuple<Aas.IReferable, Aas.IExtension>> tuples)
+            {
+                int numRemove = 0;
+
+                foreach (var tuple in tuples)
+                    if (tuple?.Item1?.Extensions != null && tuple.Item2 != null
+                    && tuple.Item1.Extensions.Contains(tuple.Item2))
+                    {
+                        tuple.Item1.Extensions.Remove(tuple.Item2);
+                        numRemove++;
+                    }
+                
+                Log.Singleton.Info($"Remove extension from multiple elements: {numRemove} extensions removed.");
+			}
+
+        }
+
         /// <summary>
         /// This is a special helper for multiple selected entities in a list of entoties of type <c>T</c>.
         /// It is separate from <c>EntityListUpDownDeleteHelper</c> in order to minimize cross effecrs
@@ -613,7 +670,9 @@ namespace AasxPackageLogic
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
                                 .AddAction("aas-elem-cut", "Change attribute ..",
-                                    "Changes common attributes of multiple selected elements."),
+                                    "Changes common attributes of multiple selected elements.")
+								.AddAction("remove-extension", "Remove extensions ..",
+									"Removes a specific selected extension from elements."),
                             ticketAction: (buttonNdx, ticket) =>
                             {
                                 if (buttonNdx == 0)
@@ -630,7 +689,14 @@ namespace AasxPackageLogic
                                         return new AnyUiLambdaActionRedrawAllElements(nextFocus: nf);
                                     }
                                 }
-                                return new AnyUiLambdaActionNone();
+
+                                if (buttonNdx == 1)
+                                {
+                                    DispEditMultiElemsRemoveExtensions(bos);
+									return new AnyUiLambdaActionRedrawAllElements(nextFocus: null);
+								}
+
+								return new AnyUiLambdaActionNone();
                             });
                     }
                 }

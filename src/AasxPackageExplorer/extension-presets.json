@@ -1,5 +1,22 @@
 [
   {
+    "name": "Main app | Submodel template attribute set",
+    "extension": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/smt-attribute-set/v1/0"
+          }
+        ]
+      },
+      "name": "smt-attrtibute-set",
+      "value": "{ type: \"Sin\", ofs: 230.0, scale: 10.0, freq: 0.05, timer: 500 }",
+      "valueId": null
+    }
+  },
+  {
     "name": "Main app | Animation of values",
     "extension": {
       "semanticId": null,

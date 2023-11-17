@@ -19,6 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using Aas = AasCore.Aas3_0;
 using Samm = AasCore.Samm2_2_0;
 
@@ -1550,22 +1551,146 @@ namespace AasxPackageLogic
             }
         }
 
-        /// <summary>
-        /// Provides a menu to add a new SubmodelElement to a list of these.
-        /// </summary>
-        public void DispSmeListAddNewHelper<T>(
+        public class DispSmeListAddNewSmtItemRecord
+        {
+            public Aas.IConceptDescription Cd;
+            public SmtAttributeRecord SmtRec;
+            public Samm.ModelElement SammMe;
+            public AasSubmodelElements? Sme;
+        }
+
+		protected List<AnyUiDialogueDataGridRow> DispSmeListAddNewCheckForSmtItems(
+			Aas.IReference basedOnSemanticId)
+        {
+            // access 
+            var res = new List<AnyUiDialogueDataGridRow>();
+            if (basedOnSemanticId?.IsValid() != true
+                || basedOnSemanticId.Count() != 1)
+                return res;
+
+            // check all ConceptDescriptions for the semanticId
+            var cdId = basedOnSemanticId.Keys[0].Value;
+            var candidates = new List<Tuple<Aas.IConceptDescription, SmtAttributeRecord>>();
+            foreach (var rftup in packages.QuickLookupAllIdent(cdId))
+                if (rftup?.Item2 is Aas.ConceptDescription cd)
+                {
+                    // SMT extension
+                    foreach (var smtRec in DispEditHelperExtensions
+                        .CheckReferableForExtensionRecords<SmtAttributeRecord>(cd))
+                        // find all organizes
+                        if (smtRec.Organizes != null)
+                            foreach (var orgId in smtRec.Organizes)
+                                foreach (var rftup2 in packages.QuickLookupAllIdent(orgId?.Value))
+                                    if (rftup2.Item2 is Aas.ConceptDescription cd2)
+                                        foreach (var smtRec2 in DispEditHelperExtensions
+                                            .CheckReferableForExtensionRecords<SmtAttributeRecord>(cd2))
+                                        {
+                                            // now, smtRec2 is a candidate for a follow up!
+                                            candidates.Add(new Tuple<IConceptDescription,
+                                                SmtAttributeRecord>(cd2, smtRec2));
+                                        }
+
+                    // SAMM extension
+                    foreach (var me in DispEditHelperSammModules.CheckReferableForSammElements(cd))
+                    {
+                        foreach (var item in SammTransformation.FindChildElementsForConcept(packages, cd, me))
+                            candidates.Add(item);
+                    }
+                }
+
+            // check candidates further
+            foreach (var cand in candidates)
+            {
+                // access
+                var cd = cand.Item1;
+                var smtRec = cand.Item2;
+                if (cd == null || smtRec == null)
+                    continue;                
+
+				// Submodel
+				if (smtRec.IsSubmodel)
+                {
+                    // basically makes no sense
+                    res.Add(new AnyUiDialogueDataGridRow()
+                    {
+                        // Text = $"{cd.IdShort} (Submodel) {cd.Id}",
+                        Cells = (new[] { "-", smtRec.CardinalityShort(), "SM", cd.IdShort, cd.Id }).ToList(),
+                        Tag = new DispSmeListAddNewSmtItemRecord()
+                        {
+                            Cd = cd,
+                            SmtRec = smtRec,
+                            Sme = null
+                        }
+					});
+                }
+                else
+                {
+                    if (smtRec.SubmodelElements != null)
+                        foreach (var smet in smtRec.SubmodelElements)
+						    res.Add(new AnyUiDialogueDataGridRow()
+						    {
+							    // Text = $"{cd.IdShort} ({smet.ToString()}) {cd.Id}",
+								Cells = (new[] { "-", smtRec.CardinalityShort(), 
+                                    ExtendISubmodelElement.ToString(smet), cd.IdShort, cd.Id }).ToList(),
+								Tag = new DispSmeListAddNewSmtItemRecord()
+								{
+									Cd = cd,
+									SmtRec = smtRec,
+									Sme = smet
+								}
+							});
+				}
+            }
+
+            // ok
+            return res;
+		}
+
+        protected void DispSmeListAddNewDetailOnItems<T>(
+            List<T> smeList,
+            List<AnyUiDialogueDataGridRow> items) where T : class, ISubmodelElement
+		{
+            // access
+            if (smeList == null || items == null)
+                return;
+
+            // for all items
+            foreach (var item in items)
+            {
+                // access
+                if (!(item.Tag is DispSmeListAddNewSmtItemRecord itrec)
+                    || itrec.Cd?.Id == null)
+                    continue;
+
+                // search for sme's having the specific semantic id
+                var cnt = smeList.Where((sme) => (sme?.SemanticId?
+                            .Matches(KeyTypes.GlobalReference, itrec.Cd.Id, MatchMode.Relaxed) == true)).Count();
+                if (cnt > 0)
+                    // make sense to rework
+                    item.Cells[0] = "" + cnt;
+            }
+        }
+
+		/// <summary>
+		/// Provides a menu to add a new SubmodelElement to a list of these.
+		/// </summary>
+		public void DispSmeListAddNewHelper<T>(
             Aas.Environment env,
             AnyUiStackPanel stack, ModifyRepo repo, string key,
             List<T> smeList,
             Action<List<T>> setValueLambda = null,
-            AasxMenu superMenu = null) where T : ISubmodelElement
+            AasxMenu superMenu = null,
+            Aas.IReference basedOnSemanticId = null) where T : class, ISubmodelElement
         {
             // access
             if (stack == null)
                 return;
 
-            // hint
-            this.AddHintBubble(stack, hintMode, new[] {
+            // gather potential SMT element items
+            var smtElemItem = DispSmeListAddNewCheckForSmtItems(basedOnSemanticId);
+
+			// hint
+			this.AddHintBubble(stack, hintMode, new[] {
                     new HintCheck(
                         () => { return smeList == null || smeList.Count < 1; },
                         "This element currently has no SubmodelElements, yet. " +
@@ -1595,6 +1720,12 @@ namespace AasxPackageLogic
                         "Adds a selected kind of SubmodelElement to the containing collection.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement."));
+
+            if (smtElemItem.Count > 0)
+            {
+				menu.AddAction("add-smt-organized", "Add SMT organized ..",
+				    "Adds a element based on SMT organized elements given by semanticId.");
+			}
 
             this.AddActionPanel(
                 stack, key,
@@ -1643,7 +1774,10 @@ namespace AasxPackageLogic
                                 smeList = new List<T>();
                                 setValueLambda?.Invoke(smeList);
                             }
+
+                            smeList = smeList ?? new List<T>();
                             smeList.Add(smw);
+                            setValueLambda(smeList);
 
                             // make some more adjustments
                             if (sme2 is IMultiLanguageProperty mlp)
@@ -1665,6 +1799,67 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2, isExpanded: true);
                         }
                     }
+
+                    if (buttonNdx == 4)
+                    {
+                        // new SMT
+
+                        // rework list
+                        DispSmeListAddNewDetailOnItems(smeList, smtElemItem);
+
+						// show list
+						var uc = new AnyUiDialogueDataSelectFromDataGrid(
+                                    "Select element(s) to be created guided by SMT attributes ..",
+                                    maxWidth: 1400);
+                        
+                        uc.ColumnDefs = AnyUiListOfGridLength.Parse(new[] { "1*", "1*", "1*", "5*", "8*" });
+                        uc.ColumnHeaders = new[] { "Present", "Card.", "Type", "IdShort", "Id" };
+                        uc.Rows = smtElemItem;
+                        
+						this.context.StartFlyoverModal(uc);
+                        var itemsAdded = 0;
+                        ISubmodelElement lastSme = null;
+                        if (uc.ResultItems != null)
+                            foreach (var ucr in uc.ResultItems)
+                                if (ucr?.Tag is DispSmeListAddNewSmtItemRecord item)
+                                {
+                                    // create from SMT and do NOT allow Submodels here
+                                    if (item.SmtRec != null && item.Sme.HasValue && item.Cd != null)
+                                    {
+                                        // create a new SME
+                                        var sme = AdminShellUtil.CreateSubmodelElementFromEnum(item.Sme.Value);
+                                        if (sme == null)
+                                        {
+                                            Log.Singleton.Error("Creating type provided by SMT attributes.");
+                                            return new AnyUiLambdaActionNone();
+                                        }
+
+                                        // populate by SMT attributes
+                                        item.SmtRec.PopulateReferable(sme, item.Cd);
+
+                                        // add & confirm
+                                        var smw = sme as T;
+                                        if (smw != null)
+                                        {
+                                            smeList.Add(smw);
+                                            this.AddDiaryEntry(sme, new DiaryEntryStructChange(
+                                                StructuralChangeReason.Create));
+
+                                            // statistics
+                                            lastSme = sme;
+                                            itemsAdded++;
+                                        }
+                                    }
+                                }
+
+                        // finalize
+                        if (itemsAdded > 0)
+                            Log.Singleton.Info($"{itemsAdded} elements guided by SMT were added.");
+
+                        if (lastSme != null)
+							return new AnyUiLambdaActionRedrawAllElements(nextFocus: lastSme, isExpanded: true);
+					}
+
                     return new AnyUiLambdaActionNone();
                 });
         }

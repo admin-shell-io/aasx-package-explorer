@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 using Aas = AasCore.Aas3_0;
 using Samm = AasCore.Samm2_2_0;
 
@@ -563,7 +564,20 @@ namespace AasxPackageLogic
             "Environment", "AdministrationShells", "ConceptDescriptions", "Package", "OrphanSubmodels",
             "AllSubmodels", "SupplementalFiles", "Value.Aas.Reference", "Empty", "Dummy" };
 
-        public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme, Structured }
+        public enum ConceptDescSortOrder {
+            [EnumMember(Value = "ListIndex")]
+            None = 0,
+			[EnumMember(Value = "IdShort")]
+			IdShort,
+			[EnumMember(Value = "Id")]
+			Id,
+			[EnumMember(Value = "Submodel")]
+			BySubmodel,
+			[EnumMember(Value = "SME")]
+			BySme,
+			[EnumMember(Value = "Structured")]
+			Structured 
+        }
 
         public string thePackageSourceFn;
         public AdminShellPackageEnv thePackage = null;
@@ -651,7 +665,15 @@ namespace AasxPackageLogic
                 VisualElementEnvironmentItem._cdSortOrder = value;
             }
         }
-    }
+
+        public static void SetCdSortOrderByString(string order)
+        {
+            if (order?.HasContent() != true)
+                return;
+			VisualElementEnvironmentItem._cdSortOrder = 
+                EnumHelper.GetEnumMemberFromValueString<ConceptDescSortOrder>(order);
+		}
+	}
 
     public class VisualElementAdminShell : VisualElementGeneric
     {
@@ -1177,11 +1199,12 @@ namespace AasxPackageLogic
         }
     }
 
-
     public class VisualElementConceptDescription : VisualElementGeneric
     {
         public Aas.Environment theEnv = null;
         public Aas.IConceptDescription theCD = null;
+
+        public bool HasSpecialColors = false;
 
         public VisualElementConceptDescription(
             VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
@@ -1202,6 +1225,27 @@ namespace AasxPackageLogic
 
             RefreshFromMainData();
             RestoreFromCache();
+        }
+
+        public void ApplyShade(int recursionIndex)
+        {
+            // normal "CD" colors
+            if (!HasSpecialColors)
+                switch (recursionIndex % 4)
+                {
+                    case 0: 
+                        this.TagBg = new AnyUiColor(0xff707070u);
+                        break;
+				    case 1:
+					    this.TagBg = new AnyUiColor(0xff505050u);
+					    break;
+				    case 2:
+					    this.TagBg = new AnyUiColor(0xff303030u);
+					    break;
+				    case 3:
+					    this.TagBg = new AnyUiColor(0xff101010u);
+					    break;
+			    }
         }
 
         public override string GetFilterElementInfo()
@@ -1252,6 +1296,8 @@ namespace AasxPackageLogic
                         this.Background = new AnyUiColor(Samm.Constants.RenderBackground);
 						this.TagBg = new AnyUiColor(ri.Background);
                         this.TagFg = new AnyUiColor(ri.Foreground);
+
+                        this.HasSpecialColors = true;
 					}
 				}
 
@@ -1276,6 +1322,19 @@ namespace AasxPackageLogic
                 } 
 #endif
 			}
+        }
+
+        // member access
+
+        public IEnumerable<VisualElementConceptDescription> FindAllMemberWithId(string id)
+        {
+            foreach (var mem in Members)
+                if (mem is VisualElementConceptDescription memcd
+                    && memcd?.theCD?.Id?.HasContent() == true
+                    && memcd.theCD.Id.Trim() == id.Trim())
+                {
+                    yield return memcd;
+                }
         }
 
         // sorting
@@ -1544,7 +1603,10 @@ namespace AasxPackageLogic
         private MultiValueDictionary<Aas.IConceptDescription, Aas.ISubmodel> _cdToSm =
             new MultiValueDictionary<Aas.IConceptDescription, Aas.ISubmodel>();
 
-        public ListOfVisualElement()
+		private MultiValueDictionary<Aas.IConceptDescription, VisualElementGeneric> _cdInStructure =
+	        new MultiValueDictionary<Aas.IConceptDescription, VisualElementGeneric>();
+
+		public ListOfVisualElement()
         {
             // interested plug-ins
             _pluginsToCheck.Clear();
@@ -1896,7 +1958,35 @@ namespace AasxPackageLogic
             }
         }
 
-        private void GenerateInnerElementsForConceptDescriptions(
+        private IEnumerable<Aas.IReferable> ComputeTopsOfExtensionForest(
+            List<Aas.IIdentifiable> allIdf)
+        {
+            // access
+            if (allIdf == null)
+                yield break;
+
+            // first, put all Identifiables into a dictionary
+            var tops = new MultiValueDictionary<string, Aas.IIdentifiable>();
+            foreach (var idf in allIdf)
+                tops.Add(idf.Id, idf);
+
+            // now, go through all Identifiables and remove the direct descendants
+            foreach (var idf in allIdf)
+				foreach (var idfrec in DispEditHelperExtensions.CheckReferableForExtensionRecords(idf))
+					if (idfrec is IExtensionStructureModel asm)
+                    {
+                        // use this information to REMOVE all Identifiables, which are descendants
+                        foreach (var dsc in asm.DescendOnce())
+                            tops.Remove(dsc.Value);
+				    }
+
+            // the remaining keys point to top Identifiables
+            foreach (var key in tops.Keys)
+                foreach (var i2 in tops[key])
+                yield return i2;
+		}
+
+		private void GenerateInnerElementsForConceptDescriptions(
             TreeViewLineCache cache, Aas.Environment env,
             VisualElementEnvironmentItem tiCDs,
             VisualElementGeneric root,
@@ -1910,17 +2000,54 @@ namespace AasxPackageLogic
             // try to approach structures first
             //
 
-            if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Structured)
+            var tiUnstructuredRoot = tiCDs;
+
+			if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Structured)
             {
-                // recursive lambda!!
-                Action<VisualElementGeneric, Aas.IConceptDescription> lambdaAddRecurse = null;
-                lambdaAddRecurse = (tiParent, cd) =>
+				//
+				// Forest of hierarchies
+				//
+
+				var tiStructuredRoot = new VisualElementEnvironmentItem(
+					parent: tiCDs, cache: cache,
+					package: tiCDs.thePackage, env: tiCDs.theEnv,
+					itemType: VisualElementEnvironmentItem.ItemType.Env);
+				tiStructuredRoot.Caption = "Structured ConceptDescriptions";
+                tiStructuredRoot.IsExpanded = false;
+				tiCDs.Members.Add(tiStructuredRoot);
+
+				// recursive lambda!!
+				Action<VisualElementGeneric, Aas.IConceptDescription, int> lambdaAddRecurse = null;
+                lambdaAddRecurse = (tiParent, cd, recDepth) =>
                 {
                     // add
                     var tiCD = GenerateVisualElementsForSingleCD(cache, env, cd, tiParent);
-                    _cdReferred.Add(cd, tiCD);
+                    tiCD.ApplyShade(recDepth);
 
-					// look for descendants
+                    // when straight called, might be not part of a structure
+                    _cdInStructure.Add(cd, tiCD);
+
+					// look for Extension descendants
+					foreach (var ee in DispEditHelperExtensions.CheckReferableForExtensionRecords(cd))
+						if (ee is IExtensionStructureModel esm)
+							foreach (var ier in esm.DescendOnce())
+							{
+								// try to find extension elements
+								if (ier?.Value?.HasContent() != true || !_idToReferable.ContainsKey(ier.Value))
+									continue;
+
+                                // already in?
+                                if (tiCD.FindAllMemberWithId(ier.Value).FirstOrDefault() != null)
+                                    continue;
+
+                                // add
+								foreach (var y in _idToReferable[ier.Value])
+                                    if (y is Aas.IConceptDescription foundCD)
+                                        // descendents will be marked as in structure
+                                        lambdaAddRecurse(tiCD, foundCD, recDepth + 1);
+							}
+
+					// look for SAMM descendants
 					foreach (var me in DispEditHelperSammModules.CheckReferableForSammElements(cd))
 						if (me is Samm.ISammStructureModel ssm)
                             foreach (var sr in ssm.DescendOnce())
@@ -1931,18 +2058,85 @@ namespace AasxPackageLogic
 
                                 foreach (var y in _idToReferable[sr.Value])
                                     if (y is Aas.IConceptDescription foundCD)
-                                        lambdaAddRecurse(tiCD, foundCD);
+										// descendents will be marked as in structure
+										lambdaAddRecurse(tiCD, foundCD, recDepth + 1);
                             }
 				};
 
-                // visit top nodes to start the lambda
+                // for the Extensions, identify the tops of the forest by computation                    
+                foreach (var idf in ComputeTopsOfExtensionForest(
+                    env.ConceptDescriptions.Cast<Aas.IIdentifiable>().ToList()))
+                {
+                    foreach(var idfrec in DispEditHelperExtensions.CheckReferableForExtensionRecords(idf))
+					    if (idfrec is IExtensionStructureModel esm /* && esm.IsTopElement() */)
+					    {
+						    // add && recurse
+						    // might not be in structure
+						    lambdaAddRecurse(tiStructuredRoot, idf as Aas.IConceptDescription, 0);
+					    }
+				}	
+
+				// visit dedicated top nodes to start the lambda
 				foreach (var cd in env.ConceptDescriptions)
-                    foreach (var me in DispEditHelperSammModules.CheckReferableForSammElements(cd))
+                {					
+                    // SAMM
+					foreach (var me in DispEditHelperSammModules.CheckReferableForSammElements(cd))
                         if (me is Samm.ISammStructureModel ssm && ssm.IsTopElement())
                         {
                             // add && recurse
-                            lambdaAddRecurse(tiCDs, cd);
-					    }
+                            // mark as in structure
+                            lambdaAddRecurse(tiStructuredRoot, cd, 0);
+                        }
+				}
+
+				//
+				// provide an branch per Submodel?
+				//
+
+				var tiSubmodelsRoot = new VisualElementEnvironmentItem(
+					parent: tiCDs, cache: cache,
+					package: tiCDs.thePackage, env: tiCDs.theEnv,
+					itemType: VisualElementEnvironmentItem.ItemType.Env);
+				tiSubmodelsRoot.Caption = "Submodel ConceptDescriptions";
+                tiSubmodelsRoot.IsExpanded = false;
+				tiCDs.Members.Add(tiSubmodelsRoot);
+
+                if (env?.Submodels != null)
+                    foreach (var sm in env.Submodels)
+                    {
+                        // branch per Submodel
+						var tiSM = new VisualElementEnvironmentItem(
+					        parent: tiCDs, cache: cache,
+					        package: tiCDs.thePackage, env: tiCDs.theEnv,
+					        itemType: VisualElementEnvironmentItem.ItemType.Env);
+						tiSM.Caption = "Submodel: " + sm.IdShort;
+                        if (sm.Administration != null)
+                            tiSM.Info += $" V{sm.Administration.Version}.{sm.Administration.Revision}";
+						tiSubmodelsRoot.Members.Add(tiSM);
+
+						// now list CDs here
+						foreach (var cd in env.ConceptDescriptions)
+                        {
+							if (!_cdToSm.ContainsKey(cd))
+								continue;
+                            if (null == _cdToSm[cd].Where((cdsm) => cdsm == sm).FirstOrDefault())
+                                continue;
+
+							GenerateVisualElementsForSingleCD(cache, env, cd, tiSM);
+						}
+					}
+
+				//
+				// provide extra branch for "unstructured"
+				//
+
+				tiUnstructuredRoot = new VisualElementEnvironmentItem(
+                    parent: tiCDs, cache: cache,
+                    package: tiCDs.thePackage, env: tiCDs.theEnv,
+                    itemType: VisualElementEnvironmentItem.ItemType.Env);
+                tiUnstructuredRoot.Caption = "Unstructured ConceptDescriptions";
+                tiCDs.Members.Add(tiUnstructuredRoot);
+				tiUnstructuredRoot.IsExpanded = false;
 			}
 
             //
@@ -1961,10 +2155,11 @@ namespace AasxPackageLogic
                     continue;
 
 				if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Structured
-					&& _cdReferred.ContainsKey(cd))
+					&& ( _cdInStructure.ContainsKey(cd) || _cdToSm.ContainsKey(cd)))
 					continue;
 
-				GenerateVisualElementsForSingleCD(cache, env, cd, tiCDs);
+                // add to the "unstructured" branch of the tree
+				GenerateVisualElementsForSingleCD(cache, env, cd, tiUnstructuredRoot);
             }
 
             //
@@ -2022,6 +2217,7 @@ namespace AasxPackageLogic
                 _idToReferable.Clear();
                 _cdReferred.Clear();
                 _cdToSm.Clear();
+                _cdInStructure.Clear();
 
 				foreach (var aas in env.AssetAdministrationShells)
                     if (aas != null)

@@ -962,7 +962,7 @@ namespace Extensions
 
             foreach (var aas in environment.AssetAdministrationShells)
             {
-                if (aas.AssetInformation.GlobalAssetId.Equals(globalAssetId))
+                if (aas.AssetInformation?.GlobalAssetId?.Equals(globalAssetId) == true)
                 {
                     return aas;
                 }
