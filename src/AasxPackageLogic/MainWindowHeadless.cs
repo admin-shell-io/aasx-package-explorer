@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using VDS.RDF.Parsing;
 using VDS.RDF;
 using Aas = AasCore.Aas3_0;
+using static AasxPackageLogic.DispEditHelperBasics;
+using System.Drawing;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -1267,7 +1269,133 @@ namespace AasxPackageLogic
                 ticket.Success = true;
             }
 
-			if (cmd == "submodelinstancefromsammaspect")
+            if (cmd == "smtextensionfromqualifiers")
+            {
+                // arguments
+                if (ticket.Env == null
+                    || ticket.Submodel == null)
+                {
+                    LogErrorToTicket(ticket,
+                        "Create SMT extensions from qualifiers: No valid AAS environment or " +
+                        "no Submodel selected.");
+                    return;
+                }
+
+                // ask
+                if (ticket?.ScriptMode != true
+                    && AnyUiMessageBoxResult.Yes != DisplayContext.MessageBoxFlyoutShow(
+                        "This operation will move data in particular Qualifiers to Extensions of " +
+                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                        "Convert SMT qualifiers to SMT extension",
+                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                    return;
+
+                // use utility
+                try
+                {
+                    // do
+                    int anyChanges = 0;
+                    var submodel = ticket.Submodel;
+                    Action<Aas.IReferable> lambdaConvert = (o) => {
+                        if (AasSmtQualifiers.ConvertSmtQualifiersToExtension(o))
+                            anyChanges++;
+                    };
+
+                    lambdaConvert(submodel);
+                    submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                    {
+                        // do
+                        lambdaConvert(sme);
+                        // recurse
+                        return true;
+                    });
+
+                    // report
+                    Log.Singleton.Info($"Convert SMT qualifiers to SMT extension: {anyChanges} changes done.");
+
+                    // emit event for Submodel and children
+                    // this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
+
+                    ticket.SetNextFocus = ticket.SubmodelRef;
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(
+                        ex, $"When creating SMT extensions from qualifiers.");
+                }
+
+                ticket.Success = true;
+            }
+
+            if (cmd == "smtorganizesfromsubmodel")
+            {
+                // arguments
+                if (ticket.Env == null
+                    || ticket.Submodel == null)
+                {
+                    LogErrorToTicket(ticket,
+                        "Take over Submodel's element relationships to CDs SMT organizes: " +
+                        "No valid AAS environment or no Submodel selected.");
+                    return;
+                }
+
+                // ask 1
+                if (ticket?.ScriptMode != true
+                    && AnyUiMessageBoxResult.Yes != DisplayContext.MessageBoxFlyoutShow(
+                        "This operation analyzes the element relatioships in the Submodel " +
+                        "and will take over these as organize references into SMT attribute " +
+                        "records of associated ConceptDescriptions. Do you want to proceed?",
+                        "Take over SM element relationships to CDs",
+                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                    return;
+
+                // ask 2
+                var eachElemDetails = true;
+                if (ticket?.ScriptMode != true)
+                    eachElemDetails = AnyUiMessageBoxResult.Yes == DisplayContext.MessageBoxFlyoutShow(
+                        "Create detailed SMT attributes for each relevant ConceptDescription, " +
+                        "include SubmodelElement type list?",
+                        "Take over SM element relationships to CDs",
+                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning);
+
+                // use utility
+                try
+                {
+                    // do
+                    int anyChanges = 0;
+                    Action<Aas.IReferable> lambdaConvert = (o) => {
+                        if (SmtAttributeRecord.TakeoverSmOrganizeToCds(ticket.Env, o,
+                                eachElemDetails: eachElemDetails))
+                            anyChanges++;
+                    };
+
+                    lambdaConvert(ticket.Submodel);
+                    ticket.Submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                    {
+                        // do
+                        lambdaConvert(sme);
+                        // recurse
+                        return true;
+                    });
+
+                    // report
+                    Log.Singleton.Info($"Take over SM element relationships to CDs: {anyChanges} changes done.");
+
+                    // emit event for Submodel and children
+                    // this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
+
+                    ticket.SetNextFocus = ticket.SubmodelRef;
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(
+                        ex, $"When creating SMT extensions from qualifiers.");
+                }
+
+                ticket.Success = true;
+            }
+
+            if (cmd == "submodelinstancefromsammaspect")
 			{
 				// arguments
 				if (ticket.Env == null
@@ -1275,7 +1403,7 @@ namespace AasxPackageLogic
 				{
 					LogErrorToTicket(ticket,
 						"Create Submodel instance form SAMM aspect model: No valid AAS environment or " +
-						"no ConceptDescription selected available.");
+						"no ConceptDescription selected.");
 					return;
 				}
 

@@ -36,7 +36,7 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
             var sm = currentReferable as Aas.Submodel;
-            if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_Document.SemanticId.GetAsExactlyOneKey()))
+            if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_Document?.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferDocumentationHsuToSg2(this,
                             $"Convert Submodel '{"" + sm.IdShort}' for Documentation HSU to SG2"));
 

@@ -886,6 +886,11 @@ namespace AasxIntegrationBase
         /// </summary>
         public Dictionary<string, object> PostResults = null;
 
+        /// <summary>
+        /// When not <c>null</c>, will focus to this business object.
+        /// </summary>
+        public object SetNextFocus;
+
         //
         // Convenience
         //

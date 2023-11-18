@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0;
@@ -1531,7 +1532,9 @@ namespace AasxPackageLogic
                     MainWindow.RedrawAllElementsAndFocus();
             }
 
-			if (cmd == "submodelinstancefromsammaspect")
+			if (cmd == "submodelinstancefromsammaspect"
+                || cmd == "smtextensionfromqualifiers"
+                || cmd == "smtorganizesfromSubmodel")
 			{
 				// simply pass on
 				try
@@ -1547,7 +1550,7 @@ namespace AasxPackageLogic
 
 				// redisplay
 				if (ticket.Success)
-					MainWindow.RedrawAllElementsAndFocus();
+					MainWindow.RedrawAllElementsAndFocus(nextFocus: ticket?.SetNextFocus);
 			}
 
 			if (cmd == "convertelement")

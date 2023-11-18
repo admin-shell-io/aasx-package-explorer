@@ -312,13 +312,18 @@ namespace AasxPackageExplorer
 					.AddWpfBlazor(name: "MissingCdsFromKnown", header: "Missing ConceptDescriptions from pool of known",
 							help: "For the selected element: checks which SME refer to missing " +
                                   "ConceptDescriptions, which can be created from pool of known definitions.")
-					.AddWpfBlazor(name: "SubmodelInstanceFromSammAspect", 
+                    .AddSeparator()
+                    .AddWpfBlazor(name: "SmtExtensionFromQualifiers", header: "SMT extensions from single SMT qualifiers",
+                            help: "Converts particular SMT qualifiers to SMT extension for selected element.")
+                    .AddWpfBlazor(name: "SmtOrganizesFromSubmodel", header: "SMT organizes from Submodel",
+                            help: "Take over Submodel's element relationships to associated concepts.")
+                    .AddWpfBlazor(name: "SubmodelInstanceFromSammAspect", 
                         header: "New Submodel instance from selected SAMM aspect",
 						help: "Creates a new Submodel instance from an selected ConceptDescription with a SAMM Aspect element.",
 						args: null))
 				.AddMenu(header: "Visualize …", attachPoint: "Visualize")
                 .AddSeparator()
-                .AddWpfBlazor(name: "ConvertElement", header: "Convert …",
+                .AddWpfBlazor(name: "ConvertElement", header: "Convert via plugin …",
                         help: "Asks plugins if these could make offers to convert the current elements and " +
                             "subsequently converts the element.",
                         args: new AasxMenuListOfArgDefs()

@@ -1551,7 +1551,19 @@ namespace AasxPackageLogic
             }
         }
 
-        public class DispSmeListAddNewSmtItemRecord
+        /// <summary>
+        /// Item of the organized relations expressed by SMT or SAMM concepts
+        /// </summary>
+        public class ConceptOrganizedChildItem
+        {
+            public Aas.IConceptDescription Cd;
+            public SmtAttributeRecord SmtRec;
+        }
+
+        /// <summary>
+        /// Information for the <c>Tag</c> of the data grid for new SMT guided elements
+        /// </summary>
+        protected class DispSmeListAddNewSmtItemRecord
         {
             public Aas.IConceptDescription Cd;
             public SmtAttributeRecord SmtRec;
@@ -1570,13 +1582,15 @@ namespace AasxPackageLogic
 
             // check all ConceptDescriptions for the semanticId
             var cdId = basedOnSemanticId.Keys[0].Value;
-            var candidates = new List<Tuple<Aas.IConceptDescription, SmtAttributeRecord>>();
+            var candidates = new List<ConceptOrganizedChildItem>();
             foreach (var rftup in packages.QuickLookupAllIdent(cdId))
                 if (rftup?.Item2 is Aas.ConceptDescription cd)
                 {
                     // SMT extension
                     foreach (var smtRec in DispEditHelperExtensions
                         .CheckReferableForExtensionRecords<SmtAttributeRecord>(cd))
+                    {
+#if __old
                         // find all organizes
                         if (smtRec.Organizes != null)
                             foreach (var orgId in smtRec.Organizes)
@@ -1586,10 +1600,16 @@ namespace AasxPackageLogic
                                             .CheckReferableForExtensionRecords<SmtAttributeRecord>(cd2))
                                         {
                                             // now, smtRec2 is a candidate for a follow up!
-                                            candidates.Add(new Tuple<IConceptDescription,
-                                                SmtAttributeRecord>(cd2, smtRec2));
+                                            candidates.Add(new ConceptOrganizedChildItem()
+                                            {
+                                                Cd = cd2,
+                                                SmtRec = smtRec2
+                                            });
                                         }
-
+#endif           
+                        foreach (var item in SmtAttributeRecord.FindChildElementsForConcept(packages, cd, smtRec))
+                            candidates.Add(item);
+                    }
                     // SAMM extension
                     foreach (var me in DispEditHelperSammModules.CheckReferableForSammElements(cd))
                     {
@@ -1602,40 +1622,40 @@ namespace AasxPackageLogic
             foreach (var cand in candidates)
             {
                 // access
-                var cd = cand.Item1;
-                var smtRec = cand.Item2;
-                if (cd == null || smtRec == null)
+                if (cand.Cd == null || cand.SmtRec == null)
                     continue;                
 
 				// Submodel
-				if (smtRec.IsSubmodel)
+				if (cand.SmtRec.IsSubmodel)
                 {
                     // basically makes no sense
                     res.Add(new AnyUiDialogueDataGridRow()
                     {
                         // Text = $"{cd.IdShort} (Submodel) {cd.Id}",
-                        Cells = (new[] { "-", smtRec.CardinalityShort(), "SM", cd.IdShort, cd.Id }).ToList(),
+                        Cells = (new[] { "-", cand.SmtRec.CardinalityShort(), "SM", 
+                            cand.Cd.IdShort, cand.Cd.Id }).ToList(),
                         Tag = new DispSmeListAddNewSmtItemRecord()
                         {
-                            Cd = cd,
-                            SmtRec = smtRec,
+                            Cd = cand.Cd,
+                            SmtRec = cand.SmtRec,
                             Sme = null
                         }
 					});
                 }
                 else
                 {
-                    if (smtRec.SubmodelElements != null)
-                        foreach (var smet in smtRec.SubmodelElements)
+                    if (cand.SmtRec.SubmodelElements != null)
+                        foreach (var smet in cand.SmtRec.SubmodelElements)
 						    res.Add(new AnyUiDialogueDataGridRow()
 						    {
 							    // Text = $"{cd.IdShort} ({smet.ToString()}) {cd.Id}",
-								Cells = (new[] { "-", smtRec.CardinalityShort(), 
-                                    ExtendISubmodelElement.ToString(smet), cd.IdShort, cd.Id }).ToList(),
+								Cells = (new[] { "-", cand.SmtRec.CardinalityShort(), 
+                                    ExtendISubmodelElement.ToString(smet), 
+                                    cand.Cd.IdShort, cand.Cd.Id }).ToList(),
 								Tag = new DispSmeListAddNewSmtItemRecord()
 								{
-									Cd = cd,
-									SmtRec = smtRec,
+									Cd = cand.Cd,
+									SmtRec = cand.SmtRec,
 									Sme = smet
 								}
 							});
@@ -1723,7 +1743,7 @@ namespace AasxPackageLogic
 
             if (smtElemItem.Count > 0)
             {
-				menu.AddAction("add-smt-organized", "Add SMT organized ..",
+				menu.AddAction("add-smt-guided", "Add SMT guided ..",
 				    "Adds a element based on SMT organized elements given by semanticId.");
 			}
 
@@ -1841,7 +1861,10 @@ namespace AasxPackageLogic
                                         var smw = sme as T;
                                         if (smw != null)
                                         {
+                                            smeList = smeList ?? new List<T>();
                                             smeList.Add(smw);
+                                            setValueLambda(smeList);
+
                                             this.AddDiaryEntry(sme, new DiaryEntryStructChange(
                                                 StructuralChangeReason.Create));
 

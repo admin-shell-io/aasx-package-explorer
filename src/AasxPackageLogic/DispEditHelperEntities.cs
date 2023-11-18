@@ -1843,10 +1843,12 @@ namespace AasxPackageLogic
                     ticketMenu: new AasxMenu()
                         .AddAction("upgrade-qualifiers", "Upgrade qualifiers",
                             "Upgrades particular qualifiers from V2.0 to V3.0 for selected element.")
+#if __moved_to_menu
 						.AddAction("SMT-qualifiers-convert", "Convert SMT qualifiers",
 							"Converts particular SMT qualifiers to SMT extension for selected element.")
 						.AddAction("SMT-set-organize", "Set SMT organize",
 							"Take over Submodel's element relationships to associated concepts.")
+#endif
 						.AddAction("remove-qualifiers", "Remove qualifiers",
                             "Removes all qualifiers for selected element.")
                         .AddAction("remove-extensions", "Remove extensions",
@@ -1901,7 +1903,9 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                         }
 
-						if (buttonNdx == 1)
+#if __moved_to_menu
+
+                        if (buttonNdx == 1)
 						{
                             // ask
 							if (ticket?.ScriptMode != true
@@ -1993,8 +1997,8 @@ namespace AasxPackageLogic
 
 							return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
 						}
-
-						if (buttonNdx == 3)
+#endif
+						if (buttonNdx == 1)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -2022,7 +2026,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                         }
 
-                        if (buttonNdx == 4)
+                        if (buttonNdx == 2)
                         {
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
@@ -2128,7 +2132,6 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionNone();
                         }));
 
-
                 // HasKind
                 this.DisplayOrEditEntityModelingKind(
                     stack, submodel.Kind,
@@ -2169,7 +2172,30 @@ namespace AasxPackageLogic
 					hideExtensions: true);
 
 			}
-		}
+
+            //
+            // ConceptDescription <- via semantic ID ?!
+            //
+
+            if (submodel.SemanticId != null && submodel.SemanticId.Keys.Count > 0)
+            {
+                var cd = env.FindConceptDescriptionByReference(submodel.SemanticId);
+                if (cd == null)
+                {
+                    this.AddGroup(
+                        stack, "ConceptDescription cannot be looked up within the AAS environment!",
+                        this.levelColors.MainSection);
+                }
+                else
+                {
+                    DisplayOrEditAasEntityConceptDescription(
+                        packages, env, submodel, cd, editMode, repo, stack,
+                        embedded: true,
+                        hintMode: hintMode);
+                }
+            }
+
+        }
 
         //
         //

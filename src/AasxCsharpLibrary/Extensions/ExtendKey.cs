@@ -43,13 +43,14 @@ namespace Extensions
         }
         public static bool Matches(this IKey key, IKey otherKey)
         {
-            key.Value = key.Value.Trim();
-            otherKey.Value = otherKey.Value.Trim();
-
             if (otherKey == null)
             {
                 return false;
             }
+
+            key.Value = key.Value.Trim();
+            otherKey.Value = otherKey.Value.Trim();
+
 
             if (key.Type == otherKey.Type && key.Value.Replace("*01", "").Equals(otherKey.Value.Replace("*01", "")))
             {

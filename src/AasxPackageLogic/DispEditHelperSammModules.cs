@@ -41,6 +41,7 @@ using System.Web.Services.Description;
 using static AasxPackageLogic.DispEditHelperBasics;
 using System.Collections;
 using static Lucene.Net.Documents.Field;
+using static AasxPackageLogic.DispEditHelperMiniModules;
 
 namespace AasxPackageLogic
 {
@@ -2564,7 +2565,7 @@ namespace AasxPackageLogic
 					submodel.GetModelReference());
 		}
 
-		public static IEnumerable<Tuple<Aas.IConceptDescription, SmtAttributeRecord>> 
+		public static IEnumerable<DispEditHelperMiniModules.ConceptOrganizedChildItem> 
 			FindChildElementsForConcept(
 				PackageCentral.PackageCentral packages,
 				Aas.IConceptDescription cd,
@@ -2626,9 +2627,12 @@ namespace AasxPackageLogic
 					// poor mens SME type
 					smtRec.SubmodelElements = new List<AasSubmodelElements>() { AasSubmodelElements.Property };
 
-					// put into intem
-					var item = new Tuple<Aas.IConceptDescription, SmtAttributeRecord>(childCd, smtRec);
-					yield return item;
+                    // put into item
+                    yield return new DispEditHelperMiniModules.ConceptOrganizedChildItem() 
+					{ 
+						Cd = childCd, 
+						SmtRec = smtRec 
+					};
 				}
 			}
 		}

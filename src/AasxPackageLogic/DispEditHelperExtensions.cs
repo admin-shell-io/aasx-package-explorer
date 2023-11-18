@@ -29,6 +29,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xaml;
 using static AasxPackageLogic.AasSmtQualifiers;
+using static AasxPackageLogic.DispEditHelperMiniModules;
 using Aas = AasCore.Aas3_0;
 using Samm = AasCore.Samm2_2_0;
 
@@ -1660,16 +1661,47 @@ namespace AasxPackageLogic
 			return CardinalitiesShort[i];
 		}
 
-		//
-		// Join
-		//
+        //
+        // Access
+        //
 
-		/// <summary>
-		/// Take over attributes from another <c>SmtAttributeRecord</c>. If present/ cannot joined, the other
-		/// attributes will be dominant.
-		/// </summary>
-		/// <param name="other"></param>
-		public void JoinAttributes(SmtAttributeRecord other)
+        public static IEnumerable<DispEditHelperMiniModules.ConceptOrganizedChildItem>
+            FindChildElementsForConcept(
+                PackageCentral.PackageCentral packages,
+                Aas.IConceptDescription cd,
+                SmtAttributeRecord smtRec)
+		{
+			// access
+			if (packages == null || cd == null || smtRec == null)
+				yield break;
+
+            // find all organizes
+            if (smtRec.Organizes != null)
+                foreach (var orgId in smtRec.Organizes)
+                    foreach (var rftup2 in packages.QuickLookupAllIdent(orgId?.Value))
+                        if (rftup2.Item2 is Aas.ConceptDescription cd2)
+                            foreach (var smtRec2 in DispEditHelperExtensions
+                                .CheckReferableForExtensionRecords<SmtAttributeRecord>(cd2))
+                            {
+                                // now, smtRec2 is a candidate for a follow up!
+                                yield return new ConceptOrganizedChildItem()
+                                {
+                                    Cd = cd2,
+                                    SmtRec = smtRec2
+                                };
+                            }
+        }
+
+        //
+        // Join
+        //
+
+        /// <summary>
+        /// Take over attributes from another <c>SmtAttributeRecord</c>. If present/ cannot joined, the other
+        /// attributes will be dominant.
+        /// </summary>
+        /// <param name="other"></param>
+        public void JoinAttributes(SmtAttributeRecord other)
 		{
 			// access
 			if (other == null)
