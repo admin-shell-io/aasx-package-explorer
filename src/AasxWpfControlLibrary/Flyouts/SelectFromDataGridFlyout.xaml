@@ -63,8 +63,16 @@
             </DataGrid.Columns>
         </DataGrid>
 
+        <!--
         <DockPanel x:Name="ButtonsPanel" Grid.Row="4" Grid.Column="1">
             <Button x:Name="ButtonSelect" IsDefault="True" Content="Select!" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="ButtonSelect_Click"/>
         </DockPanel>
+        -->
+
+        <UniformGrid x:Name="ButtonsPanel" Grid.Row="4" Grid.Column="1" Rows="1">
+            <Button x:Name="ButtonSelect" IsDefault="True" Content="Select!" Style="{DynamicResource TranspRoundCorner}" 
+                    Foreground="White" FontSize="18" Padding="6" Margin="4" Click="ButtonSelect_Click"/>
+        </UniformGrid>
+        
     </Grid>
 </UserControl>

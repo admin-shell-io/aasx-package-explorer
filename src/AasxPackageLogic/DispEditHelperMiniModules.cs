@@ -1589,27 +1589,11 @@ namespace AasxPackageLogic
                     // SMT extension
                     foreach (var smtRec in DispEditHelperExtensions
                         .CheckReferableForExtensionRecords<SmtAttributeRecord>(cd))
-                    {
-#if __old
-                        // find all organizes
-                        if (smtRec.Organizes != null)
-                            foreach (var orgId in smtRec.Organizes)
-                                foreach (var rftup2 in packages.QuickLookupAllIdent(orgId?.Value))
-                                    if (rftup2.Item2 is Aas.ConceptDescription cd2)
-                                        foreach (var smtRec2 in DispEditHelperExtensions
-                                            .CheckReferableForExtensionRecords<SmtAttributeRecord>(cd2))
-                                        {
-                                            // now, smtRec2 is a candidate for a follow up!
-                                            candidates.Add(new ConceptOrganizedChildItem()
-                                            {
-                                                Cd = cd2,
-                                                SmtRec = smtRec2
-                                            });
-                                        }
-#endif           
+                    {    
                         foreach (var item in SmtAttributeRecord.FindChildElementsForConcept(packages, cd, smtRec))
                             candidates.Add(item);
                     }
+                    
                     // SAMM extension
                     foreach (var me in DispEditHelperSammModules.CheckReferableForSammElements(cd))
                     {
@@ -1885,6 +1869,32 @@ namespace AasxPackageLogic
 
                     return new AnyUiLambdaActionNone();
                 });
+        }
+
+        public static Aas.ISubmodel DispEditHelperCreateSubmodelFromSmtSamm(
+            PackageCentral.PackageCentral packages,
+            Aas.IEnvironment env,
+            Aas.IConceptDescription rootCd,
+            bool createChilds)
+        {
+            // access
+            if (packages == null || env == null || rootCd == null)
+                return null;
+
+            // create a Submodel and link it to the first AAS
+            var submodel = new Aas.Submodel(
+                idShort: rootCd.IdShort,
+                id: "" + AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance),
+                administration: rootCd.Administration?.Copy(),
+                semanticId: rootCd.GetCdReference());
+            env.Submodels.Add(submodel);
+
+            var aas1 = env?.AssetAdministrationShells?.FirstOrDefault();
+            if (aas1 != null)
+                aas1.Submodels.Add(submodel.GetReference());
+
+            // ok 
+            return submodel;
         }
 
     }

@@ -96,6 +96,8 @@ namespace AasxPackageExplorer
                     b.FontSize = 18;
                     b.Padding = new Thickness(4);
                     b.Margin = new Thickness(4);
+                    b.SetResourceReference(Control.StyleProperty, "TranspRoundCorner");
+                    b.Click += ButtonSelect_Click;
                     this.ButtonsPanel.Children.Add(b);
                 }
             }
@@ -140,6 +142,12 @@ namespace AasxPackageExplorer
 
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
+            // check which button
+            for (int bi = 0; bi < ButtonsPanel.Children.Count; bi++)
+                if (sender == ButtonsPanel.Children[bi])
+                    DiaData.ButtonIndex = bi;
+
+            // give result
             if (PrepareResult())
             {
                 DiaData.Result = true;
@@ -157,6 +165,11 @@ namespace AasxPackageExplorer
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            // only with single buttons
+            if (ButtonsPanel.Children.Count > 1)
+                return;
+
+            // ok
             if (PrepareResult())
             {
                 DiaData.Result = true;

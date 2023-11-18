@@ -517,7 +517,8 @@ namespace AnyUi
 		              
 		// out
 		public int ResultIndex = -1;
-		public AnyUiDialogueDataGridRow ResultItem = null;
+        public int ButtonIndex = -1;
+        public AnyUiDialogueDataGridRow ResultItem = null;
 		public IList<AnyUiDialogueDataGridRow> ResultItems = null;
 
 		public AnyUiDialogueDataSelectFromDataGrid(

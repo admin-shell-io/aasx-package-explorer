@@ -1534,7 +1534,8 @@ namespace AasxPackageLogic
 
 			if (cmd == "submodelinstancefromsammaspect"
                 || cmd == "smtextensionfromqualifiers"
-                || cmd == "smtorganizesfromSubmodel")
+                || cmd == "smtorganizesfromSubmodel"
+                || cmd == "submodelinstancefromsmtconcepts")
 			{
 				// simply pass on
 				try

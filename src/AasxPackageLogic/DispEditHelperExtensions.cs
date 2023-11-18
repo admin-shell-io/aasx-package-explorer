@@ -1665,6 +1665,19 @@ namespace AasxPackageLogic
         // Access
         //
 
+		public static bool ConceptSuitableForSubmodelCreate(SmtAttributeRecord smtRec)
+		{
+			// access
+			if (smtRec == null)
+				return false;
+
+			// ok?
+			if (smtRec.IsSubmodel)
+				return true;
+
+			return false;
+		}
+
         public static IEnumerable<DispEditHelperMiniModules.ConceptOrganizedChildItem>
             FindChildElementsForConcept(
                 PackageCentral.PackageCentral packages,

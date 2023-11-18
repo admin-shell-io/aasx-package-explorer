@@ -379,11 +379,25 @@ namespace AasxPackageLogic.PackageCentral
 			return QuickLookupAllIdent(idKey).FirstOrDefault()?.Item2 as T;
 		}
 
-		//
-		// Event management
-		//
+        /// <summary>
+        /// Will go to all accessible containers to find identifiables of s certain typ3
+        /// </summary>
+		public IEnumerable<T> FindAllReferables<T>() where T : class, Aas.IReferable
+        {
+            foreach (var cnt in GetAllContainer())
+            {
+                if (cnt.Env?.AasEnv != null)
+                    foreach (var rfi in cnt.Env?.AasEnv.FindAllReferable(onlyIdentifiables: true))
+                        if (rfi is T found)
+                            yield return found;
+            }
+        }
 
-		private PackageConnectorEventStore _eventStore = null; // replaced by store within AasEventCollectionViewer
+        //
+        // Event management
+        //
+
+        private PackageConnectorEventStore _eventStore = null; // replaced by store within AasEventCollectionViewer
         // reason: update to ObservableCollection needs to be done in DispatcherThread
         public PackageConnectorEventStore EventStore { get { return _eventStore; } }
 

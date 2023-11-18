@@ -319,9 +319,12 @@ namespace AasxPackageExplorer
                             help: "Take over Submodel's element relationships to associated concepts.")
                     .AddWpfBlazor(name: "SubmodelInstanceFromSammAspect", 
                         header: "New Submodel instance from selected SAMM aspect",
-						help: "Creates a new Submodel instance from an selected ConceptDescription with a SAMM Aspect element.",
-						args: null))
-				.AddMenu(header: "Visualize …", attachPoint: "Visualize")
+						help: "Creates a new Submodel instance from an selected ConceptDescription with a SAMM Aspect element.")
+                    .AddWpfBlazor(name: "SubmodelInstanceFromSmtConcepts",
+                        header: "New Submodel from SMT/ SAMM ConceptDescription",
+                        help: "Creates a new Submodel instance from an selected root given by accessible ConceptDescriptions.")
+                    )
+                .AddMenu(header: "Visualize …", attachPoint: "Visualize")
                 .AddSeparator()
                 .AddWpfBlazor(name: "ConvertElement", header: "Convert via plugin …",
                         help: "Asks plugins if these could make offers to convert the current elements and " +

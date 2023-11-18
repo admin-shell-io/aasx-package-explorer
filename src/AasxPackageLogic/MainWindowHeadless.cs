@@ -30,6 +30,7 @@ using VDS.RDF;
 using Aas = AasCore.Aas3_0;
 using static AasxPackageLogic.DispEditHelperBasics;
 using System.Drawing;
+using System.IO.Packaging;
 
 // ReSharper disable MethodHasAsyncOverload
 
@@ -1390,6 +1391,88 @@ namespace AasxPackageLogic
                 {
                     Log.Singleton.Error(
                         ex, $"When creating SMT extensions from qualifiers.");
+                }
+
+                ticket.Success = true;
+            }
+
+            if (cmd == "submodelinstancefromsmtconcepts")
+            {
+                // arguments
+                if (ticket.Env == null)
+                {
+                    LogErrorToTicket(ticket,
+                        "Create new Submodel from accessible ConceptDescriptions: " +
+                        "No valid AAS environment.");
+                    return;
+                }
+
+                // start dialogue
+                var uc = new AnyUiDialogueDataSelectFromDataGrid(
+                            "Select SMT/ SAMM concepts to act as root ..",
+                            maxWidth: 1100);
+
+                uc.ColumnDefs = AnyUiListOfGridLength.Parse(new[] { "1*", "3*", "1*", "8*" });
+                uc.ColumnHeaders = new[] { "Kind", "IdShort", "Version", "Id" };
+                uc.Rows = new List<AnyUiDialogueDataGridRow>();
+
+                uc.AlternativeSelectButtons = new[] { "Create root", "Create root and all childs" };
+
+                // populate rows
+                foreach (var cd in PackageCentral.FindAllReferables<Aas.IConceptDescription>())
+                {
+                    // SMT root?
+                    foreach (var smtRec in DispEditHelperExtensions
+                        .CheckReferableForExtensionRecords<SmtAttributeRecord>(cd))
+                        if (SmtAttributeRecord.ConceptSuitableForSubmodelCreate(smtRec))
+                            uc.Rows.Add(new AnyUiDialogueDataGridRow() { 
+                                Cells = new List<string>() { 
+                                    "SMT", "" + cd.IdShort, "" + cd.Administration?.ToStringExtended(1),
+                                    "" + cd.Id },
+                                Tag = cd
+                            });
+
+                    // SAMM root?
+                    foreach (var me in DispEditHelperSammModules.CheckReferableForSammElements(cd))
+                        if (SammTransformation.ConceptSuitableForSubmodelCreate(me))
+                            uc.Rows.Add(new AnyUiDialogueDataGridRow()
+                            {
+                                Cells = new List<string>() { 
+                                    "SAMM", "" + cd.IdShort, "" + cd.Administration?.ToStringExtended(1),
+                                    "" + cd.Id },
+                                Tag = cd
+                            });
+                }
+
+                // perfom dialogue
+                if (!DisplayContext.StartFlyoverModal(uc)
+                    || !uc.Result || uc.ResultItem == null)
+                    return;
+
+                var rootCd = uc.ResultItem.Tag as Aas.IConceptDescription;
+                if (rootCd == null)
+                    return;
+
+                var createChilds = uc.ButtonIndex > 0;
+
+                // use utility
+                try
+                {
+                    var sm = DispEditHelperMiniModules.DispEditHelperCreateSubmodelFromSmtSamm(
+                        PackageCentral, ticket.Env, rootCd, createChilds);
+
+                    if (sm == null)
+                        Log.Singleton.Error("Error creating new Submodel from accessible ConceptDescriptions.");
+                    else
+                    {
+                        Log.Singleton.Info($"Submodel {sm.IdShort} created");
+                        ticket.SetNextFocus = sm;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(
+                        ex, $"When creating new Submodel from accessible ConceptDescriptions.");
                 }
 
                 ticket.Success = true;

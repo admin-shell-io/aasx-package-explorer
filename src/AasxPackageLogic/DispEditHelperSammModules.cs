@@ -2565,7 +2565,20 @@ namespace AasxPackageLogic
 					submodel.GetModelReference());
 		}
 
-		public static IEnumerable<DispEditHelperMiniModules.ConceptOrganizedChildItem> 
+        public static bool ConceptSuitableForSubmodelCreate(ModelElement me)
+        {
+            // access
+            if (me == null)
+                return false;
+
+            // ok?
+            if (me is Samm.Aspect asp)
+                return true;
+
+            return false;
+        }
+
+        public static IEnumerable<DispEditHelperMiniModules.ConceptOrganizedChildItem> 
 			FindChildElementsForConcept(
 				PackageCentral.PackageCentral packages,
 				Aas.IConceptDescription cd,
