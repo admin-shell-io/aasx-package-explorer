@@ -13,6 +13,7 @@ using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
+using Lucene.Net.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -1571,12 +1572,14 @@ namespace AasxPackageLogic
             public AasSubmodelElements? Sme;
         }
 
-		protected List<AnyUiDialogueDataGridRow> DispSmeListAddNewCheckForSmtItems(
+		protected static List<AnyUiDialogueDataGridRow> DispSmeListAddNewCheckForSmtItems(
+            PackageCentral.PackageCentral packages,
 			Aas.IReference basedOnSemanticId)
         {
             // access 
             var res = new List<AnyUiDialogueDataGridRow>();
-            if (basedOnSemanticId?.IsValid() != true
+            if (packages == null
+                || basedOnSemanticId?.IsValid() != true
                 || basedOnSemanticId.Count() != 1)
                 return res;
 
@@ -1691,7 +1694,7 @@ namespace AasxPackageLogic
                 return;
 
             // gather potential SMT element items
-            var smtElemItem = DispSmeListAddNewCheckForSmtItems(basedOnSemanticId);
+            var smtElemItem = DispSmeListAddNewCheckForSmtItems(packages, basedOnSemanticId);
 
 			// hint
 			this.AddHintBubble(stack, hintMode, new[] {
@@ -1892,6 +1895,65 @@ namespace AasxPackageLogic
             var aas1 = env?.AssetAdministrationShells?.FirstOrDefault();
             if (aas1 != null)
                 aas1.Submodels.Add(submodel.GetReference());
+
+            // lambda to recurse
+            int numAdded = 0;
+            int numErrors = 0;
+            Func<Aas.IConceptDescription, List<Aas.ISubmodelElement>> lambdaCreateSmes = null;
+            lambdaCreateSmes = (parentCd) =>
+            {
+                // start
+                var res = new List<Aas.ISubmodelElement>();
+                if (parentCd?.Id == null)
+                    return res;
+
+                // childs?
+                var childInfo = DispSmeListAddNewCheckForSmtItems(
+                    packages, basedOnSemanticId: parentCd.GetCdReference());
+
+                // try to create
+                foreach (var ci in childInfo)
+                {
+                    // get item?
+                    if (!(ci.Tag is DispSmeListAddNewSmtItemRecord item))
+                        continue;
+
+                    // create a new SME
+                    var sme = AdminShellUtil.CreateSubmodelElementFromEnum(item.Sme.Value);
+                    if (sme == null)
+                    {
+                        Log.Singleton.Error("Creating type provided by SMT attributes.");
+                        numErrors++;
+                        continue;
+                    }
+
+                    // populate by SMT attributes
+                    item.SmtRec.PopulateReferable(sme, item.Cd);
+
+                    // add
+                    res.Add(sme);
+                    numAdded++;
+
+                    // recurse
+                    if (createChilds)
+                    {
+                        var childs2 = lambdaCreateSmes(item.Cd);
+                        if (childs2 != null)
+                            foreach (var c2 in childs2)
+                                sme.Add(c2);
+                    }
+                }
+
+                // result
+                return res;
+            };
+
+            // into Submodel?
+            submodel.SubmodelElements = new List<ISubmodelElement>();
+            submodel.SubmodelElements.AddRange(lambdaCreateSmes(rootCd));
+
+            // info
+            Log.Singleton.Info($"Added {numAdded}. {numErrors} errors.");
 
             // ok 
             return submodel;
