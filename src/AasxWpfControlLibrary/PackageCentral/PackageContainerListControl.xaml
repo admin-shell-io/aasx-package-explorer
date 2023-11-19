@@ -51,7 +51,12 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Name="MenuItemUnload" Header="Un-load" Click="MenuItem_Click">
+                <MenuItem Name="MenuItemLoad" Header="Load if resident" Click="MenuItem_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x2b8e;"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="MenuItemUnload" Header="Un-Load" Click="MenuItem_Click">
                     <MenuItem.Icon>
                         <TextBlock Text="&#x1f5d1;"/>
                     </MenuItem.Icon>

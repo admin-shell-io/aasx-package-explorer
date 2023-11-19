@@ -214,12 +214,19 @@ namespace AasxWpfControlLibrary.PackageCentral
                 this.FileRepository?.MoveDown(fi);
             }
 
-            if (mi?.Name == "MenuItemUnload" && fi != null)
+			if (mi?.Name == "MenuItemLoad" && fi != null)
+			{
+				await fi.LoadResidentIfPossible(this.FileRepository?.GetFullItemLocation(fi.Location));
+                Log.Singleton.Info($"Repository item {fi.Location} loaded.");
+			}
+
+			if (mi?.Name == "MenuItemUnload" && fi != null)
             {
                 fi.Close();
-            }
+				Log.Singleton.Info($"Repository item {fi.Location} unloaded.");
+			}
 
-            if (mi?.Name == "MenuItemRecalc" && fi != null)
+			if (mi?.Name == "MenuItemRecalc" && fi != null)
             {
                 await fi.LoadResidentIfPossible(theFileRepository?.GetFullItemLocation(fi.Location));
 

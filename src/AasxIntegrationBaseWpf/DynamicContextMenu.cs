@@ -26,16 +26,16 @@ namespace AasxIntegrationBaseWpf
     /// Display data for WPF context menu items.
     /// Holds the WPF control.
     /// </summary>
-    public class DynamicContextMenuDispalyDataWpf : AasxMenuDisplayDataBase
+    public class DynamicContextMenuDisplayDataWpf : AasxMenuDisplayDataBase
     {
         /// <summary>
         /// A WPF control for the context menu item.
         /// </summary>
         public Control Control;
 
-        public DynamicContextMenuDispalyDataWpf() { }
+        public DynamicContextMenuDisplayDataWpf() { }
 
-        public DynamicContextMenuDispalyDataWpf(Control control)
+        public DynamicContextMenuDisplayDataWpf(Control control)
         {
             Control = control;
         }
@@ -68,7 +68,7 @@ namespace AasxIntegrationBaseWpf
                 var ctl = new Separator();
 
                 // result
-                sep.DisplayData = new DynamicContextMenuDispalyDataWpf(ctl);
+                sep.DisplayData = new DynamicContextMenuDisplayDataWpf(ctl);
                 return ctl;
             }
 
@@ -103,7 +103,7 @@ namespace AasxIntegrationBaseWpf
                 ctl.Tag = mitb;
 
                 // result
-                mitb.DisplayData = new DynamicContextMenuDispalyDataWpf(ctl);
+                mitb.DisplayData = new DynamicContextMenuDisplayDataWpf(ctl);
                 return ctl;
             }
 
@@ -117,7 +117,7 @@ namespace AasxIntegrationBaseWpf
                 ctl.IsChecked = mi.IsChecked;
 
                 // result
-                mi.DisplayData = new DynamicContextMenuDispalyDataWpf(ctl);
+                mi.DisplayData = new DynamicContextMenuDisplayDataWpf(ctl);
                 return ctl;
             }
 

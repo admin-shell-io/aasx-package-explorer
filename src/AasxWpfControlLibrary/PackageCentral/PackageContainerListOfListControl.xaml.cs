@@ -215,6 +215,17 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }
 
                 if (cmd == "filerepomakerelative")
+                    if (fr is PackageContainerListLocalBase frlb
+                        && !(fr is PackageContainerListLastRecentlyUsed))
+                    {
+                        foreach (var fi in frlb.EnumerateItems())
+                        {
+							await fi.LoadResidentIfPossible(frlb.GetFullItemLocation(fi.Location));
+							Log.Singleton.Info($"Repository item {fi.Location} loaded.");
+						}
+                    }
+
+                if (cmd == "filerepomakerelative")
                     if (fr is PackageContainerListLocal frl)
                     {
                         // make sure
@@ -302,25 +313,6 @@ namespace AasxWpfControlLibrary.PackageCentral
                     if (!(await _flyout?.GetDisplayContext()?.StartFlyoverModalAsync(uc))
                         || !uc.Result)
                         return;
-                    // dead-csharp off
-                    //var inputDialog = new Microsoft.Win32.OpenFileDialog();
-                    //inputDialog.Title = "AASX Package File to be uploaded in the file repository";
-                    //inputDialog.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
-                    //_flyout.StartFlyover(new EmptyFlyout());
-                    //var okClicked = inputDialog.ShowDialog();
-                    //_flyout.CloseFlyover();
-
-                    //if (okClicked != true)
-                    //{
-                    //    return;
-                    //}
-
-                    //if (inputDialog.FileName.Length < 1 || inputDialog.FileNames.Length > 1)
-                    //{
-                    //    return;
-                    //}
-                    // dead-csharp on
-                    //Add file to package explorer's unnamed repo
 
                     var fileName = uc.OriginalFileName;
                     if (fr is PackageContainerAasxFileRepository fileRepo)
@@ -434,30 +426,35 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (btn == PackageContainerListControl.CustomButton.Context)
             {
                 var menu = new AasxMenu()
-                    .AddAction("FileRepoClose", "Close", "\u274c")
-                    .AddAction("FileRepoEditName", "Edit name", "\u270e");
+                    .AddAction("FileRepoClose", "Close", icon: "\u274c")
+                    .AddAction("FileRepoEditName", "Edit name", icon: "\u270e");
 
                 if (!(fr is PackageContainerListLastRecentlyUsed))
                 {
-                    menu.AddAction("item-up", "Move Up", "\u25b2")
-                        .AddAction("item-down", "Move Down", "\u25bc");
+                    menu.AddAction("item-up", "Move Up", icon: "\u25b2")
+                        .AddAction("item-down", "Move Down", icon: "\u25bc");
                 }
 
                 menu.AddSeparator()
-                    .AddAction("FileRepoSaveAs", "Save as ..", "\U0001f4be")
+                    .AddAction("FileRepoSaveAs", "Save as ..", icon: "\U0001f4be")
                     .AddSeparator();
 
                 if (!(fr is PackageContainerListLastRecentlyUsed))
                 {
-                    if (fr is PackageContainerListLocal)
-                        menu.AddAction(
-                            "FileRepoMakeRelative", "Make AASX filenames relative ..", "\u2699");
+					menu.AddAction(
+                    	"FileRepoLoadAllResident", "Load all resident files ..", icon: "\U0001f503");
 
-                    menu.AddAction("FileRepoAddCurrent", "Add current AAS", "\u2699")
-                        .AddAction("FileRepoAddToServer", "Add AASX File to File Repository", "\u2699")
-                        .AddAction("FileRepoMultiAdd", "Add multiple AASX files ..", "\u2699")
-                        .AddAction("FileRepoAddFromServer", "Add from REST server ..", "\u2699")
-                        .AddAction("FileRepoPrint", "Print 2D code sheet ..", "\u2699");
+					if (fr is PackageContainerListLocal)
+                    {
+                        menu.AddAction(
+                            "FileRepoMakeRelative", "Make AASX filenames relative ..", icon: "\u2699");
+					}
+
+					menu.AddAction("FileRepoAddCurrent", "Add current AAS", icon: "\u2699")
+                        .AddAction("FileRepoAddToServer", "Add AASX File to File Repository", icon: "\u2699")
+                        .AddAction("FileRepoMultiAdd", "Add multiple AASX files ..", icon: "\u2699")
+                        .AddAction("FileRepoAddFromServer", "Add from REST server ..", icon: "\u2699")
+                        .AddAction("FileRepoPrint", "Print 2D code sheet ..", icon: "\u2699");
                 }
 
                 var cm2 = DynamicContextMenu.CreateNew(
