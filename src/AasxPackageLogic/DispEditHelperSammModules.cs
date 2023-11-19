@@ -2590,6 +2590,21 @@ namespace AasxPackageLogic
 
 			// possible childs?
 			var childs = new List<Samm.SammReference>();
+
+			// lambda for going deeper (Property) -> Characteristics -> Entity -> Property
+			Func<Samm.Property, Samm.Entity> lambdaTryProp2Entity = (propTest) =>
+			{
+				var propCharCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(propTest.Characteristic?.Value);
+				var propCharMe = DispEditHelperSammModules.CheckReferableForSammElements(propCharCd)?.FirstOrDefault();
+				if (propCharMe is Samm.Characteristic propChar)
+				{
+					var propEntCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(propChar.DataType?.Value);
+					var propEntMe = DispEditHelperSammModules.CheckReferableForSammElements(propEntCd)?.FirstOrDefault();
+					if (propEntMe is Samm.Entity ent)
+						return ent;
+				}
+				return null;
+			};
 			
 			// Aspect
 			if (me is Samm.Aspect asp)
@@ -2602,9 +2617,10 @@ namespace AasxPackageLogic
 					childs.AddRange(asp.Events);
 			}
 
-			// Property -> Charasteristics -> Enitity -> Property
+			// Property
 			if (me is Samm.Property prop)
 			{
+#if old
 				var propCharCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(prop.Characteristic?.Value);
 				var propCharMe = DispEditHelperSammModules.CheckReferableForSammElements(propCharCd)?.FirstOrDefault();
 				if (propCharMe is Samm.Characteristic propChar)
@@ -2615,7 +2631,13 @@ namespace AasxPackageLogic
 						foreach (var p in ent.Properties)
 							childs.Add(p);
 				}
-			}
+#endif
+
+				var propEnt = lambdaTryProp2Entity(prop);
+				if (propEnt?.Properties != null)
+                    foreach (var p in propEnt.Properties)
+                        childs.Add(p);
+            }
 
 			// try lookup childs
 			foreach (var child in childs)
@@ -2638,7 +2660,11 @@ namespace AasxPackageLogic
 					smtRec.ExampleValue = childProp.ExampleValue;
 
 					// poor mens SME type
-					smtRec.SubmodelElements = new List<AasSubmodelElements>() { AasSubmodelElements.Property };
+					var childSmeType = AasSubmodelElements.Property;
+					var childEntTest = lambdaTryProp2Entity(childProp);
+					if (childEntTest != null)
+                        childSmeType = AasSubmodelElements.SubmodelElementCollection;
+                    smtRec.SubmodelElements = new List<AasSubmodelElements>() { childSmeType };
 
                     // put into item
                     yield return new DispEditHelperMiniModules.ConceptOrganizedChildItem() 

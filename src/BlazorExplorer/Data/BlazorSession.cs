@@ -634,6 +634,8 @@ namespace BlazorUI.Data
             return true;
         }
 
+        private bool _mainTimer_PendingReIndexElements = true;
+        private DateTime _mainTimer_LastCheckForReIndexElements = DateTime.Now;
 
         /// <summary>
         /// This is the main session timer callback. It is either activated by the session itself
@@ -641,7 +643,25 @@ namespace BlazorUI.Data
         /// </summary>
         public void MainTimerTick()
         {
+            // do re-index?
+            var deltaSecs2 = (DateTime.Now - _mainTimer_LastCheckForReIndexElements).TotalSeconds;
+            if (deltaSecs2 >= 1.0 && _mainTimer_PendingReIndexElements)
+            {
+                // dis-engage
+                _mainTimer_PendingReIndexElements = false;
 
+                // be modest for the time being
+                PackageCentral?.MainItem?.Container?.ReIndexIdentifiables();
+
+                // Info
+                Log.Singleton.Info("Re-indexing Identifiables for faster access.");
+            }
+        }
+
+        public void TriggerPendingReIndexElements()
+        {
+            _mainTimer_LastCheckForReIndexElements = DateTime.Now;
+            _mainTimer_PendingReIndexElements = true;
         }
 
         /// <summary>

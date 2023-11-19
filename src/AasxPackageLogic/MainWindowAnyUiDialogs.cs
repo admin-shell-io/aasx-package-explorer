@@ -1532,10 +1532,28 @@ namespace AasxPackageLogic
                     MainWindow.RedrawAllElementsAndFocus();
             }
 
-			if (cmd == "submodelinstancefromsammaspect"
+            if (cmd == "submodelinstancefromsmtconcepts")
+            {
+                // simply pass on
+                try
+                {
+                    // delegate futher
+                    await CommandBinding_GeneralDispatchHeadless(cmd, menuItem, ticket);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        $"When executing command {cmd}, an error occurred");
+                }
+
+                // redisplay
+                if (ticket.Success)
+                    MainWindow.RedrawAllElementsAndFocus(nextFocus: ticket?.SetNextFocus);
+            }
+
+            if (cmd == "submodelinstancefromsammaspect"
                 || cmd == "smtextensionfromqualifiers"
-                || cmd == "smtorganizesfromSubmodel"
-                || cmd == "submodelinstancefromsmtconcepts")
+                || cmd == "smtorganizesfromSubmodel")
 			{
 				// simply pass on
 				try

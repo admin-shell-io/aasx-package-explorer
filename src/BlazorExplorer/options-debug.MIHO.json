@@ -25,7 +25,7 @@
   // "AuxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_A.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_V3new_spiel1.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_DPPV2.aasx",
-  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\samm_spiel_empty-smt.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_and_SAMM_Showcase_v01.aasx",
   "WindowLeft": 100,
   "WindowTop": -1,
   "WindowWidth": 900,

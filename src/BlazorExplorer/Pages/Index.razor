@@ -87,6 +87,12 @@
                             DialogueData="evs.DialogueData" />
                     }
 
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectFromDataGrid)
+                    {
+                        <AnyUiFlyoutSelectFromDataGrid EventSession="evs"
+                                                       DialogueData="evs.DialogueData" />
+                    }
+
                     @if (evs.DialogueData is AnyUiDialogueDataOpenFile)
                     {
                         <AnyUiFlyoutOpenFile 
@@ -1324,7 +1330,7 @@
             Session?.MainTimerTick();
             // MainTimer_HandleLogMessages();
             MainTimer_HandleApplicationEvents();
-            MainTimer_HandleElementAnimation();
+            MainTimer_HandleElementAnimation();          
         }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(100));
         BlazorSession.totalIndexTimer++;
     }
