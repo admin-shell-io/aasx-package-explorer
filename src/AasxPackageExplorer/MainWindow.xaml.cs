@@ -929,7 +929,7 @@ namespace AasxPackageExplorer
             // Repository pointed by the Options
             if (Options.Curr.AasxRepositoryFn.HasContent())
             {
-                var fr2 = Logic.UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
+                var fr2 = await Logic.UiLoadFileRepositoryAsync(Options.Curr.AasxRepositoryFn, tryLoadResident: true);
                 if (fr2 != null)
                 {
                     this.UiShowRepositories(visible: true);

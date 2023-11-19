@@ -667,14 +667,15 @@ namespace AasxPackageLogic
             AasxMenu superMenu = null,
             AasxMenu ticketMenu = null,
             Func<int, AasxMenuActionTicket, AnyUiLambdaActionBase> ticketAction = null,
-            FirstColumnWidth firstColumnWidth = FirstColumnWidth.Standard)
+			Func<int, AasxMenuActionTicket, Task<AnyUiLambdaActionBase>> ticketActionAsync = null,
+			FirstColumnWidth firstColumnWidth = FirstColumnWidth.Standard)
         {
             // generate actionStr from ticketMenu
             if (actionStr == null && ticketMenu != null)
                 actionStr = ticketMenu.Select((tmi) => (tmi is AasxMenuItem mi) ? mi.Header : "").ToArray();
 
             // access 
-            if ((action == null && ticketAction == null) || actionStr == null)
+            if ((action == null && ticketAction == null && ticketActionAsync == null) || actionStr == null)
                 return;
             if (repo == null && addWoEdit == null)
                 return;
@@ -693,7 +694,14 @@ namespace AasxPackageLogic
                         if (ticket != null)
                             ticket.UiLambdaAction = ticketAction(currentI, ticket);
                     };
-                    superMenu.Add(tmi);
+
+                    tmi.ActionAsync = async (name, item, ticket) =>
+					{
+						if (ticket != null)
+							ticket.UiLambdaAction = await ticketActionAsync(currentI, ticket);
+					};
+
+					superMenu.Add(tmi);
                 }
             }
 
@@ -746,14 +754,29 @@ namespace AasxPackageLogic
                 wp.Children.Add(b);
 
                 // register callback
-                AnyUiUIElement.RegisterControl(b,
-                    (o) =>
-                    {
-                        // button # as argument!
-                        return (ticketAction != null)
-                            ? ticketAction(currentI, null)
-                            : action?.Invoke(currentI);
-                    });
+                if (ticketActionAsync == null)
+					AnyUiUIElement.RegisterControl(b,
+						setValue: (o) =>
+						{
+							// button # as argument!
+							if (ticketAction != null)
+								return ticketAction.Invoke(currentI, null);
+							else
+								return action?.Invoke(currentI);
+						});
+                else
+				    AnyUiUIElement.RegisterControl(b,
+                        setValueAsync: async (o) =>
+                        {
+						    // button # as argument!
+						    if (ticketAction != null)
+							    return ticketAction.Invoke(currentI, null);
+						    else
+						    if (ticketActionAsync != null)
+							    return await ticketActionAsync.Invoke(currentI, null);
+						    else
+							    return action?.Invoke(currentI);
+					    });
 
                 if (actionTags != null && i < actionTags.Length)
                     AnyUiUIElement.NameControl(b, actionTags[i]);

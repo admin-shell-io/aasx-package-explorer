@@ -1786,15 +1786,19 @@ namespace AasxPackageLogic
         // some functions in close relation to UI menu functions
         //
 
+        // TODO (MIHO, 2023-11-19): join the two functions
+
         public PackageContainerListBase UiLoadFileRepository(string fn)
         {
             try
             {
+                // load the list
                 Log.Singleton.Info(
                     $"Loading aasx file repository {fn} ..");
 
                 var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
 
+                // finalize
                 if (fr != null)
                     return fr;
                 else
@@ -1810,11 +1814,45 @@ namespace AasxPackageLogic
             return null;
         }
 
-        /// <summary>
-        /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
-        /// found to be activated
-        /// </summary>
-        public bool UiCheckIfActivateLoadedNavTo()
+		public async Task<PackageContainerListBase> UiLoadFileRepositoryAsync(string fn, bool tryLoadResident)
+		{
+			try
+			{
+				// load the list
+				Log.Singleton.Info(
+					$"Loading aasx file repository {fn} ..");
+
+				var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+
+				// try load resident?
+				if (fr != null && tryLoadResident)
+					foreach (var fi in fr.EnumerateItems())
+					{
+                        if (fi.ContainerOptions?.LoadResident == true)
+						    await fi.LoadResidentIfPossible(fr.GetFullItemLocation(fi.Location));
+					}
+
+				// finalize
+				if (fr != null)
+					return fr;
+				else
+					Log.Singleton.Info(
+						$"File not found when loading aasx file repository {fn}");
+			}
+			catch (Exception ex)
+			{
+				Log.Singleton.Error(
+					ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
+		/// found to be activated
+		/// </summary>
+		public bool UiCheckIfActivateLoadedNavTo()
         {
             // access
             if (PackageCentral.Main?.AasEnv == null || MainWindow.GetDisplayElements() == null)

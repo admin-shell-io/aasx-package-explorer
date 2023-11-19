@@ -1738,7 +1738,7 @@ namespace AasxPackageLogic
                 stack, key,
                 repo: repo, superMenu: superMenu,
                 ticketMenu: menu,
-                ticketAction: (buttonNdx, ticket) =>
+                ticketActionAsync: async (buttonNdx, ticket) =>
                 {
                     if (buttonNdx >= 0 && buttonNdx <= 3)
                     {
@@ -1823,7 +1823,7 @@ namespace AasxPackageLogic
                         uc.ColumnHeaders = new[] { "Present", "Card.", "Type", "IdShort", "Id" };
                         uc.Rows = smtElemItem;
                         
-						this.context.StartFlyoverModal(uc);
+						await this.context.StartFlyoverModalAsync(uc);
                         var itemsAdded = 0;
                         ISubmodelElement lastSme = null;
                         if (uc.ResultItems != null)

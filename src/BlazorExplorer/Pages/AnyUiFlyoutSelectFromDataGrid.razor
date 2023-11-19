@@ -15,12 +15,14 @@
 	<div class="modal-header">
 		<h3 class="modal-title" id="exampleModalLongTitle">@ddsfl.Caption</h3>
 		<button type="button" class="close btn btn-backdrop" aria-label="Close"
-				@onclick="() => LeaveResult(false)">
+				@onclick="() => LeaveResult(false, 0)">
 			<span aria-hidden="true">&times;</span>
 		</button>
 	</div>
 	<div class="modal-body">
 		<form>
+			
+			@*
 			<span @ondblclick="@DblHandler">
 				<select class="form-control selectpicker" multiple data-max-options="2"
 						style="height:@(numItems)rem; max-height: 60vh;"
@@ -34,6 +36,39 @@
 
 				</select>
 			</span>
+			*@
+
+			<span @ondblclick="@DblHandler">
+				<table class="table table-primary table-hover table-bordered border-primary" id="tableIds">
+					<thead>
+						<tr>
+							@if (ddsfl.ColumnHeaders != null)
+								foreach (var ch in ddsfl.ColumnHeaders)
+								{
+									<th scope="col">@ch</th>
+								}
+						</tr>
+					</thead>
+					<tbody>
+						@if (ddsfl.Rows != null)
+							foreach (var row in ddsfl.Rows)
+							{
+								var currRow = row;
+								var active = (row == _selectedRow) ? "table-active " : "";
+								<tr class="clickable @(active)" @onclick="() => OnSelectRow(currRow)">
+
+									@if (ddsfl.ColumnHeaders != null)
+										for (int ci=0; ci < ddsfl.ColumnHeaders.Length; ci++)
+											if (currRow.Cells != null && currRow.Cells.Count() >= ci)
+											{
+												<th scope="col">@currRow.Cells[ci]</th>
+											}
+								</tr>
+							}
+					</tbody>
+				</table>
+			</span>
+
 		</form>
 	</div>
 	<div class="modal-footer">
@@ -46,8 +81,9 @@
 		{
 			for (int bi = 0; bi < ddsfl.AlternativeSelectButtons.Length; bi++)
 			{
+				var currBi = bi;
 				var title = ddsfl.AlternativeSelectButtons[bi];
-				<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true, bi)">@title</button>
+				<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true, currBi)">@title</button>
 			}
 		}
 
@@ -61,19 +97,34 @@
 	[Parameter]
 	public AnyUiDialogueDataBase DialogueData { get; set; }
 
-	void OnSelect(ChangeEventArgs e)
+	AnyUiDialogueDataGridRow _selectedRow = null;
+
+	void PrepareResult(AnyUiDialogueDataGridRow row)
 	{
-		if (DialogueData is AnyUiDialogueDataSelectFromDataGrid ddsfl
-			&& e.Value is string[] varr
-			&& varr.Length > 0
-			&& int.TryParse(varr[0], out int i)
-				&& ddsfl.Rows != null
-				&& i >= 0 && i < ddsfl.Rows.Count)
+		if (DialogueData is AnyUiDialogueDataSelectFromDataGrid ddsfdg)
 		{
-			ddsfl.Result = true;
-			ddsfl.ResultIndex = i;
-			ddsfl.ResultItem = ddsfl.Rows[i];
+			if (row != null
+				&& ddsfdg.Rows != null
+				&& ddsfdg.Rows.Contains(row))
+			{
+				ddsfdg.Result = true;
+				ddsfdg.ResultIndex = ddsfdg.Rows.IndexOf(row);
+				ddsfdg.ResultItem = row;
+				ddsfdg.ResultItems = new List<AnyUiDialogueDataGridRow>() { row };
+			}
+			else
+			{
+				ddsfdg.Result = false;
+				ddsfdg.ResultIndex = -1;
+				ddsfdg.ResultItem = null;
+			}
 		}
+	}
+
+	protected void OnSelectRow(AnyUiDialogueDataGridRow de)
+	{
+		_selectedRow = de;
+		StateHasChanged();
 	}
 
 	void DblHandler(MouseEventArgs e)
@@ -92,7 +143,9 @@
 		{
 			ddsfl.ButtonIndex = buttonIndex;
 		}
-		
+
+		PrepareResult(_selectedRow);
+
 		EventSession?.EndModal(result);
 	}
 }
