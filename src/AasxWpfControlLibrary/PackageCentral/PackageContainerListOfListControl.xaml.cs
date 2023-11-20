@@ -214,7 +214,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
                 }
 
-                if (cmd == "filerepomakerelative")
+                if (cmd == "filerepoloadallresident")
                     if (fr is PackageContainerListLocalBase frlb
                         && !(fr is PackageContainerListLastRecentlyUsed))
                     {

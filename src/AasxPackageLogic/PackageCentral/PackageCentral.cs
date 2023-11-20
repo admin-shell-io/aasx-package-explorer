@@ -331,11 +331,17 @@ namespace AasxPackageLogic.PackageCentral
         // Access to identifiables
         //
 
-        /// <summary>
-        /// This provides a "quick" lookup of Identifiables, e.g. based on hashes/ dictionaries.
-        /// May be not 100% reliable, but quick.
-        /// </summary>
-        public IEnumerable<Tuple<PackageContainerBase, Aas.IReferable>> QuickLookupAllIdent(
+        public void ReIndexIdentifiables()
+        {
+            foreach (var cnt in GetAllContainer())
+                cnt.ReIndexIdentifiables();
+		}
+
+		/// <summary>
+		/// This provides a "quick" lookup of Identifiables, e.g. based on hashes/ dictionaries.
+		/// May be not 100% reliable, but quick.
+		/// </summary>
+		public IEnumerable<Tuple<PackageContainerBase, Aas.IReferable>> QuickLookupAllIdent(
             string idKey,
             bool deepLookup = false)
         {
