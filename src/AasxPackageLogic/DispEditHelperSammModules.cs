@@ -2652,9 +2652,9 @@ namespace AasxPackageLogic
 					var smtRec = new SmtAttributeRecord();
 
 					// poor mens cardinality
-					smtRec.Cardinality = AasSmtQualifiers.SmtCardinality.One;
+					smtRec.SmeCardinality = AasSmtQualifiers.SmtCardinality.One;
 					if (child is OptionalSammReference osr && osr.Optional)
-						smtRec.Cardinality = AasSmtQualifiers.SmtCardinality.ZeroToOne;
+						smtRec.SmeCardinality = AasSmtQualifiers.SmtCardinality.ZeroToOne;
 
 					// poor mens initial / default / example value
 					smtRec.ExampleValue = childProp.ExampleValue;
@@ -2670,6 +2670,7 @@ namespace AasxPackageLogic
                     yield return new DispEditHelperMiniModules.ConceptOrganizedChildItem() 
 					{ 
 						Cd = childCd, 
+						Card = smtRec.SmeCardinality,
 						SmtRec = smtRec 
 					};
 				}

@@ -1558,7 +1558,8 @@ namespace AasxPackageLogic
         public class ConceptOrganizedChildItem
         {
             public Aas.IConceptDescription Cd;
-            public SmtAttributeRecord SmtRec;
+            public AasSmtQualifiers.SmtCardinality Card = AasSmtQualifiers.SmtCardinality.One;
+			public SmtAttributeRecord SmtRec;
         }
 
         /// <summary>
@@ -1619,7 +1620,7 @@ namespace AasxPackageLogic
                     res.Add(new AnyUiDialogueDataGridRow()
                     {
                         // Text = $"{cd.IdShort} (Submodel) {cd.Id}",
-                        Cells = (new[] { "-", cand.SmtRec.CardinalityShort(), "SM", 
+                        Cells = (new[] { "-", SmtAttributeRecord.CardinalityShort(cand.Card), "SM", 
                             cand.Cd.IdShort, cand.Cd.Id }).ToList(),
                         Tag = new DispSmeListAddNewSmtItemRecord()
                         {
@@ -1636,7 +1637,7 @@ namespace AasxPackageLogic
 						    res.Add(new AnyUiDialogueDataGridRow()
 						    {
 							    // Text = $"{cd.IdShort} ({smet.ToString()}) {cd.Id}",
-								Cells = (new[] { "-", cand.SmtRec.CardinalityShort(), 
+								Cells = (new[] { "-", SmtAttributeRecord.CardinalityShort(cand.Card), 
                                     ExtendISubmodelElement.ToString(smet), 
                                     cand.Cd.IdShort, cand.Cd.Id }).ToList(),
 								Tag = new DispSmeListAddNewSmtItemRecord()

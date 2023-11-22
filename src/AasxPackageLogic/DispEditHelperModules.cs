@@ -2510,11 +2510,18 @@ namespace AasxPackageLogic
 			};
 
 			if (rf is Aas.ISubmodel sm)
-				checkItems = SmtAttributeRecord.PerformAttributeCheck(sm.SubmodelElements, inList: checkItems,
+				checkItems = SmtAttributeRecord.PerformAttributeCheck(
+                    sm, sm.SubmodelElements, inList: checkItems,
 					lambdaLookupSmtRec: lambdaLookupSmtRec);
 
 			if (rf is Aas.ISubmodelElementCollection smc)
-				checkItems = SmtAttributeRecord.PerformAttributeCheck(smc.Value, inList: checkItems,
+				checkItems = SmtAttributeRecord.PerformAttributeCheck(
+                    smc, smc.Value, inList: checkItems,
+					lambdaLookupSmtRec: lambdaLookupSmtRec);
+
+			if (rf is Aas.ISubmodelElementList sml)
+				checkItems = SmtAttributeRecord.PerformAttributeCheck(
+					sml, sml.Value, inList: checkItems,
 					lambdaLookupSmtRec: lambdaLookupSmtRec);
 
 			// perform the check on factual record of this element

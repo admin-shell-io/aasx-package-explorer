@@ -182,7 +182,20 @@ namespace Extensions
 
         }
 
-        public static IReference GetModelReference(this ISubmodelElement sme, bool includeParents = true)
+        public static IEnumerable<IQualifier> FindQualifierOfAnyType(
+            this ISubmodelElement submodelElement, string[] qualifierTypes)
+        {
+            if (qualifierTypes == null || qualifierTypes.Length < 1)
+                yield break;
+            foreach (var qualifierType in qualifierTypes)
+            {
+                var res = FindQualifierOfType(submodelElement, qualifierType);
+                if (res != null)
+                    yield return res;
+			}
+        }
+
+		public static IReference GetModelReference(this ISubmodelElement sme, bool includeParents = true)
         {
             // this will be the tail of our chain
             var keyList = new List<IKey>();

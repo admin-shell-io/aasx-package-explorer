@@ -309,13 +309,13 @@ namespace AasxPackageLogic
 				});
 		}
 
-		public AnyUiLambdaActionBase ExtensionHelperIdfReferenceAction(
+		public AnyUiLambdaActionBase ExtensionHelperIdfReferenceAction<T>(
 			Aas.Environment env,
 			Aas.IReferable relatedReferable,
 			int actionIndex,
-			ExtIdfReference sr,
-			Action<ExtIdfReference> setValue,
-			Func<string, ExtIdfReference> createInstance)
+			T sr,
+			Action<T> setValue,
+			Func<string, T> createInstance) where T : ExtIdfReference
 		{
 			if (actionIndex == 0)
 			{
@@ -343,18 +343,18 @@ namespace AasxPackageLogic
 			return new AnyUiLambdaActionNone();
 		}
 
-		public void ExtensionHelperAddIdfReference(
+		public void ExtensionHelperAddIdfReference<T>(
 			Aas.Environment env, 
 			AnyUiStackPanel stack,
 			string caption,
 			ExtensionRecordBase recInst,
 			Aas.IReferable relatedReferable,
-			ExtIdfReference sr,
-			Action<ExtIdfReference> setValue,
-			Func<string, ExtIdfReference> createInstance,
+			T sr,
+			Action<T> setValue,
+			Func<string, T> createInstance,
 			int firstColumnWidth = -1, // -1 = Standard
 			string[] presetList = null,
-			bool showButtons = true) 
+			bool showButtons = true) where T : ExtIdfReference
 		{
 			var grid = AddSmallGrid(1, 2, colWidths: new[] { "*", "#" });
 			stack.Add(grid);
@@ -386,25 +386,41 @@ namespace AasxPackageLogic
 						setValue: setValue,
 						createInstance: createInstance);
 				});
+
+			if (sr is ExtIdfCardinalityReference cardrf)
+			{
+				// edit
+				ExtensionHelperAddEnumField(
+					grid, 0, 1,
+					"",
+					typeForEnum: typeof(SmtCardinality),
+					enumValue: cardrf.Cardinality,
+					setEnumValue: (o) =>
+					{
+						cardrf.Cardinality = (SmtCardinality)o;
+						setValue?.Invoke(cardrf as T);
+						return new AnyUiLambdaActionNone();
+					});
+			}
 		}
 
-		public void ExtensionHelperAddListOfIdfReference(
+		public void ExtensionHelperAddListOfIdfReference<T>(
 			Aas.Environment env, 
 			AnyUiStackPanel stack,
 			QuickLookupIdentifiable lookupIdf,
 			string caption,
 			ExtensionRecordBase recInst,
 			Aas.IReferable relatedReferable,
-			List<ExtIdfReference> value,
-			Action<List<ExtIdfReference>> setValue,
-			Func<string, ExtIdfReference> createInstance)
+			List<T> value,
+			Action<List<T>> setValue,
+			Func<string, T> createInstance) where T : ExtIdfReference
 		{
 			this.AddVerticalSpace(stack);
 
 			if (this.SafeguardAccess(stack, repo, value, "" + caption + ":",
 				"Create data element!",
 				v => {
-					setValue?.Invoke(new List<ExtIdfReference>(new ExtIdfReference[] { createInstance?.Invoke("") }));
+					setValue?.Invoke(new List<T>(new T[] { createInstance?.Invoke("") }));
 					return new AnyUiLambdaActionRedrawEntity();
 				}))
 			{
@@ -544,6 +560,14 @@ namespace AasxPackageLogic
 				var propType = pii.PropertyType;
 				var underlyingType = Nullable.GetUnderlyingType(propType);
 
+				// some flags logic
+				var propFlags = pii.GetCustomAttribute<ExtensionFlagsAttribute>()?.Flags;
+				if (propFlags != null)
+				{
+					if (relatedReferable is Aas.IConceptDescription && propFlags.Contains("SKIPFORCD"))
+						continue;
+				}
+
 				// make hint lambda
 				Action<bool> hintLambda = (hint) =>
 				{
@@ -682,7 +706,7 @@ namespace AasxPackageLogic
 					hintLambda(lidr == null || lidr.Count < 1);
 
 					// edit
-					ExtensionHelperAddListOfIdfReference(
+					ExtensionHelperAddListOfIdfReference<ExtIdfReference>(
 						env, stack, 
 						lookupIdf,
 						caption: "" + pii.Name,
@@ -695,6 +719,31 @@ namespace AasxPackageLogic
 							setValue?.Invoke(recInst);
 						},
 						createInstance: (eir) => new ExtIdfReference(eir));
+				}
+
+				// List of SmtIdfCardinalityReference?
+				if (pii.PropertyType.IsAssignableTo(typeof(List<ExtIdfCardinalityReference>)))
+				{
+					// value
+					var lidr = (List<ExtIdfCardinalityReference>)pii.GetValue(recInst);
+
+					// hint?
+					hintLambda(lidr == null || lidr.Count < 1);
+
+					// edit
+					ExtensionHelperAddListOfIdfReference<ExtIdfCardinalityReference>(
+						env, stack,
+						lookupIdf,
+						caption: "" + pii.Name,
+						recInst,
+						relatedReferable,
+						value: lidr,
+						setValue: (v) =>
+						{
+							pii.SetValue(recInst, v);
+							setValue?.Invoke(recInst);
+						},
+						createInstance: (eir) => new ExtIdfCardinalityReference(eir));
 				}
 
 				// single IdfReference?
@@ -1367,8 +1416,10 @@ namespace AasxPackageLogic
 				// to convert
 				rec = rec ?? new SmtAttributeRecord();
 
-				if (qti.Type == "SMT/Cardinality")
-					rec.Cardinality = (SmtCardinality)
+				if (qti.Type == "SMT/Cardinality"
+					|| qti.Type == "Cardinality"
+					|| qti.Type == "Multiplicity")
+					rec.SmeCardinality = (SmtCardinality)
 							EnumHelper.GetEnumMemberFromValueString<SmtCardinality>(qf.Value);
 
 				if (qti.Type == "SMT/EitherOr")
@@ -1423,6 +1474,20 @@ namespace AasxPackageLogic
 
 			// attach
 			return DispEditHelperExtensions.GeneralExtensionHelperAddJsonExtension(rf, rec.GetType(), rec);
+		}
+	}
+
+	/// <summary>
+	/// Some string based flags to attach to the property
+	/// </summary>
+	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
+	public class ExtensionFlagsAttribute : System.Attribute
+	{
+		public string Flags = "";
+
+		public ExtensionFlagsAttribute(string flags)
+		{
+			Flags = flags;
 		}
 	}
 
@@ -1495,6 +1560,21 @@ namespace AasxPackageLogic
 		public ExtIdfReference(string val = "")
 		{
 			Value = val;
+		}
+	}
+
+	/// <summary>
+	/// This class creates a reference to an Identifiable, which "feels" like a string.
+	/// A cardinality is included, as well
+	/// </summary>
+	public class ExtIdfCardinalityReference : ExtIdfReference
+	{
+		public SmtCardinality Cardinality { get; set; }
+
+		public ExtIdfCardinalityReference(string val = "", SmtCardinality cardinality = SmtCardinality.One)
+		{
+			Value = val;
+			Cardinality = cardinality;
 		}
 	}
 
@@ -1573,8 +1653,10 @@ namespace AasxPackageLogic
 		// attributes
 
 		[ExtensionHintAttribute("Specifies, how many SubmodelElement instances of this " +
-			"SMT element are allowed in the actual collection (hierarchy level of the Submodel).")]
-		public AasSmtQualifiers.SmtCardinality Cardinality { get; set; } = AasSmtQualifiers.SmtCardinality.One;
+			"SMT element are allowed in the actual collection (hierarchy level of the Submodel). " +
+			"Note: This attribute is only valid for annotating SMEs, not CDs!")]
+		[ExtensionFlags("SKIPFORCD")]
+		public AasSmtQualifiers.SmtCardinality SmeCardinality { get; set; } = AasSmtQualifiers.SmtCardinality.One;
 
 		[ExtensionHintAttribute("Specifies an id of an equivalence class. " +
 			"Only ids in the range [A-Za-z0-9] are allowed.  If multiple SMT elements feature the same equivalency " +
@@ -1631,7 +1713,7 @@ namespace AasxPackageLogic
 		[ExtensionHintAttribute("\u00ab Experimental \u00bb Specifies a list of concepts, which are " +
 			"organized, hierarchically structured, within this concept. This does not impose a type-like " +
 			"semantic. A concept might be organized by multiple concepts.")]
-		public List<ExtIdfReference> Organizes { get; set; } = null;
+		public List<ExtIdfCardinalityReference> Organizes { get; set; } = null;
 
 		//
 		// Init
@@ -1653,17 +1735,25 @@ namespace AasxPackageLogic
 					}).ToArray();
 		}
 
-		public string CardinalityShort()
+		public static string CardinalityShort(SmtCardinality card)
 		{
 			if (CardinalitiesShort == null)
 				return "";
-			var i = ((int)this.Cardinality) % CardinalitiesShort.Length;
+			var i = ((int)card) % CardinalitiesShort.Length;
 			return CardinalitiesShort[i];
 		}
 
         //
         // Access
         //
+
+		public IEnumerable<ExtIdfCardinalityReference> FindOrganizesForId(string id)
+		{
+			if (Organizes != null)
+				foreach (var org in Organizes)
+					if (org?.Value != null && org.Value == id)
+						yield return org;
+		}
 
 		public static bool ConceptSuitableForSubmodelCreate(SmtAttributeRecord smtRec)
 		{
@@ -1700,6 +1790,7 @@ namespace AasxPackageLogic
                                 yield return new ConceptOrganizedChildItem()
                                 {
                                     Cd = cd2,
+									Card = orgId.Cardinality,
                                     SmtRec = smtRec2
                                 };
                             }
@@ -1742,7 +1833,7 @@ namespace AasxPackageLogic
 			};
 
 			// apply
-			Cardinality = other.Cardinality;
+			SmeCardinality = other.SmeCardinality;
 			EitherOr = JoinStrings(EitherOr, other.EitherOr, "|");
 			InitialValue = OverStrings(InitialValue, other.InitialValue);
 			DefaultValue = OverStrings(DefaultValue, other.DefaultValue);
@@ -1766,7 +1857,7 @@ namespace AasxPackageLogic
 			if (other.Organizes != null && other.Organizes.Count > 0)
 				foreach (var oorg in other.Organizes)
 				{
-					Organizes = Organizes ?? new List<ExtIdfReference>();
+					Organizes = Organizes ?? new List<ExtIdfCardinalityReference>();
 					var found = false;
 					foreach (var org in Organizes)
 						if (org?.Value == oorg?.Value)
@@ -1949,7 +2040,9 @@ namespace AasxPackageLogic
 		/// Note: this function needs a lambda for looking up SMT attribute records
 		///       of subordinate elements either by Referable or SemanticId reference.
 		/// </summary>
-		public static List<SmtAttributeCheckItem> PerformAttributeCheck(List<Aas.ISubmodelElement> elems,
+		public static List<SmtAttributeCheckItem> PerformAttributeCheck(
+			Aas.IReferable parentRf,
+			List<Aas.ISubmodelElement> elems,
 			Func<Aas.IReferable, SmtAttributeRecord> lambdaLookupSmtRec,
 			List<SmtAttributeCheckItem> inList = null)
 		{
@@ -1957,6 +2050,9 @@ namespace AasxPackageLogic
 			if (elems == null || elems.Count < 1)
 				return inList;
 			var res = inList ?? new List<SmtAttributeCheckItem>();
+
+			// try to access attributes of the parent
+			var smtParent = lambdaLookupSmtRec?.Invoke(parentRf);
 
 			// make two dictionaries on these elements
 			// (to count elemens per semantic id and have SmtAttributes available)
@@ -1985,13 +2081,19 @@ namespace AasxPackageLogic
 				if (rec == null)
 					continue;
 
+				// cardinality
+				var card = rec.SmeCardinality;
+				var parentOrg = smtParent?.FindOrganizesForId(ssiKey)?.FirstOrDefault();
+				if (parentOrg != null)
+					card = parentOrg.Cardinality;
+
 				// check
 				var complain = "";
-				if (rec.Cardinality == SmtCardinality.One && els.Count != 1)
+				if (card == SmtCardinality.One && els.Count != 1)
 					complain = "[1]";
-				if (rec.Cardinality == SmtCardinality.OneToMany && els.Count < 1)
+				if (card == SmtCardinality.OneToMany && els.Count < 1)
 					complain = "[1..*]";
-				if (rec.Cardinality == SmtCardinality.ZeroToOne && els.Count > 1)
+				if (card == SmtCardinality.ZeroToOne && els.Count > 1)
 					complain = "[0..1]";
 
 				// give out
@@ -2105,9 +2207,27 @@ namespace AasxPackageLogic
 				if (already)
 					continue;
 
+				// try identify cardinality
+				var card = SmtCardinality.One;
+				var smeFromDictKey = dict[dictKey].FirstOrDefault() as Aas.ISubmodelElement;
+
+				// access cardinality of the SME by qualifier
+				var qf = smeFromDictKey?.FindQualifierOfAnyType(new[] { 
+							"SMT/Cardinality", "Cardinality", "Multiplicity" })?.FirstOrDefault();
+				if (qf?.Value != null)
+					card = (SmtCardinality) EnumHelper.GetEnumMemberFromValueString<SmtCardinality>(
+							qf.Value, valElse: SmtCardinality.One);
+
+				// access cardinality of the SME by SmtAttributeRec?
+				var smtRecFromSme = DispEditHelperExtensions
+					.CheckReferableForExtensionRecords<SmtAttributeRecord>(smeFromDictKey)?
+					.FirstOrDefault();
+				if (smtRecFromSme != null)
+					card = smtRecFromSme.SmeCardinality;
+
 				// without further ado, just put it in!
-				smtRec.Organizes = smtRec.Organizes ?? new List<ExtIdfReference>();
-				smtRec.Organizes.Add(new ExtIdfReference(dictKey));
+				smtRec.Organizes = smtRec.Organizes ?? new List<ExtIdfCardinalityReference>();
+				smtRec.Organizes.Add(new ExtIdfCardinalityReference(dictKey, card));
 				changes = true;
 			}
 
