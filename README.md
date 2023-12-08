@@ -18,13 +18,9 @@
 
 <p align="center">We are proud to announce that AASX Package Explorer is now  
 
-<p align="center"><i><a href="https://projects.eclipse.org/projects/dt.aaspe">Eclipse AASX Package Explorer</a></i>,
+<p align="center"><i><a href="https://projects.eclipse.org/projects/dt.aaspe">Eclipse AASX Package Explorer</a></i>, an <a href="https://www.eclipse.org/">Eclipse Foundation</a> incubated project,
 
-<p align="center">an <a href="https://www.eclipse.org/">Eclipse Foundation</a> incubated project,
-
-<p align="center">and is moving to 
-
-<p align="center"><a href="https://github.com/eclipse-aaspe/aaspe">https://github.com/eclipse-aaspe/aaspe</a>.
+<p align="center">and is moving to <a href="https://github.com/eclipse-aaspe/aaspe">https://github.com/eclipse-aaspe/aaspe</a>.
 
 <p align="center">Please move the development to the new repository and update your links.
 
