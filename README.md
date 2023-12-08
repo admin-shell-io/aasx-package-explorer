@@ -24,7 +24,7 @@
 
 <p align="center">Please move the development to the new repository and update your links.
 
-<p align="center">See <a href="">CONTRIBUTING</a> for information on how to migrate your development.
+<p align="center">See <a href="https://github.com/eclipse-aaspe/aaspe/CONTRIBUTING">aaspe/CONTRIBUTING</a> for information on how to migrate your development.
 
 <p align="center">Please refrain from committing or forking this repository. It will be archived.
 
