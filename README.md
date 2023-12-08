@@ -1,3 +1,33 @@
+<hr>
+
+![image](warning.png)
+
+<p align="center">
+  <b>tl;dr: repository now @ <a href="https://github.com/eclipse-aaspe/aaspe">https://github.com/eclipse-aaspe/aaspe</a></b>
+</p>
+
+<hr>
+
+<p align="center">We are proud to announce that AASX Package Explorer is now  
+
+<p align="center"><a href="https://projects.eclipse.org/projects/dt.aaspe">Eclipse AASX Package Explorer</a>,
+
+<p align="center">an <a href="https://www.eclipse.org/">Eclipse Foundation</a> incubated project,
+
+<p align="center">and is moving to 
+
+<p align="center"><a href="https://github.com/eclipse-aaspe/aaspe">https://github.com/eclipse-aaspe/aaspe</a>.
+
+<p align="center">Please move the development to the new repository and update your links.
+
+<p align="center">See <a href="">CONTRIBUTING</a> for information on how to migrate your development.
+
+<p align="center">Please refrain from committing or forking this repository. It will be archived.
+
+<p align="center"><i>Thank you for being a part of the Digital Twin open source community 💙 and see you over at eclipse-aaspe!</i></p>
+
+<hr>
+
 # AASX Package Explorer
 
 ![Build-test-inspect](
