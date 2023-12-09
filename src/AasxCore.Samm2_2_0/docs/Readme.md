@@ -215,6 +215,8 @@ like this:
 ```
 
 
+The [Movement.ttl](https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.eclipse.examples/1.0.0/Movement.ttl) example in the "src/examples" folder is taken from the [Aspect Model Editor 5.0.0](https://github.com/eclipse-esmf/esmf-aspect-model-editor).
+
 For more examples of aspect models conformant to the Semantic Aspect
 Meta Model see
 <https://github.com/eclipse-tractusx/sldt-semantic-models>.
