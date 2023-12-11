@@ -229,6 +229,7 @@ Meta Model see
 ## AASX Package Explorer - Step by Step
 
 
+
 ### Import and View an Aspect Model
 
 
@@ -392,11 +393,13 @@ For each Constraint again a separate Concept Description of SAMM model element t
 **Step 11) (Context: Trait) Edit "BaseCharacteristic" and add IDs of constraints ("Constraint" and "+").**
 
 
+
  ### Export Aspect Model
 
 For exporting an aspect model from a choosen concept description use the "File/Export .../Export SAMM aspect model by selected CD". Before calling the export function you must select an concept description of type "samm-aspect".
 
 ![Export SAMM aspect model](src/aasx_package_explorer_SAMM_export.png "Export SAMM aspect model")
+
 
 
 # Background on Implementation
@@ -464,6 +467,7 @@ The JSON value for an extension for a SAMM Measurement would look like this. It 
        }
       ]
     }</value>
+
 
 
 

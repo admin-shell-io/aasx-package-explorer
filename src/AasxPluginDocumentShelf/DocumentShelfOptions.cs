@@ -90,7 +90,7 @@ namespace AasxPluginDocumentShelf
             {
                 UsageInfo = "Some manufacturers use manufacturer documentation to provide models for " +
                 "Computer Aided Design (CAD) and further engineering tools.",
-                ForceVersion = DocumentEntity.SubmodelVersion.V11
+                ForceVersion = DocumentEntity.SubmodelVersion.V12
             };
             opt.Records.Add(rec);
 
