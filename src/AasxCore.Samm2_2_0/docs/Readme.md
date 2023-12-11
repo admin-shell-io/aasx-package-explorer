@@ -13,9 +13,15 @@
 		- [References for usage of SAMM and ESMF](#references)
 		- [Examples](#examples)
 - [AASX Package Explorer - Step by Step](#aasx-package-explorer-step-by-step)
-	- [Import Aspect Model](#import-aspect-model)
+	- [Import and View Aspect Model](#import-aspect-model)
 	- [Creating a Submodel Instance](#creating-a-submodel-instance)
+	- [Editing an Aspect Model](#editing-an-aspect-model)
 	- [Export Aspect Model](#export-aspect-model)
+- [Background on Implementation](#background-on-implementation)
+	- [Data Specifications and Extensions](#data-specifications-and-extensions)
+	- [SAMM Extensions](#samm-extensions)
+
+
 
 ## Introduction
 
@@ -223,7 +229,7 @@ Meta Model see
 
 ## AASX Package Explorer - Step by Step
 
-### Import Aspect Model
+### Import and View an Aspect Model
 
 For importing an existing aspect model use "File/Import .../Import SAMM aspect into ConceptDescriptions ...". 
 
@@ -296,15 +302,164 @@ After selecting the elements (in our example only the mandatory fields were sele
 ![Exmample values](src/aasx_package_explorer_AddSMEguidedBySMT_position.png "Example Values")
 
 
+### Editing an Aspect Model
+
+After adding a new Concept Description choose SAMM Extensions to model a new aspect model.
+
+**Step 1) Add a new Concept Description**
+
+**Step 2) Choose SAMM Extension**
+
+![SAMM Extension](src/aasx_package_explorer_SAMMExtension.png "SAMM Extension")
+
+Clicking on "Add other" shows which SAMM element types are available to create and to edit.
+
+**Step 3) Choose "Add other"**
+
+**Step 4) Choose SAMM element type**
+
+![SAMM Extension - Add other](src/aasx_package_explorer_SAMMExtension_AddOther.png "SAMM Extension - Add other")
+
+The list of SAMM element types contains not only all elements from the SAMM metamodel but also all predefined characteristics except for the basis ones like "bamm-c:Boolean" etc. because in this case the data type is added directly into the Concept Description and not into a new Concept Description.
+
+*NOTE: per Concept Description please add only one SAMM Extension!*
 
 
- ### Export Aspect Model
+![SAMM Extension - Select SAMM Element Type](src/aasx_package_explorer_SAMMExtension_SelectSAMMElementType.png "SAMM Extension - Select SAMM Element Type")
+
+Click on the element you want to edit. In our example we start with modelling an aspect model "Movement".
+Then select the version of the SAMM Aspect Metamodel that you need. In our example we select version 2.0.0.
+
+![SAMM Extension - Select SAMM Version](src/aasx_package_explorer_SAMMExtension_SelectSAMMVersion.png "SAMM Extension - Select SAMM Version")
+
+First we add the idShort and ID of the Concept Description. These two attributes are not part of the SAMM extension but common to all Concept Descriptions.
+
+**Step 5) Edit attribute "id" of the Concept Description**
+
+**Step 6) Edit attribute "idShort" of the Concept Description**
+
+
+In a next step add the preferredName in the languages you want to support. In our example the preferred name is provided in English as "movement".
+
+**Step 7) Edit attribute "preferredName" of the SAMM Extension**
+
+
+![SAMM Extension - Preferred Name](src/aasx_package_explorer_SAMMExtension_PreferredName.png "SAMM Extension - - Preferred Name")
+
+The ID consists of the namespace and the name of the model element. In our example the namespace of the model is "urn:samm:org.eclipse.examples:1.0.0#" and its name is "Movement".
+
+![SAMM Extension - ID and idShort of Concept Description](src/aasx_package_explorer_ConceptDescription_ID.png "SAMM Extension - ID and idShort of Concept Description")
+
+In a next step we add the properties "isMoving" and "position" to the aspect.
+
+![SAMM Extension - SAMM Aspect: add property](src/aasx_package_explorer_SAMMExtension_AddProperty.png "SAMM Extension - SAMM Aspect: add property")
+
+The IDs of the two properties need to be added. Add as many properties as needed. If a property is optional click on the Box "Opt." In our example the two properties "isMoving" and "position" are mandatory.
+
+**Step 8) (Context:Aspect or Entity) Add Properties with their unique ID**
+
+**Step 9) (Context:Aspect or Entity) Decide whether Property is optional**
+
+![SAMM Extension - SAMM Aspect: added two properties](src/aasx_package_explorer_SAMMExtension_PropertiesAdded.png "SAMM Extension - SAMM Aspect: added two properties)
+
+Now we need to add the two newly defined properties "isMoving" and "position". "isMoving" has the basic predefined Characteristic "samm-c:Boolean" with data type "Boolean". "position" has the basic Characteristic "samm-c:SingleEntity". The namespace of samm-c is *urn:samm:org.eclipse.examples:1.0.0#*.
+
+**Step 10) (Context:Property) Edit attribute "Characteristic": Either select predefined characteristic or create new characteristic. If constraints shall be added to the characteristic a trait needs to be created.**
+
+We start Step 1) to Step 7) but this time choose the SAMM element type "Property". This Concept Description shall contain the information for the SAMM-property "isMoving". We select the predefined chacteristic "urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#Boolean" by selecting from the set of characteristics by clicking on "Preset".
+
+![SAMM Extension - Predefined Characteristics](src/aasx_package_explorer_SAMMExtension_PresetCharacteristics.png "SAMM Extension - Predefined Characteristics")
+
+![SAMM Extension - Characteristic](src/aasx_package_explorer_SAMMExtension_PropertyCharacteristics.png "SAMM Extension - Characteristic")
+
+
+We start Step 1) to Step 7) but this time choose the SAMM element type "Property". This Concept Description shall contain the information for the SAMM-property "position". As the characteristic we add  the newly defined characteristic "urn:samm:org.eclipse.examples:1.0.0#SpatialPositionCharacteristic". This is why we need to add a new Concept Description representing the new characteristic "SpatialPositionCharacteristic" (following the steps 1) to Step 7)). As a SAMM model element type we choose "SingleEntity". As a data type we add "urn:samm:org.eclipse.examples:1.0.0#SpatialPosition".
+
+For the SAMM-property "position" we create a new Concept Description of SAMM model element type "Entity" with ID "urn:samm:org.eclipse.examples:1.0.0#SpatialPosition", that is used as data type in the characteristic "SpatialPositionCharacteristic".
+
+An important characteristic are the characteristic for sets, lists etc. For those the unique ID of the Element Characteristic needs to be added. A predefined characteristic may be used, see Step 10).
+
+![SAMM Extension - Characteristic Set](src/aasx_package_explorer_SAMMExtension_CharacteristicSet.png "SAMM Extension - Characteristic Set")
+
+Traits are also supported. A Trait is a combination of a characteristic and a constraint. In this case an existing BaseCharacteristic and several constraints can be added. 
+
+![SAMM Extension - Traits](src/aasx_package_explorer_SAMMExtension_Trait.png "SAMM Extension - Traits")
+
+For each Constraint again a separate Concept Description of SAMM model element type "Constraint" needs to be created following steps 1) to 7). Choose one of the predefined constraint types like "RangeConstraint" etc.
+
+**Step 11) (Context: Trait) Edit "BaseCharacteristic" and add IDs of cosntraints ("Constraint" and "+").**
+
+### Export Aspect Model
 
 For exporting an aspect model from a choosen concept description use the "File/Export .../Export SAMM aspect model by selected CD". Before calling the export function you must select an concept description of type "samm-aspect".
 
 ![Export SAMM aspect model](src/aasx_package_explorer_SAMM_export.png "Export SAMM aspect model")
 
+# Background on Implementation
 
+## Data Specifications and Extensions
+
+
+The [Specification of the Asset Administration Shell](https://industrialdigitaltwin.org/en/content-hub/aasspecifications) support embedded data specifications. Data Specifications are supporting standardized extension points whereas Extensions are used for proprietary extensions (class "HasExtensions" in Part 1). All referables are allowed to have proprietary extensions.
+
+Especially for concept descriptions it was foreseen that there will be different kinds of concept descriptions that need to be supported. In a first step a data specification for IEC61360 properties and values was standardized (Part 3a). These data specifications are embedded, i.e. they are part of the standardized schemas in https://github.com/admin-shell-io/aas-specs.
+
+## SAMM Extensions
+
+Since there is no standardized data specification for aspect models conformant to SAMM so far the extension mechanism was used to implement the functionality as explained in this document.
+
+![AAS Extension for a SAMM Property](src/aasx_package_explorer_SAMMExtension_Property.png "AAS Extension for a SAMM Property")
+
+The semanticId of each extension corresponds to the SAMM Metamodel ID. For example the extension of a Concept Description representing a SAMM-property has the semantic ID *urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#Property*. The value of the Extension carries the attributes as well as the values of the attributes in a JSON format. This is why the "valueType" is "xs:string". In this example the attributes specific for a SAMM property are "Characteristic" and "PreferredName". 
+
+    
+    <extension>
+
+      <semanticId>
+        <type>ExternalReference</type>
+        <keys>
+          <key>
+            <type>GlobalReference</type>
+            <value>urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#Property</value>
+          </key>
+        </keys>
+      </semanticId> 
+
+      <name>samm-property</name>
+
+      <valueType>xs:string</valueType>
+
+      <value>{
+        "Characteristic": {
+          "Value": "urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#Boolean"
+        },
+        "PreferredName": [
+        {
+         "Language": "en",
+         "Text": "is moving"
+        }
+       ]
+      }</value>
+
+    </extension>
+
+
+The JSON value for an extension for a SAMM Measurement would look like this. It contains additionally a Unit ID.
+
+      <value>{
+        "Unit": {
+          "Value": "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#kilometrePerHour"
+        },
+       "DataType": {
+          "Value": "http://www.w3.org/2001/XMLSchema#float"
+       },
+      "PreferredName": [
+       {
+         "Language": "en",
+        "Text": "speed"
+       }
+      ]
+    }</value>
 
 
 
