@@ -4,11 +4,10 @@ on:
   pull_request:
     branches:
       - master
+      - MIHO/*V3*
     types: [opened, synchronize, reopened, edited]
 
   push:
-    branches:
-      - master
 
 jobs:
   Check-style:
@@ -22,10 +21,10 @@ jobs:
         run: powershell .\CheckLicenses.ps1
         if: always()
 
-      - name: Install .NET core
+      - name: Install .NET core 6.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.100'
+          dotnet-version: '6.0.x'
         if: always()
 
       - name: Install tools for style

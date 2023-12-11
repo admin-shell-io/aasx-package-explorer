@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,15 +7,13 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AdminShellNS;
-using Newtonsoft.Json;
+using Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable ReplaceWithSingleAssignment.True
 
@@ -35,8 +33,8 @@ namespace AasxFormatCst
                     new ListOfUnique<CstPropertyDef.PropertyDefinition>();
         public List<CstPropertyRecord.PropertyRecord> PropertyRecs = new List<CstPropertyRecord.PropertyRecord>();
 
-        protected Dictionary<AdminShell.ConceptDescription, CstPropertyDef.PropertyDefinition>
-            _cdToProp = new Dictionary<AdminShellV20.ConceptDescription, CstPropertyDef.PropertyDefinition>();
+        protected Dictionary<Aas.ConceptDescription, CstPropertyDef.PropertyDefinition>
+            _cdToProp = new Dictionary<Aas.ConceptDescription, CstPropertyDef.PropertyDefinition>();
 
         protected CstIdStore _knownIdStore = new CstIdStore();
 
@@ -60,7 +58,7 @@ namespace AasxFormatCst
         }
 
         private void RecurseOnSme(
-            AdminShell.SubmodelElementWrapperCollection smwc,
+            List<Aas.ISubmodelElement> smwc,
             CstIdObjectBase presetId,
             string presetClassType,
             CstPropertyRecord.ListOfProperty propRecs)
@@ -85,21 +83,21 @@ namespace AasxFormatCst
                 foreach (var smw in smwc)
                 {
                     // trivial
-                    var sme = smw?.submodelElement;
+                    var sme = smw;
                     if (sme == null)
                         continue;
 
                     // is SMC? .. ugly contraption to have first all Properties, then all SMCs
-                    var smc = sme as AdminShell.SubmodelElementCollection;
+                    var smc = sme as Aas.SubmodelElementCollection;
                     if ((smcMode == 0 && smc != null)
                         || (smcMode == 1 && smc == null))
                         continue;
 
                     // check, if ConceptDescription exists ..
-                    var cd = _env?.AasEnv.FindConceptDescription(sme.semanticId);
+                    var cd = _env?.AasEnv.FindConceptDescriptionByReference(sme.SemanticId);
 
                     // try to take over as much information from the pure SME as possible
-                    var semid = sme.semanticId.GetAsExactlyOneKey()?.value;
+                    var semid = sme.SemanticId.GetAsExactlyOneKey()?.Value;
                     string refStr = null;
                     string refName = null;
                     if (semid != null)
@@ -135,23 +133,23 @@ namespace AasxFormatCst
                         tmpPd = new CstPropertyDef.PropertyDefinition(bo);
 
                         // more info
-                        tmpPd.Name = "" + sme.idShort;
-                        if (sme.description != null)
-                            tmpPd.Remark = sme.description.GetDefaultStr("en");
+                        tmpPd.Name = "" + sme.IdShort;
+                        if (sme.Description != null)
+                            tmpPd.Remark = sme.Description.GetDefaultString("en");
 
-                        if (sme is AdminShell.Property prop)
-                            tmpDt = prop.valueType;
+                        if (sme is Aas.Property prop)
+                            tmpDt = Aas.Stringification.ToString(prop.ValueType);
 
                         // more info
                         if (cd != null)
                         {
-                            var ds61360 = cd.IEC61360Content;
+                            var ds61360 = cd.EmbeddedDataSpecifications?.GetIEC61360Content();
                             if (ds61360 != null)
                             {
-                                if (ds61360.definition != null)
-                                    tmpPd.Definition = ds61360.definition.GetDefaultStr("en");
+                                if (ds61360.Definition != null)
+                                    tmpPd.Definition = ds61360.Definition.GetDefaultString("en");
 
-                                var dst = ds61360.dataType?.Trim().ToUpper();
+                                var dst = Aas.Stringification.ToString(ds61360.DataType)?.ToUpper();
                                 if (ds61360 == null && dst != null)
                                 {
                                     tmpDt = dst;
@@ -206,7 +204,7 @@ namespace AasxFormatCst
                         var pr = new CstPropertyRecord.Property()
                         {
                             ID = tmpPd.ToRef(),
-                            Name = "" + smc.idShort,
+                            Name = "" + smc.IdShort,
                             ValueProps = rec
                         };
 
@@ -227,7 +225,7 @@ namespace AasxFormatCst
                             // TODO (MIHO, 2021-05-28): extend Parse() to parse also ECLASS, IEC CDD
                             var blockId = CstIdObjectBase.Parse(refStr);
                             blockId.Name = refName;
-                            RecurseOnSme(smc.value, blockId, "Block", lop);
+                            RecurseOnSme(smc.Value, blockId, "Block", lop);
                         }
                     }
                     else
@@ -260,7 +258,7 @@ namespace AasxFormatCst
                         {
                             ValueStr = sme.ValueAsText(),
                             ID = refStr,
-                            Name = "" + sme.idShort
+                            Name = "" + sme.IdShort
                         };
                         if (propRecs != null)
                             propRecs.Add(pr);
@@ -270,8 +268,8 @@ namespace AasxFormatCst
 
         public void ExportSingleSubmodel(
             AdminShellPackageEnv env, string path,
-            AdminShell.Key smId,
-            IEnumerable<AdminShell.Referable> cdReferables,
+            Aas.Key smId,
+            IEnumerable<Aas.IReferable> cdReferables,
             CstIdObjectBase firstNodeId,
             CstIdObjectBase secondNodeId,
             CstIdObjectBase appClassId)
@@ -281,19 +279,19 @@ namespace AasxFormatCst
                 return;
             _env = env;
 
-            var sm = _env?.AasEnv.FindFirstSubmodelBySemanticId(smId);
+            var sm = _env?.AasEnv.FindAllSubmodelBySemanticId(smId.Value).First();
             if (sm == null)
                 return;
 
             // Step 1: copy all relevant CDs into the AAS
             if (cdReferables != null)
                 foreach (var rf in cdReferables)
-                    if (rf is AdminShell.ConceptDescription cd)
-                        env?.AasEnv.ConceptDescriptions.AddIfNew(cd);
+                    if (rf is Aas.ConceptDescription cd)
+                        env?.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(cd);
 
             // Step 2: make up a list of used semantic references and write to default file
             var tmpIdStore = new CstIdStore();
-            tmpIdStore.CreateEmptyItemsFromSMEs(sm.submodelElements, omitIecEclass: true);
+            tmpIdStore.CreateEmptyItemsFromSMEs(sm.SubmodelElements, omitIecEclass: true);
             tmpIdStore.WriteToFile(path + "_default_prop_refs.json");
 
             // Step 3: initialize node defs
@@ -332,7 +330,7 @@ namespace AasxFormatCst
             });
 
             // Step 4: recursively look at SME
-            RecurseOnSme(sm.submodelElements, appClassId, "Application Class", lop);
+            RecurseOnSme(sm.SubmodelElements, appClassId, "Application Class", lop);
 
             // Step 90: write class definitions
             var clsRoot = new CstClassDef.Root() { ClassDefinitions = ClassDefs };

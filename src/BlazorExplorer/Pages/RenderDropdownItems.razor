@@ -1,0 +1,30 @@
+﻿@page "/RenderDropdownItems"
+@using Microsoft.AspNetCore.Components.Web
+@using MW.Blazor
+@using AasxIntegrationBase
+@using AnyUi
+@using System.Globalization;
+
+@if (MenuItems != null)
+    foreach (var mi in MenuItems)
+        if (mi is AasxMenuItem mii)
+        {
+            var currMii = mii;
+            <a class="dropdown-item" href="#" @onclick="() => ItemClicked(currMii)">
+                <span style="display: inline-block; width: 2rem!important; ">@(mii.Icon)</span>
+                <span style="text-align: left; ">@(mii.Header)</span>
+            </a>
+        }
+
+@code {
+
+    [Parameter] public IEnumerable<AasxMenuItemBase> MenuItems { get; set; }
+
+    [Parameter]
+    public EventCallback<AasxMenuItem> OnItemSelected { get; set; }
+
+    protected void ItemClicked(AasxMenuItem mii)
+    {
+        OnItemSelected.InvokeAsync(mii);
+    }
+}

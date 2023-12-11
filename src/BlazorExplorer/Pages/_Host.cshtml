@@ -1,0 +1,224 @@
+﻿@page "/"
+@namespace BlazorUI.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+@{
+// resharper disable all
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AASX Packager Explorer for HTML</title>
+    <base href="~/" />
+
+    <!-- Bootstrap 3 based local file -->
+    <!-- <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" /> -->
+
+    <!-- Bootstrap 5 CDN -->
+    <!--
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.9.2/dist/umd/popper.min.js"  crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"  crossorigin="anonymous"></script>
+    -->
+
+    <!-- Bootstrap 5 downloaded -->
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" /> 
+
+    <link href="css/site.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/all.css" />
+    <link rel="stylesheet" href="css/treeStyles.css" />
+</head>
+<body>
+    <!-- Bootstrap 5 a popper budnle downloaded -->
+    <script src="bootstrap/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <app>
+        <component type="typeof(BlazorExplorer.App)" render-mode="Server" />
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <!-- blazor boiler plate -->
+    <script src="~/js/blazor-modal.js"></script>
+    <script src="_framework/blazor.server.js"></script>
+    
+    <!-- used for HTML5 canvas drawing / translating click events-->
+    <!-- see: https://www.codeproject.com/Articles/5269947/Drawing-with-the-HTML-Canvas-Element-in-Blazor-Ser -->
+    <!-- see also: https://stackoverflow.com/questions/5598743/finding-elements-position-relative-to-the-document -->
+    <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+    <script>
+    function getDivCanvasOffsets(el) {
+        var obj = {};
+        // obj.offsetLeft = el.offsetLeft;
+        obj.offsetLeft = el.getBoundingClientRect().left; // + document.documentElement.scrollLeft
+        // obj.offsetTop = el.offsetTop;
+        obj.offsetTop = el.getBoundingClientRect().top; // + document.documentElement.scrollTop
+        return JSON.stringify(obj);
+    }
+    </script>
+
+    <!-- Install keyboard monitoring -->
+    <script src="~/js/keyboard.js"></script>
+
+    <!-- Bootstrap style main layout / menu system -->
+    <script src="~/js/main-layout.js"></script>
+
+    <!-- File input dialogue -->
+    <script src="_content/BlazorInputFile/inputfile.js"></script>
+    <script>
+        function BlazorDownloadFile(filename, contentType, content) {
+            // Blazor .net3
+            // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content) 
+            // to a Uint8Array to create the File
+            // const data = base64DecToArr(content);
+            // For Blazor .net6.0, object marshalling seems to be transparent
+            const data = content;
+
+            // Create the URL
+
+            const file = new File([data], filename, { type: contentType });
+            const exportUrl = URL.createObjectURL(file);
+
+            // Create the <a> element and click on it
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = exportUrl;
+            a.download = filename;
+            a.target = "_blank";
+            // a.target = "_self";
+            a.click();
+
+            // We don't need to keep the url, let's release the memory
+            // On Safari it seems you need to comment this line... (please let me know if you know why)
+            URL.revokeObjectURL(exportUrl);
+        }
+
+        function BlazorDisplayFile(filename, contentType, content) {
+            // Blazor .net3
+            // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content)
+            // to a Uint8Array to create the File
+            // const data = base64DecToArr(content);
+            // For Blazor .net6.0, object marshalling seems to be transparent
+            const data = content;
+
+            // Browser switch: Mozilla blocks display of PDF "block:... denied for scipt", therefore
+            // switch to "octet-stream", then, funny enough, Mozilla will also DISPLAY PDF ..
+
+            var sBrowser, sUsrAg = navigator.userAgent;
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                contentType = "application/octet-stream";
+            }
+
+            //console.log("sBrowser=" + sBrowser);
+            //console.log("sUsrAg=" + sUsrAg);
+            //console.log("contentType=" + contentType);
+
+            // Create the URL
+            const file = new File([data], filename, { type: contentType });
+            const exportUrl = URL.createObjectURL(file);
+
+            // Create the <a> element and click on it
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = exportUrl;
+
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                a.download = filename;
+            }
+
+            a.target = "_blank";
+            a.click();
+
+            // We don't need to keep the url, let's release the memory
+            // On Safari it seems you need to comment this line... (please let me know if you know why)
+            URL.revokeObjectURL(exportUrl);
+        }
+
+        function BlazorDownloadUrl(url, contentType, filename) {
+
+            // Create the <a> element and click on it
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = url;
+
+            // try force download (seems not to work)
+            a.type = "application/octet-stream"
+            a.download = filename;
+            
+            a.target = "_blank";
+            // a.target = "_self";
+            a.click();
+
+            // We don't need to keep the url, let's release the memory
+            // On Safari it seems you need to comment this line... (please let me know if you know why)
+            URL.revokeObjectURL(url);
+        }
+
+        function BlazorDisplayUrl(url, contentType) {
+            // Browser switch: Mozilla blocks display of PDF "block:... denied for scipt", therefore
+            // switch to "octet-stream", then, funny enough, Mozilla will also DISPLAY PDF ..
+
+            var sBrowser, sUsrAg = navigator.userAgent;
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                contentType = "application/octet-stream";
+            }
+
+            // Create the <a> element and click on it
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = url;
+
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                a.download = url;
+            }
+
+            a.target = "_blank";
+            a.click();
+
+            // We don't need to keep the url, let's release the memory
+            // On Safari it seems you need to comment this line... (please let me know if you know why)
+            URL.revokeObjectURL(url);
+        }
+
+        // Convert a base64 string to a Uint8Array. This is needed to create a blob object from the base64 string.
+        // The code comes from: https://developer.mozilla.org/fr/docs/Web/API/WindowBase64/D%C3%A9coder_encoder_en_base64
+        function b64ToUint6(nChr) {
+            return nChr > 64 && nChr < 91 ? nChr - 65 : nChr > 96 && nChr < 123 ? nChr - 71 : nChr > 47 && nChr < 58 ? nChr + 4 : nChr === 43 ? 62 : nChr === 47 ? 63 : 0;
+        }
+
+        function base64DecToArr(sBase64, nBlocksSize) {
+            var
+                sB64Enc = sBase64.replace(/[^A-Za-z0-9\+\/]/g, ""),
+                nInLen = sB64Enc.length,
+                nOutLen = nBlocksSize ? Math.ceil((nInLen * 3 + 1 >> 2) / nBlocksSize) * nBlocksSize : nInLen * 3 + 1 >> 2,
+                taBytes = new Uint8Array(nOutLen);
+
+            for (var nMod3, nMod4, nUint24 = 0, nOutIdx = 0, nInIdx = 0; nInIdx < nInLen; nInIdx++) {
+                nMod4 = nInIdx & 3;
+                nUint24 |= b64ToUint6(sB64Enc.charCodeAt(nInIdx)) << 18 - 6 * nMod4;
+                if (nMod4 === 3 || nInLen - nInIdx === 1) {
+                    for (nMod3 = 0; nMod3 < 3 && nOutIdx < nOutLen; nMod3++, nOutIdx++) {
+                        taBytes[nOutIdx] = nUint24 >>> (16 >>> nMod3 & 24) & 255;
+                    }
+                    nUint24 = 0;
+                }
+            }
+            return taBytes;
+        }
+    </script>
+</body>
+</html>

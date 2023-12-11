@@ -17,7 +17,7 @@ function Main
     Write-Host "Inspecting the TODOs in the code..."
     dotnet opinionated-csharp-todos `
         --inputs '**/*.cs' `
-        --excludes 'packages/**' '**/obj/**' 'MsaglWpfControl/**'
+        --excludes 'packages/**' '**/obj/**' 'MsaglWpfControl/**' 'AasxCsharpLib_bkp/**'
     if($LASTEXITCODE -ne 0)
     {
         throw (

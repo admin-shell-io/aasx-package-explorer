@@ -1,0 +1,172 @@
+﻿@startuml
+
+actor User
+control Timer
+participant "MainWindow.cs" as MainWindow
+participant "VisualAasx\nElements.cs" as VisualAasxElements
+participant "Plugins.cs" as Plugins
+participant "AasxPluginGeneric\nForms.Plugin.cs" as GFplugin
+participant "DispEditAasx\nEntity.xaml.cs" as DispEditAasxEntity
+participant "AasxPlugin\nGenericForms\n...AnyUiControl.cs" as AnyUiControl
+participant "AnyUiWpf/Html.cs\ninstances" as AnyUiStar
+
+group seq: Preparation of tree
+
+  User -> MainWindow : Load\nAASX
+  activate MainWindow
+
+    MainWindow -> VisualAasxElements : add VisualElements\nfrom shell env
+    activate VisualAasxElements 
+
+      VisualAasxElements -> Plugins : InvokeAction(\n"call-check-\nvisualextension", ...)
+      activate Plugins
+
+        Plugins -> GFplugin : InvokeAction(...)
+        activate GFplugin
+
+          GFplugin -> GFplugin : Init()
+
+        Plugins <- GFplugin
+        deactivate GFplugin
+
+      VisualAasxElements <- Plugins
+      deactivate Plugins
+
+    MainWindow <- VisualAasxElements
+    deactivate VisualAasxElements
+
+  MainWindow <- MainWindow : displayed tree\nitems have a\nVisualElement-\nPluginExtension
+
+  User <- MainWindow : tree displayed
+  deactivate MainWindow
+
+end
+
+group seq: Click on VisualExtension
+
+  User -> MainWindow : Click gray box\nin tree
+  activate MainWindow
+
+  MainWindow -> DispEditAasxEntity : DisplayOrEditVisualAasxElement()
+  activate DispEditAasxEntity 
+
+    DispEditAasxEntity -> Plugins  : InvokeAction("fill-anyui-visualextension", ...)
+    activate Plugins
+ 
+      Plugins -> GFplugin: InvokeAction(..)
+      activate GFplugin
+
+        GFplugin -> AnyUiControl : Start()
+        activate AnyUiControl
+
+          AnyUiControl -> AnyUiStar : create\nelements
+          activate AnyUiStar 
+          AnyUiControl <- AnyUiStar
+
+        GFplugin <- AnyUiControl
+
+      Plugins <- GFplugin
+      deactivate GFplugin
+
+    DispEditAasxEntity <- Plugins
+    deactivate Plugins
+
+    DispEditAasxEntity -> DispEditAasxEntity : render extension\non screen
+
+  MainWindow <- DispEditAasxEntity
+  deactivate DispEditAasxEntity
+
+  User <- MainWindow : panel for plugin\ndisplayed
+  deactivate MainWindow
+
+end
+
+group seq: Click on element inside(!) VisualExtension
+
+  User -> AnyUiStar : click inside
+  activate AnyUiStar 
+
+  AnyUiStar -> AnyUiStar : AnyUiUIElement.\nSetValueLambda
+
+    AnyUiStar -> MainWindow : WishForOutsideAction.Add(AnyUiLambdaActionPluginUpdateAnyUi)
+    activate MainWindow
+    AnyUiStar <- MainWindow
+    deactivate MainWindow
+  deactivate AnyUiStar 
+  
+  Timer -> MainWindow : MainTimer()
+  activate MainWindow
+  
+    MainWindow -> MainWindow : MainTimer_\nHandleLambdaAction
+    activate MainWindow
+
+      MainWindow -> Plugins : InvokeAction("update-anyui-visualextension")
+      activate Plugins
+
+        Plugins -> GFplugin : Invoke(...)
+        activate GFplugin
+
+          GFplugin -> AnyUiControl: Update(args)
+          activate AnyUiControl
+
+            AnyUiControl -> AnyUiControl : change values\nor structure
+
+          GFplugin <- AnyUiControl
+          deactivate AnyUiControl
+
+        Plugins <- GFplugin
+        deactivate GFplugin
+
+      MainWindow <- Plugins
+      deactivate Plugins
+      
+    deactivate MainWindow
+
+  deactivate MainWindow
+  
+end
+
+group seq: Click on something else than VisualExtension
+
+  User -> MainWindow : click some\nother VisualElement
+  activate MainWindow
+
+    MainWindow -> DispEditAasxEntity : DisplayOrEditVisualAasxElement()
+    activate DispEditAasxEntity 
+
+      DispEditAasxEntity -> Plugins : InvokeAction("dispose-anyui-visual-extension")
+      activate Plugins
+
+      note right #FFAAAA
+        TODO : PackageExplorer seems 
+        NOT to implement this!
+      end note
+
+        Plugins -> GFplugin : InvokeAction(...)
+        activate GFplugin
+
+        GFplugin -> GFplugin : dispose()
+
+        GFplugin -> AnyUiStar : dispose()
+        GFplugin <- AnyUiStar
+        deactivate AnyUiStar
+
+        GFplugin -> AnyUiControl : dispose()
+        GFplugin <- AnyUiControl 
+        deactivate AnyUiControl 
+
+        Plugins <- GFplugin
+        deactivate GFplugin
+
+      DispEditAasxEntity <- Plugins
+      deactivate Plugins
+
+    MainWindow <- DispEditAasxEntity
+    deactivate DispEditAasxEntity 
+  
+  deactivate MainWindow 
+
+end
+
+
+@enduml

@@ -1,0 +1,174 @@
+﻿@page "/AnyUiFlyoutSelectFromReferablesPool"
+@using AasxIntegrationBase
+@using AnyUi
+@using AasxPredefinedConcepts
+@using AasxPackageLogic
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if (EventSession != null && DialogueData is AnyUiDialogueDataSelectReferableFromPool ddsfl)
+{
+	@* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddsfl.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+			<label for="pickerDomain" class="form-label">Domain</label>
+			<select class="form-select" id="pickerDomain"
+				title="Domain"
+				aria-label="multiple select example" @onchange="@OnSelectDomain">
+				@if (_domainNames != null)
+					for (int i = 0; i < _domainNames.Count; i++)
+					{
+						<option value="@(i)">@(_domainNames[i])</option>
+					}
+
+			</select>
+
+			<label for="tableIds" class="form-label mt-5">ID</label>
+			<span @ondblclick="@DblHandler">
+				<table class="table table-primary table-hover table-bordered border-primary" id="tableIds">
+					<thead>
+						<tr>
+							<th scope="col">Type</th>
+							<th scope="col">Name</th>
+							<th scope="col">Identification</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (_domainEntities != null)
+							foreach (var de in _domainEntities)
+							{
+								var currDe = de;
+								var active = (de == _selectedEntity) ? "table-active " : "";
+								<tr class="clickable @(active)" @onclick="() => OnSelectRow(currDe)">
+									<td>@de.DisplayType</td>
+									<td>@de.DisplayName</td>
+									<td>@de.DisplayId</td>
+								</tr>
+							}
+					</tbody>
+				</table>
+			</span>
+		</form>
+	</div>
+	<div class="modal-footer">
+
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	[Parameter]
+	public AasxPredefinedConcepts.DefinitionsPool DataSourcePools { get; set; }
+
+	protected List<string> _domainNames = new List<string>();
+	protected string _domainCurrent = "";
+
+	protected DefinitionsPoolEntityBase _selectedEntity = null;
+	protected List<DefinitionsPoolEntityBase> _domainEntities = new List<DefinitionsPoolEntityBase>();
+
+	protected override void OnInitialized()
+	{
+		// pass thru
+		base.OnInitialized();
+
+		// access
+		if (!(DialogueData is AnyUiDialogueDataSelectReferableFromPool ddsrp))
+			return;
+
+		// domains
+		_domainNames.Clear();
+		if (DataSourcePools != null)
+		{
+			var domains = DataSourcePools.GetDomains().ToList();
+			domains.Sort();
+			foreach (var d in domains)
+				_domainNames.Add(d);
+		}
+
+		// no domain entities, yet
+		_domainEntities.Clear();
+
+		// first?
+		if (_domainNames.Count > 0)
+		{
+			_domainCurrent = _domainNames[0];
+			ShowDomain(_domainCurrent);
+		}
+	}
+
+	protected void ShowDomain(string domain)
+	{
+		// access
+		if (domain?.HasContent() != true)
+			return;
+
+		// nothing selected, yet
+		_selectedEntity = null;
+
+		// display
+		var ld = this.DataSourcePools?.GetEntitiesForDomain(domain)?.ToList();
+		if (ld != null)
+		{
+			ld.Sort((x1, x2) => x1.DisplayName.CompareTo(x2.DisplayName));
+			_domainEntities.Clear();
+			foreach (var ent in ld)
+				_domainEntities.Add(ent);
+			StateHasChanged();
+		}
+	}
+
+	void OnSelectDomain(ChangeEventArgs e)
+	{
+		if (DialogueData is AnyUiDialogueDataSelectReferableFromPool ddsrp
+			&& e.Value is string valstr
+			&& int.TryParse(valstr, out int i)
+				&& i >= 0 && i < _domainNames.Count)
+		{
+			ShowDomain(_domainNames[i]);
+		}
+	}
+
+	protected void OnSelectRow(DefinitionsPoolEntityBase de)
+	{
+		_selectedEntity = de;
+		StateHasChanged();
+	}
+
+	void DblHandler(MouseEventArgs e)
+	{
+		LeaveResult(true);
+	}
+
+	public void LeaveResult(bool result)
+	{
+		if (DialogueData is AnyUiDialogueDataSelectReferableFromPool ddsrp
+			&& _domainEntities != null
+			&& _selectedEntity != null)
+		{
+			ddsrp.ResultItem = _selectedEntity;
+			ddsrp.ResultIndex = _domainEntities.IndexOf(_selectedEntity);
+			EventSession?.EndModal(true);
+		}
+		else
+		{
+			// no
+			EventSession?.EndModal(false);
+		}
+	}
+}

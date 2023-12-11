@@ -13,14 +13,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using AdminShellNS;
+using Extensions;
 using JetBrains.Annotations;
 
 namespace AasxPluginSmdExporter
 {
     public class SmdExporterOptionsRecord
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<AdminShellV20.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
     }
 
     [UsedImplicitlyAttribute]
@@ -34,8 +36,8 @@ namespace AasxPluginSmdExporter
         public static SmdExporterOptions CreateDefault()
         {
             var rec = new SmdExporterOptionsRecord();
-            rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.SmdExporter.Static.SEM_SmdExporterSubmodel.GetAsExactlyOneKey());
+            var key = AasxPredefinedConcepts.SmdExporter.Static.SEM_SmdExporterSubmodel.GetAsExactlyOneKey();
+            rec.AllowSubmodelSemanticId.Add(new AdminShellV20.Key(key.Type.ToString(), true, "", key.Value));
 
             var opt = new SmdExporterOptions();
             opt.Records.Add(rec);

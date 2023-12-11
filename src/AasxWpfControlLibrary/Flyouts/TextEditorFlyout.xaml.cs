@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxIntegrationBaseWpf;
 using AasxPackageLogic;
 using AnyUi;
 using Newtonsoft.Json;
@@ -36,6 +37,9 @@ namespace AasxPackageExplorer
 
         // TODO (MIHO, 2020-12-21): make DiaData non-Nullable
         public AnyUiDialogueDataTextEditor DiaData = new AnyUiDialogueDataTextEditor();
+
+        public Func<DynamicContextMenu> ContextMenuCreate = null;
+        public AasxMenuActionDelegate ContextMenuAction = null;
 
         private PluginInstance pluginInstance = null;
         private Control textControl = null;
@@ -87,6 +91,10 @@ namespace AasxPackageExplorer
             if (DiaData.MaxWidth.HasValue && DiaData.MaxWidth.Value > 200)
                 OuterGrid.MaxWidth = DiaData.MaxWidth.Value;
 
+            // populate preset combo
+            ComboBoxPreset.Items.Clear();
+            ComboBoxPreset.ItemsSource = DiaData.Presets?.Select((o) => o.Name);
+
             // text to edit
             SetMimeTypeAndText();
 
@@ -105,6 +113,10 @@ namespace AasxPackageExplorer
         //
 
         public void ControlStart()
+        {
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
         {
         }
 
@@ -170,19 +182,72 @@ namespace AasxPackageExplorer
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
+            // prepare result, as client application migt want to save modified but cancelled text
+            PrepareResult();
             DiaData.Result = false;
             ControlClosed?.Invoke();
         }
 
-        private void ButtonOk_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            PrepareResult();
-            DiaData.Result = true;
-            ControlClosed?.Invoke();
+            if (sender == ButtonOk)
+            {
+                PrepareResult();
+                DiaData.Result = true;
+                ControlClosed?.Invoke();
+            }
+
+            if (sender == ButtonContextMenu)
+            {
+                // first attempt: directly attached to the flyout
+                var cm = ContextMenuCreate?.Invoke();
+                var cma = ContextMenuAction;
+
+                // 2nd attempt: within the dia data?
+                if (DiaData is AnyUiDialogueDataTextEditorWithContextMenu ddcm)
+                {
+                    var am = ddcm.ContextMenuCreate?.Invoke();
+                    if (am != null)
+                    {
+                        cm = DynamicContextMenu.CreateNew(am);
+                        cma = ddcm.ContextMenuAction;
+                    }
+                }
+
+                // still not?
+                if (cm == null)
+                    return;
+
+                // update data
+                PrepareResult();
+
+                // show
+                cm.Start(sender as Button, cma);
+            }
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
         {
+        }
+
+        private void ComboBoxPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender == ComboBoxPreset
+                && DiaData.Presets != null
+                && ComboBoxPreset.SelectedIndex >= 0
+                && ComboBoxPreset.SelectedIndex < DiaData.Presets.Count)
+            {
+                DiaData.Text = DiaData.Presets[ComboBoxPreset.SelectedIndex].Text;
+                SetMimeTypeAndText();
+            }
+        }
+
+        private void UserControl_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e?.Key == Key.Enter && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                Button_Click(ButtonOk, null);
+            }
         }
     }
 }

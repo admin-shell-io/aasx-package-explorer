@@ -31,23 +31,46 @@ function PackageRelease($outputDir)
     ##
     
     $smallPlugins = $(
-    "AasxPluginAdvancedTextEditor",
-    "AasxPluginBomStructure",
-    "AasxPluginDocumentShelf",
-    "AasxPluginExportTable",
-    "AasxPluginGenericForms",
-    "AasxPluginImageMap",
-    "AasxPluginMtpViewer",
-    "AasxPluginPlotting",
-    "AasxPluginSmdExporter",
-    "AasxPluginTechnicalData",
-    "AasxPluginUaNetClient",
-    "AasxPluginUaNetServer"
+        "AasxPluginAdvancedTextEditor",
+        "AasxPluginBomStructure",
+        "AasxPluginDocumentShelf",
+        "AasxPluginExportTable",
+        "AasxPluginGenericForms",
+        "AasxPluginKnownSubmodels",
+        "AasxPluginContactInformation",
+        "AasxPluginDigitalNameplate",
+        "AasxPluginImageMap",
+        "AasxPluginMtpViewer",
+        "AasxPluginPlotting",
+        "AasxPluginSmdExporter",
+        "AasxPluginTechnicalData"
+        "AasxPluginUaNetClient",
+        "AasxPluginUaNetServer"
+    )
+
+    $blazorPlugins = $(
+        "AasxPluginAdvancedTextEditor",
+        "AasxPluginBomStructure",
+        "AasxPluginDocumentShelf",
+        "AasxPluginExportTable",
+        "AasxPluginGenericForms",
+        "AasxPluginImageMap",
+        "AasxPluginKnownSubmodels",
+        "AasxPluginContactInformation",
+        "AasxPluginDigitalNameplate",
+        "AasxPluginMtpViewer",
+        "AasxPluginPlotting",
+        "AasxPluginSmdExporter",
+        "AasxPluginTechnicalData",
+        "AasxPluginUaNetClient",
+        "AasxPluginUaNetServer",
+        "AasxPluginWebBrowser"
     )
 
     $allPlugins = $smallPlugins.Clone()
     $allPlugins += "AasxPluginWebBrowser"
 
+    #function MakePackage($identifier)
     function MakePackage($identifier, $plugins)
     {
         $destinationDir = Join-Path $outputDir $identifier
@@ -109,9 +132,10 @@ function PackageRelease($outputDir)
             -DestinationPath $archPath
     }
 
-    function MakePackageBlazor($identifier)
+    function MakePackageBlazor($identifier, $plugins)
     {
         $destinationDir = Join-Path $outputDir $identifier
+        $aasxBlazorDir = Join-Path $destinationDir "BlazorExplorer"
 
         Write-Host ("Making the package $($identifier|ConvertTo-Json) to: " +
             $destinationDir)
@@ -120,14 +144,30 @@ function PackageRelease($outputDir)
         New-Item -ItemType Directory -Force -Path $destinationDir|Out-Null
 
         ##
-        # BlazorUI
+        # BlazorExplorer
         ##
 
-        Write-Host "* Copying BlazorUI to: $destinationDir"
+        Write-Host "* Copying BlazorExlorer to: $destinationDir"
         Copy-Item `
-            -Path (Join-Path $buildDir "BlazorUI") `
+            -Path (Join-Path $buildDir "BlazorExplorer") `
             -Recurse `
             -Destination $destinationDir
+
+        ##
+        # Plug-ins
+        ##
+
+        $pluginsDir = Join-Path $aasxBlazorDir "plugins"
+        New-Item -ItemType Directory -Force -Path $pluginsDir|Out-Null
+
+        foreach ($plugin in $plugins)
+        {
+            Write-Host "* Copying $plugin to: $pluginsDir"
+            Copy-Item `
+                -Path (Join-Path $buildDir $plugin) `
+                -Recurse `
+                -Destination $pluginsDir
+        }
 
         ##
         # Compress
@@ -136,7 +176,7 @@ function PackageRelease($outputDir)
         $archPath = Join-Path $outputDir "$identifier.zip"
         Write-Host "* Compressing: $archPath"
         Compress-Archive `
-            -Path (Join-Path $destinationDir "BlazorUI") `
+            -Path (Join-Path $destinationDir "BlazorExplorer") `
             -DestinationPath $archPath
     }
 
@@ -146,9 +186,11 @@ function PackageRelease($outputDir)
 
     MakePackage -identifier "aasx-package-explorer" -plugins $allPlugins
 
-    MakePackage -identifier "aasx-package-explorer-small" -plugins $smallPlugins
+    MakePackage -identifier "aasx-package-explorer-small" #-plugins $smallPlugins
 
-    MakePackageBlazor -identifier "aasx-package-explorer-blazorui"
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer" -plugins $blazorPlugins
+
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorexplorer-small"
 
     # Do not copy the source code in the releases.
     # The source code will be distributed automatically through Github releases.

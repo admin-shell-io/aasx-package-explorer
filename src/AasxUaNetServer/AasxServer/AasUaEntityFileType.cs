@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,21 +7,19 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AdminShellNS;
+using Opc.Ua;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using Opc.Ua;
+using Aas = AasCore.Aas3_0;
 
 namespace AasOpcUaServer
 {
     public class AasUaPackageFileHandler
     {
-        private AdminShellPackageEnv package = null;
-        private AdminShell.File file = null;
+        private AdminShellPackageEnv _package = null;
+        private Aas.IFile _file = null;
 
         private class PackageFileHandle
         {
@@ -42,10 +40,10 @@ namespace AasOpcUaServer
 
         private Dictionary<UInt32, PackageFileHandle> handles = new Dictionary<uint, PackageFileHandle>();
 
-        public AasUaPackageFileHandler(AdminShellPackageEnv package, AdminShell.File file)
+        public AasUaPackageFileHandler(AdminShellPackageEnv package, Aas.IFile file)
         {
-            this.package = package;
-            this.file = file;
+            this._package = package;
+            this._file = file;
         }
 
         private UInt32 GetMaxHandle()
@@ -59,11 +57,11 @@ namespace AasOpcUaServer
         public UInt32 Open(Byte mode)
         {
             // access file handle
-            if (this.package == null || this.file == null)
+            if (this._package == null || this._file == null)
                 throw new InvalidOperationException("no admin-shell package or file");
             var nh = GetMaxHandle() + 1;
             var fh = new PackageFileHandle(nh);
-            fh.packStream = package.GetLocalStreamFromPackage(file.value);
+            fh.packStream = _package.GetLocalStreamFromPackage(_file.Value);
             if (fh.packStream == null)
                 throw new InvalidOperationException("no admin-shell package or file");
             handles.Add(nh, fh);
@@ -117,7 +115,7 @@ namespace AasOpcUaServer
         {
             if (!handles.ContainsKey(handle))
                 throw new InvalidOperationException("handle is unknown");
-            if (this.package == null || this.file == null)
+            if (this._package == null || this._file == null)
                 throw new InvalidOperationException("no admin-shell package or file");
             var h = handles[handle];
             return h.filepos;
@@ -127,7 +125,7 @@ namespace AasOpcUaServer
         {
             if (!handles.ContainsKey(handle))
                 throw new InvalidOperationException("handle is unknown");
-            if (this.package == null || this.file == null)
+            if (this._package == null || this._file == null)
                 throw new InvalidOperationException("no admin-shell package or file");
             var h = handles[handle];
             if (h.packStream == null)
@@ -150,7 +148,7 @@ namespace AasOpcUaServer
         {
             if (!handles.ContainsKey(handle))
                 throw new InvalidOperationException("handle is unknown");
-            if (this.package == null || this.file == null)
+            if (this._package == null || this._file == null)
                 throw new InvalidOperationException("no admin-shell package or file");
             var h = handles[handle];
             if (h.packStream == null)
@@ -188,7 +186,7 @@ namespace AasOpcUaServer
         /// Shall be TRUE for local, existing files ..
         /// </summary>
         /// <returns></returns>
-        public bool CheckSuitablity(AdminShellPackageEnv package, AdminShell.File file)
+        public bool CheckSuitablity(AdminShellPackageEnv package, Aas.IFile file)
         {
             // trivial
             if (package == null || file == null)
@@ -198,7 +196,7 @@ namespace AasOpcUaServer
             Stream s = null;
             try
             {
-                s = package.GetLocalStreamFromPackage(file.value);
+                s = package.GetLocalStreamFromPackage(file.Value);
             }
             catch (Exception ex)
             {
@@ -211,7 +209,7 @@ namespace AasOpcUaServer
         }
 
         public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShellPackageEnv package = null, AdminShell.File file = null)
+            AdminShellPackageEnv package = null, Aas.IFile file = null)
         {
             // access
             if (parent == null)
@@ -238,11 +236,11 @@ namespace AasOpcUaServer
 
 
                 // this first information is to provide a "off-the-shelf" size information; a Open() will re-new this
-                var fileLen = Convert.ToUInt64(package.GetStreamSizeFromPackage(file.value));
+                var fileLen = Convert.ToUInt64(package.GetStreamSizeFromPackage(file.Value));
 
                 // populate attributes from the spec
                 this.entityBuilder.CreateAddPropertyState<string>(o, mode, "MimeType",
-                    DataTypeIds.String, file.mimeType, ReferenceTypeIds.HasProperty, VariableTypeIds.PropertyType);
+                    DataTypeIds.String, file.ContentType, ReferenceTypeIds.HasProperty, VariableTypeIds.PropertyType);
                 instData.nodeOpenCount = this.entityBuilder.CreateAddPropertyState<UInt16>(o, mode, "OpenCount",
                     DataTypeIds.UInt16, 0, ReferenceTypeIds.HasProperty, VariableTypeIds.PropertyType);
                 instData.nodeSize = this.entityBuilder.CreateAddPropertyState<UInt64>(o, mode, "Size",

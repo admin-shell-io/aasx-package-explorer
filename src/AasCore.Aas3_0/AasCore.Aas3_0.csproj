@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;DebugSlow</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <LangVersion>8</LangVersion>
+
+    <PackageId>AasCore.Aas3_0</PackageId>
+    <Version>1.0.0-rc1</Version>
+    <Authors>Marko Ristin</Authors>
+    <Description>
+        An SDK for manipulating, verifying and de/serializing Asset Administration Shells.
+    </Description>
+    <RepositoryUrl>https://github.com/aas-core-works/aas-core3.0-csharp.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>Copyright (c) 2023 Marko Ristin</Copyright>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/aas-core-works/aas-core3.0-csharp/main/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/aas-core-works/aas-core3.0-csharp</PackageProjectUrl>
+    <PackageTags>aas;asset administration shell;iiot;industry internet of things;industrie 4.0;i4.0</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+</Project>

@@ -15,6 +15,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Aas = AasCore.Aas3_0;
+using AdminShellNS;
 
 namespace AasxPluginSmdExporter
 {
@@ -35,7 +37,7 @@ namespace AasxPluginSmdExporter
 
         public List<IOput> ConnectedTo { get; set; } = new List<IOput>();
 
-        public AdminShellNS.AdminShell.SemanticId SemanticId { get; set; }
+        public Aas.IReference SemanticId { get; set; }
 
         public string ConceptDescription { get; set; }
 
@@ -56,7 +58,7 @@ namespace AasxPluginSmdExporter
             this.Domain = "";
         }
 
-        public IOput(string idShort, string owner, AdminShellNS.AdminShell.SemanticId semanticId)
+        public IOput(string idShort, string owner, Aas.IReference semanticId)
         {
             this.IdShort = idShort;
             this.Owner = owner;
@@ -157,10 +159,12 @@ namespace AasxPluginSmdExporter
         {
             if (token.SelectToken("semanticId") != null)
             {
+				var jsonStr = token["semanticId"].ToString();
 
-                this.SemanticId =
-                    JsonConvert.DeserializeObject<AdminShellNS.AdminShell.SemanticId>(token["semanticId"].ToString());
-                this.ConceptDescription = this.SemanticId?.Keys[0].value;
+				this.SemanticId = Aas.Jsonization.Deserialize.ReferenceFrom(
+					System.Text.Json.Nodes.JsonNode.Parse(jsonStr));
+
+				this.ConceptDescription = this.SemanticId?.Keys[0].Value;
             }
             else
             {

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -16,7 +16,9 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AasxPredefinedConcepts;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxPluginDocumentShelf
@@ -31,10 +33,11 @@ namespace AasxPluginDocumentShelf
     public class DocumentShelfOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
         /// <summary>
-        /// As for "foreign" records the semanticId matching of V11 will fail,
+        /// As for "foreign" records the semanticId matching of V12 will fail,
         /// it can be controlled.
+        /// Use case: "Documentations" used for PLC files, CAD, ..
         /// </summary>
-        public DocumentEntity.SubmodelVersion ForceVersion = DocumentEntity.SubmodelVersion.V11;
+        public DocumentEntity.SubmodelVersion ForceVersion = DocumentEntity.SubmodelVersion.V12;
 
         /// <summary>
         /// Give more usage information for this record / use of the Submodel.
@@ -42,7 +45,7 @@ namespace AasxPluginDocumentShelf
         public string UsageInfo = null;
     }
 
-    public class DocumentShelfOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
+    public class DocumentShelfOptions : AasxPluginLookupOptionsBase
     {
         public List<DocumentShelfOptionsRecord> Records = new List<DocumentShelfOptionsRecord>();
 
@@ -64,28 +67,44 @@ namespace AasxPluginDocumentShelf
             // V1.0
             var preDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
-            var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsExactlyOneKey();
+            var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.SemanticId?.GetAsExactlyOneKey();
             if (semIdDocumentation != null)
                 rec.AllowSubmodelSemanticId.Add(semIdDocumentation);
 
             // V1.1
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
+                AasxPredefinedConcepts.VDI2770v11.Static
+                    .SM_ManufacturerDocumentation.GetSemanticKey());
 
-            //
-            // further models for CAD
-            //
+			// V1.2
+			rec.AllowSubmodelSemanticId.Add(
+				AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static
+                    .SM_HandoverDocumentation.GetSemanticKey());
 
-            rec = new DocumentShelfOptionsRecord()
+			//
+			// further models for CAD
+            // (for the time being still V11!)
+			//
+
+			rec = new DocumentShelfOptionsRecord()
             {
                 UsageInfo = "Some manufacturers use manufacturer documentation to provide models for " +
-                "Computer Aided Design (CAD) and further engineering tools."
+                "Computer Aided Design (CAD) and further engineering tools.",
+                ForceVersion = DocumentEntity.SubmodelVersion.V11
             };
             opt.Records.Add(rec);
 
-            rec.AllowSubmodelSemanticId.Add(new AdminShellV20.Key(
-                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
+            rec.AllowSubmodelSemanticId.Add(new Aas.Key(
+                Aas.KeyTypes.Submodel, "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
+
+            rec.AllowSubmodelSemanticId.Add(new Aas.Key(
+                Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/MCAD/0/1/"));
+
+            rec.AllowSubmodelSemanticId.Add(new Aas.Key(
+                Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/"));
+
+            rec.AllowSubmodelSemanticId.Add(new Aas.Key(
+                Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/PLC/0/1/"));
 
             return opt;
         }

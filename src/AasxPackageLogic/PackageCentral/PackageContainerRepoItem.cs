@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,19 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -65,9 +61,9 @@ namespace AasxPackageLogic.PackageCentral
         //
 
         /// <summary>
-        /// Asset Ids of the respective AASX Package.
+        /// AssetInformation Ids of the respective AASX Package.
         /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-        /// to ensure full AAS KeyList compatibility.
+        /// to ensure full AAS List<Key> compatibility.
         /// </summary>
         /// 
         [JsonProperty(PropertyName = "AssetIds")]
@@ -88,7 +84,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// AAS Ids of the respective AASX Package.
         /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-        /// to ensure full AAS KeyList compatibility.
+        /// to ensure full AAS List<Key> compatibility.
         /// </summary>
         [JsonProperty(PropertyName = "AasIds")]
         private List<string> _aasIds = new List<string>();
@@ -103,7 +99,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// Submodel Ids of the respective AASX Package.
         /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-        /// to ensure full AAS KeyList compatibility.
+        /// to ensure full AAS List<Key> compatibility.
         /// </summary>
         [JsonProperty(PropertyName = "SubmodelIds")]
         private List<string> _submodelIds = new List<string>();
@@ -208,7 +204,7 @@ namespace AasxPackageLogic.PackageCentral
                     if (ids != null && ids.Count > 0)
                     {
                         if (info != "")
-                            info += Environment.NewLine;
+                            info += System.Environment.NewLine;
                         info += head;
                         foreach (var id in ids)
                             info += "" + id + ",";
@@ -334,6 +330,9 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
+        //This is for Asp.NetCore Rest APIs
+        public string PackageId { get; internal set; }
+
         public override void Close()
         {
             base.Close();
@@ -418,7 +417,7 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         /// <summary>
-        /// This function accesses the AAS, Asset and Submodel information of the environment and
+        /// This function accesses the AAS, AssetInformation and Aas.Submodel information of the environment and
         /// re-calculates the particulare lists of ids. If the tag and/ or description is empty, 
         /// it will also build a generated tag or descriptions
         /// </summary>
@@ -428,28 +427,21 @@ namespace AasxPackageLogic.PackageCentral
 
             CleanIds();
 
-            Env?.AasEnv?.Assets?.ForEach((x) =>
+            Env?.AasEnv?.AssetAdministrationShells?.ForEach((x) =>
             {
-                if (true == x?.identification?.id.HasContent())
-                    _assetIds.Add(x?.identification.id);
-            });
-
-            Env?.AasEnv?.AdministrationShells?.ForEach((x) =>
-            {
-                if (true == x?.identification?.id.HasContent())
-                    _aasIds.Add(x?.identification.id);
+                if (true == x?.Id.HasContent())
+                    _aasIds.Add(x.Id);
             });
 
             Env?.AasEnv?.Submodels?.ForEach((x) =>
             {
-                if (true == x?.identification?.id.HasContent())
-                    _submodelIds.Add(x?.identification.id);
+                if (true == x?.Id.HasContent())
+                    _submodelIds.Add(x.Id);
             });
 
             // get some descriptiive data
             var threeFn = Path.GetFileNameWithoutExtension(Location);
-            var asset0 = Env?.AasEnv?.Assets?.FirstOrDefault();
-            var aas0 = Env?.AasEnv?.AdministrationShells?.FirstOrDefault();
+            var aas0 = Env?.AasEnv?.AssetAdministrationShells?.FirstOrDefault();
 
             // Tag
             if (!Tag.HasContent() || force)
@@ -459,12 +451,10 @@ namespace AasxPackageLogic.PackageCentral
                 try
                 {
                     tag = "";
-                    if (asset0 != null)
-                        tag = AdminShellUtil.ExtractPascalCasingLetters(asset0.idShort).SubstringMax(0, 3);
                     if (tag == null || tag.Length < 2)
                         tag = AdminShellUtil.ExtractPascalCasingLetters(threeFn).SubstringMax(0, 3);
                     if ((tag == null || tag.Length < 2) && aas0 != null)
-                        tag = ("" + aas0.idShort).SubstringMax(0, 3).ToUpper();
+                        tag = ("" + aas0.IdShort).SubstringMax(0, 3).ToUpper();
                     if (tag == null || tag.Length < 3)
                         tag = ("" + threeFn).SubstringMax(0, 3).ToUpper();
                 }
@@ -480,14 +470,8 @@ namespace AasxPackageLogic.PackageCentral
             if (!Description.HasContent() || force)
             {
                 var desc = "";
-                if (aas0?.idShort.HasContent() == true)
-                    desc += $"{aas0.idShort}";
-                if (asset0?.idShort.HasContent() == true)
-                {
-                    if (desc.HasContent())
-                        desc += ",";
-                    desc += $"{asset0.idShort}";
-                }
+                if (aas0?.IdShort.HasContent() == true)
+                    desc += $"{aas0.IdShort}";
                 Description = desc;
             }
         }

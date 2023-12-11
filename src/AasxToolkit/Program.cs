@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -106,6 +106,27 @@ namespace AasxToolkit
                 }
             );
 
+            var cmdExDoc = new Cli.Command(
+                "exdoc",
+                "extracts digital files from VDI2770 style Submodels",
+                new[]
+                {
+                    new Cli.Arg(
+                        "doc-sys",
+                        "ClassificationSystem of the document. "),
+                    new Cli.Arg(
+                        "doc-class",
+                        "ClassId of the document. "),
+                    new Cli.Arg(
+                        "target",
+                        "Target filename. If '*' will extract one or multiple files with filename printed out. "),
+                },
+                (cmdArgs) =>
+                {
+                    return new Cli.Parsing(new Instruction.ExtractDoc(cmdArgs[0], cmdArgs[1], cmdArgs[2]));
+                }
+            );
+
             var cmdExportTemplate = new Cli.Command(
                 "export-template",
                 "saves the AASX package from RAM to a template file.",
@@ -204,6 +225,7 @@ namespace AasxToolkit
                     cmdGen,
                     cmdLoad,
                     cmdSave,
+                    cmdExDoc,
                     cmdExportTemplate,
                     cmdExportCst,
                     cmdValidate,

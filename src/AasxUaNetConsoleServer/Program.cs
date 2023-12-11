@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -63,8 +63,7 @@ namespace Net46ConsoleServer
             // start
             Console.WriteLine("Starting server ...");
             Console.WriteLine("Press 'x' to exit.");
-            UaServerWrapper server = new UaServerWrapper(_autoAccept: true, _stopTimeout: 0, _aasxEnv: env,
-                logger: logger, _serverOptions: options);
+            UaServerWrapper server = new UaServerWrapper(_stopTimeout: 0, _aasxEnv: env, logger: logger, _serverOptions: options);
             server.Run();
 
             // loop

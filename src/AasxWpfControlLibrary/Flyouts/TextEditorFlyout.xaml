@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="900" Loaded="UserControl_Loaded">
+             d:DesignHeight="300" d:DesignWidth="900" Loaded="UserControl_Loaded" PreviewKeyUp="UserControl_PreviewKeyUp">
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -36,10 +36,26 @@
         </Viewbox>
 
         <TextBlock x:Name="TextBlockCaption" Grid.Row="0" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Caption .."/></TextBlock>
-        
-        <Button x:Name="ButtonOk" IsDefault="True" Grid.Row="2" Grid.Column="1" Content="Ok" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="0,8,0,10" Click="ButtonOk_Click"/>
+
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" MinWidth="140"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox x:Name="ComboBoxPreset" Grid.Row="0" Grid.Column="0" Height="22" VerticalAlignment="Center" Margin="0,2,10,4" SelectionChanged="ComboBoxPreset_SelectionChanged"/>
+            <Button x:Name="ButtonOk" IsDefault="True" Grid.Row="0" Grid.Column="1" Content="Ok" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="0,8,0,10" Click="Button_Click"/>
+            <Button x:Name="ButtonContextMenu" IsDefault="True" Grid.Row="0" Grid.Column="2" Content=" ⋮ " 
+                    Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" FontWeight="Bold"
+                    Padding="12,6,12,6" Margin="8,8,0,10" Click="Button_Click"/>
+        </Grid>
 
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
         
     </Grid>
+    
 </UserControl>

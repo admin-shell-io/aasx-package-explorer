@@ -1,4 +1,5 @@
 ﻿{
+  "Version": "AAS2.0",
   "SM_VDI2770_Documentation": {
     "hasDataSpecification": null,
     "semanticId": {
@@ -915,7 +916,7 @@
 
           "preferredName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "Summary"
             }
           ],
@@ -965,7 +966,7 @@
 
           "preferredName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "KeyWords"
             }
           ],
@@ -1001,7 +1002,7 @@
 
           "preferredName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "StatusValue"
             }
           ],

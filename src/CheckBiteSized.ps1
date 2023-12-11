@@ -8,7 +8,7 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnetToolVersion
 
 function Main {
-    AssertDotnetToolVersion -PackageID "BiteSized" -ExpectedVersion "1.0.1"
+    AssertDotnetToolVersion -PackageID "BiteSized" -ExpectedVersion "2.0.0"
 
     Set-Location $PSScriptRoot
 
@@ -29,8 +29,11 @@ function Main {
             "MsaglWpfControl/GraphViewer.cs" `
             "MsaglWpfControl/VEdge.cs" `
             "MsaglWpfControl/VNode.cs" `
+            "AasxFileServerRestLibrary/**" `
+            "AasxCsharpLib_bkp/**" `
+            "AasxServer.DomainModelV3_0_RC02/**"`
         --max-lines-in-file 100000 `
-        --max-line-length 120 `
+        --max-line-length 240 `
         --ignore-lines-matching '[a-z]+://[^ \t]+$'
 
     if($LASTEXITCODE -ne 0)

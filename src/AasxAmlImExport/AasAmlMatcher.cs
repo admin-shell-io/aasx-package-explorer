@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,13 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
 using Aml.Engine.CAEX;
+using System.Collections.Generic;
 
 namespace AasxAmlImExport
 {
@@ -22,38 +17,38 @@ namespace AasxAmlImExport
     /// </summary>
     public class AasAmlMatcher
     {
-        private Dictionary<AdminShell.Referable, CAEXObject> aasToAml =
-            new Dictionary<AdminShell.Referable, CAEXObject>();
+        private Dictionary<IReferable, CAEXObject> aasToAml =
+            new Dictionary<IReferable, CAEXObject>();
 
-        private Dictionary<CAEXObject, AdminShell.Referable> amlToAas =
-            new Dictionary<CAEXObject, AdminShell.Referable>();
+        private Dictionary<CAEXObject, IReferable> amlToAas =
+            new Dictionary<CAEXObject, IReferable>();
 
-        public void AddMatch(AdminShell.Referable aasReferable, CAEXObject amlObject)
+        public void AddMatch(IReferable aasReferable, CAEXObject amlObject)
         {
             aasToAml.Add(aasReferable, amlObject);
             amlToAas.Add(amlObject, aasReferable);
         }
 
-        public ICollection<AdminShell.Referable> GetAllAasReferables()
+        public ICollection<IReferable> GetAllAasReferables()
         {
             return aasToAml.Keys;
         }
 
-        public CAEXObject GetAmlObject(AdminShell.Referable aasReferable)
+        public CAEXObject GetAmlObject(IReferable aasReferable)
         {
             if (aasToAml.ContainsKey(aasReferable))
                 return aasToAml[aasReferable];
             return null;
         }
 
-        public AdminShell.Referable GetAasObject(CAEXObject amlObject)
+        public IReferable GetAasObject(CAEXObject amlObject)
         {
             if (amlToAas.ContainsKey(amlObject))
                 return amlToAas[amlObject];
             return null;
         }
 
-        public bool ContainsAasObject(AdminShell.Referable aasReferable)
+        public bool ContainsAasObject(IReferable aasReferable)
         {
             return aasToAml.ContainsKey(aasReferable);
         }

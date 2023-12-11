@@ -8,11 +8,12 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxDictionaryImport.Cdd
 {
@@ -42,7 +43,7 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
-        protected override Model.IDataSource OpenPath(string path, Model.DataSourceType type)
+        public override Model.IDataSource OpenPath(string path, Model.DataSourceType type = Model.DataSourceType.Custom)
         {
             string dir = File.Exists(path) ? Path.GetDirectoryName(path) : path;
             return new DataSource(this, dir, type);
@@ -262,15 +263,15 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-           AdminShellV20.AdministrationShell adminShell)
+        public override bool ImportSubmodelInto(Aas.Environment env,
+           Aas.IAssetAdministrationShell adminShell)
         {
             return new Importer(env, Context).ImportSubmodel(this, adminShell);
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
-           AdminShell.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(Aas.Environment env,
+           Aas.IReferable parent)
         {
             // If we wanted to import the class, we would typically use the submodel import
             // instead.  Therefore we import the children instead.
@@ -349,8 +350,8 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
-           AdminShell.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(Aas.Environment env,
+           Aas.IReferable parent)
         {
             return new Importer(env, Context).ImportSubmodelElements(this, parent);
         }

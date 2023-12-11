@@ -25,7 +25,7 @@ namespace SampleClient
     public class UASampleClient
     {
         const int ReconnectPeriod = 10;
-        Session session;
+        ISession session;
         SessionReconnectHandler reconnectHandler;
         string endpointURL;
         int clientRunTime = Timeout.Infinite;
@@ -107,7 +107,7 @@ namespace SampleClient
                 throw new Exception("Application instance certificate invalid!");
             }
 
-            config.ApplicationUri = Utils.GetApplicationUriFromCertificate(
+            config.ApplicationUri = X509Utils.GetApplicationUriFromCertificate(
                 config.SecurityConfiguration.ApplicationCertificate.Certificate);
             if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
             {
@@ -135,7 +135,7 @@ namespace SampleClient
             session.KeepAlive += Client_KeepAlive;
         }
 
-        private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
+        private void Client_KeepAlive(ISession sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {

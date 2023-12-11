@@ -1,33 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
     <Nullable>Disable</Nullable>
     <LangVersion>8.0</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Resources\ZveiContactInformationV10.json" />
+    <None Remove="Resources\DigitalNameplateV20.json" />
+    <None Remove="Resources\IdtaContactInformationV10.json" />
+    <None Remove="Resources\IdtaHandoverDocumentationV12.json" />
+    <None Remove="Resources\IdtaHierarchicalStructV10.json" />
+    <None Remove="Resources\IdtaTechnicalDataV12.json" />
     <None Remove="Resources\ZveiDigitalTypeplate.json" />
     <None Remove="Resources\ZveiTimeSeriesDataV10.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ZveiContactInformationV10.json" />
+    <EmbeddedResource Include="Resources\IdtaHandoverDocumentationV12.json" />
+    <EmbeddedResource Include="Resources\IdtaHierarchicalStructV10.json" />
+    <EmbeddedResource Include="Resources\IdtaContactInformationV10.json" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate.json" />
+    <EmbeddedResource Include="Resources\DigitalNameplateV20.json" />
     <EmbeddedResource Include="Resources\ZveiNameplateV10.json" />
     <EmbeddedResource Include="Resources\ZveiTechnicalData.json" />
     <EmbeddedResource Include="Resources\VDI2770v11.json" />
+    <EmbeddedResource Include="Resources\IdtaTechnicalDataV12.json" />
     <EmbeddedResource Include="Resources\ZveiTimeSeriesDataV10.json" />
     <EmbeddedResource Include="Resources\ZveiTechnicalDataV11.json" />
     <EmbeddedResource Include="Resources\VDI2770.json" />
     <Content Include="README\Old_JSON_ConceptDescriptions.txt" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -13,20 +13,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxPredefinedConcepts;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 using WpfMtpControl;
+using AasxIntegrationBase;
 
 namespace AasxPluginMtpViewer
 {
-    public class MtpViewerOptionsRecord
+    public class MtpViewerOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
         public enum MtpRecordType { MtpType, MtpInstance }
 
         public MtpRecordType RecordType = MtpRecordType.MtpType;
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
     }
 
-    public class MtpViewerOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class MtpViewerOptions : AasxPluginLookupOptionsBase
     {
         public List<MtpViewerOptionsRecord> Records = new List<MtpViewerOptionsRecord>();
 
@@ -43,11 +45,11 @@ namespace AasxPluginMtpViewer
 
             var rec1 = new MtpViewerOptionsRecord();
             rec1.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpType;
-            rec1.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpSubmodel.Keys);
+            rec1.AllowSubmodelSemanticId = defs.SEM_MtpSubmodel.Keys.ToKeyList();
 
             var rec2 = new MtpViewerOptionsRecord();
             rec2.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpInstance;
-            rec2.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpInstanceSubmodel.Keys);
+            rec2.AllowSubmodelSemanticId = defs.SEM_MtpInstanceSubmodel.Keys.ToKeyList();
 
             var opt = new MtpViewerOptions();
             opt.Records.Add(rec1);

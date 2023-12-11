@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,16 +7,21 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
-using AdminShellNS;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using static AasCore.Aas3_0.Reporting;
 
 namespace AdminShellNS
 {
@@ -24,7 +29,7 @@ namespace AdminShellNS
     /// This class lets an outer functionality keep track on the supplementary files, which are in or
     /// are pending to be added or deleted to an Package.
     /// </summary>
-    public class AdminShellPackageSupplementaryFile : AdminShell.Referable
+    public class AdminShellPackageSupplementaryFile /*: IReferable*/
     {
         public delegate byte[] SourceGetByteChunk();
 
@@ -56,7 +61,7 @@ namespace AdminShellNS
         }
 
         // class derives from Referable in order to provide GetElementName
-        public override string GetElementName()
+        public string GetElementName()
         {
             return "File";
         }
@@ -118,14 +123,27 @@ namespace AdminShellNS
         }
 
         /// <summary>
-        /// De-serialize an open stream into AdministrationShellEnv. Does version/ compatibility management.
+        /// Skips first few tokens of an XML content until first "real" element is encountered
+        /// </summary>
+        /// <param name="xmlReader"></param>
+        public static void XmlSkipHeader(XmlReader xmlReader)
+        {
+            while (xmlReader.NodeType == XmlNodeType.XmlDeclaration ||
+                   xmlReader.NodeType == XmlNodeType.Whitespace ||
+                   xmlReader.NodeType == XmlNodeType.Comment ||
+                   xmlReader.NodeType == XmlNodeType.None)
+                xmlReader.Read();
+        }
+
+        /// <summary>
+        /// De-serialize an open stream into Environment. Does version/ compatibility management.
         /// </summary>
         /// <param name="s">Open for read stream</param>
         /// <returns></returns>
-        public static AdminShell.AdministrationShellEnv DeserializeXmlFromStreamWithCompat(Stream s)
+        public static AasCore.Aas3_0.Environment DeserializeXmlFromStreamWithCompat(Stream s)
         {
             // not sure
-            AdminShell.AdministrationShellEnv res = null;
+            AasCore.Aas3_0.Environment res = null;
 
             // try get first element
             var nsuri = TryReadXmlFirstElementNamespaceURI(s);
@@ -138,7 +156,8 @@ namespace AdminShellNS
                     typeof(AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv),
                     "http://www.admin-shell.io/aas/1/0");
                 var v10 = serializer.Deserialize(s) as AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv;
-                res = new AdminShellV20.AdministrationShellEnv(v10);
+                res = new AasCore.Aas3_0.Environment(new List<IAssetAdministrationShell>(), new List<ISubmodel>(), new List<IConceptDescription>());
+                res.ConvertFromV10(v10);
                 return res;
 #else
                 throw (new Exception("Cannot handle AAS file format http://www.admin-shell.io/aas/1/0 !"));
@@ -148,63 +167,84 @@ namespace AdminShellNS
             // read V2.0?
             if (nsuri != null && nsuri.Trim() == "http://www.admin-shell.io/aas/2/0")
             {
+#if !DoNotUseAasxCompatibilityModels
                 XmlSerializer serializer = new XmlSerializer(
-                    typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/2/0");
-                res = serializer.Deserialize(s) as AdminShell.AdministrationShellEnv;
+                    typeof(AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv),
+                    "http://www.admin-shell.io/aas/2/0");
+                var v20 = serializer.Deserialize(s) as AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv;
+                res = new AasCore.Aas3_0.Environment(new List<IAssetAdministrationShell>(), new List<ISubmodel>(), new List<IConceptDescription>());
+                res.ConvertFromV20(v20);
                 return res;
+#else
+                throw (new Exception("Cannot handle AAS file format http://www.admin-shell.io/aas/1/0 !"));
+#endif
+            }
+
+            // read V3.0?
+            if (nsuri != null && nsuri.Trim() == Xmlization.NS)
+            {
+                // dead-csharp off
+                //XmlSerializer serializer = new XmlSerializer(
+                //    typeof(AasCore.Aas3_0_RC02.Environment), "http://www.admin-shell.io/aas/3/0");
+                //res = serializer.Deserialize(s) as AasCore.Aas3_0_RC02.Environment;
+                // dead-csharp on
+                using (var xmlReader = XmlReader.Create(s))
+                {
+                    // TODO (MIHO, 2022-12-26): check if could be feature of AAS core
+                    XmlSkipHeader(xmlReader);
+                    res = Xmlization.Deserialize.EnvironmentFrom(xmlReader);
+                    return res;
+                }
             }
 
             // nope!
             return null;
         }
-
-        public static JsonSerializer BuildDefaultAasxJsonSerializer()
+        // dead-csharp off
+        //public static JsonSerializer BuildDefaultAasxJsonSerializer()
+        //{
+        //    var serializer = new JsonSerializer();
+        //    serializer.Converters.Add(
+        //        new AdminShellConverters.JsonAasxConverter(
+        //            "modelType", "name"));
+        //    return serializer;
+        //}
+        public static T DeserializeFromJSON<T>(string data) where T : IReferable
         {
-            var serializer = new JsonSerializer();
-            serializer.Converters.Add(
-                new AdminShellConverters.JsonAasxConverter(
-                    "modelType", "name"));
-            return serializer;
+            //using (var tr = new StringReader(data))
+            //{
+            //var serializer = BuildDefaultAasxJsonSerializer();
+            //var rf = (T)serializer.Deserialize(tr, typeof(T));
+
+            var node = System.Text.Json.Nodes.JsonNode.Parse(data);
+            var rf = Jsonization.Deserialize.IReferableFrom(node);
+
+            return (T)rf;
+            //}
         }
 
-        public static T DeserializeFromJSON<T>(TextReader textReader) where T : AdminShell.Referable
-        {
-            var serializer = BuildDefaultAasxJsonSerializer();
-            var rf = (T)serializer.Deserialize(textReader, typeof(T));
-            return rf;
-        }
+        //public static T DeserializeFromJSON<T>(JToken obj) where T : IReferable
+        //{
+        //    if (obj == null)
+        //        return default(T);
+        //    var serializer = BuildDefaultAasxJsonSerializer();
+        //    var rf = obj.ToObject<T>(serializer);
+        //    return rf;
+        //}
 
-        public static T DeserializeFromJSON<T>(string data) where T : AdminShell.Referable
-        {
-            using (var tr = new StringReader(data))
-            {
-                var serializer = BuildDefaultAasxJsonSerializer();
-                var rf = (T)serializer.Deserialize(tr, typeof(T));
-                return rf;
-            }
-        }
-
-        public static T DeserializeFromJSON<T>(JToken obj) where T : AdminShell.Referable
-        {
-            if (obj == null)
-                return null;
-            var serializer = BuildDefaultAasxJsonSerializer();
-            var rf = obj.ToObject<T>(serializer);
-            return rf;
-        }
-
-        /// <summary>
-        /// Use this, if <c>DeserializeFromJSON</c> is too tight.
-        /// </summary>
-        public static T DeserializePureObjectFromJSON<T>(string data)
-        {
-            using (var tr = new StringReader(data))
-            {
-                var serializer = BuildDefaultAasxJsonSerializer();
-                var rf = (T)serializer.Deserialize(tr, typeof(T));
-                return rf;
-            }
-        }
+        ///// <summary>
+        ///// Use this, if <c>DeserializeFromJSON</c> is too tight.
+        ///// </summary>
+        //public static T DeserializePureObjectFromJSON<T>(string data)
+        //{
+        //    using (var tr = new StringReader(data))
+        //    {
+        //        //var serializer = BuildDefaultAasxJsonSerializer();
+        //        //var rf = (T)serializer.Deserialize(tr, typeof(T));
+        //        return null;
+        //    }
+        //}
+        // dead-csharp on
     }
 
     /// <summary>
@@ -217,14 +257,14 @@ namespace AdminShellNS
 
         private string _tempFn = null;
 
-        private AdminShell.AdministrationShellEnv _aasEnv = new AdminShell.AdministrationShellEnv();
+        private AasCore.Aas3_0.Environment _aasEnv = new AasCore.Aas3_0.Environment(new List<IAssetAdministrationShell>(), new List<ISubmodel>(), new List<IConceptDescription>());
         private Package _openPackage = null;
         private readonly ListOfAasSupplementaryFile _pendingFilesToAdd = new ListOfAasSupplementaryFile();
         private readonly ListOfAasSupplementaryFile _pendingFilesToDelete = new ListOfAasSupplementaryFile();
 
         public AdminShellPackageEnv() { }
 
-        public AdminShellPackageEnv(AdminShell.AdministrationShellEnv env)
+        public AdminShellPackageEnv(AasCore.Aas3_0.Environment env)
         {
             if (env != null)
                 _aasEnv = env;
@@ -243,6 +283,11 @@ namespace AdminShellNS
             }
         }
 
+        public void SetFilename(string fileName)
+        {
+            _fn = fileName;
+        }
+
         public string Filename
         {
             get
@@ -251,7 +296,7 @@ namespace AdminShellNS
             }
         }
 
-        public AdminShell.AdministrationShellEnv AasEnv
+        public AasCore.Aas3_0.Environment AasEnv
         {
             get
             {
@@ -259,7 +304,7 @@ namespace AdminShellNS
             }
         }
 
-        private static AdminShell.AdministrationShellEnv LoadXml(string fn)
+        private static AasCore.Aas3_0.Environment LoadXml(string fn)
         {
             try
             {
@@ -281,20 +326,24 @@ namespace AdminShellNS
             }
         }
 
-        private static AdminShell.AdministrationShellEnv LoadJson(string fn)
+        private static AasCore.Aas3_0.Environment LoadJson(string fn)
         {
             try
             {
-                using (StreamReader file = System.IO.File.OpenText(fn))
+                using (var file = System.IO.File.OpenRead(fn))
                 {
-                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                    var serializer = new JsonSerializer();
-                    serializer.Converters.Add(
-                        new AdminShellConverters.JsonAasxConverter(
-                            "modelType", "name"));
+                    // dead-csharp off
+                    //// TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                    //var serializer = new JsonSerializer();
+                    //serializer.Converters.Add(
+                    //    new AdminShellConverters.JsonAasxConverter(
+                    //        "modelType", "name"));
 
-                    var aasEnv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
-                        file, typeof(AdminShell.AdministrationShellEnv));
+                    //var aasEnv = (AasCore.Aas3_0_RC02.Environment)serializer.Deserialize(
+                    //    file, typeof(AasCore.Aas3_0_RC02.Environment));
+                    // dead-csharp on
+                    var node = System.Text.Json.Nodes.JsonNode.Parse(file);
+                    var aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
 
                     return aasEnv;
                 }
@@ -307,9 +356,9 @@ namespace AdminShellNS
         }
 
         /// <remarks><paramref name="fn"/> is unequal <paramref name="fnToLoad"/> if indirectLoadSave is used.</remarks>
-        private static (AdminShell.AdministrationShellEnv, Package) LoadPackageAasx(string fn, string fnToLoad)
+        private static (AasCore.Aas3_0.Environment, Package) LoadPackageAasx(string fn, string fnToLoad)
         {
-            AdminShell.AdministrationShellEnv aasEnv;
+            AasCore.Aas3_0.Environment aasEnv;
             Package openPackage = null;
 
             Package package;
@@ -362,16 +411,21 @@ namespace AdminShellNS
                     {
                         using (var s = specPart.GetStream(FileMode.Open))
                         {
-                            using (var file = new StreamReader(s))
-                            {
-                                JsonSerializer serializer = new JsonSerializer();
-                                serializer.Converters.Add(
-                                    new AdminShellConverters.JsonAasxConverter(
-                                        "modelType", "name"));
+                            // dead-csharp off
+                            //using (var file = new StreamReader(s))
+                            //{
+                            //JsonSerializer serializer = new JsonSerializer();
+                            //serializer.Converters.Add(
+                            //    new AdminShellConverters.JsonAasxConverter(
+                            //        "modelType", "name"));
 
-                                aasEnv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
-                                    file, typeof(AdminShell.AdministrationShellEnv));
-                            }
+                            //aasEnv = (AasCore.Aas3_0_RC02.Environment)serializer.Deserialize(
+                            //    file, typeof(AasCore.Aas3_0_RC02.Environment));
+
+                            var node = System.Text.Json.Nodes.JsonNode.Parse(s);
+                            aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
+                            //}
+                            // dead-csharp on
                         }
                     }
                     else
@@ -467,18 +521,39 @@ namespace AdminShellNS
             }
         }
 
+        public void SetTempFn(string fn)
+        {
+            try
+            {
+                _tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".aasx");
+                System.IO.File.Copy(fn, _tempFn);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    $"While copying AASX {fn}" +
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+        }
+
         public void LoadFromAasEnvString(string content)
         {
             try
             {
-                using (var file = new StringReader(content))
-                {
-                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
-                    _aasEnv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
-                        file, typeof(AdminShell.AdministrationShellEnv));
-                }
+                // dead-csharp off
+                //using (var file = new StringReader(content))
+                //{
+                // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                //JsonSerializer serializer = new JsonSerializer();
+                //serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
+                //_aasEnv = (AasCore.Aas3_0_RC02.Environment)serializer.Deserialize(
+                //    file, typeof(AasCore.Aas3_0_RC02.Environment));
+
+                var node = System.Text.Json.Nodes.JsonNode.Parse(content);
+                _aasEnv = Jsonization.Deserialize.EnvironmentFrom(node);
+                //}
+                // dead-csharp on
             }
             catch (Exception ex)
             {
@@ -489,20 +564,24 @@ namespace AdminShellNS
         }
 
         public enum SerializationFormat { None, Xml, Json };
-
-        public static XmlSerializerNamespaces GetXmlDefaultNamespaces()
-        {
-            var nss = new XmlSerializerNamespaces();
-            nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-            nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-            nss.Add("IEC", "http://www.admin-shell.io/IEC61360/2/0");
-            nss.Add("abac", "http://www.admin-shell.io/aas/abac/2/0");
-            return nss;
-        }
-
+        // dead-csharp off
+        //public static XmlSerializerNamespaces GetXmlDefaultNamespaces()
+        //{
+        //    var nss = new XmlSerializerNamespaces();
+        //    nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
+        //    nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
+        //    nss.Add("IEC", "http://www.admin-shell.io/IEC61360/2/0");
+        //    nss.Add("abac", "http://www.admin-shell.io/aas/abac/2/0");
+        //    return nss;
+        //}
+        // dead-csharp on
         public bool SaveAs(string fn, bool writeFreshly = false, SerializationFormat prefFmt = SerializationFormat.None,
                 MemoryStream useMemoryStream = null, bool saveOnlyCopy = false)
         {
+            // silently fix flaws
+            _aasEnv?.SilentFix30();
+
+            // ok, which format?
             if (fn.ToLower().EndsWith(".xml"))
             {
                 // save only XML
@@ -512,14 +591,25 @@ namespace AdminShellNS
                 {
                     Stream s = (useMemoryStream != null)
                         ? (Stream)useMemoryStream
-                        : File.Open(fn, FileMode.Create, FileAccess.Write);
+                        : System.IO.File.Open(fn, FileMode.Create, FileAccess.Write);
 
                     try
                     {
+                        // dead-csharp off
                         // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
-                        var nss = GetXmlDefaultNamespaces();
-                        serializer.Serialize(s, _aasEnv, nss);
+                        //var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
+                        //var nss = GetXmlDefaultNamespaces();
+                        //serializer.Serialize(s, _aasEnv, nss);
+                        // dead-csharp on
+                        var writer = XmlWriter.Create(s, new XmlWriterSettings()
+                        {
+                            Indent = true,
+                            OmitXmlDeclaration = true
+                        });
+                        Xmlization.Serialize.To(
+                            _aasEnv, writer);
+                        writer.Flush();
+                        writer.Close();
                         s.Flush();
                     }
                     finally
@@ -547,27 +637,42 @@ namespace AdminShellNS
                 try
                 {
                     Stream s = (useMemoryStream != null) ? (Stream)useMemoryStream
-                        : File.Open(fn, FileMode.Create, FileAccess.Write);
+                        : System.IO.File.Open(fn, FileMode.Create, FileAccess.Write);
 
                     try
                     {
-                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        JsonSerializer serializer = new JsonSerializer()
-                        {
-                            NullValueHandling = NullValueHandling.Ignore,
-                            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                            Formatting = Newtonsoft.Json.Formatting.Indented
-                        };
+                        // dead-csharp off
+                        //// TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                        //JsonSerializer serializer = new JsonSerializer()
+                        //{
+                        //    NullValueHandling = NullValueHandling.Ignore,
+                        //    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                        //    Formatting = Newtonsoft.Json.Formatting.Indented
+                        //};
 
-                        using (var sw = new StreamWriter(s))
+                        //var sw = new StreamWriter(s);
+                        //var writer = new JsonTextWriter(sw);
+
+                        //serializer.Serialize(writer, _aasEnv);
+                        //writer.Flush();
+                        //sw.Flush();
+                        //s.Flush();
+
+                        //if (useMemoryStream == null)
+                        //{
+                        //    writer.Close();
+                        //    sw.Close();
+                        //}
+                        // dead-csharp on
+                        using (var wr = new System.Text.Json.Utf8JsonWriter(s))
                         {
-                            using (var writer = new JsonTextWriter(sw))
-                            {
-                                serializer.Serialize(writer, _aasEnv);
-                                writer.Flush();
-                                sw.Flush();
-                                s.Flush();
-                            }
+                            Jsonization.Serialize.ToJsonObject(_aasEnv).WriteTo(wr,
+                                new System.Text.Json.JsonSerializerOptions()
+                                {
+                                    WriteIndented = true
+                                });
+                            wr.Flush();
+                            s.Flush();
                         }
                     }
                     finally
@@ -701,8 +806,8 @@ namespace AdminShellNS
                     {
                         // create, as not existing
                         var frn = "aasenv-with-no-id";
-                        if (_aasEnv.AdministrationShells.Count > 0)
-                            frn = _aasEnv.AdministrationShells[0].GetFriendlyName() ?? frn;
+                        if (_aasEnv.AssetAdministrationShells.Count > 0)
+                            frn = _aasEnv.AssetAdministrationShells[0].GetFriendlyName() ?? frn;
                         var aas_spec_fn = "/aasx/#/#.aas";
                         if (prefFmt == SerializationFormat.Json)
                             aas_spec_fn += ".json";
@@ -739,9 +844,17 @@ namespace AdminShellNS
                     {
                         using (var s = specPart.GetStream(FileMode.Create))
                         {
-                            var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
-                            var nss = GetXmlDefaultNamespaces();
-                            serializer.Serialize(s, _aasEnv, nss);
+
+                            var writer = XmlWriter.Create(s, new XmlWriterSettings()
+                            {
+                                Indent = true,
+                                OmitXmlDeclaration = true
+                            });
+                            Xmlization.Serialize.To(
+                                _aasEnv, writer);
+                            writer.Flush();
+                            writer.Close();
+                            s.Flush();
                         }
                     }
 
@@ -975,12 +1088,24 @@ namespace AdminShellNS
                 // raw save
                 using (var s = new StreamWriter(bdfn))
                 {
-                    var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
-                    var nss = new XmlSerializerNamespaces();
-                    nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-                    nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-                    nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
-                    serializer.Serialize(s, _aasEnv, nss);
+                    // dead-csharp off
+                    //var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
+                    //var nss = new XmlSerializerNamespaces();
+                    //nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
+                    //nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
+                    //nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
+                    //serializer.Serialize(s, _aasEnv, nss);
+                    // dead-csharp on
+                    var writer = XmlWriter.Create(s, new XmlWriterSettings()
+                    {
+                        Indent = true,
+                        OmitXmlDeclaration = true
+                    });
+                    Xmlization.Serialize.To(
+                        _aasEnv, writer);
+                    writer.Flush();
+                    writer.Close();
+                    s.Flush();
                 }
             }
             catch (Exception ex)
@@ -995,10 +1120,10 @@ namespace AdminShellNS
         {
             // local
             if (IsLocalFile(uriString))
-                return GetLocalStreamFromPackage(uriString, mode);
+                return GetLocalStreamFromPackage(uriString, mode, access);
 
             // no ..
-            return File.Open(uriString, mode, access);
+            return System.IO.File.Open(uriString, mode, access);
         }
 
         public byte[] GetByteArrayFromUriOrLocalPackage(string uriString)
@@ -1025,7 +1150,7 @@ namespace AdminShellNS
         {
             // access
             if (_openPackage == null)
-                throw (new Exception(string.Format($"AASX Package {_fn} not opened. Aborting!")));
+                return false;
             if (uriString == null || uriString == "" || !uriString.StartsWith("/"))
                 return false;
 
@@ -1034,18 +1159,137 @@ namespace AdminShellNS
             return isLocal;
         }
 
-        public Stream GetLocalStreamFromPackage(string uriString, FileMode mode = FileMode.Open)
+        private static WebProxy proxy = null;
+
+        public Stream GetLocalStreamFromPackage(string uriString, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read)
+        {
+            // Check, if remote
+            if (uriString.ToLower().Substring(0, 4) == "http")
+            {
+                if (proxy == null)
+                {
+                    string proxyAddress = "";
+                    string username = "";
+                    string password = "";
+
+                    string proxyFile = "proxy.txt";
+                    if (System.IO.File.Exists(proxyFile))
+                    {
+                        try
+                        {   // Open the text file using a stream reader.
+                            using (StreamReader sr = new StreamReader(proxyFile))
+                            {
+                                proxyFile = sr.ReadLine();
+                            }
+                        }
+                        catch (IOException e)
+                        {
+                            Console.WriteLine("proxy.txt could not be read:");
+                            Console.WriteLine(e.Message);
+                        }
+                    }
+
+                    try
+                    {
+                        using (StreamReader sr = new StreamReader(proxyFile))
+                        {
+                            proxyAddress = sr.ReadLine();
+                            username = sr.ReadLine();
+                            password = sr.ReadLine();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(proxyFile + " not found!");
+                    }
+
+                    if (proxyAddress != "")
+                    {
+                        proxy = new WebProxy();
+                        Uri newUri = new Uri(proxyAddress);
+                        proxy.Address = newUri;
+                        proxy.Credentials = new NetworkCredential(username, password);
+                        Console.WriteLine("Using proxy: " + proxyAddress);
+                    }
+                }
+
+                var handler = new HttpClientHandler();
+
+                if (proxy != null)
+                    handler.Proxy = proxy;
+                else
+                    handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+                var hc = new HttpClient(handler);
+
+                var response = hc.GetAsync(uriString).GetAwaiter().GetResult();
+
+                // if you call response.EnsureSuccessStatusCode here it will throw an exception
+                if (response.StatusCode == HttpStatusCode.Moved
+                    || response.StatusCode == HttpStatusCode.Found)
+                {
+                    var location = response.Headers.Location;
+                    response = hc.GetAsync(location).GetAwaiter().GetResult();
+                }
+
+                response.EnsureSuccessStatusCode();
+                var s = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+
+                if (s.Length < 500) // indirect load?
+                {
+                    StreamReader reader = new StreamReader(s);
+                    string json = reader.ReadToEnd();
+                    var parsed = JObject.Parse(json);
+                    try
+                    {
+                        string url = parsed.SelectToken("url").Value<string>();
+                        response = hc.GetAsync(url).GetAwaiter().GetResult();
+                        response.EnsureSuccessStatusCode();
+                        s = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return s;
+            }
+
+            // access
+            if (_openPackage == null)
+                throw (new Exception(string.Format($"AASX Package {_fn} not opened. Aborting!")));
+
+            // exist
+            var puri = new Uri(uriString, UriKind.RelativeOrAbsolute);
+            if (!_openPackage.PartExists(puri))
+                throw (new Exception(string.Format($"AASX Package has no part {uriString}. Aborting!")));
+
+            // get part
+            var part = _openPackage.GetPart(puri);
+            if (part == null)
+                throw (new Exception(
+                    string.Format($"Cannot access part {uriString} in {_fn}. Aborting!")));
+            return part.GetStream(mode, access);
+        }
+
+        public async Task ReplaceSupplementaryFileInPackageAsync(string sourceUri, string targetFile, string targetContentType, Stream fileContent)
         {
             // access
             if (_openPackage == null)
                 throw (new Exception(string.Format($"AASX Package {_fn} not opened. Aborting!")));
 
-            // gte part
-            var part = _openPackage.GetPart(new Uri(uriString, UriKind.RelativeOrAbsolute));
-            if (part == null)
-                throw (new Exception(
-                    string.Format($"Cannot access URI {uriString} in {_fn} not opened. Aborting!")));
-            return part.GetStream(mode);
+            if (!string.IsNullOrEmpty(sourceUri))
+            {
+                _openPackage.DeletePart(new Uri(sourceUri, UriKind.RelativeOrAbsolute));
+
+            }
+            var targetUri = PackUriHelper.CreatePartUri(new Uri(targetFile, UriKind.RelativeOrAbsolute));
+            PackagePart packagePart = _openPackage.CreatePart(targetUri, targetContentType);
+            fileContent.Position = 0;
+            using (Stream dest = packagePart.GetStream())
+            {
+                fileContent.CopyTo(dest);
+            }
         }
 
         public long GetStreamSizeFromPackage(string uriString)
@@ -1320,6 +1564,12 @@ namespace AdminShellNS
             _aasEnv = null;
         }
 
+        public void Flush()
+        {
+            if (_openPackage != null)
+                _openPackage.Flush();
+        }
+
         public void Dispose()
         {
             Close();
@@ -1349,7 +1599,7 @@ namespace AdminShellNS
                 }
 
                 // copy to temp file
-                using (var temp = File.OpenWrite(temppath))
+                using (var temp = System.IO.File.OpenWrite(temppath))
                 {
                     input.CopyTo(temp);
                     return temppath;
@@ -1357,5 +1607,32 @@ namespace AdminShellNS
             }
         }
 
+        public void EmbeddAssetInformationThumbnail(IResource defaultThumbnail, Stream fileContent)
+        {
+            // access
+            if (_openPackage == null)
+                throw (new Exception(string.Format($"AASX Package {_fn} not opened. Aborting!")));
+
+            if (!string.IsNullOrEmpty(defaultThumbnail.Path))
+            {
+                var sourceUri = defaultThumbnail.Path.Replace(Path.DirectorySeparatorChar, '/');
+                _openPackage.DeletePart(new Uri(sourceUri, UriKind.RelativeOrAbsolute));
+
+            }
+            var targetUri = PackUriHelper.CreatePartUri(new Uri(defaultThumbnail.Path, UriKind.RelativeOrAbsolute));
+
+            PackagePart packagePart = _openPackage.CreatePart(targetUri, defaultThumbnail.ContentType, compressionOption: CompressionOption.Maximum);
+
+            _openPackage.CreateRelationship(packagePart.Uri, TargetMode.Internal,
+                                        "http://schemas.openxmlformats.org/package/2006/" +
+                                        "relationships/metadata/thumbnail");
+
+            //Write to the part
+            fileContent.Position = 0;
+            using (Stream dest = packagePart.GetStream())
+            {
+                fileContent.CopyTo(dest);
+            }
+        }
     }
 }

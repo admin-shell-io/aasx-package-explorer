@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -26,6 +26,7 @@ using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AdminShellNS;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -48,6 +49,8 @@ namespace AasxPackageExplorer
             DataSourcePools = dataSourcePools;
         }
 
+        protected static object _lastDomainSelected = null;
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // fill caption
@@ -61,10 +64,21 @@ namespace AasxPackageExplorer
             this.ListBoxDomains.Items.Clear();
             if (DataSourcePools != null)
             {
-                foreach (var d in DataSourcePools.GetDomains())
+                var domains = DataSourcePools.GetDomains().ToList();
+                domains.Sort();
+                foreach (var d in domains)
                     this.ListBoxDomains.Items.Add(d);
-                if (this.ListBoxDomains.Items.Count > 0)
-                    this.ListBoxDomains.SelectedIndex = 0;
+                
+                if (_lastDomainSelected != null)
+                {
+                    var i = this.ListBoxDomains.Items.IndexOf(_lastDomainSelected);
+                    this.ListBoxDomains.SelectedIndex = i;
+                } 
+                else
+                {
+                    if (this.ListBoxDomains.Items.Count > 0)
+                        this.ListBoxDomains.SelectedIndex = 0;
+                }
             }
 
         }
@@ -81,6 +95,10 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         //
         // Mechanics
         //
@@ -91,13 +109,15 @@ namespace AasxPackageExplorer
             var dom = this.ListBoxDomains.SelectedItem as string;
             if (dom == null)
                 return;
-            var ld = this.DataSourcePools?.GetEntitiesForDomain(dom);
+            var ld = this.DataSourcePools?.GetEntitiesForDomain(dom)?.ToList();
             if (ld != null)
             {
+                ld.Sort( (x1, x2) => x1.DisplayName.CompareTo(x2.DisplayName) );
                 DataGridEntities.Items.Clear();
                 foreach (var ent in ld)
                     DataGridEntities.Items.Add(ent);
-            }
+                _lastDomainSelected = ListBoxDomains.SelectedItem;
+                }
         }
 
         private bool PrepareResult()

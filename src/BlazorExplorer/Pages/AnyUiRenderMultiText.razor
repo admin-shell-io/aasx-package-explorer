@@ -1,0 +1,138 @@
+﻿@page "/testMultiRenderText"
+@using AdminShellNS
+@using Aas = AasCore.Aas3_0
+@using Extensions
+@using AnyUi
+@using BlazorUI.Data
+@using System.Text;
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@{
+    // resharper disable all
+}
+
+@{
+    // access
+    if (Element == null)
+        return;
+
+    // book keeping
+    Element.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context, touchLambda: TouchAction) { _component = this };
+
+    // split lines
+    if (lines != null)
+        for (int i = 0; i < lines.Length; i++)
+        {
+            @lines[i];
+            @if (i < lines.Length - 1)
+            {
+                <br />
+            }
+        }
+}
+
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public BlazorUI.Data.BlazorSession Session { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public int TextWrapColumn { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Element
+    {
+        get { return _element; }
+        set
+        {
+            // hold image data
+            _element = value;
+        }
+    }
+
+    //
+    // Touch
+    //
+
+    protected void TouchAction(AnyUiUIElement tel)
+    {
+        // access
+        if (tel == null || tel != this.Element)
+            return;
+
+        // execute
+        OnParametersSet();
+        InvokeAsync(() => this.StateHasChanged());
+    }
+
+    //
+    // Business
+    //
+
+    protected AnyUiUIElement _element = null;
+
+    string[] lines;
+
+    protected string WrapLinesByColumn(string input, int col)
+    {
+        if (input == null)
+            return null;
+        if (col <= 0)
+            return input;
+        var sb = new StringBuilder();
+        int len = 0;
+        bool danglingNL = false;
+        for (int i=0; i<input.Length; i++)
+        {
+            if (input[i] == '\r')
+                continue;
+            if (input[i] == '\n')
+            {
+                if (!danglingNL)
+                    sb.Append('\n');
+                danglingNL = false;
+                len = 0;
+                continue;
+            }
+            // wrap?
+            if (len >= col && " -+/.:;".IndexOf(input[i]) >= 0)
+            {
+                sb.Append(input[i]);
+                sb.Append('\n');
+                len = 0;
+                danglingNL = true;
+            }
+            else
+            {
+                sb.Append(input[i]);
+                len++;
+            }
+        }
+        return sb.ToString();
+    }
+
+    protected override void OnParametersSet()
+    {
+        var toShow = "";
+
+        if (Element is AnyUiSelectableTextBlock stb)
+            toShow = stb.Text;
+
+        if (Element is AnyUiTextBlock tb)
+            toShow = tb.Text;
+
+        if (Element is AnyUiLabel lb)
+            toShow = lb.Content;
+
+        if (Element is AnyUiTextBox txb)
+            toShow = txb.Text;
+
+        lines = WrapLinesByColumn(toShow, TextWrapColumn)?.Split('\n');
+    }
+}

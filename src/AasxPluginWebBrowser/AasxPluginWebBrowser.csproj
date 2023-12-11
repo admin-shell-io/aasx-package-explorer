@@ -1,24 +1,48 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
     <OutputType>library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
-	  
-	<!-- 
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+
+    <!-- CefSharp: include Chromium Embedded Framework in the application -->
+    <CefSharpBuildAction>Content</CefSharpBuildAction>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- platform/target/runtime-->
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
+    <!-- 
 	    Both Platform and Platforms need to be specified:
 	        * Dotnet CLI will only recognize "Platform",
 			* Visual Studio will only recognize "Platforms". 
-	-->
-	<Platforms>x64</Platforms>
-	<Platform>x64</Platform>
+	    -->
+
+    <!-- build path -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <!-- Append to "Base Output Path"; disabled to prevent long build paths -->
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'x64'">
+    <!-- Fallback properties required for CefSharp libraries to correctly add dlls -->
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Update="AasxPluginWebBrowser.plugin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="AasxPluginWebBrowser.options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -32,20 +56,25 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Windows" />
+    <PackageReference Include="CefSharp.Common.NETCore" Version="115.3.110" />
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="115.3.110" />
+    <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.CodeDom" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="cef.redist.x64" Version="84.4.1" />
-    <PackageReference Include="cef.redist.x86" Version="84.4.1" />
-    <PackageReference Include="CefSharp.Common" Version="84.4.10" />
-    <PackageReference Include="CefSharp.Wpf" Version="84.4.10" />
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.CodeDom" Version="4.7.0" />
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
+
+  <Target Name="CefSharpAfterBuildDebug" AfterTargets="AfterBuild">
+    <CallTarget Targets="CefSharpAfterBuildDiagnostic" />
+  </Target>
 </Project>

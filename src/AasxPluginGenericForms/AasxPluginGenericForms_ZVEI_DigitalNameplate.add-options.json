@@ -26,8 +26,9 @@
             "$type": "FormMultiLangProp",
             "FormTitle": "ManufacturerName",
             "FormInfo": "Legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation.",
-            "FormEditIdShort": false,
-            "FormEditDescription": false,
+            "FormUrl": "www.google.de/books", // TODO (??, 0000-00-00): ZeroToOne
+            "FormEditIdShort": true, // TODO (??, 0000-00-00): false
+            "FormEditDescription": true, // TODO (?, 0000-00-00): false
             "PresetIdShort": "ManufacturerName",
             "PresetCategory": "PARAMETER",
             "KeySemanticId": {
@@ -38,7 +39,7 @@
               "index": 0,
               "idType": "IRDI"
             },
-            "Multiplicity": "One",
+            "Multiplicity": "OneToMany", // TODO (??, 0000-00-00): One
             "IsReadOnly": false
           },
           {
@@ -579,8 +580,9 @@
               "index": 0,
               "idType": "IRDI"
             },
-            "Multiplicity": "ZeroToOne",
+            "Multiplicity": "ZeroToMany", // TODO (??, 0000-00-00): ZeroToOne
             "IsReadOnly": false,
+            "comboBoxChoices": [ "Alpha", "Beta", "Gamma" ],
             "allowedValueTypes": [
               "string"
             ],

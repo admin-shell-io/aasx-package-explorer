@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,16 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using AasxIntegrationBase;
-using AdminShellNS;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -79,6 +73,13 @@ namespace AasxPackageLogic.PackageCentral
             // we do it not caring on any errors
             try
             {
+                // make sure the backup dir exists
+                if (!Directory.Exists(backupDir))
+                {
+                    Directory.CreateDirectory(backupDir);
+                    Log.Singleton.Info(StoredPrint.Color.Blue, "Created backup directory : " + backupDir);
+                }
+
                 // get index in form
                 if (BackupIndex == 0)
                 {
@@ -103,7 +104,7 @@ namespace AasxPackageLogic.PackageCentral
                     var bdfn = Path.Combine(backupDir, $"backup{ndx:000}{bext}");
                     Env.TemporarilySaveCloseAndReOpenPackage(() =>
                     {
-                        File.Copy(Env.Filename, bdfn, overwrite: true);
+                        System.IO.File.Copy(Env.Filename, bdfn, overwrite: true);
                     });
                 }
             }

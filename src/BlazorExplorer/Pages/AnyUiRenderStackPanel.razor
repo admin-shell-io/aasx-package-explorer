@@ -1,0 +1,128 @@
+﻿@page "/test3"
+@using AdminShellNS
+@using Aas = AasCore.Aas3_0
+@using AdminShellNS;
+@using Extensions
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@{
+    // resharper disable all
+}
+
+
+@{
+
+    // access
+    if (_panel == null)
+        return;
+
+    // because of not working with table, need an outer <div>
+    var divOuterStyle = new StylePile();
+    divOuterStyle.SetSpecifics(
+        margin: _panel.Margin);
+
+    //
+    // Eval different table attributes
+    //
+
+    var panelStyle = new StylePile();
+
+    panelStyle.Add("background-color", _panel.Background?.HtmlRgb(), doNotSetIfNull: true);
+
+    if (AnyUiDisplayDataHtml.DebugFrames)
+        panelStyle.Set("border", "1px solid black", add: true);
+
+    panelStyle.Set("width", "100%", add: true);
+
+    //
+    // Render
+    //
+
+    <div style="@divOuterStyle">
+        @if (_panel != null && _panel.Orientation == AnyUiOrientation.Horizontal)
+        {
+            @* Render the STACK HORIZONTALLY *@
+            @* Note: the stack panel with horizontal orientation does NOT pass the FillMode! *@
+            <table @attributes="@PanelAttributes" style="@panelStyle" data-source="AnyUiRenderStackPanel.razor HOR">
+                <tr>
+                    <td>
+                        @{
+                            if (_panel?.Children != null)
+                                foreach (var ch in _panel.Children)
+                                {
+                                <AnyUiRenderElem DisplayData="@DisplayData"
+                                                 Session="@Session"
+                                                 Parent="@Element"
+                                                 Element="@ch"
+                                                 FillMode="@AnyUiHtmlFillMode.None" />
+                                }
+                        }
+                    </td>
+                </tr>
+            </table>
+        }
+
+        @if (_panel.Orientation == null
+            || (_panel != null && _panel.Orientation == AnyUiOrientation.Vertical))
+        {
+            @* Default code .. Render the STACK VERTICALLY *@
+            @* Note: the stack panel with horizontal orientation does pass the FillMode, likely fill too width! *@
+            <table @attributes="@PanelAttributes" style="@panelStyle" data-source="AnyUiRenderStackPanel.razor VER">
+                <tbody>
+                    @{
+                        @if (_panel?.Children != null)
+                            for (int i=0; i<_panel.Children.Count; i++)
+                            {
+                                //if (i > 19)
+                                //    break;
+                                var ch = _panel.Children[i];
+                                <tr>
+                                    <td>
+                                        <AnyUiRenderElem DisplayData="@DisplayData"
+                                                         Session="@Session"
+                                                         Element="@ch"
+                                                         FillMode="@FillMode" />
+                                    </td>
+                                </tr>
+                            }
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> PanelAttributes { get; set; }
+
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public BlazorUI.Data.BlazorSession Session { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+
+    protected AnyUiStackPanel _panel = null;
+
+    [Parameter]
+    public AnyUiStackPanel Element
+    {
+        get { return _panel; }
+        set
+        {
+            _panel = value;
+            if (_panel == null)
+                return;
+        }
+    }
+
+}

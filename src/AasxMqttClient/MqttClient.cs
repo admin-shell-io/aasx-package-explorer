@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>
@@ -15,19 +15,19 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
+using Extensions;
 using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Client.Options;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxMqttClient
 {
@@ -38,8 +38,8 @@ namespace AasxMqttClient
 
         [JsonIgnore]
         public static string HelpString =
-            "{aas} = AAS.idShort, {aas-id} = AAS.identification" + Environment.NewLine +
-            "{sm} = Submodel.idShort, {sm-id} = Submodel.identification" + Environment.NewLine +
+            "{aas} = AAS.idShort, {aas-id} = AAS.identification" + System.Environment.NewLine +
+            "{sm} = Submodel.idShort, {sm-id} = Submodel.identification" + System.Environment.NewLine +
             "{path} = Path of idShorts";
 
         public string BrokerUrl = "localhost:1883";
@@ -142,8 +142,8 @@ namespace AasxMqttClient
 
         private string GenerateTopic(string template,
             string defaultIfNull = null,
-            string aasIdShort = null, AdminShell.Identification aasId = null,
-            string smIdShort = null, AdminShell.Identification smId = null,
+            string aasIdShort = null, string aasId = null,
+            string smIdShort = null, string smId = null,
             string path = null)
         {
             var res = template;
@@ -154,14 +154,14 @@ namespace AasxMqttClient
             if (aasIdShort != null)
                 res = res.Replace("{aas}", "" + aasIdShort);
 
-            if (aasId?.id != null)
-                res = res.Replace("{aas-id}", "" + System.Net.WebUtility.UrlEncode(aasId.id));
+            if (aasId != null)
+                res = res.Replace("{aas-id}", "" + System.Net.WebUtility.UrlEncode(aasId));
 
             if (smIdShort != null)
                 res = res.Replace("{sm}", "" + smIdShort);
 
-            if (smId?.id != null)
-                res = res.Replace("{sm-id}", "" + System.Net.WebUtility.UrlEncode(smId.id));
+            if (smId != null)
+                res = res.Replace("{sm-id}", "" + System.Net.WebUtility.UrlEncode(smId));
 
             if (path != null)
                 res = res.Replace("{path}", path);
@@ -213,15 +213,15 @@ namespace AasxMqttClient
 
             if (_diaData.EnableFirstPublish)
             {
-                foreach (AdminShell.AdministrationShell aas in package.AasEnv.AdministrationShells)
+                foreach (Aas.AssetAdministrationShell aas in package.AasEnv.AssetAdministrationShells)
                 {
                     _logger?.Info("Publish first AAS");
                     var message = new MqttApplicationMessageBuilder()
                                    .WithTopic(GenerateTopic(
                                         _diaData.FirstTopicAAS, defaultIfNull: "AAS",
-                                        aasIdShort: aas.idShort, aasId: aas.identification))
+                                        aasIdShort: aas.IdShort, aasId: aas.Id))
                                    .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(aas))
-                                   .WithExactlyOnceQoS()
+                                   .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                                    .WithRetainFlag(_diaData.MqttRetain)
                                    .Build();
 
@@ -232,15 +232,15 @@ namespace AasxMqttClient
                     foreach (var sm in package.AasEnv.Submodels)
                     {
                         // whole structure
-                        _logger?.Info("Publish first " + "Submodel_" + sm.idShort);
+                        _logger?.Info("Publish first " + "Submodel_" + sm.IdShort);
 
                         var message2 = new MqttApplicationMessageBuilder()
                                         .WithTopic(GenerateTopic(
-                                            _diaData.FirstTopicSubmodel, defaultIfNull: "Submodel_" + sm.idShort,
-                                            aasIdShort: aas.idShort, aasId: aas.identification,
-                                            smIdShort: sm.idShort, smId: sm.identification))
+                                            _diaData.FirstTopicSubmodel, defaultIfNull: "Submodel_" + sm.IdShort,
+                                            aasIdShort: aas.IdShort, aasId: aas.Id,
+                                            smIdShort: sm.IdShort, smId: sm.Id))
                                        .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(sm))
-                                       .WithExactlyOnceQoS()
+                                       .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                                        .WithRetainFlag(_diaData.MqttRetain)
                                        .Build();
 
@@ -258,10 +258,18 @@ namespace AasxMqttClient
             _logger?.Info("Publish single values: " + _diaData.SingleValuePublish);
         }
 
+        protected bool IsLeaf(ISubmodelElement sme)
+        {
+            if (sme == null)
+                return false;
+            var childExist = sme.EnumerateChildren().FirstOrDefault();
+            return childExist == null;
+        }
+
         private void PublishSingleValues_FirstTimeSubmodel(
-            AdminShell.AdministrationShell aas,
-            AdminShell.Submodel sm,
-            AdminShell.KeyList startPath)
+            Aas.IAssetAdministrationShell aas,
+            Aas.ISubmodel sm,
+            List<Aas.IKey> startPath)
         {
             // trivial
             if (aas == null || sm == null)
@@ -271,14 +279,16 @@ namespace AasxMqttClient
             sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
             {
                 // assumption is, the sme is now "leaf" of a SME-hierarchy
-                if (sme is AdminShell.IEnumerateChildren)
+                if (!IsLeaf(sme))
                     return true;
 
                 // value of the leaf
                 var valStr = sme.ValueAsText();
 
                 // build a complete path of keys
-                var path = startPath + parents.ToKeyList() + sme?.ToKey();
+                var path = startPath.Copy();
+                path.AddRange(parents.ToKeyList());
+                path.Add(sme?.ToKey());
                 var pathStr = path.BuildIdShortPath();
 
                 // publish
@@ -288,11 +298,11 @@ namespace AasxMqttClient
                 var msg = new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
                                 _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
-                                aasIdShort: aas.idShort, aasId: aas.identification,
-                                smIdShort: sm.idShort, smId: sm.identification,
+                                aasIdShort: aas.IdShort, aasId: aas.Id,
+                                smIdShort: sm.IdShort, smId: sm.Id,
                                 path: pathStr))
                             .WithPayload(valStr)
-                            .WithExactlyOnceQoS()
+                            .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                             .WithRetainFlag(_diaData.MqttRetain)
                             .Build();
                 _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
@@ -305,8 +315,8 @@ namespace AasxMqttClient
 
         private void PublishSingleValues_ChangeItem(
             AasEventMsgEnvelope ev,
-            AdminShell.ReferableRootInfo ri,
-            AdminShell.KeyList startPath,
+            ExtendEnvironment.ReferableRootInfo ri,
+            List<Aas.IKey> startPath,
             AasPayloadStructuralChangeItem ci)
         {
             // trivial
@@ -325,21 +335,23 @@ namespace AasxMqttClient
 
             // give this to (recursive) function
             var messages = new List<MqttApplicationMessage>();
-            if (dataRef is AdminShell.SubmodelElement dataSme)
+            if (dataRef is IReferable dataSme)
             {
-                var smwc = new AdminShell.SubmodelElementWrapperCollection(dataSme);
-                smwc.RecurseOnReferables(null, null, (o, parents, rf) =>
+                dataSme.RecurseOnReferables(null, (o, parents, rf) =>
                 {
                     // assumption is, the sme is now "leaf" of a SME-hierarchy
-                    var sme = rf as AdminShell.SubmodelElement;
-                    if (sme == null || sme is AdminShell.IEnumerateChildren)
+                    var sme = rf as Aas.ISubmodelElement;
+                    if (sme == null || !IsLeaf(sme))
                         return true;
 
                     // value of the leaf
                     var valStr = sme.ValueAsText();
 
                     // build a complete path of keys
-                    var path = startPath + ci.Path + parents.ToKeyList() + sme?.ToKey();
+                    var path = startPath.Copy();
+                    path.AddRange(ci.Path);
+                    path.AddRange(parents.ToKeyList());
+                    path.Add(sme?.ToKey());
                     var pathStr = path.BuildIdShortPath();
 
                     // publish
@@ -349,11 +361,11 @@ namespace AasxMqttClient
                         new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
                                 _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
-                                aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
-                                smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                                aasIdShort: ri?.AAS?.IdShort, aasId: ri?.AAS?.Id,
+                                smIdShort: ri?.Submodel?.IdShort, smId: ri?.Submodel?.Id,
                                 path: pathStr))
                             .WithPayload(valStr)
-                            .WithExactlyOnceQoS()
+                            .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                             .WithRetainFlag(_diaData.MqttRetain)
                             .Build());
 
@@ -375,8 +387,8 @@ namespace AasxMqttClient
 
         private void PublishSingleValues_UpdateItem(
             AasEventMsgEnvelope ev,
-            AdminShell.ReferableRootInfo ri,
-            AdminShell.KeyList startPath,
+            ExtendEnvironment.ReferableRootInfo ri,
+            List<Aas.IKey> startPath,
             AasPayloadUpdateValueItem ui)
         {
             // trivial
@@ -387,7 +399,8 @@ namespace AasxMqttClient
             var valStr = "" + ui.Value;
 
             // build a complete path of keys
-            var path = startPath + ui.Path;
+            var path = startPath.Copy();
+            path.AddRange(ui.Path);
             var pathStr = path.BuildIdShortPath();
 
             // publish
@@ -396,11 +409,11 @@ namespace AasxMqttClient
             var message = new MqttApplicationMessageBuilder()
                     .WithTopic(GenerateTopic(
                         _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
-                        aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
-                        smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                        aasIdShort: ri?.AAS?.IdShort, aasId: ri?.AAS?.Id,
+                        smIdShort: ri?.Submodel?.IdShort, smId: ri?.Submodel?.Id,
                         path: pathStr))
                     .WithPayload(valStr)
-                    .WithExactlyOnceQoS()
+                    .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                     .WithRetainFlag(_diaData.MqttRetain)
                     .Build();
 
@@ -410,7 +423,7 @@ namespace AasxMqttClient
         }
 
         public void PublishEventAsync(AasEventMsgEnvelope ev,
-            AdminShell.ReferableRootInfo ri = null)
+            ExtendEnvironment.ReferableRootInfo ri = null)
         {
             // access
             if (ev == null || _mqttClient == null || !_mqttClient.IsConnected)
@@ -425,14 +438,14 @@ namespace AasxMqttClient
 
             // aas / sm already available in rootInfo, prepare idShortPath
             var sourcePathStr = "";
-            var sourcePath = new AdminShell.KeyList();
+            var sourcePath = new List<Aas.IKey>();
             if (ev.Source?.Keys != null && ri != null && ev.Source.Keys.Count > ri.NrOfRootKeys)
             {
                 sourcePath = ev.Source.Keys.SubList(ri.NrOfRootKeys);
                 sourcePathStr = sourcePath.BuildIdShortPath();
             }
 
-            var observablePath = new AdminShell.KeyList();
+            var observablePath = new List<Aas.IKey>();
             if (ev.ObservableReference?.Keys != null && ri != null
                 && ev.ObservableReference.Keys.Count > ri.NrOfRootKeys)
             {
@@ -447,11 +460,11 @@ namespace AasxMqttClient
                 var message = new MqttApplicationMessageBuilder()
                                .WithTopic(GenerateTopic(
                                     _diaData.EventTopic, defaultIfNull: "Event",
-                                    aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
-                                    smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                                    aasIdShort: ri?.AAS?.IdShort, aasId: ri?.AAS?.Id,
+                                    smIdShort: ri?.Submodel?.IdShort, smId: ri?.Submodel?.Id,
                                     path: sourcePathStr))
                                .WithPayload(json)
-                               .WithExactlyOnceQoS()
+                               .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                                .WithRetainFlag(_diaData.MqttRetain)
                                .Build();
 
@@ -481,7 +494,7 @@ namespace AasxMqttClient
         }
 
         public void PublishEvent(AasEventMsgEnvelope ev,
-            AdminShell.ReferableRootInfo ri = null)
+            ExtendEnvironment.ReferableRootInfo ri = null)
         {
             PublishEventAsync(ev, ri);
         }

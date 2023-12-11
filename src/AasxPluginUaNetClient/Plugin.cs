@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>,
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>,
 Author: Michael Hoffmeister.
 
 Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>
@@ -31,29 +31,19 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     // ReSharper disable once UnusedType.Global
-    public class AasxPlugin : IAasxPluginInterface
-    {
-        private LogInstance Log = new LogInstance();
-
-        public string GetPluginName()
+    public class AasxPlugin : AasxPluginBase
+	{
+        public new void InitPlugin(string[] args)
         {
-            return "AasxPluginOpcUaClient";
-        }
-
-        public void InitPlugin(string[] args)
-        {
-        }
-
-        public object CheckForLogMessage()
-        {
-            return Log.PopLastShortTermPrint();
-        }
+			PluginName = "AasxPluginOpcUaClient";
+			_log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+		}
 
         public AasxPluginActionDescriptionBase[] ListActions()
         {
-            Log.Info("ListActions() called");
-            var res = new List<AasxPluginActionDescriptionBase>();
-            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
+			var res = ListActionsBasicHelper(
+				enableCheckVisualExt: false,
+				enableLicenses: true);
             res.Add(new AasxPluginActionDescriptionBase("create-client",
                 "Creates a OPC UA client and returns as plain object. Arguments: (string _endpointURL, "
                 + "bool _autoAccept, int _stopTimeout, string _userName, string _password)."));
@@ -63,7 +53,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             if (action == "get-licenses")
             {
@@ -84,7 +74,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // OPC Copyright
                 MessageBox.Show(
-                    "Copyright (c) 2018-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>, " +
+                    "Copyright (c) 2018-2023 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>, " +
                     "author: Andreas Orzelski\n\n" +
                     "Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal Community " +
                     "License (RCL)\n" + "see https://opcfoundation.org/license/rcl.html",
@@ -95,7 +85,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args == null || args.Length != 5 || !(args[0] is string && args[1] is bool && args[2] is int
                     && args[3] is string && args[4] is string))
                 {
-                    Log.Info("create-client() call with wrong arguments. Expected: (string _endpointURL, "
+                    _log.Info("create-client() call with wrong arguments. Expected: (string _endpointURL, "
                         + "bool _autoAccept, int _stopTimeout, string _userName, string _password)");
                     return null;
                 }
@@ -125,7 +115,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args == null || args.Length != 3 || !(args[0] is SampleClient.UASampleClient
                     && args[1] is string && args[2] is int))
                 {
-                    Log.Info("read-sme-value() call with wrong arguments. Expected: (UASampleClient client, "
+                    _log.Info("read-sme-value() call with wrong arguments. Expected: (UASampleClient client, "
                         + "string nodeName, int index)");
                     return null;
                 }

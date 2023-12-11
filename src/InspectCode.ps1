@@ -29,35 +29,14 @@ function Main
     Write-Host "* The working directory is: $(Get-Location)"
     Write-Host "* The path to solution is: $pathToSolution"
 
-    # We need to allow for a custom path to InspectCode since dotnet jb command fails on systems
-    # where there are spaces in the paths.
-    if (Test-Path env:INSPECT_CODE_PATH)
-    {
-        Write-Host ( `
-            "* The environment variable INSPECT_CODE_PATH has been defined, " + `
-            "inspecting with it: $($env:INSPECT_CODE_PATH)")
+    Write-Host "* Inspecting the code with dotnet jb inspectcode"
 
-        if ($null -eq (Test-Path $env:INSPECT_CODE_PATH -ErrorAction SilentlyContinue))
-        {
-            throw "Unable to find the specified INSPECT_CODE_PATH: $( $env:INSPECT_CODE_PATH )"
-        }
-
-        & $env:INSPECT_CODE_PATH `
+    & dotnet.exe jb inspectcode `
         "-o=$codeInspectionPath" `
         "--caches-home=$cachesHome" `
-        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
+        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json;AasxFileServerRestLibrary\**;es6numberserializer\**;jsoncanonicalizer\**' `
+        "--build" `
         "$pathToSolution"
-    }
-    else
-    {
-        Write-Host "* Inspecting the code with dodtnet jb inspectcode"
-
-        & dotnet.exe jb inspectcode `
-            "-o=$codeInspectionPath" `
-            "--caches-home=$cachesHome" `
-            '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
-            "$pathToSolution"
-    }
 
     [xml]$inspection = Get-Content $codeInspectionPath
 

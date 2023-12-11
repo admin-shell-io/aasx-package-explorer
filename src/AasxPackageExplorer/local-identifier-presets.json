@@ -1,0 +1,65 @@
+[
+  {
+    "name": "GTIN from GS1",
+    "pair": {
+      "semanticId": null,
+      "name": "GTIN",
+      "value": "123456789-10",
+      "externalSubjectId": null
+    }
+  },
+  {
+    "name": "Catena-X ManufacturerID",
+    "pair": {
+      "semanticId": null,
+      "name": "ManufacturerID",
+      "value": "",
+      "externalSubjectId": null
+    }
+  },
+  {
+    "name": "Catena-X ManufacturerID",
+    "pair": {
+      "semanticId": null,
+      "name": "ManufacturerID",
+      "value": "",
+      "externalSubjectId": null
+    }
+  },
+  {
+    "name": "Catena-X ManufacturerPartID",
+    "pair": {
+      "semanticId": null,
+      "name": "ManufacturerPartID",
+      "value": "",
+      "externalSubjectId": null
+    }
+  },
+  {
+    "name": "Catena-X CustomerPartID",
+    "pair": {
+      "semanticId": null,
+      "name": "CustomerPartID",
+      "value": "",
+      "externalSubjectId": null
+    }
+  },
+  {
+    "name": "Catena-X PartInstanceID",
+    "pair": {
+      "semanticId": null,
+      "name": "PartInstanceID",
+      "value": "",
+      "externalSubjectId": null
+    }
+  },
+  {
+    "name": "Catena-X BPN",
+    "pair": {
+      "semanticId": null,
+      "name": "BPN",
+      "value": "",
+      "externalSubjectId": null
+    }
+  }
+]

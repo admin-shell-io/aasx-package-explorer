@@ -1,0 +1,203 @@
+﻿@page "/AnyUiFlyoutSelectAasEntity"
+@using AdminShellNS
+@using Aas = AasCore.Aas3_0;
+@using AasxIntegrationBase
+@using AnyUi
+@using AasxPackageLogic
+@using BlazorUI.Data
+@using BlazorInputFile
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession Session
+
+@* see: https://blog.stevensanderson.com/2019/09/13/blazor-inputfile/ *@
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataSelectAasEntity ddsae)
+{
+	@* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@((ddsae.Caption?.HasContent() != true) ? "Select AAS element" : ddsae.Caption)</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+
+	@* limited dimensions, becaus tree-items are limited as well  *@
+	<div class="modal-body my-3 row d-flex justify-content-center">
+
+		@* Filter *@
+		<div class="dropdown col-md-6">
+			<button class="btn btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+				@_filterCurrent
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+				@for (int i = 0; i < _filterItems.Count; i++)
+				{
+					var currI = i; // save iteration variable
+					<li><a class="dropdown-item" @onclick="() => SetFilter(currI)">@(_filterItems[i])</a></li>
+				}
+			</ul>
+		</div>
+
+		<div class="col-md-6 mt-2" style="width: 60vw!important; max-width: 1100px; min-height: 60vh!important; overflow: hidden">		
+			@* Tree *@
+
+			@*
+				IsExpanded="@(item => ExpandedItems.Contains(item))"
+				SetExpanded="@((item, state) => SetExpanded(item, state))"
+				IsSelected="@(item => item == SelectedItem)"
+			*@
+
+			<div class="modal-content-light px-3 py-2 rounded-3">
+				<span @ondblclick="() => LeaveResult(true)">
+					<TreeOfAasxVisualElements Items="_displayElements.TreeItems"
+						IsExpanded="@(item => item.IsExpanded)"
+						SetExpanded="@((item, state) => _displayElements.SetExpanded(item, state))"
+						IsSelected="@(item => _displayElements.SelectedItems?.Contains(item) == true)"
+						NodeClicked="(ve, modi) => { _displayElements.NotifyTreeSelectionChanged(ve, modi); this.StateHasChanged(); }" 
+						/>
+				</span>	
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+
+		<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(false)">Cancel</button>
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	protected AnyUiDialogueDataBase _lastDiaData = null;
+
+	protected BlazorVisualElements _displayElements = new BlazorVisualElements();
+
+	protected List<string> _filterItems = new List<string>();
+
+	protected string _filterCurrent = "All";
+
+	//protected VisualElementGeneric SelectedItem = null;
+	//protected ListOfVisualElementBasic ExpandedItems = new ListOfVisualElementBasic();
+
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+
+		// check if new dia data
+		if (_lastDiaData != DialogueData)
+		{
+			_lastDiaData = DialogueData;
+			InitState();
+		}
+	}
+
+	protected override void OnInitialized()
+	{
+		// pass thru
+		base.OnInitialized();
+
+		// init 
+		InitState();
+	}
+
+	protected void InitState()
+	{
+		// display elements need cache
+		_displayElements.ActivateElementStateCache();
+
+		// access
+		if (!(DialogueData is AnyUiDialogueDataSelectAasEntity ddsae))
+			return;
+
+		// fill combo box
+		_filterItems = VisualElementGeneric.GetAllFilterElementInfos().ToList();
+
+		// select an item
+		_filterCurrent = "As proposed";
+		if (ddsae.Filter != null)
+			foreach (var x in _filterItems)
+				if (x.ToString().Trim().ToLower() == ddsae.Filter.Trim().ToLower())
+				{
+					_filterCurrent = x;
+					break;
+				}
+
+		// apply original filter, a change of filter might olter this
+		var filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(ddsae.Filter);
+		_displayElements.RebuildAasxElements(Session.PackageCentral, ddsae.Selector, true, filter,
+			expandModePrimary: 1, expandModeAux: 0,
+			lazyLoadingFirst: false);
+	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (!firstRender || _displayElements?.TreeItems == null)
+			return;
+
+		// initially expand some of the stuff (namely all AAS)
+		foreach (var aas in _displayElements.TreeItems.FindAllVisualElementOf<VisualElementAdminShell>((x) => true))
+			if (aas != null)
+				foreach (var ve in aas.FindAllParents(includeThis: true))
+					//if (!ExpandedItems.Contains(ve))
+					//	ExpandedItems.Add(ve);
+					ve.IsExpanded = true;
+
+		// redisplay
+		StateHasChanged();
+	}
+
+
+	protected void SetFilter(int i)
+	{
+		// initial access
+		if (i < 0 || i >= _filterItems.Count)
+			return;
+
+		// apply combobox itself
+		_filterCurrent = _filterItems[i];
+		StateHasChanged();
+
+		// access (again)
+		if (!(DialogueData is AnyUiDialogueDataSelectAasEntity ddsae))
+			return;
+
+		// apply filter to the tree
+		ddsae.Filter = _filterCurrent;
+		var filter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(ddsae.Filter);
+		_displayElements.RebuildAasxElements(Session.PackageCentral, ddsae.Selector, true, filter,
+			expandModePrimary: 1, expandModeAux: 0,
+			lazyLoadingFirst: false);
+	}
+
+	//protected void SetExpanded(VisualElementGeneric ve, bool state)
+	//{
+	//	if (state && !ExpandedItems.Contains(ve))
+	//		ExpandedItems.Add(ve);
+
+	//	if (!state && ExpandedItems.Contains(ve))
+	//		ExpandedItems.Remove(ve);
+	//}
+
+	public void LeaveResult(bool result)
+	{
+		// check if an item was selected prior
+		if (result && _displayElements?.SelectedItem != null && DialogueData is AnyUiDialogueDataSelectAasEntity ddsae)
+		{
+			var res = ddsae.PrepareResult(_displayElements.SelectedItem, _filterCurrent);
+			EventSession?.EndModal(res);
+		}
+		else
+		{
+			// no
+			EventSession?.EndModal(false);
+		}
+	}
+}

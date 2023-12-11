@@ -4,11 +4,10 @@ on:
   pull_request:
     branches:
       - master
+      - MIHO/*V3*
     types: [opened, synchronize, reopened, edited]
 
   push:
-    branches:
-      - master
 
 jobs:
   Check-release:
@@ -23,10 +22,10 @@ jobs:
           $timestamp = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH-mm-ssZ")
           Write-Output "::set-output name=timestamp::$timestamp"
 
-      - name: Install .NET core
+      - name: Install .NET core 6.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.100'
+          dotnet-version: '6.0.x'
 
       - name: Install build dependencies
         working-directory: src
@@ -54,9 +53,16 @@ jobs:
           name: aasx-package-explorer-small.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
           path: artefacts/release/LATEST.alpha/aasx-package-explorer-small.zip
 
+      - name: Upload latest BlazorExplorer small
+        continue-on-error: true
+        uses: actions/upload-artifact@v2
+        with:
+          name: aasx-package-explorer-blazorexplorer-small.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/aasx-package-explorer-blazorexplorer-small.zip
+
       - name: Upload latest BlazorUI
         continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
-          name: aasx-package-explorer-blazorui.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
-          path: artefacts/release/LATEST.alpha/aasx-package-explorer-blazorui.zip
+          name: aasx-package-explorer-blazorexplorer.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/aasx-package-explorer-blazorexplorer.zip

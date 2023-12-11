@@ -1,0 +1,308 @@
+﻿@startuml
+
+package AasxPackageLogic {
+
+class MainWindowLogic {
+  PackageCentral
+}
+note right
+  Base class for abstract 
+  (non-UI) main window
+  handling.
+end note
+
+class MainWindowTools
+note right
+  Some tools (Andreas,
+  security) used by
+  multiple menu functions
+end note
+
+MainWindowLogic <|-- MainWindowTools
+
+class MainWindowHeadless {
+  + CommandBinding_GeneralDispatch()
+}
+note right
+  Menu items, which can be
+  executed headless 
+  (without UI).
+end note
+
+class MainWindowAnyUiDialogs {
+  + CommandBinding_GeneralDispatchAnyUiDialogs()
+}
+note right
+  Menu items using some 
+  AnyUI dialogs and function
+  from main window.
+end note
+
+class MainWindowScripting {
+  + CommandBinding_GeneralDispatchAnyUiDialogs()
+}
+note right
+  Scripting sits above
+  the abstract menu
+  functions.
+end note
+
+MainWindowTools <|-- MainWindowHeadless
+
+MainWindowHeadless <|-- MainWindowAnyUiDialogs
+
+MainWindowAnyUiDialogs <|-- MainWindowScripting
+
+IMainWindow <--- MainWindowScripting : uses
+
+class IMainWindow {
+  UiLoadPackageWithNew()
+}
+note right
+  An main window needs implement this to allow 
+  business logic to trigger important state 
+  changes visible to the user, e.g. loading.
+end note
+
+}
+
+package AasxPackageExplorer {
+
+class Program
+{
+  + Options
+  + Prefs
+  void SignalNewData()
+  void Main()
+  void CreateHostBuilder()
+}
+note top
+  Singleton.
+  Program start.
+  Dispatching events to session.
+end note
+
+class Startup
+note top
+  Boiler plate code
+end note
+
+class "App.razor" as AppRazor <<Razor*>>
+
+class BlazorSession
+{
+  SessionId : int
+  Logic : MainWindowScripting
+  DisplayElements : BlazorVisualElements
+  MainMenu : AasxMenuBlazor
+  DynamicMenu : AasxMenuBlazor
+  DisplayData : AnyUiDisplayDataHtml
+  ElementPanel : AnyUiStackPanel
+  EditMode : bool
+  HintMode : bool
+  PrepareDisplayDataAndElementPanel()
+}
+note top
+  This is the top instance for 
+  holding session data.
+  Injected into razor pages.
+end note
+
+class "BlazorSession.CommandBindings.cs" as BlazorSessionCommandBindings {
+  CommandBinding_GeneralDispatch()
+}
+note right
+  Menu functions which 
+  involve a lot of HTML.
+end note
+
+BlazorSession *-- BlazorSessionCommandBindings : partial
+
+MainWindowScripting <-- BlazorSessionCommandBindings : uses
+
+class BlazorVisualElements
+{
+  + TreeItems
+  + SelectedItem
+  + SelectedItems
+  RebuildAasxElements()
+  TrySelectVisualElement()
+}
+note top
+  Management of tree items
+end note
+
+class Index <<RazorPage>>
+note top
+  Main content page
+  Aim: View in MVVM
+end note
+
+package AnyUiHtml
+{
+  class AnyUiDisplayDataHtml
+  class AnyUiDisplayContextHtml
+}
+
+class MainLayout <<Layout>>
+note top
+  Organizes pages layout
+  Hosts pages as content
+  Provides Functions via 
+  CascadingParameter
+end note
+
+class MainMenu <<RazorComponent>>
+note top
+  Hosts menu items to
+  dynamically created
+  main menue
+end note
+
+MainLayout *-- MainMenu
+
+class StatusBar <<RazorComponent>>
+note top
+  Shows status line in
+  colors.
+  Separate component to
+  minimize overhead when
+  render state.
+end note
+
+MainLayout *-- StatusBar
+
+
+class Tree <<RazorComponent>>
+note top
+  Generic component to 
+  manage hierachical tree
+end note
+
+class TreeOfAasxVisualElements <<RazorComponent>>
+note top
+  Specialized component
+  for AasxVisualElements
+end note
+
+class MultiLineText <<RazorComponent>>
+
+class Modal <<RazorComponent>>
+note top
+  Generic display of 
+  modal contents
+end note
+
+class DynamicMenuItem <<RazorComponent>>
+note top
+  Rendering of AasxMenu items
+end note
+
+class "AnyUiRender*" as AnyUiRenderStar <<RazorComponent>>
+note top
+  Recursive rendering of AnyUi widgets
+end note
+
+class "AnyUiDialogueData*" as AnyUiDialogueDataStar
+note top
+  Derived classes holding 
+  abstracted dialogue infos
+end note
+
+class "AnyUiFlyout*" as AnyUiFlyoutStar <<RazorComponent>>
+note top
+  Handcrafted modal dialogues 
+  to input user data
+end note
+
+class StylePile
+note top
+  Composing of style="..." strings
+  out of individual C# attributes
+end note
+
+class AasxMenuBlazor
+{
+  Menu: AasxMenu
+}
+
+Package wwwroot
+{
+  class "main-layout.js" as MainLayoutJs <<JavaScript>>
+  
+  class "blazor-modal.js" as BlazorModalJs <<JavaScript>>
+  
+  class "keyboard.js" as KeyboardJs <<JavaScript>>
+
+  class "treeStyle.css" as TreeStyleCss
+
+  class "site.css" as SiteCss
+  note bottom
+    General place for CSS 
+    definitions
+    overwriting some bootstrap
+    definitions  
+  end note
+
+}
+note bottom of wwwroot
+  Files here will be automatically served via HTTP
+end note
+
+Program *-- "1..n" BlazorSession
+
+MainWindowScripting <--- BlazorSession
+IMainWindow <|--- BlazorSession
+
+BlazorSession *-- BlazorVisualElements : DisplayElements
+BlazorSession *-- AasxMenuBlazor : MainMenu
+
+Program --> Index : starts
+
+Program --> Startup : uses
+Startup --> AppRazor : defines routes
+
+AppRazor --> Index : routes
+
+Index --> BlazorSession : views
+Index --> MainLayout : uses
+Index --> TreeOfAasxVisualElements : uses
+Index --> AnyUiFlyoutStar : uses
+
+TreeOfAasxVisualElements --> AnyUiDialogueDataStar : works on
+
+TreeOfAasxVisualElements --|> Tree : wraps
+
+Index --> MultiLineText : uses
+Index --> AnyUiRenderStar : uses
+
+AnyUiRenderStar --> BlazorSession : renders ElementPanel
+
+
+TreeOfAasxVisualElements --> BlazorVisualElements : renders
+
+class ToBeDone
+ToBeDone *-- AnyUiDisplayContextHtml : displayContext
+ToBeDone *-- AnyUiDisplayDataHtml: displayData
+
+Index --> ToBeDone : includes
+
+AnyUiRenderStar --> StylePile : uses
+Index --> StylePile : uses
+DynamicMenuItem--> StylePile : uses
+DynamicMenuItem--> SiteCss : uses
+DynamicMenuItem --> AasxMenuBlazor : renders
+
+MainLayout --> MainLayoutJs : uses
+MainMenu --> DynamicMenuItem : uses
+
+Index --> Modal
+Index --> BlazorModalJs
+
+MainLayout --> KeyboardJs
+
+StylePile <--> SiteCss : co-exists
+
+}
+
+@enduml

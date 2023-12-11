@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,13 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase.AdminShellEvents;
+using AdminShellNS;
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using AasxIntegrationBase.AdminShellEvents;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
+using AasxIntegrationBase;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -26,6 +28,8 @@ namespace AasxPackageLogic.PackageCentral
         public PackageCentralException(string message, Exception innerException = null)
             : base(message, innerException) { }
     }
+
+    public delegate Aas.IReferable QuickLookupIdentifiable(string idKey);
 
     /// <summary>
     /// This class is an item maintained by the PackageCentral.
@@ -162,11 +166,13 @@ namespace AasxPackageLogic.PackageCentral
 
         public async Task<bool> SaveAsAsync(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackCntRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null,
+            bool doNotRememberLocation = false)
         {
             try
             {
-                await Container.SaveToSourceAsync(saveAsNewFileName, prefFmt, runtimeOptions);
+                await Container.SaveToSourceAsync(saveAsNewFileName, prefFmt, runtimeOptions,
+                    doNotRememberLocation: doNotRememberLocation);
                 return true;
             }
             catch (Exception ex)
@@ -319,6 +325,78 @@ namespace AasxPackageLogic.PackageCentral
             foreach (var pe in GetAllPackageEnv())
                 if (lambda == null || lambda.Invoke(pe))
                     yield return pe;
+        }
+
+        //
+        // Access to identifiables
+        //
+
+        public void ReIndexIdentifiables()
+        {
+            foreach (var cnt in GetAllContainer())
+                cnt.ReIndexIdentifiables();
+		}
+
+		/// <summary>
+		/// This provides a "quick" lookup of Identifiables, e.g. based on hashes/ dictionaries.
+		/// May be not 100% reliable, but quick.
+		/// </summary>
+		public IEnumerable<Tuple<PackageContainerBase, Aas.IReferable>> QuickLookupAllIdent(
+            string idKey,
+            bool deepLookup = false)
+        {
+            if (idKey?.HasContent() != true)
+                yield break;
+
+            foreach (var cnt in GetAllContainer())
+            {
+                var res = new Dictionary<Aas.IReferable, Aas.IReferable>();
+
+                if (cnt.IdentifiableLookup != null)
+                    foreach (var idf in cnt.IdentifiableLookup.LookupAllIdent(idKey))
+                        if (!res.ContainsKey(idf))
+                            res.Add(idf, idf);
+                
+                if (deepLookup && cnt.Env?.AasEnv != null)
+                    foreach (var rfi in cnt.Env?.AasEnv.FindAllReferable(onlyIdentifiables: true))
+                        if (rfi is Aas.IIdentifiable idf && idf.Id?.Trim() == idKey.Trim())
+                            res.Add(idf, idf);
+                            
+                foreach (var idf in res.Keys)
+                    yield return new Tuple<PackageContainerBase, IReferable>(cnt, idf);
+            }
+        }
+
+		/// <summary>
+		/// This provides a "quick" lookup of Identifiables, e.g. based on hashes/ dictionaries.
+		/// May be not 100% reliable, but quick.
+		/// </summary>
+		public Aas.IReferable QuickLookupFirstIdent(string idKey)
+        {
+            return QuickLookupAllIdent(idKey).FirstOrDefault()?.Item2;
+		}
+
+		/// <summary>
+		/// This provides a "quick" lookup of Identifiables, e.g. based on hashes/ dictionaries.
+		/// May be not 100% reliable, but quick.
+		/// </summary>
+		public T QuickLookupFirstIdent<T>(string idKey) where T : class, Aas.IReferable
+		{
+			return QuickLookupAllIdent(idKey).FirstOrDefault()?.Item2 as T;
+		}
+
+        /// <summary>
+        /// Will go to all accessible containers to find identifiables of s certain typ3
+        /// </summary>
+		public IEnumerable<T> FindAllReferables<T>() where T : class, Aas.IReferable
+        {
+            foreach (var cnt in GetAllContainer())
+            {
+                if (cnt.Env?.AasEnv != null)
+                    foreach (var rfi in cnt.Env?.AasEnv.FindAllReferable(onlyIdentifiables: true))
+                        if (rfi is T found)
+                            yield return found;
+            }
         }
 
         //

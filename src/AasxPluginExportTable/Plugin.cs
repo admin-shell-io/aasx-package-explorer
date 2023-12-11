@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -15,96 +15,95 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using AasxPluginExportTable;
+using AasxPluginExportTable.TimeSeries;
 using AasxPluginExportTable.Uml;
-using AdminShellNS;
 using AnyUi;
 using JetBrains.Annotations;
+using Aas = AasCore.Aas3_0;
+using AdminShellNS;
+using Extensions;
+using static AnyUi.AnyUiDialogueDataSaveFile;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using AasxPluginExportTable.Table;
+using AasxPluginExportTable;
+using AasxPluginExportTable.Smt;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        public LogInstance Log = new LogInstance();
-        private PluginEventStack _eventStack = new PluginEventStack();
-        private AasxPluginExportTable.ExportTableOptions options = new AasxPluginExportTable.ExportTableOptions();
+        private ExportTableOptions _options = new AasxPluginExportTable.ExportTableOptions();
 
-        public string GetPluginName()
-        {
-            return "AasxPluginExportTable";
-        }
-
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            PluginName = "AasxPluginExportTable";
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginExportTable.ExportTableOptions.CreateDefault();
+            _options = ExportTableOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
             {
                 var newOpt =
-                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginExportTable.ExportTableOptions>(
+                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<ExportTableOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
-        }
+            var res = ListActionsBasicHelper(
+                enableOptions: true,
+                enableEventsGet: true,
+                enablePresetsGet: true,
+                enableMenuItems: true,
+                enableCheckVisualExt: false);
 
-        public AasxPluginActionDescriptionBase[] ListActions()
-        {
-            Log.Info("ListActions() called");
-            var res = new List<AasxPluginActionDescriptionBase>();
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "set-json-options", "Sets plugin-options according to provided JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-events", "Pops and returns the earliest event from the event stack."));
+#if __not_needed_anymore
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("export-uml", "Exports a Submodel to an UML file."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "export-uml-dialogs", "Exports a Submodel to an UML file using AnyUI modal dialogs.",
+                useAsync: true));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "import-time-series", "Import time series data from a table file."));
+#endif
+
+            res.Add(new AasxPluginActionDescriptionBase(
+                "interop-export", "Provides service to export a interop table into specific formats."));
+
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginExportTable.ExportTableOptions>(
-                    (args[0] as string));
-                if (newOpt != null)
-                    this.options = newOpt;
-            }
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                disableDefaultLicense: true,
+                enableGetCheckVisuExt: true);
+            if (help != null)
+                return help;
 
-            if (action == "get-json-options")
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this.options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
+            // rest follows
 
             if (action == "get-licenses")
             {
                 var lic = new AasxPluginResultLicense();
-                lic.shortLicense = "The OpenXML SDK is under MIT license." + Environment.NewLine +
-                    "The ClosedXML library is under MIT license." + Environment.NewLine +
-                    "The ExcelNumberFormat number parser is licensed under the MIT license." + Environment.NewLine +
+                lic.shortLicense = "The OpenXML SDK is under MIT license." + System.Environment.NewLine +
+                    "The ClosedXML library is under MIT license." + System.Environment.NewLine +
+                    "The ExcelNumberFormat number parser is licensed under the MIT license."
+                    + System.Environment.NewLine +
                     "The FastMember reflection access is licensed under Apache License 2.0 (Apache - 2.0).";
 
                 lic.isStandardLicense = true;
@@ -114,401 +113,206 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && _eventStack != null)
+            if (action == "get-presets")
             {
-                // try access
-                return _eventStack.PopEvent();
+                var presets = new object[]
+                {
+                    _options.Presets,
+                    _options.UmlExport,
+                    _options.TimeSeriesImport
+                };
+                return new AasxPluginResultBaseObject("presets", presets);
             }
 
-            if ((action == "export-submodel" || action == "import-submodel")
-                && args != null && args.Length >= 3 &&
-                args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv &&
-                args[2] is AdminShell.Submodel)
+            if (action == "get-menu-items")
             {
-                // flyout provider
-                var fop = args[0] as IFlyoutProvider;
+                // result list 
+                var res = new List<AasxPluginResultSingleMenuItem>();
 
-                // which Submodel
-                var env = args[1] as AdminShell.AdministrationShellEnv;
-                var sm = args[2] as AdminShell.Submodel;
-                if (env == null || sm == null)
-                    return null;
-
-                // the Submodel elements need to have parents
-                sm.SetAllParents();
-
-                // handle the export dialogue
-                var uc = new ExportTableFlyout((action == "export-submodel")
-                    ? "Export SubmodelElements as Table"
-                    : "Import SubmodelElements from Table");
-                uc.Presets = this.options.Presets;
-                fop?.StartFlyoverModal(uc);
-                fop?.CloseFlyover();
-                if (uc.Result == null)
+                // import table
+                res.Add(new AasxPluginResultSingleMenuItem()
                 {
-                    if (uc.CloseForHelp)
+                    AttachPoint = "Import",
+                    MenuItem = new AasxMenuItem()
                     {
-                        // give over to event stack
-                        var evt = new AasxPluginResultEventDisplayContentFile();
-                        evt.fn = "https://github.com/admin-shell-io/aasx-package-explorer/tree/" +
-                            "MIHO/AddPluginForKnownSubmodels/src/AasxPluginExportTable/help";
-                        evt.mimeType = System.Net.Mime.MediaTypeNames.Text.Html;
-                        _eventStack?.PushEvent(evt);
+                        Name = "ImportTable",
+                        Header = "Import SubmodelElements from Table …",
+                        HelpText = "Import sets of SubmodelElements from table datat in multiple common formats.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                                .Add("File", "Filename and path of file to imported.")
+                                .Add("Preset", "Name of preset to load.")
+                                .Add("Format", "Format to be either " +
+                                        "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
+                                .Add("Record", "Record data", hidden: true)
                     }
+                });
 
-                    return null;
-                }
+                // export table
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Export",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ExportTable",
+                        Header = "Export SubmodelElements as Table …",
+                        HelpText = "Export table(s) for sets of SubmodelElements in multiple common formats.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                            .Add("File", "Filename and path of file to exported.")
+                            .Add("Location", "Location of the file (local, user, download).")
+                            .Add("Preset", "Name of preset to load.")
+                            .Add("Format", "Format to be either " +
+                                    "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
+                            .Add("Record", "Record data", hidden: true)
+                    }
+                });
 
-                if (action == "export-submodel")
-                    Export(uc.Result, fop, sm, env);
+                // export uml
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Export",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ExportUml",
+                        Header = "Export Submodel as UML …",
+                        HelpText = "Export UML of Submodel in multiple common formats.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                            .Add("File", "Filename and path of file to exported.")
+                            .Add("Location", "Location of the file (local, user, download).")
+                            .Add("Format", "Format to be either 'XMI v1.1', 'XML v2.1', 'PlantUML'.")
+                            .Add("Record", "Record data", hidden: true)
+                            .AddFromReflection(new ExportUmlRecord())
+                    }
+                });
 
-                if (action == "import-submodel")
-                    Import(uc.Result, fop, sm, env);
+                // export SMT AsciiDoc
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Export",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ExportSmtAsciiDoc",
+                        Header = "Export Submodel as AsciiDoc SMT spec …",
+                        HelpText = "Export Submodel and referenced arctifacts to an integrated " +
+                            "AsciiDoc document.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                            .Add("File", "Filename and path of file to exported.")
+                            .Add("Location", "Location of the file (local, user, download).")
+                            .Add("Format", "Format to be either 'adoc' or 'zip'.")
+                            .Add("Record", "Record data", hidden: true)
+                            .AddFromReflection(new ExportSmtRecord())
+                    }
+                });
+
+                // import time series
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Import",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ImportTimeSeries",
+                        Header = "Read time series values into SubModel …",
+                        HelpText = "Import sets of time series values from an table in common format.",
+                        ArgDefs = new AasxMenuListOfArgDefs()
+                                .Add("File", "Filename and path of file to imported.")
+                                .Add("Format", "Format to be 'Excel'.")
+                                .Add("Record", "Record data", hidden: true)
+                                .AddFromReflection(new ImportTimeSeriesRecord())
+                    }
+                });
+
+                // return
+                return new AasxPluginResultProvideMenuItems()
+                {
+                    MenuItems = res
+                };
             }
 
-            if (action == "export-uml"
-                && args != null && args.Length >= 3
-                && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv
-                && args[2] is AdminShell.Submodel)
+            if (action == "interop-export")
             {
-                var fn = (args.Length >= 4) ? args[3] as string : null;
-
-                // flyout provider (will be required in the future)
-                var fop = args[0] as IFlyoutProvider;
-
-                // which Submodel
-                var env = args[1] as AdminShell.AdministrationShellEnv;
-                var sm = args[2] as AdminShell.Submodel;
-                if (env == null || sm == null)
-                    return null;
-
-                // the Submodel elements need to have parents
-                sm.SetAllParents();
-
-                // prep options
-                var exop = options.UmlExport;
-                if (exop == null)
-                    exop = new ExportUmlOptions();
-
-                // dialogue for user options
-                var uc = new ExportUmlFlyout();
-                uc.Result = exop;
-                fop?.StartFlyoverModal(uc);
-                fop?.CloseFlyover();
-                if (uc.Result == null)
-                    return null;
-
-                // ask for filename
-                var dlg = new Microsoft.Win32.SaveFileDialog();
-                try
+                if (args != null && args.Length >= 3
+                    && args[0] is string fmt
+                    && args[1] is string fn
+                    && args[2] is AasxPluginExportTableInterop.InteropTable table)
                 {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                        System.AppDomain.CurrentDomain.BaseDirectory);
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
-                dlg.Title = "Select file for UML export ..";
-
-                if (uc.Result.Format == ExportUmlOptions.ExportFormat.PlantUml)
-                {
-                    dlg.FileName = "new.uml";
-                    dlg.DefaultExt = "*.uml";
-                    dlg.Filter =
-                        "PlantUML text file (*.uml)|*.uml|All files (*.*)|*.*";
-                }
-                else
-                {
-                    dlg.FileName = "new.xml";
-                    dlg.DefaultExt = "*.xml";
-                    dlg.Filter =
-                        "XMI file (*.xml)|*.xml|All files (*.*)|*.*";
-                }
-
-                fop?.StartFlyover(new EmptyFlyout());
-                var fnres = dlg.ShowDialog(fop?.GetWin32Window());
-                fop?.CloseFlyover();
-                if (fnres != true)
-                    return null;
-                fn = dlg.FileName;
-
-                // use functionality
-                ExportUml.ExportUmlToFile(env, sm, uc.Result, fn);
-                Log.Info($"Export UML data to file: {fn}");
-
-                // copy?
-                if (uc.Result.CopyToPasteBuffer)
-                    try
+                    if (fmt == "excel")
                     {
-                        var lines = File.ReadAllText(fn);
-                        Clipboard.SetData(DataFormats.Text, lines);
-                        Log.Info("Export UML data copied to paste buffer.");
+                        var res = InteropUtils.ExportExcel(fn, table);
+                        return new AasxPluginResultBaseObject(res.ToString(), res);
                     }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
-
+                }
             }
 
             // default
             return null;
         }
 
-        private void ExportTable_EnumerateSubmodel(
-            List<ExportTableAasEntitiesList> list, AdminShell.AdministrationShellEnv env,
-            bool broadSearch, bool actInHierarchy, int depth,
-            AdminShell.Submodel sm, AdminShell.SubmodelElement sme)
+        /// <summary>
+        /// Async variant of <c>ActivateAction</c>.
+        /// Note: for some reason of type conversion, it has to return <c>Task<object></c>.
+        /// </summary>
+        public new async Task<object> ActivateActionAsync(string action, params object[] args)
         {
-            // check
-            if (list == null || env == null || sm == null)
-                return;
-
-            //
-            // Submodel or SME ??
-            //
-
-            AdminShell.IEnumerateChildren coll = null;
-            if (sme == null)
+            if (action == "call-menu-item")
             {
-                // yield SM
-                // MIHO 21-11-24: IMHO this makes no sense
-                //// list.Add(new ExportTableAasEntitiesItem(depth, sm: sm, parentSm: sm));
-
-                // use collection
-                coll = sm;
-            }
-            else
-            {
-                // simple check for SME collection
-                if (sme is AdminShell.IEnumerateChildren)
-                    coll = (sme as AdminShell.IEnumerateChildren);
-            }
-
-            // prepare listItem
-            ExportTableAasEntitiesList listItem = null;
-            if (!actInHierarchy)
-            {
-                // add everything in one list
-                if (list.Count < 1)
-                    list.Add(new ExportTableAasEntitiesList());
-                listItem = list[0];
-            }
-            else
-            {
-                // create a new list for each recursion
-                listItem = new ExportTableAasEntitiesList();
-                list.Add(listItem);
-            }
-
-            // pass 1: process value
-            if (coll != null)
-                foreach (var ci in coll.EnumerateChildren())
+                if (args != null && args.Length >= 3
+                    && args[0] is string cmd
+                    && args[1] is AasxMenuActionTicket ticket
+                    && args[2] is AnyUiContextPlusDialogs displayContext)
                 {
-                    // gather data for this entity
-                    var sme2 = ci.submodelElement;
-                    var cd = env.FindConceptDescription(sme2?.semanticId?.Keys);
-
-                    // add
-                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd,
-                        parent: coll as AdminShell.Referable));
-
-                    // go directly deeper?
-                    if (!broadSearch && ci.submodelElement != null &&
-                        ci.submodelElement is AdminShell.IEnumerateChildren)
-                        ExportTable_EnumerateSubmodel(
-                            list, env, broadSearch: false, actInHierarchy,
-                            depth: 1 + depth, sm: sm, sme: ci.submodelElement);
-                }
-
-            // pass 2: go for recursion AFTER?
-            if (broadSearch)
-            {
-                if (coll != null)
-                    foreach (var ci in coll.EnumerateChildren())
-                        if (ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
-                            ExportTable_EnumerateSubmodel(
-                                list, env, broadSearch: true, actInHierarchy,
-                                depth: 1 + depth, sm: sm, sme: ci.submodelElement);
-            }
-        }
-
-        private void Export(ExportTableRecord job,
-            IFlyoutProvider fop,
-            AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env)
-        {
-            // prepare list of items to be exported
-            var list = new List<ExportTableAasEntitiesList>();
-            ExportTable_EnumerateSubmodel(list, env, broadSearch: false,
-                actInHierarchy: job.ActInHierarchy, depth: 1, sm: sm, sme: null);
-
-            // get the output file
-            var dlg = new Microsoft.Win32.SaveFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                    System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch (Exception ex)
-            {
-                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            }
-            dlg.Title = "Select text file to be exported";
-
-            if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-            {
-                dlg.FileName = "new.txt";
-                dlg.DefaultExt = "*.txt";
-                dlg.Filter =
-                    "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-            {
-                dlg.FileName = "new.tex";
-                dlg.DefaultExt = "*.tex";
-                dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-            {
-                dlg.FileName = "new.xlsx";
-                dlg.DefaultExt = "*.xlsx";
-                dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-            {
-                dlg.FileName = "new.docx";
-                dlg.DefaultExt = "*.docx";
-                dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
-            }
-
-            fop?.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(fop?.GetWin32Window());
-            fop?.CloseFlyover();
-
-            try
-            {
-                if (res == true)
-                {
-                    Log.Info("Exporting table: {0}", dlg.FileName);
-                    var success = false;
                     try
                     {
-                        if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-                            success = job.ExportTabSeparated(dlg.FileName, list);
-                        if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-                            success = job.ExportLaTex(dlg.FileName, list);
-                        if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-                            success = job.ExportExcel(dlg.FileName, list);
-                        if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                            success = job.ExportWord(dlg.FileName, list);
+                        if (cmd == "exporttable")
+                        {
+                            await AnyUiDialogueTable.ImportExportTableDialogBased(
+                                _options, _log, ticket, displayContext, _options, doImport: false);
+                            return new AasxPluginResultBase();
+                        }
+
+                        if (cmd == "importtable")
+                        {
+                            await AnyUiDialogueTable.ImportExportTableDialogBased(
+                                _options, _log, ticket, displayContext, _options, doImport: true);
+                            return new AasxPluginResultBase();
+                        }
+
+                        if (cmd == "exportuml")
+                        {
+                            await AnyUiDialogueUmlExport.ExportUmlDialogBased(
+                                _log, ticket, displayContext);
+                            return new AasxPluginResultBase();
+                        }
+
+                        if (cmd == "exportuml")
+                        {
+                            await AnyUiDialogueUmlExport.ExportUmlDialogBased(
+                                _log, ticket, displayContext);
+                            return new AasxPluginResultBase();
+                        }
+
+                        if (cmd == "exportsmtasciidoc")
+                        {
+                            await AnyUiDialogueSmtExport.ExportSmtDialogBased(
+                                _log, ticket, displayContext, _options);
+                            return new AasxPluginResultBase();
+                        }
+
+                        if (cmd == "importtimeseries")
+                        {
+                            await AnyUiDialogueTimeSeries.ImportTimeSeriesDialogBased(
+                                _log, ticket, displayContext);
+                            return new AasxPluginResultBase();
+                        }
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "performing data format export");
-                        success = false;
+                        _log?.Error(ex, "when executing plugin menu item " + cmd);
                     }
-
-                    if (!success)
-                        fop?.MessageBoxFlyoutShow(
-                            "Some error occured while exporting the table. Please refer to the log messages.",
-                            "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
                 }
             }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "When exporting table, an error occurred");
-            }
 
+            // default
+            return null;
         }
 
-        private void Import(ExportTableRecord job,
-            IFlyoutProvider fop,
-            AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env)
-        {
-            // get the import file
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                    System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch (Exception ex)
-            {
-                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            }
-            dlg.Title = "Select text file to be exported";
-
-            if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-            {
-                dlg.DefaultExt = "*.txt";
-                dlg.Filter =
-                    "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-            {
-                dlg.DefaultExt = "*.tex";
-                dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-            {
-                dlg.DefaultExt = "*.xlsx";
-                dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-            {
-                dlg.DefaultExt = "*.docx";
-                dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
-            }
-
-            fop?.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(fop?.GetWin32Window());
-            fop?.CloseFlyover();
-
-            if (true != res)
-                return;
-
-            // try import
-            try
-            {
-                Log.Info("Importing table: {0}", dlg.FileName);
-                var success = false;
-                try
-                {
-                    if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                    {
-                        success = true;
-                        var pop = new ImportPopulateByTable(Log, job, sm, env, options);
-                        using (var stream = File.Open(dlg.FileName, FileMode.Open,
-                                    FileAccess.Read, FileShare.ReadWrite))
-                            foreach (var tp in ImportTableWordProvider.CreateProviders(stream))
-                                pop.PopulateBy(tp);
-                    }
-
-                    if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-                    {
-                        success = true;
-                        var pop = new ImportPopulateByTable(Log, job, sm, env, options);
-                        foreach (var tp in ImportTableExcelProvider.CreateProviders(dlg.FileName))
-                            pop.PopulateBy(tp);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log?.Error(ex, "importing table");
-                    success = false;
-                }
-
-                if (!success)
-                    fop?.MessageBoxFlyoutShow(
-                        "Some error occured while importing the table. Please refer to the log messages.",
-                        "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "When exporting table, an error occurred");
-            }
-
-        }
     }
 }

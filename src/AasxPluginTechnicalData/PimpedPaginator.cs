@@ -1,11 +1,13 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
 */
+
+#if USE_WPF
 
 using System;
 using System.Collections.Generic;
@@ -248,7 +250,7 @@ namespace AasxPluginTechnicalData.Tetra.Framework.WPF
         }
 
 
-        #region DocumentPaginator members
+#region DocumentPaginator members
 
         public override bool IsPageCountValid
         {
@@ -277,13 +279,13 @@ namespace AasxPluginTechnicalData.Tetra.Framework.WPF
             get { return paginator.Source; }
         }
 
-        #endregion
+#endregion
 
 
         public class Definition
         {
 
-            #region Page sizes
+#region Page sizes
 
             /// <summary>
             /// PageSize in DIUs
@@ -326,7 +328,7 @@ namespace AasxPluginTechnicalData.Tetra.Framework.WPF
             }
             private double _FooterHeight;
 
-            #endregion
+#endregion
 
 
             public DrawHeaderFooter Header, Footer;
@@ -342,7 +344,7 @@ namespace AasxPluginTechnicalData.Tetra.Framework.WPF
             private bool _RepeatTableHeaders = true;
 
 
-            #region Some convenient helper properties
+#region Some convenient helper properties
 
             internal Size ContentSize
             {
@@ -389,7 +391,7 @@ namespace AasxPluginTechnicalData.Tetra.Framework.WPF
                 }
             }
 
-            #endregion
+#endregion
 
         }
 
@@ -403,3 +405,5 @@ namespace AasxPluginTechnicalData.Tetra.Framework.WPF
 
     }
 }
+
+#endif

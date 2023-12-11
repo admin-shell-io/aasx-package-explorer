@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -142,6 +142,10 @@ namespace AasxPackageExplorer
         //
 
         public void ControlStart()
+        {
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
         {
         }
 
@@ -342,6 +346,7 @@ namespace AasxPackageExplorer
                     ApplyPreset(_presets[i]);
             }
         }
+
 
         private void TextBoxMessages_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {

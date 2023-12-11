@@ -13,7 +13,7 @@
       <WriterVersion>5.2.7.0</WriterVersion>
       <WriterRelease>5.2.7.0</WriterRelease>
       <LastWritingDateTime>2019-11-12T09:42:53.6809451</LastWritingDateTime>
-      <WriterProjectTitle>Application Recommendation Asset Administration Shell</WriterProjectTitle>
+      <WriterProjectTitle>Application Recommendation AssetInformation Administration Shell</WriterProjectTitle>
       <WriterProjectID>AR AAS</WriterProjectID>
     </WriterHeader>
   </AdditionalInformation>
@@ -66,13 +66,13 @@
       </Attribute>
     </InterfaceClass>
   </InterfaceClassLib>
-  <InterfaceClassLib Name="AssetAdministrationShellInterfaceClassLib"><Description>Interface Class Library according to Details of the Asset Administration Shell V2.0.</Description>
+  <InterfaceClassLib Name="AssetAdministrationShellInterfaceClassLib"><Description>Interface Class Library according to Details of the AssetInformation Administration Shell V2.0.</Description>
     <Version>1.0.0</Version>
     <InterfaceClass Name="FileDataReference" RefBaseClassPath="AutomationMLBPRInterfaceClassLib/ExternalDataReference">
       <Description>A FileDataReference represents the address to a File. FileDataReference is derived from the AutomationML Interface Class ExternalDataReference that is defined in AutomationML BPR_005E_ExternalDataReference_v1.0.0_2:The interface class “ExternalDataReference” shall be used in order to reference external documents out of the scope of AutomationML.</Description>
     </InterfaceClass>
     <InterfaceClass Name="ReferableReference" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface">
-      <Description>Reference to any other referable element of the same of any other AAS or a reference to an external object or entity. For local references inside the same Asset Administration Shell an InternalLink between two objects with this interface "ReferableReference" shall be set. In this case the attribute value has to be empty. For references between different Asset Administration Shells or external objects or entities the attribute value shall be used and no InternalLink shall be set.</Description>
+      <Description>Reference to any other referable element of the same of any other AAS or a reference to an external object or entity. For local references inside the same AssetInformation Administration Shell an InternalLink between two objects with this interface "ReferableReference" shall be set. In this case the attribute value has to be empty. For references between different AssetInformation Administration Shells or external objects or entities the attribute value shall be used and no InternalLink shall be set.</Description>
       <Attribute Name="value" AttributeDataType="xs:string">
         <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable element of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
         <RefSemantic CorrespondingAttributePath="AAS:ReferenceElement/value" />
@@ -115,10 +115,10 @@
     <Version>1.0.0</Version>
     <RoleClass Name="ExternalData" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole" />
   </RoleClassLib>
-  <RoleClassLib Name="AssetAdministrationShellRoleClassLib"><Description>Role Class Library according to Details of the Asset Administration Shell V2.0.</Description>
+  <RoleClassLib Name="AssetAdministrationShellRoleClassLib"><Description>Role Class Library according to Details of the AssetInformation Administration Shell V2.0.</Description>
     <Version>1.0.0</Version>
     <RoleClass Name="AssetAdministrationShell" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
-      <Description>An Asset Administration Shell.</Description>
+      <Description>An AssetInformation Administration Shell.</Description>
       <Attribute Name="idShort" AttributeDataType="xs:string">
         <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
         <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
@@ -173,13 +173,13 @@
         <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
       </Attribute>
       <Attribute Name="derivedFrom" AttributeDataType="xs:string">
-        <Description>The derivedFrom attribute is used to establish a relationship between two Asset Administration Shells that are derived from each other. </Description>
+        <Description>The derivedFrom attribute is used to establish a relationship between two AssetInformation Administration Shells that are derived from each other. </Description>
         <Value></Value>
         <RefSemantic CorrespondingAttributePath="AAS:AssetAdministrationShell/derivedFrom" />
       </Attribute>
     </RoleClass>
-    <RoleClass Name="Asset" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
-      <Description>An Asset describes meta data of an asset that is represented by an AAS. The asset may either represent an asset type or an asset instance. The asset has a globally unique identifier plus – if needed – additional domain specific (proprietary) identifiers.</Description>
+    <RoleClass Name="AssetInformation" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>An AssetInformation describes meta data of an asset that is represented by an AAS. The asset may either represent an asset type or an asset instance. The asset has a globally unique identifier plus – if needed – additional domain specific (proprietary) identifiers.</Description>
       <Attribute Name="idShort" AttributeDataType="xs:string">
         <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
         <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
@@ -232,7 +232,7 @@
         <Description>Kind of the element: either type or instance.</Description>
         <DefaultValue>Instance</DefaultValue>
         <Value>Instance</Value>
-        <RefSemantic CorrespondingAttributePath="AAS:Asset/kind" />
+        <RefSemantic CorrespondingAttributePath="AAS:AssetInformation/kind" />
         <Constraint Name="">
           <NominalScaledType>
             <RequiredValue>Instance</RequiredValue>

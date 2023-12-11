@@ -8,12 +8,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using AasxPackageLogic;
+using AdminShellNS;
+using Extensions;
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using AasxPackageLogic;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxDictionaryImport
 {
@@ -68,8 +70,8 @@ namespace AasxDictionaryImport
         /// <param name="adminShell">The admin shell to import into, or null if a new admin shell should be
         /// created</param>
         /// <returns>true if at least one submodel was imported</returns>
-        public static bool ImportSubmodel(Window window, AdminShellV20.AdministrationShellEnv env,
-            string defaultSourceDir, AdminShellV20.AdministrationShell? adminShell = null)
+        public static bool ImportSubmodel(Window window, Aas.Environment env,
+            string defaultSourceDir, Aas.IAssetAdministrationShell? adminShell = null)
         {
             adminShell ??= CreateAdminShell(env);
             return PerformImport(window, ImportMode.Submodels, defaultSourceDir,
@@ -87,8 +89,8 @@ namespace AasxDictionaryImport
         /// directory</param>
         /// <param name="parent">The parent element to import into</param>
         /// <returns>true if at least one submodel element was imported</returns>
-        public static bool ImportSubmodelElements(Window window, AdminShell.AdministrationShellEnv env,
-            string defaultSourceDir, AdminShell.IManageSubmodelElements parent)
+        public static bool ImportSubmodelElements(Window window, Aas.Environment env,
+            string defaultSourceDir, Aas.IReferable parent)
         {
             return PerformImport(window, ImportMode.SubmodelElements, defaultSourceDir,
                 e => e.ImportSubmodelElementsInto(env, parent));
@@ -117,15 +119,13 @@ namespace AasxDictionaryImport
             return imported > 0;
         }
 
-        private static AdminShellV20.AdministrationShell CreateAdminShell(AdminShellV20.AdministrationShellEnv env)
+        private static Aas.AssetAdministrationShell CreateAdminShell(Aas.Environment env)
         {
-            var adminShell = new AdminShellV20.AdministrationShell()
+            var adminShell = new Aas.AssetAdministrationShell("", new Aas.AssetInformation(Aas.AssetKind.Instance))
             {
-                identification = new AdminShellV20.Identification(
-                        AdminShellV20.Identification.IRI,
-                        AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas))
+                Id = AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas)
             };
-            env.AdministrationShells.Add(adminShell);
+            env.Add(adminShell);
             return adminShell;
         }
 

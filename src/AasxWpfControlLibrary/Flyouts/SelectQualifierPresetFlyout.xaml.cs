@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,16 +7,16 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPackageLogic;
+using AnyUi;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using AasxIntegrationBase;
-using AasxPackageLogic;
-using AdminShellNS;
-using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageExplorer
 {
@@ -29,7 +29,7 @@ namespace AasxPackageExplorer
     public class QualifierPreset
     {
         public string name = "";
-        public AdminShell.Qualifier qualifier = new AdminShell.Qualifier();
+        public Aas.Qualifier qualifier = new Aas.Qualifier("", Aas.DataTypeDefXsd.String);
     }
 
     // ReSharper enable ClassNeverInstantiated.Global
@@ -49,7 +49,7 @@ namespace AasxPackageExplorer
 
             try
             {
-                var init = File.ReadAllText(presetFn);
+                var init = System.IO.File.ReadAllText(presetFn);
                 thePresets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
             }
             catch (Exception ex)
@@ -75,6 +75,10 @@ namespace AasxPackageExplorer
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
+        {
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
         {
         }
 

@@ -1,4 +1,5 @@
 ﻿{
+  "Version": "AAS2.0",
   "SM_ManufacturerDocumentation": {
     "semanticId": {
       "keys": [
@@ -359,7 +360,7 @@
           ],
           "shortName": [
             {
-              "language": "EN?",
+              "language": "en",
               "text": "ClassId"
             }
           ],

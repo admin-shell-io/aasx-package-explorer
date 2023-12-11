@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -18,6 +18,7 @@ namespace AasxToolkit.Instruction
         typeof(Generate),
         typeof(Load),
         typeof(Save),
+        typeof(ExtractDoc),
         typeof(Validate),
         typeof(ExportTemplate),
         typeof(ExportCst),
@@ -52,6 +53,20 @@ namespace AasxToolkit.Instruction
         public Save(string path)
         {
             Path = path;
+        }
+    }
+
+    public class ExtractDoc : IInstruction
+    {
+        public readonly string DocSys;
+        public readonly string DocClass;
+        public readonly string Target;
+
+        public ExtractDoc(string docSys, string docClass, string target)
+        {
+            DocSys = docSys;
+            DocClass = docClass;
+            Target = target;
         }
     }
 

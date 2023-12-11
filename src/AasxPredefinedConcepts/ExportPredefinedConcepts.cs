@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,23 +7,22 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Aas3_0;
+using AdminShellNS;
+using Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
 {
     public static class ExportPredefinedConcepts
     {
-        public static void Export(AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, string fn)
+        public static void Export(Aas.Environment env, Aas.ISubmodel sm, string fn)
         {
             // access
-            if (fn == null || env == null || sm == null || sm.idShort == null || sm.submodelElements == null)
+            if (fn == null || env == null || sm == null || sm.IdShort == null || sm.SubmodelElements == null)
                 return;
 
             // make text file
@@ -41,21 +40,21 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("Phase (1) Check, which ConceptDescriptions need to be exported:");
                 snippets.WriteLine("===============================================================");
 
-                var usedCds = new Dictionary<string, AdminShell.ConceptDescription>();
-                foreach (var sme in sm.submodelElements?.FindDeep<AdminShell.SubmodelElement>())
+                var usedCds = new Dictionary<string, Aas.IConceptDescription>();
+                foreach (var sme in sm.SubmodelElements?.FindDeep<Aas.ISubmodelElement>())
                 {
                     // for SME, try to lookup CD
-                    if (sme.semanticId == null)
+                    if (sme.SemanticId == null)
                         continue;
 
-                    var cd = env.FindConceptDescription(sme.semanticId.GetAsExactlyOneKey());
+                    var cd = env.FindConceptDescriptionByReference(sme.SemanticId);
                     if (cd == null)
                         continue;
 
                     // name?
-                    var ids = cd.idShort;
+                    var ids = cd.IdShort;
                     if ((ids == null || ids == "") && cd.GetIEC61360() != null)
-                        ids = cd.GetIEC61360().shortName?.GetDefaultStr();
+                        ids = cd.GetIEC61360().ShortName?.GetDefaultString();
                     if (ids == null || ids == "")
                         continue;
                     ids = "CD_" + ids;
@@ -79,14 +78,27 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine(message);
                 snippets.WriteLine(new String('=', message.Length));
 
-                var keySM = "SM_" + sm.idShort;
+                var keySM = "SM_" + sm.IdShort;
                 if (true)
                 {
+                    // JsonNET does not work, because modelType is not serialized
+#if __old__
                     // ok, for Serialization we just want the plain element with no BLOBs..
                     var settings = new JsonSerializerSettings();
                     settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(
                         deep: false, complete: false);
+                    settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                     var jsonStr = JsonConvert.SerializeObject(sm, Formatting.Indented, settings);
+#else
+                    // challenge: SM without SMEs
+                    var smClone = sm.Copy();
+                    smClone.SubmodelElements = null;
+                    var jsonStr = Jsonization.Serialize.ToJsonObject(smClone)
+                        .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                        {
+                            WriteIndented = true
+                        });
+#endif
 
                     // export
                     snippets.WriteLine($"\"{keySM}\" : {jsonStr},");
@@ -102,11 +114,19 @@ namespace AasxPredefinedConcepts
                 foreach (var k in usedCds.Keys)
                 {
                     // ok, for Serialization we just want the plain element with no BLOBs..
+#if __old__
                     var settings = new JsonSerializerSettings();
                     settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(
                         deep: false, complete: false);
+                    settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                     var jsonStr = JsonConvert.SerializeObject(usedCds[k], Formatting.Indented, settings);
-
+#else
+                    var jsonStr = Jsonization.Serialize.ToJsonObject(usedCds[k])
+                        .ToJsonString(new System.Text.Json.JsonSerializerOptions()
+                        {
+                            WriteIndented = true
+                        });
+#endif
                     // export
                     snippets.WriteLine($"\"{k}\" : {jsonStr},");
                 }
@@ -130,9 +150,9 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine(message);
                 snippets.WriteLine(new String('=', message.Length));
 
-                snippets.WriteLine($"this.{keySM} = bs.RetrieveReferable<AdminShell.Submodel>(\"{keySM}\");");
+                snippets.WriteLine($"this.{keySM} = bs.RetrieveReferable<Submodel>(\"{keySM}\");");
                 foreach (var k in usedCds.Keys)
-                    snippets.WriteLine($"this.{k} = bs.RetrieveReferable<AdminShell.ConceptDescription>(\"{k}\");");
+                    snippets.WriteLine($"this.{k} = bs.RetrieveReferable<ConceptDescription>(\"{k}\");");
 
                 snippets.WriteLine();
             }

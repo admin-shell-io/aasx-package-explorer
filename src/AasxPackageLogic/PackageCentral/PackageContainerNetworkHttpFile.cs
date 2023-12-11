@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,22 +7,18 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxOpenIdClient;
+using AdminShellNS;
+using IdentityModel.Client;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using AasxIntegrationBase;
-using AasxOpenIdClient;
-using AdminShellNS;
-using IdentityModel.Client;
-using Newtonsoft.Json;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -199,12 +195,6 @@ namespace AasxPackageLogic.PackageCentral
                     string[] splitResult = redirectUrl.Split(new string[] { "?" },
                         StringSplitOptions.RemoveEmptyEntries);
                     splitResult[0] = splitResult[0].TrimEnd('/');
-                    var queryString = HttpUtility.ParseQueryString(splitResult[1]);
-                    string authType = queryString["authType"];
-                    if (authType == "keycloak")
-                    {
-                        OpenIDClient.keycloak = splitResult[0];
-                    }
 
                     if (splitResult.Length < 1)
                     {
@@ -213,7 +203,6 @@ namespace AasxPackageLogic.PackageCentral
                     }
 
                     runtimeOptions?.Log?.Info("Redirect to: " + splitResult[0]);
-                    runtimeOptions?.Log?.Info("AuthType: " + authType);
 
                     if (oidc == null)
                     {
@@ -261,7 +250,7 @@ namespace AasxPackageLogic.PackageCentral
                     var givenFn = Location;
                     if (contentFn != null)
                         givenFn = contentFn;
-                    TempFn = CreateNewTempFn(givenFn, IsFormat);
+                    TempFn = CreateNewTempFn(givenFn, IsFormat); //Why temp file, no use of file_name
                     runtimeOptions?.Log?.Info($".. downloading and scanning by proxy/firewall {client.BaseAddress} " +
                         $"and request {requestPath} .. ");
 
@@ -364,7 +353,7 @@ namespace AasxPackageLogic.PackageCentral
             // copy temp file
             try
             {
-                File.Copy(TempFn, targetFilename, overwrite: true);
+                System.IO.File.Copy(TempFn, targetFilename, overwrite: true);
             }
             catch (Exception ex)
             {
@@ -404,10 +393,10 @@ namespace AasxPackageLogic.PackageCentral
 
             // BEGIN Workaround behind some proxies
             // Stream is sent twice, if proxy-authorization header is not set
-            string proxyFile = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "/proxy.dat";
+            string proxyFile = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/proxy.dat";
             string username = "";
             string password = "";
-            if (File.Exists(proxyFile))
+            if (System.IO.File.Exists(proxyFile))
             {
                 using (StreamReader sr = new StreamReader(proxyFile))
                 {
@@ -434,7 +423,7 @@ namespace AasxPackageLogic.PackageCentral
                 $"and request {requestPath} .. ");
 
             // make base64
-            var ba = File.ReadAllBytes(copyFn);
+            var ba = System.IO.File.ReadAllBytes(copyFn);
             var base64 = Convert.ToBase64String(ba);
             //// var msBase64 = new MemoryStream(Encoding.UTF8.GetBytes(base64));
 
@@ -457,7 +446,8 @@ namespace AasxPackageLogic.PackageCentral
 
         public override async Task SaveToSourceAsync(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackCntRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null,
+            bool doNotRememberLocation = false)
         {
             // check extension
             if (IsFormat == Format.Unknown)

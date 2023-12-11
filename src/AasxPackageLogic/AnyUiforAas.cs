@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,14 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPackageLogic.PackageCentral;
+using AnyUi;
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AasxPackageLogic.PackageCentral;
-using AdminShellNS;
-using AnyUi;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
 {
@@ -44,13 +44,9 @@ namespace AasxPackageLogic
         }
     }
 
-    public class AnyUiLambdaActionRedrawEntity : AnyUiLambdaActionBase { }
-    public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionBase
+    public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionRedrawAllElementsBase
     {
-        public object NextFocus = null;
-        public bool? IsExpanded = null;
         public DispEditHighlight.HighlightFieldInfo HighlightField = null;
-        public bool OnlyReFocus = false;
 
         public AnyUiLambdaActionRedrawAllElements(
             object nextFocus, bool? isExpanded = true,
@@ -77,19 +73,22 @@ namespace AasxPackageLogic
 
     public class AnyUiLambdaActionPackCntChange : AnyUiLambdaActionBase
     {
-        public AnyUiLambdaActionPackCntChange() { }
-        public AnyUiLambdaActionPackCntChange(PackCntChangeEventData change)
-        {
-            this.Change = change;
-        }
         public PackCntChangeEventData Change;
+        public object NextFocus = null;
+
+        public AnyUiLambdaActionPackCntChange() { }
+        public AnyUiLambdaActionPackCntChange(PackCntChangeEventData change, object nextFocus = null)
+        {
+            Change = change;
+            NextFocus = nextFocus;
+        }
     }
 
     public class AnyUiLambdaActionNavigateTo : AnyUiLambdaActionBase
     {
         public AnyUiLambdaActionNavigateTo() { }
         public AnyUiLambdaActionNavigateTo(
-            AdminShell.Reference targetReference,
+            Aas.IReference targetReference,
             bool translateAssetToAAS = false,
             bool alsoDereferenceObjects = true)
         {
@@ -97,25 +96,9 @@ namespace AasxPackageLogic
             this.translateAssetToAAS = translateAssetToAAS;
             this.alsoDereferenceObjects = alsoDereferenceObjects;
         }
-        public AdminShell.Reference targetReference;
+        public Aas.IReference targetReference;
         public bool translateAssetToAAS = false;
         public bool alsoDereferenceObjects = true;
-    }
-
-    public class AnyUiLambdaActionDisplayContentFile : AnyUiLambdaActionBase
-    {
-        public AnyUiLambdaActionDisplayContentFile() { }
-        public AnyUiLambdaActionDisplayContentFile(
-            string fn, string mimeType = null, bool preferInternalDisplay = false)
-        {
-            this.fn = fn;
-            this.mimeType = mimeType;
-            this.preferInternalDisplay = preferInternalDisplay;
-        }
-
-        public string fn = null;
-        public string mimeType = null;
-        public bool preferInternalDisplay = false;
     }
 
     //
@@ -129,7 +112,7 @@ namespace AasxPackageLogic
         public string Filter;
 
         // out
-        public AdminShell.KeyList ResultKeys;
+        public List<Aas.IKey> ResultKeys;
         public VisualElementGeneric ResultVisualElement;
 
         public AnyUiDialogueDataSelectAasEntity(
@@ -143,6 +126,126 @@ namespace AasxPackageLogic
                 Selector = selector.Value;
             if (filter != null)
                 Filter = filter;
+        }
+
+        public static string ApplyFullFilterString(string filter)
+        {
+            if (filter == null)
+                return null;
+            var res = filter;
+            if (res.Trim().ToLower() == "submodelelement")
+                foreach (var s in Enum.GetNames(typeof(Aas.AasSubmodelElements)))
+                    res += " " + s + " ";
+            if (res.Trim().ToLower() == "all")
+                return null;
+            else
+                return " " + res + " ";
+        }
+
+        public static bool CheckFilter(string givenFilter, string singleName)
+        {
+            // special case
+            var ff = ApplyFullFilterString(givenFilter);
+            if (ff == null)
+                return true;
+
+            // regular
+            return (
+                givenFilter == null || singleName == null
+                || ff.ToLower().IndexOf($"{singleName.ToLower().Trim()} ", StringComparison.Ordinal) >= 0);
+        }
+
+        public bool PrepareResult(
+            VisualElementGeneric selectedItem,
+            string filter)
+        {
+            // access
+            if (selectedItem == null)
+                return false;
+            var siMdo = selectedItem.GetMainDataObject();
+
+            // already one result
+            ResultVisualElement = selectedItem;
+
+            //
+            // IReferable
+            //
+            if (siMdo is Aas.IReferable dataRef)
+            {
+                // check if a valuable item was selected
+                // new special case: "GlobalReference" allows to select all (2021-09-11)
+                var skip = filter != null &&
+                    filter.Trim().ToLower() == Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference).Trim().ToLower();
+                if (!skip)
+                {
+                    var elemname = dataRef.GetSelfDescription().AasElementName;
+                    var fullFilter = AnyUiDialogueDataSelectAasEntity.ApplyFullFilterString(filter);
+                    if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
+                        return false;
+                }
+
+                // ok, prepare list of keys
+                ResultKeys = selectedItem.BuildKeyListToTop();
+
+                return true;
+            }
+
+            //
+            // other special cases
+            //
+            if (siMdo is Aas.Reference smref &&
+                AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "submodelref"))
+            {
+                ResultKeys = new List<Aas.IKey>();
+                ResultKeys.AddRange(smref.Keys);
+                return true;
+            }
+
+            if (selectedItem is VisualElementPluginExtension vepe)
+            {
+                // get main data object of the parent of the plug in ..
+                var parentMdo = vepe.Parent.GetMainDataObject();
+                if (parentMdo != null)
+                {
+                    // safe to return a list for the parent ..
+                    // (include AAS, as this is important to plug-ins)
+                    ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+
+                    // .. enriched by a last element
+                    ResultKeys.Add(new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag));
+
+                    // ok
+                    return true;
+                }
+            }
+
+            if (selectedItem is VisualElementAsset veass
+                && AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "AssetInformation")
+                && veass.theAsset != null)
+            {
+                // prepare data
+                ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+                return true;
+            }
+
+            if (selectedItem is VisualElementOperationVariable veov
+                && AnyUiDialogueDataSelectAasEntity.CheckFilter(filter, "OperationVariable")
+                && veov.theOpVar?.Value != null)
+            {
+                // prepare data
+                ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+                return true;
+            }
+
+            if (selectedItem is VisualElementSupplementalFile vesf && vesf.theFile != null)
+            {
+                // prepare data
+                ResultKeys = selectedItem.BuildKeyListToTop(includeAas: true);
+                return true;
+            }
+
+            // uups
+            return false;
         }
     }
 
@@ -163,13 +266,54 @@ namespace AasxPackageLogic
         }
     }
 
+    public class AnyUiDialogueDataSelectFromRepository : AnyUiDialogueDataBase
+    {
+        /// <summary>
+        /// Limit the number of buttons shown in the dialogue.
+        /// </summary>
+        public static int MaxButtonsToShow = 20;
+
+        public IList<PackageContainerRepoItem> Items = null;
+        public PackageContainerRepoItem ResultItem = null;
+
+        public AnyUiDialogueDataSelectFromRepository(
+            string caption = "",
+            double? maxWidth = null)
+            : base(caption, maxWidth)
+        {
+        }
+
+        public PackageContainerRepoItem SearchId(string aid)
+        {
+            // condition
+            aid = aid?.Trim().ToLower();
+            if (aid?.HasContent() != true)
+                return null;
+
+            // first compare against tags
+            if (this.Items != null)
+                foreach (var ri in this.Items)
+                    if (aid == ri.Tag.Trim().ToLower())
+                        return ri;
+
+            // if not, compare asset ids
+            if (this.Items != null)
+                foreach (var ri in this.Items)
+                    foreach (var id in ri.EnumerateAssetIds())
+                        if (aid == id.Trim().ToLower())
+                            return ri;
+
+            return null;
+        }
+    }
+
     public class AnyUiDialogueDataSelectQualifierPreset : AnyUiDialogueDataBase
     {
         // in
         // (the presets will be provided by the technology implementation)
 
         // out
-        public AdminShell.Qualifier ResultQualifier = null;
+        public Aas.Qualifier ResultQualifier = null;
 
         public AnyUiDialogueDataSelectQualifierPreset(
             string caption = "",

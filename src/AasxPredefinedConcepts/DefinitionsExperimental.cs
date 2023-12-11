@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,12 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
+using Extensions;
+using Aas = AasCore.Aas3_0;
 
 // reSharper disable UnusedType.Global
 // reSharper disable ClassNeverInstantiated.Global
@@ -34,7 +30,7 @@ namespace AasxPredefinedConcepts
         /// </summary>
         public class InteropRelations : AasxDefinitionBase
         {
-            public AdminShell.ConceptDescription
+            public Aas.ConceptDescription
                 CD_FileToNavigateElement,
                 CD_FileToEntity,
                 CD_IsPartOfForBOM,
@@ -49,9 +45,9 @@ namespace AasxPredefinedConcepts
             public InteropRelations()
             {
                 // info
-                this.DomainInfo = "Interoperable Relations (experimental)";
+                this.DomainInfo = "Composite assets, interoperable Relations (experimental)";
 
-                // Referable
+                // IReferable
                 CD_FileToNavigateElement = CreateSparseConceptDescription("en", "IRI",
                     "FileToNavigateElement",
                     "http://admin-shell.io/sandbox/CompositeComponent/General/FileToNavigateElement/1/0",
@@ -73,7 +69,7 @@ namespace AasxPredefinedConcepts
                     "EntityOfElectricalEngineering",
                     "http://admin-shell.io/sandbox/CompositeComponent/Electrical/EntityOfElectricalEngineering/1/0",
                     @"States, that the Entity is part of the model for Electrical engineering.
-                    Note: Any Entity with a certain meaning to the Electrical engineering might be 
+                    Note: Any Aas.Entity with a certain meaning to the Electrical engineering might be 
                     declared as EntityOfElectricalEngineering.");
 
                 CD_ElectricSinglePoleConnection = CreateSparseConceptDescription("en", "IRI",
@@ -103,7 +99,7 @@ namespace AasxPredefinedConcepts
                     "TubePipeConnectionPneumatic",
                     "http://admin-shell.io/sandbox/CompositeComponent/Fluidic/TubePipeConnectionPneumatic/1/0",
                     "States, that there is a pneumatic connection between two Electrical Entities.",
-                    isCaseOf: CD_TubePipeConnection.GetReference());
+                    isCaseOf: CD_TubePipeConnection.GetCdReference());
 
                 CD_TubePipeConnectionHydraulic = CreateSparseConceptDescription("en", "IRI",
                     "TubePipeConnectionHydraulic",

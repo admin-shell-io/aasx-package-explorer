@@ -1,0 +1,1947 @@
+﻿@page "/"
+@using Aas = AasCore.Aas3_0
+@using AdminShellNS
+@using AasxIntegrationBase
+@*using BlazorUI*@
+@using BlazorExplorer.Shared
+@using Extensions
+@using AnyUi
+@using AasxPackageLogic 
+@using BlazorUI.Data
+@using BlazorUI.Pages 
+@using BlazorUI.Utils
+@using System.Threading
+@using Microsoft.AspNetCore.WebUtilities
+@using AasxPackageLogic.PackageCentral;
+@*using System*@
+@*using System.Net;*@
+@inject IJSRuntime JSRuntime
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession Session
+@inject NavigationManager NavManager
+
+@implements IDisposable
+
+@{
+    // resharper disable all
+
+    // update as soon as possible
+    Session.DisplayContext.SetJsRuntime(JSRuntime);
+}
+
+<div class="col-12 row">
+    <div class=@($"col-{Session.DividerTreeAndElement}")>
+        <div class="row-12">
+            <!-- Modal -->
+            <div class="row">
+                @{
+                    evs = AnyUiDisplayContextHtml.FindEventSession(Session.SessionId);
+                    sessionHtmlEventIn = evs.htmlEventIn;
+                }
+                
+                @* <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose"> *@
+
+                <Modal @bind-Open="evs.EventOpen" Close="OnClose2">                    
+
+                    @if (evs.DialogueData is AnyUiDialogueDataModalPanel)
+                    {
+                        // child class of AnyUiDialogueDataMessageBox!
+                        <AnyUiFlyoutModalPanel 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+                    else
+                    if (evs.DialogueData is AnyUiDialogueDataMessageBox)
+                    {
+                        <AnyUiFlyoutMessageBox 
+                            EventSession="evs" 
+                            DialogueData="evs.DialogueData"/>
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataTextBox)
+                    {
+                        <AnyUiFlyoutTextBox
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataTextEditor)
+                    {
+                        <AnyUiFlyoutTextEditor 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataLogMessage)
+                    {
+                        int a = 1;
+                        <AnyUiFlyoutLogMessage 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectFromList)
+                    {
+                        <AnyUiFlyoutSelectFromList 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectFromDataGrid)
+                    {
+                        <AnyUiFlyoutSelectFromDataGrid EventSession="evs"
+                                                       DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataOpenFile)
+                    {
+                        <AnyUiFlyoutOpenFile 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataSaveFile)
+                    {
+                        <AnyUiFlyoutSaveFile 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataDownloadFile)
+                    {
+                        <AnyUiFlyoutDownloadFile 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectAasEntity)
+                    {
+                        <AnyUiFlyoutSelectAasEntity 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData" />
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectReferableFromPool)
+                    {
+                        <AnyUiFlyoutSelectFromReferablesPool 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData"
+                            DataSourcePools="AasxPredefinedConcepts.DefinitionsPool.Static"/>
+                    }
+
+                    @if (evs.DialogueData is AnyUiDialogueDataSelectFromRepository)
+                    {
+                        <AnyUiFlyoutSelectFromRepository 
+                            EventSession="evs"
+                            DialogueData="evs.DialogueData"/>
+                    }                    
+
+                    @if (evs.SpecialAction is AnyUiSpecialActionContextMenu)
+                    {                        
+                        <AnyUiFlyoutContextMenu
+                            EventSession="evs"
+                            SpecialAction="evs.SpecialAction"/>
+                    }
+
+                </Modal>
+
+                @code{
+                    void OnClose2(string value)
+                    {
+                        evs.EventOpen = false;
+                    }
+                }
+
+                @if (false && (evs != null && sessionHtmlEventIn || evs.EventOpen))
+                {
+                    <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose">
+
+                        @if (evs.htmlEventType == "MessageBoxFlyoutShow" && evs.htmlEventInputs.Count >= 2)
+                        {
+                            string message = (string)evs.htmlEventInputs[0];
+                            string caption = (string)evs.htmlEventInputs[1];
+                            AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)evs.htmlEventInputs[2];
+                            evs.htmlEventInputs.Clear();
+
+                            <form method="dialog">
+                                <p><span style="font-weight:bold">@caption</span></p>
+                                <br />
+                                <p>@message</p>
+                                <br />
+                                @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
+                                {
+                                    <button value="OK">OK</button>
+                                }
+                                @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
+                                {
+                                    <button value="Yes">Yes</button>
+                                    <button value="No">No</button>
+                                }
+                                @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
+                                {
+                                    <button value="Cancel">Cancel</button>
+                                }
+                            </form>
+                        }
+                        else
+                   if (evs.htmlEventType == "ModalSelectFile")
+                        {
+                            evs.htmlEventInputs.Clear();
+
+                            <form method="dialog">
+                                <p><span style="font-weight:bold">Select file</span></p>
+                                <br />                                        
+                                @*<InputFile OnChange="HandleFileSelected2" />*@
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                            </form>
+                            @code {
+                        async Task HandleFileSelected2(IFileListEntry[] files)
+                                {                                               
+                                    // try get the file contents
+                        string targetFn = null;
+                        try
+                        {
+                            var file = files.FirstOrDefault();
+                            if (file != null)
+                            {
+                                var fn = System.IO.Path.Combine(
+                                            System.IO.Path.GetTempPath(), 
+                                            System.IO.Path.GetFileName(file.Name));
+                                var fileStream = System.IO.File.Create(fn);
+                                await file.Data.CopyToAsync(fileStream);
+                                fileStream.Close();
+                                targetFn = fn;
+                            }
+                        }
+                        catch
+                        {
+                        }
+
+                        // finally: the modal dialog will be closed!
+                        evs.htmlEventIn = false;
+                        evs.htmlEventType = null;
+                        evs.htmlEventInputs.Clear();
+                        evs.htmlEventOut = true;                                            
+                        evs.htmlEventOutputs.Clear();
+                        evs.htmlEventOutputs.Add(targetFn);
+                                }
+                            }
+                        }
+                        else
+                   if (evs.htmlEventType == "ModalSelectEntity")
+                        {
+                            evs.htmlEventInputs.Clear();
+
+                            <p><span style="font-weight:bold">Select AAS entity</span></p>
+                            <br />                                                       
+                            <div style="max-width: 70%; max-height: 70%">
+                                <!--
+                                <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"                          
+                                @bind-ExpandedNodes="ExpandedNodes"
+                                SelectedNodeChanged="new EventCallback<Item>(null, (Action<Item>) SelectedNodeChangedModal)"
+                                HasChildNodes="@(item => item.Childs?.Any() == true)">
+                                <TitleTemplate>                                                
+                                <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
+                                <strong><span style="color:blue">@getSymbols(context)</span></strong>
+                                </TitleTemplate>
+                                </Tree>
+                                -->
+                                <br />                                                                                
+                            </div>
+
+                            <form method="dialog">
+                                <button value="OK">OK</button>
+                                <button value="Cancel">Cancel</button>
+                            </form>
+
+                            @code {
+                        public void SelectedNodeChangedModal(Item im)
+                                {
+                        ;
+                        if (evs != null)
+                        {
+                            evs.htmlEventOutputs.Clear();
+                            evs.htmlEventOutputs.Add(im?.Referable);
+                        }
+                                }
+                            }
+                        }
+                        else
+                   if (evs.htmlEventType == "StartFlyoverModal" && evs.htmlEventInputs.Count >= 1)
+                        {
+                            AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)evs.htmlEventInputs[0];
+                            if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                            {
+                                string flyCaption = ddte.Caption + " - read only";
+                                flyText = ddte.Text;
+                                evs.htmlEventInputs.Clear();
+
+                                <form method="dialog">
+                                    <p><span style="font-weight:bold">@flyCaption</span></p>
+                                    // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
+                                    <textarea cols="100" rows="20"
+                                                style="resize:both;">@flyText</textarea>
+                                    <br />
+                                    <button value="OK">OK</button>
+                                    <button value="Cancel">Cancel</button>
+                                </form>
+                            }
+                            if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+                            {
+                                int sizeDdsfl = ddsfl.ListOfItems.Count;
+                                int iDdsfl = 0;
+
+                                <form method="dialog">
+                                    <select class="form-control selectpicker" size="@sizeDdsfl"
+                                            @onchange="@((ChangeEventArgs __e) => MyDialogDataSelectFromList(__e.Value.ToString()))">
+                                        @for (iDdsfl = 0; iDdsfl < sizeDdsfl; iDdsfl++)
+                                        {
+                                            // menu item itself
+                                            string textDdsfl = ddsfl.ListOfItems[iDdsfl].Text;
+                                            <option value="@(iDdsfl + ": " + textDdsfl)">@(
+                                       iDdsfl + ": " + textDdsfl
+                                       )</option>
+                                        }
+                                    </select>
+                                </form>
+                            }
+                        }
+                        else
+                   if (evs.htmlEventType == "contextMenu" && evs.htmlEventInputs.Count >= 1)
+                        {
+                            // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                            AnyUiSpecialActionContextMenu cntlcm =
+                                (AnyUiSpecialActionContextMenu)evs.htmlEventInputs[1];
+                            var nmi = cntlcm.MenuItemHeaders.Length / 2;
+                            int i = 0;
+                            string icon = "" + cntlcm.MenuItemHeaders[0];
+                            string header = "" + cntlcm.MenuItemHeaders[1];
+                            evs.htmlEventInputs.Clear();
+                            // string v = i + ": " + icon + " " + header;
+                            <form method="dialog">
+                                <select class="form-control selectpicker" size="@nmi"
+                                        @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
+                                    @for (i = 0; i < nmi; i++)
+                                    {
+                                        // menu item itself
+                                        icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                        header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                        <option value="@(i + ": " + icon + " " + header)">@(
+                                i + ": " + icon + " " + header
+                                )</option>
+                                    }
+                                </select>
+                            </form>
+                        }
+                        else
+                        {
+                            evs.htmlEventInputs.Clear();
+                            <form method="dialog">
+                                <p><span style="font-weight:bold">Something went wrong!</span></p>
+                                <br /> 
+                                <button value="Cancel">Cancel</button>
+                            </form>
+                        }
+                    </Modal>
+                }
+
+                @code {
+                    private AnyUiHtmlEventSession evs { get; set; }
+                    private bool sessionHtmlEventIn { get; set; }
+
+                    void MyContextMenuSelect(string value)
+                    {
+                        string[] s = value.Split(':');
+                        int i = Convert.ToInt32(s[0]);
+                        evs.htmlEventOutputs.Add(i);
+                        evs.htmlEventIn = false;
+                        evs.htmlEventInputs.Clear();
+                        evs.htmlEventOut = true;
+                    }
+
+                    void MyDialogDataSelectFromList(string value)
+                    {
+                        string[] s = value.Split(':');
+                        int i = Convert.ToInt32(s[0]);
+                        evs.htmlEventOutputs.Add(i);
+                        evs.htmlEventIn = false;
+                        evs.htmlEventInputs.Clear();
+                        evs.htmlEventOut = true;
+                    }
+
+                    private void MyTextInput(string value)
+                    {
+                        flyText = value;
+                    }
+
+                    public string flyText { get; set; }
+
+                    void OnClose(string value)
+                    {
+                        evs.htmlEventIn = false;
+                        evs.htmlEventInputs.Clear();
+                        switch (evs.htmlEventType)
+                        {
+                            case "MessageBoxFlyoutShow":
+
+                                evs.htmlEventOutputs.Clear();
+                                AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
+                                switch (value)
+                                {
+                                    case "OK":
+                                        r = AnyUiMessageBoxResult.OK;
+                                        break;
+                                    case "Cancel":
+                                        r = AnyUiMessageBoxResult.Cancel;
+                                        break;
+                                    case "Yes":
+                                        r = AnyUiMessageBoxResult.Yes;
+                                        break;
+                                    case "No":
+                                        r = AnyUiMessageBoxResult.No;
+                                        break;
+                                }
+                                evs.htmlEventOutputs.Add(r);
+                                break;
+
+                            case "ModalSelectEntity":
+                                // result is already in the session.htmlEventOutputs
+                                break;
+
+                            case "StartFlyoverModal":
+                                evs.htmlEventOutputs.Clear();
+                                evs.htmlEventOutputs.Add(flyText);
+                                switch (value)
+                                {
+                                    case "OK":
+                                        evs.htmlEventOutputs.Add(true);
+                                        break;
+                                    case "Cancel":
+                                        evs.htmlEventOutputs.Add(false);
+                                        break;
+                                }
+                                break;
+                            
+                            case "contextMenu":
+                                evs.htmlEventOutputs.Clear();                               
+                                break;
+
+                            default:
+                                evs.htmlEventOutputs.Clear();                               
+                                break;
+                        }
+                        evs.htmlEventOut = true;
+                    }
+                }
+            </div>
+            
+            <!-- Tree -->
+            <div style="margin:0px 2px 1px 1px">
+                <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; white-space: nowrap;position:sticky;padding:10px 2px 10px 2px">
+                    <div class="col" style="white-space: nowrap">
+                        @* @updateVisibleTree(Items, Session.DisplayElements.SelectedItem) *@
+                        @* @if (Program.isLoading)
+                            {<span style="color:white;background-color:blue;">Loading...</span>} *@
+                        @if (Session.DisplayElements?.TreeItems == null
+                            || Session.DisplayElements.TreeItems.Count() < 1)
+                        {
+                            <span style="color:white;background-color:#0028cd;">
+                                Enter * to read AASX from file system<br />
+                                Enter URL of AASX Server REST API (without /server/listaas)<br />
+                            </span>
+                        }
+                        else
+                        {
+                            @* @bind-ExpandedNodes="Session.DisplayElements.ExpandedItems"
+                               @bind-SelectedNode="Session.DisplayElements.SelectedItem"
+                            *@
+
+						    @*<Tree TNode=VisualElementGeneric
+                              Nodes="Session.DisplayElements.TreeItems"
+                              ChildSelector="@(item => item.Members)"                                                    
+                              IsExpanded="@(item => item.IsExpanded)"
+                              SetExpanded="@((item, state) => SetExpanded(Session.DisplayElements.TreeItems, item, state))"
+                              IsSelected="@(item => Session.DisplayElements.SelectedItems?.Contains(item) == true)"
+                              NodeClicked="(ve, modi) => { Session.DisplayElements.NotifyTreeSelectionChanged(ve, modi); this.StateHasChanged(); }"
+                              HasChildNodes="@(item => item.Members != null && item.Members.Count() > 0)">
+							    <TitleTemplate>
+                                    @{
+                                        //// SubmodelService.syncSubTree(context);
+                                        var styleOuter = new StylePile()
+                                        // .Add("display", "inline-block")
+                                        // .Add("overflow", "hidden")
+                                        .Add("white-space", "nowrap")
+                                        .SetSpecifics(forceNoWrap: true,
+                                        borderBrush: new AnyUiBrush(context?.Border ?? AnyUiColors.White),
+                                        borderThickness: new AnyUiThickness(1),
+                                        background: new AnyUiBrush(context?.Background ?? AnyUiColors.White));
+
+                                        var styleTag = new StylePile()
+                                        .Add("display", "inline-block")
+                                        .Add("white-space", "nowrap")
+                                        .Add("width", "30px")
+                                        .Add("text-align", "center")
+                                        .Add("font-stretch", "30%")
+                                        .SetSpecifics(forceNoWrap: true,
+                                        padding: new AnyUiThickness(0,-2,0,-2),
+                                        borderThickness: new AnyUiThickness(0),
+                                        fontSizeRel: 0.8,
+                                        // fontSizeRel: StylePile.FontSizeRelToFit(context.TagString, normLen: 2),
+									    foreground: new AnyUiBrush(context?.TagFg ?? AnyUiColors.White),
+                                        background: new AnyUiBrush(context?.TagBg ?? AnyUiColors.DarkBlue));
+
+                                        var styleLine = new StylePile()
+                                        .Add("display", "inline-block")
+                                        .Add("width", "1200px")
+                                        .Add("white-space", "nowrap")
+                                        .Add("text-align", "left")
+                                        .SetSpecifics(forceNoWrap: true,
+                                        foreground: AnyUiBrushes.Black);
+                                    }
+                                    <span style="@styleOuter">
+                                        <div style="@styleTag">
+                                            @(context?.TagString ?? "")
+                                        </div>
+
+                                        <div style="@styleLine" >
+                                            @(context?.Caption ?? "") @(context?.Info ?? "")
+                                        </div>
+                                        <!-- <strong><span style="color:blue">@getSymbols(context)</span></strong> -->
+                                    </span>
+							    </TitleTemplate>
+                            </Tree>*@
+
+                            <TreeOfAasxVisualElements
+                                Items="Session.DisplayElements.TreeItems"
+                                IsExpanded="@(item => item.IsExpanded)"
+                                SetExpanded="@((item, state) => Session.DisplayElements.SetExpanded(item, state))"
+                                IsSelected="@(item => Session.DisplayElements.SelectedItems?.Contains(item) == true)"
+                                NodeClicked="OnNodeClicked"
+                                />
+                                
+                        }
+
+                        @*<br /><br />*@
+                        <br />
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Repo -->
+            <div style="margin:2px 2px 0px 1px">
+                <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; word-wrap:break-word;position:sticky;padding:10px">
+
+                    <div style="overflow: hidden">
+
+                        @* Repositories *@
+                        @if (Session.PackageCentral.Repositories != null)
+                        {
+                            foreach (var repo in Session.PackageCentral.Repositories)
+                            {
+                                <PanelPackageContainerList
+                                    ContainerList="repo"
+                                    ContextMenuSelected="ContainerListItemSelected"/>
+                            }
+                        }
+
+                        @* File drop? *@
+                        <div class="drag-drop-zone-blue">
+                            <BlazorInputFile.InputFile OnChange="FileDrop_Handler.FileSelected" />
+                            @FileDrop_Handler.Status
+                        </div>
+
+                        @* Leave some footer space for context menues *@
+		                <div class="col-12 row">
+			                @for (int i = 0; i < 0; i++)
+			                {
+				                <br />
+			                }
+		                </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Details -->
+            <div style="margin:2px 2px 0px 1px">
+                <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; word-wrap:break-word;position:sticky;padding:10px">
+                    @{
+                        //if (bi.env != null && (selectedNode == null || selectedNode.Tag != null))
+                        //{
+                        //    {
+                        //        if (bi.thumbNail == null && bi.env != null)
+                        //        {
+                        //            System.IO.Stream s = null;
+                        //            try
+                        //            {
+                        //                s = bi.env.GetLocalThumbnailStream();
+                        //            }
+                        //            catch
+                        //            {
+                        //                s = null;
+                        //            }
+                        //            if (s != null)
+                        //            {
+                        //                using (var m = new System.IO.MemoryStream())
+                        //                {
+                        //                    s.CopyTo(m);
+                        //                    bi.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                        //                }
+
+                        //                // it is indespensible to properly close the thumbnail stream!
+                        //                s.Close();
+                        //            }
+                        //        }
+                        //        if (bi.thumbNail != null)
+                        //        {
+                        //            <br />
+                        //            <img src=data:image;base64,@bi.thumbNail
+                        //     style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
+                        //        }
+                        //    }
+                        //}
+
+                        //if (Session.thumbNail != null)
+                        //{
+                        //    <br />
+                        //    <img src=data:image;base64,@Session.thumbNail
+                        //         style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
+                        //}
+
+                        <PanelAasxInfoBox InfoBox="Session.InfoBox" />
+                    }
+                </div>
+            </div>
+        
+        </div>
+    </div>
+
+    <div class="col-auto d-flex align-items-center" style="padding: 0px 2px 0px 1px">
+        <div class="btn-group-vertical" style="">
+            <button class="btn btn-tiny-bl-wh"
+                    @onclick="LeftPanelShrink">
+                &#x25c0;
+            </button>
+
+            <button class="btn btn-tiny-bl-wh"
+                    style="margin-top: 10px"
+                    @onclick="LeftPanelGrow">
+                &#x25b6;
+            </button>
+            @code {
+                private void LeftPanelShrink()
+                {
+                    if (Session.DividerTreeAndElement > 2)
+                    {
+                        Session.DividerTreeAndElement--;
+                        this.StateHasChanged();
+                    }
+                }
+                private void LeftPanelGrow()
+                {
+                    if (Session.DividerTreeAndElement < 10)
+                    {
+                        Session.DividerTreeAndElement++;
+                        this.StateHasChanged();
+                    }
+                }
+            }
+        </div>
+    </div>
+
+    <!-- right panel -->
+    @{
+        var elementPanelStyle = new StylePile()
+            .Add("word-wrap: break-word; width: 100%; overflow: hidden");
+
+        // by some weird reason, the top margin is to be correct, if NOT a plugon ..
+        if (!(Session.DisplayElements?.SelectedItem is VisualElementPluginExtension))
+            elementPanelStyle.Add("margin-top", "-16px");
+    }
+
+    <div class=@($"col-{11-Session.DividerTreeAndElement}") style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; position:sticky;padding:10px;">
+        <div class="sticky-top" style="@elementPanelStyle">
+            @{                
+                if (Session?.PrepareDisplayDataAndElementPanel(
+                    JSRuntime,
+                    Session.DisplayContext,
+                    ref Session.helper,
+                    ref Session.ElementPanel,
+                    ref Session.DynamicMenu) == true)
+                {
+                    // render
+                    var _displayData = new AnyUiDisplayDataHtml(Session.DisplayContext);
+                    <AnyUiRenderElem DisplayData="@_displayData"
+                                Session="@Session" 
+                                Element="@Session.ElementPanel"
+                                FillMode="@AnyUiHtmlFillMode.FillWidth"/>
+                }
+                else
+                {
+                    // emergency
+                    <span>Nothing to display</span>
+                    <br />
+                }
+            }
+        </div>
+    </div>
+
+</div>
+
+<span>Redraws: @CounterRedraw</span>
+
+@code {
+
+    // resharper disable all
+
+    // Gets a reference to the MainLayout component
+    [CascadingParameter]
+    public BlazorExplorer.Shared.MainLayout Layout { get; set; }
+
+    [Parameter]
+    public int CounterRedraw { get; set; }
+
+    ListOfItems Items = null;
+
+    protected int _inhibitSelectNodeForPanel = 0;
+
+    public string DebugTrash = "";
+
+    // for File Drop
+    protected BlazorInputFileHandler FileDrop_Handler = new BlazorInputFileHandler();
+
+    // IList<VisualElementGeneric> ExpandedNodes = new List<VisualElementGeneric>();
+
+    // in this application: redirect SelectedNode to the DisplayElements class
+    // (because most of the user logic refers to it)
+    // VisualElementGeneric selectedNode;
+
+    //VisualElementGeneric SelectedNode
+    //{
+    //    get { return Session.DisplayElements.SelectedItem; }
+    //    set
+    //    {
+    //        // always remember
+    //        Session.DisplayElements.SelectedItem = value;
+
+    //        // inhibited
+    //        if (_inhibitSelectNodeForPanel > 0)
+    //        {
+    //            _inhibitSelectNodeForPanel--;
+    //            return;
+    //        }
+
+    //        // no? execute!
+    //        _onlyUpdatePluginUi = false;
+    //        // OnSelectNode(selectedNode);
+    //    }
+    //}
+
+    //protectezd void SelectedNodeChanged(Item i)
+    //{
+
+    //}
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // OnInitialized() allways called twice
+        //// if (hack++ == 0)
+        ////    return;
+
+        if (firstRender)
+        {
+            //
+            // normal rendering
+            //
+
+            SubmodelService.NewDataAvailable += NotifyForNewData;
+
+            //
+            // check query params
+            //
+
+            // investigate query parameters if to load special AAS or SMs ..
+            var header = -1;
+            var aasIndex = -1;
+            string smId = null;
+            string pluginTag = null;
+
+            var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+            var qdict = QueryHelpers.ParseQuery(uri.Query);
+
+            if (qdict != null)
+            {
+                if (qdict.TryGetValue("header", out var qhead))
+                    if (int.TryParse(Convert.ToString(qhead), out var head)
+                        && head >= 0 && head <= 2)
+                        header = head;
+
+                if (qdict.TryGetValue("aasndx", out var qndx))
+                    if (int.TryParse(Convert.ToString(qndx), out var ndx))
+                        aasIndex = ndx;
+
+                if (qdict.TryGetValue("smid", out var qsmid))
+                    smId = BlazorUtils.Base64Decode(Convert.ToString(qsmid));
+
+                if (qdict.TryGetValue("plugin", out var qplugin))
+                    pluginTag = Convert.ToString(qplugin);
+            }
+
+            //
+            // load?
+            //
+
+            //if (aasIndex >= 0)
+            //{
+            //    // try to load files?
+            //    Program.loadAasxFiles(bi, load: false);
+            //    string newLoad = null;
+
+            //    if (Program.Repo?.FileMap?.Count > 0
+            //        && aasIndex >= 0 && aasIndex < Program.Repo.FileMap.Count)
+            //    {
+            //        var repoFile = Program.Repo.FileMap[aasIndex];
+            //        newLoad = Program.Repo.GetFullItemLocation(repoFile.Location);
+            //    }
+            //    else
+            //    if (bi.repository?.FileMap?.Count > 0
+            //        && aasIndex >= 0 && aasIndex < bi.repository.FileMap.Count)
+            //    {
+            //        var repoFile = bi.repository.FileMap[aasIndex];
+            //        bi.container = PackageContainerFactory.GuessAndCreateFor(bi._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+            //        bi.env = bi.container.Env;
+            //        bi.aasxFileSelected = "";
+            //        bi.editMode = false;
+            //        bi.thumbNail = null;
+            //        Program.signalNewData(3, bi.sessionNumber);
+            //    }
+            //    else
+            //    if (bi.aasxFiles?.Length > 0
+            //        && aasIndex >= 0 && aasIndex < bi.aasxFiles.Length)
+            //    {
+            //        newLoad = bi.aasxFiles[aasIndex];
+            //    }
+
+            //    if (newLoad != null && System.IO.File.Exists(newLoad))
+            //    {
+            //        InvokeAsync(() =>
+            //        {
+            //            Program.loadAasx(bi, newLoad);
+            //            Program.signalNewData(3, bi.sessionNumber);
+
+            //            // disable features in MainLayout?
+            //            if (Layout != null && header >= 0 && header <= 2)
+            //                Layout.ShowHeader = header;
+
+            //            // only here, we can changed to SM / plugin
+            //            Item itsm = null;
+
+            //            if (smId != null && pluginTag != null)
+            //                itsm = Items?.FindSubmodelPlugin(smId, pluginTag);
+            //            else
+            //                itsm = Items?.FindSubmodel(smId);
+
+            //            if (itsm != null)
+            //            {
+            //                ListOfItems.AddToExpandNodesFor(ExpandedNodes, itsm);
+            //                SelectedNode = itsm;
+            //                StateHasChanged();
+            //            }
+            //        });
+            //    }
+            //}
+        }
+    }
+
+    protected static Dictionary<string, string> _fourLetterSubst =
+        new System.Collections.Generic.Dictionary<string, string>()
+        {
+            { "asset", "Asst" },
+            { "range", "Rang" }
+            };
+
+    protected string FourLetterTag(string tag)
+    {
+        // known exceptions
+        if (tag == null)
+            return "    ";
+
+        var tll = tag.Trim().ToLower();
+        if (_fourLetterSubst.ContainsKey(tll))
+            return _fourLetterSubst[tll];
+
+        // simply cut
+        if (tag.Length > 4)
+            tag = tag.Substring(0, 4);
+
+        // pad
+        while (tag.Length < 4)
+            tag += " ";
+
+        return tag;
+    }
+
+    Program.DataRedrawMode newDataMode = Program.DataRedrawMode.None;
+
+    protected bool _onlyUpdatePluginUi = false;
+
+    /// <summary>
+    /// This is main input chanel for external data / events / inputs
+    /// to the razor page. This input data might comprise
+    /// action lambdas from html, event returns from plugins, dispatch
+    /// from singleton main program and more.
+    /// </summary>
+    /// <param name="source">Not used</param>
+    /// <param name="args">Data</param>
+    void NotifyForNewData(object source, EventArgs args)
+    {
+        // update = true;
+        if (args is Program.NewDataAvailableArgs ndm)
+        {
+            if (ndm.SessionNumber == Session.SessionId)
+            {
+                // state change for inner logic
+                if (newDataMode == Program.DataRedrawMode.ValueChanged)
+                    // newDataMode = Program.getSignalNewDataMode();
+                    newDataMode = ndm.RedrawMode;
+
+                // some events may affect
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionPluginUpdateAnyUi lapu)
+                {                    
+                    if (!lapu.PluginName.HasContent())
+                    {
+                        // special case: Do NOT involve plugin, just update values of elemt
+                        // without updating the complete razor
+                        UpdateTreeWithTouchedValues();
+
+                        // stop the flow here
+                        return;
+                    }
+
+                    // force the sticky update mode to true
+                    _onlyUpdatePluginUi = true;
+                }
+
+                if (ndm.ExecuteMenuItem?.HasContent() == true)
+                {
+                    // special case
+                    if (ndm.ExecuteMenuItem == "@@ENTER@@")
+                    {
+                        var evs = AnyUiDisplayContextHtml.FindEventSession(ndm.SessionNumber);
+                        if (evs != null && evs.EventOpen && evs.DialogueData != null)
+                        {
+                            ;
+                            // evs.EndModal(true);
+                        }
+                        return;
+                    }
+
+                    // ordinary
+                    var mi = Session?.MainMenu?.Menu?.FindName(ndm.ExecuteMenuItem);
+                    if (mi != null)
+                        Task.Run(async () =>
+                            await Session.MainMenu.Menu.ActivateAction(mi, new AasxMenuActionTicket()));
+                    return;
+                }
+
+                if (ndm.OnlyUpdatePanel)
+                    _onlyUpdatePluginUi = true;
+
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionRedrawAllElementsBase larae)
+                {
+                    // force the sticky update mode to false, because of total redraw
+                    Session.RedrawAllAasxElements(
+                        keepFocus: true,
+                        nextFocusMdo: larae.NextFocus,
+                        wishExpanded: larae.IsExpanded ?? true);
+                    _onlyUpdatePluginUi = false;
+                }
+
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionRedrawEntity)
+                {
+                    // force the sticky update mode to false, because of redraw of entity
+                    _onlyUpdatePluginUi = false;
+                    Session.DisposeLoadedPlugin();
+                }
+
+                if (ndm.NewPluginResultEvent is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+                    && Session.renderJsRuntime != null
+                    && evtDispCont.fn != null)
+                {
+                    // raise a bit more attention
+                    if (evtDispCont.SaveInsteadDisplay)
+                        Log.Singleton.Info(StoredPrint.Color.Blue, "Please find the file ready in the Downloads folder!");
+
+                    // trigger
+                    InvokeAsync(async () => {
+                        await BlazorUtils.DisplayOrDownloadFile(Session.renderJsRuntime, evtDispCont.fn, evtDispCont.mimeType,
+                                forceSave: evtDispCont.SaveInsteadDisplay);
+                        this.StateHasChanged();
+                    });
+                    return;
+                }
+
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionPackCntChange lapcc)
+                {
+                    if (lapcc.Change?.Reason == PackCntChangeEventReason.MoveToIndex)
+                    {
+                        // if an index is moved within the tree, both the tree shall be re-drawn
+                        // and the panel shall be updated (because of index)
+                        Session.RedrawAllAasxElements(keepFocus: true);
+                        _onlyUpdatePluginUi = false;
+                    }
+
+                    if (lapcc.Change?.Reason == PackCntChangeEventReason.Delete)
+                    {
+                        // if an element is deleted within the tree, the tree shall be re-drawn,
+                        // the focus shall be shifted to a recommended element
+                        // and the panel shall be updated (because of index)
+                        Session.RedrawAllAasxElements(
+                            keepFocus: true, nextFocusMdo: lapcc.NextFocus, wishExpanded: false);
+                        _onlyUpdatePluginUi = false;
+                    }
+                }
+
+                // re-rendering modal dialogs
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionModalPanelReRender lamprr
+                    && lamprr.DiaDataPanel != null)
+                {
+                    try
+                    {
+                        lamprr.DiaDataPanel.Panel = 
+                            lamprr.DiaDataPanel.RenderPanel.Invoke(lamprr.DiaDataPanel);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+                }
+
+                // some actions special to Blazor
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionStatusLineClear)
+                {
+                    Layout.StatusLineClear();
+                }
+
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionExecuteSpecialAction laesa
+                    && laesa.SpecialAction != null)
+                {
+                    if (laesa.SpecialAction.MenuItemLambdaAsync != null)
+                        InvokeAsync(async () => {
+                            // await Task.Delay(1000);
+                            await laesa.SpecialAction.MenuItemLambdaAsync(laesa.Arg);
+                        });
+
+                    // do not redraw directly; event needs to be send
+                    return;
+                }
+
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionExecuteSetValue laesv)
+                {
+                    if (laesv.SetValueAsyncLambda != null)
+                        InvokeAsync(async () => {
+                            // evaluate
+                            var ret = await laesv.SetValueAsyncLambda(laesv.Arg);
+
+                            // kind of recursion
+                            Program.signalNewData(
+                                new Program.NewDataAvailableArgs(
+                                        Program.DataRedrawMode.SomeStructChange, Session.SessionId,
+                                        newLambdaAction: ret, onlyUpdatePanel: true));
+                        });
+
+                    // do not redraw directly; kind of recursion above
+                    return;
+                }
+
+                // re-create items
+                // Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
+
+                // check if to re-index some elements
+                ReIndexSignificantElements();
+
+                // trigger redraw (but inhibit for plugin-redraw)
+                _inhibitSelectNodeForPanel += 1;
+                CounterRedraw += 1;
+                var s = "" + DebugTrash;
+                InvokeAsync(() => this.StateHasChanged());
+                // this.StateHasChanged();
+
+            }
+        }
+    }
+
+    protected void ReIndexSignificantElements()
+    {
+        // access
+        if (Session?.env == null)
+            return;
+
+        // index
+        Session.significantElements = new IndexOfSignificantAasElements(Session.env?.AasEnv);   
+    }
+
+    bool update = true;
+
+    protected void UpdateTreeWithTouchedValues()
+    {
+        // access
+        var root = Session.ElementPanel;
+        if (root == null)
+            return;
+
+        // recurse over all
+        foreach (var el in root.FindAll())
+            if (el?.Touched == true && el.DisplayData is AnyUiDisplayDataHtml dd)
+            {
+                // clear
+                el.Touched = false;
+
+                // trigger action
+                dd.TouchLambda?.Invoke(el);
+            }
+    }
+
+    //string updateVisibleTree(List<Item> viewItems, VisualElementGeneric selectedNode)
+    //{
+    //    if (update && session != null && !session.htmlEventIn && !session.htmlEventOut)
+    //    {
+    //        //switch (newDataMode)
+    //        //{
+    //        //    // 0 == same tree, only values changed
+    //        //    case Program.DataRedrawMode.ValueChanged:
+    //        //        break;
+    //        //    // 1 == same tree, structure may change
+    //        //    // 2 == build new tree, keep open nodes
+    //        //    case Program.DataRedrawMode.SomeStructChange:
+    //        //    case Program.DataRedrawMode.RebuildTreeKeepOpen:
+    //        //        bool isSelected = selectedNode != null;
+    //        //        bool isExpanded = Session.DisplayElements.ExpandedItems.Count != 0;
+    //        //        List<string>[] expandedNodesPath = new List<string>[Session.DisplayElements.ExpandedItems.Count + 1];
+    //        //        List<string> selectedNodePath = getPath(selectedNode);
+    //        //        if (isExpanded)
+    //        //        {
+    //        //            for (int j = 0; j < Session.DisplayElements.ExpandedItems.Count; j++)
+    //        //            {
+    //        //                expandedNodesPath[j] = getPath(Session.DisplayElements.ExpandedItems[j]);
+    //        //            }
+    //        //        }
+    //        //        Session.RebuildTree();
+    //        //        //SubmodelService.buildTree(Session);
+    //        //        //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
+    //        //        Session.DisplayElements.ExpandedItems.Clear();
+    //        //        selectedNode = null;
+    //        //        if (isSelected)
+    //        //        {
+    //        //            selectedNode = findPath(selectedNodePath);
+    //        //        }
+    //        //        if (isExpanded)
+    //        //        {
+    //        //            foreach (var path in expandedNodesPath)
+    //        //            {
+    //        //                var p = findPath(path);
+    //        //                if (p != null)
+    //        //                    Session.DisplayElements.ExpandedItems.Add(p);
+    //        //            }
+    //        //        }
+    //        //        newDataMode = 0;
+    //        //        break;
+    //        //    // 3 == build new tree, all nodes closed
+    //        //    case Program.DataRedrawMode.RebuildTreeAllClosed:
+    //        //        Session.RebuildTree();
+    //        //        //SubmodelService.buildTree(Session);
+    //        //        //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
+    //        //        Session.DisplayElements.ExpandedItems.Clear();
+    //        //        selectedNode = null;
+    //        //        newDataMode = 0;
+    //        //        break;
+    //        //}
+
+    //        //// remember new (same?) selected node, but do not redraw pluging
+    //        //_inhibitSelectNodeForPanel += 1;
+    //        //Session.DisplayElements.SelectedItem = selectedNode;
+    //        //// update = false;
+    //        //// updateNode(viewItems[0]);
+    //    }
+    //    return "";
+    //}
+
+    List<string> getPath(VisualElementGeneric i)
+    {
+        if (i == null)
+            return null;
+
+        var upPath = i.FindAllParents(includeThis: true).Select((ve) => ve.Caption).ToList();
+        upPath.Reverse();
+        return upPath;
+
+        //upPath.Add(i.Text);
+        //while (i.parent != null)
+        //{
+        //    i = (Item)i.parent;
+        //    upPath.Add(i.Text);
+        //}
+        //List<string> downPath = new List<string>();
+        //int j = upPath.Count - 1;
+        //while (j >= 0)
+        //{
+        //    downPath.Add(upPath[j--]);
+        //}
+        //return downPath;
+    }
+
+    VisualElementGeneric findPath(List<string> path)
+    {
+        // TODO
+        //if (path != null && path.Count > 0)
+        //{
+        //    Item i = Items[0];
+        //    if (i.Text != path[0])
+        //        return null;
+        //    int j = 0;
+        //    Item found = i;
+        //    while (++j < path.Count)
+        //    {
+        //        if (i.Childs != null)
+        //        {
+        //            found = null;
+        //            foreach (var c in i.Childs)
+        //            {
+        //                if (c.Text == path[j])
+        //                {
+        //                    found = c;
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //        if (found == null)
+        //        {
+        //            return null;
+        //        }
+        //        i = found;
+        //    }
+        //    return found;
+        //}
+        return null;
+    }
+
+    void updateNode(Item i)
+    {
+        var clist = i.Childs as List<Item>;
+        List<string> listIdshort = new List<string>();
+        bool done = false;
+        if (!done && i.Tag is Aas.Submodel sm)
+        {
+            foreach (var smew1 in sm.SubmodelElements)
+            {
+                listIdshort.Add(smew1.IdShort);
+            }
+            done = true;
+        }
+        if (!done && i.Tag is Aas.SubmodelElementCollection smec)
+        {
+            foreach (var smew2 in smec.Value)
+            {
+                listIdshort.Add(smew2.IdShort);
+            }
+            done = true;
+        }
+        if (!done && i.Tag is Aas.ISubmodelElement sme)
+        {
+            listIdshort.Add(sme.IdShort);
+            done = true;
+        }
+        // check if child name exists in data children idshorts, if not delete
+        if (done)
+        {
+            List<Item> toDelete = new List<Item>();
+            if (clist != null)
+            {
+                foreach (var c in clist)
+                {
+                    if (!listIdshort.Contains(c.Text))
+                    {
+                        toDelete.Add(c);
+                    }
+                }
+            }
+            else
+            {
+                if (!listIdshort.Contains(i.Text))
+                {
+                    toDelete.Add(i);
+                }
+            }
+            foreach (var c in toDelete)
+            {
+                var parent = c.parent as Item;
+                if (parent != null)
+                {
+                    (parent.Childs as List<Item>).Remove(c);
+                }
+            }
+        }
+        // check if data children idshorts exist in child names, if not insert
+        if (clist != null)
+        {
+            foreach (var c in clist)
+            {
+                updateNode(c);
+            }
+        }
+    }
+
+    string getSymbols(VisualElementGeneric item)
+    {
+        return "++";
+    }
+
+    string ViewNodeType(VisualElementGeneric item)
+    {
+        return item?.TagString ?? "--";
+    }
+
+    string ViewNodeID(VisualElementGeneric item)
+    {
+        return item?.Caption ?? "--";
+    }
+
+    string ViewNodeInfo(VisualElementGeneric item)
+    {
+        return item?.Info ?? "--";
+    }
+
+    private Timer _timer;
+
+    protected override void OnInitialized()
+    {
+        // wire components
+        FileDrop_Handler.FileDropped = async (ddof) =>
+        {
+            var modi = await Layout.GetKeyboardModifiers();
+            await Session.FileDropped(ddof, modi);
+        };
+
+        // set timer
+        _timer = new System.Threading.Timer((e) =>
+        {
+            Session?.MainTimerTick();
+            // MainTimer_HandleLogMessages();
+            MainTimer_HandleApplicationEvents();
+            MainTimer_HandleElementAnimation();          
+        }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(100));
+        BlazorSession.totalIndexTimer++;
+    }
+
+    public void Dispose()
+    {
+        // TODO SESSION
+
+        _timer?.Dispose();
+        SubmodelService.NewDataAvailable -= NotifyForNewData;
+        BlazorSession.totalIndexTimer--;
+    }
+
+
+    //private void MainTimer_HandleLogMessages()
+    //{
+    //    return;
+
+    //    // check for Stored Prints in Log
+    //    StoredPrint sp;
+    //    while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
+    //    {
+    //        switch (sp.color)
+    //        {
+    //            default:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
+    //                break;
+    //            case StoredPrint.Color.Black:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
+    //                break;
+    //            case StoredPrint.Color.Blue:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.LightBlue);
+    //                break;
+    //            case StoredPrint.Color.Yellow:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Yellow);
+    //                break;
+    //            case StoredPrint.Color.Red:
+    //                Layout?.UpdateMessage(sp.msg, AnyUiBrushes.White, AnyUiBrushes.Red);
+    //                break;
+    //        }
+
+    //        // message window
+    //        //_messageReportWindow?.AddStoredPrint(sp);
+    //    }
+    //}
+
+
+    private void MainTimer_HandleApplicationEvents()
+    {
+        if (Session.InTimer)
+            return;
+        Session.InTimer = true;
+        // check if a plug-in has some work to do ..
+        foreach (var lpi in Plugins.LoadedPlugins.Values)
+        {
+            var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
+            if (evt !=null)
+                HandleApplicationEvent(evt, lpi);
+        }
+        Session.InTimer = false;
+    }
+
+    private async void HandleApplicationEvent(
+            AasxIntegrationBase.AasxPluginResultEventBase evt,
+            Plugins.PluginInstance pluginInstance)
+    {
+        try
+        {
+            var context = Session.helper.context as AnyUiDisplayContextHtml;
+
+            // Navigate To
+            //============
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo
+                && evtNavTo.targetReference != null && evtNavTo.targetReference.Keys.Count > 0)
+            {
+                await Session.UiHandleNavigateTo(evtNavTo.targetReference);
+
+    //            // make a work copy
+    //            var workReference = evtNavTo.targetReference.Copy();
+
+    //            // plug-in? .. shorten reference
+    //            var srl = workReference.Keys.Last();
+    //            string pluginTag = null;
+    //            if (srl?.Type == Aas.KeyTypes.FragmentReference
+    //                && srl?.Value?.StartsWith("Plugin:") == true)
+    //            {
+    //                pluginTag = srl?.Value.Substring("Plugin:".Length);
+    //                workReference.Keys.Remove(srl);
+    //            }
+
+    //            // find Referable by reference in open package
+    //            var workRf = Session?.env?.AasEnv?.FindReferableByReference(workReference);
+
+    //            // find items
+    //            #if TODO
+    //    var targetItem = Items?.FindReferable(workRf, pluginTag);
+
+    //// activate this
+    //if (targetItem != null)
+    //{
+    //    _inhibitSelectNodeForPanel = 0;
+    //_onlyUpdatePluginUi = false;
+    //ListOfItems.AddToExpandNodesFor(ExpandedNodes, targetItem);
+    //SelectedNode = targetItem;
+    //InvokeAsync(() => this.StateHasChanged());
+    //}
+    //            #endif
+            }
+
+            // Display Content Url
+            //====================
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+                && evtDispCont.Session?.SessionId is int evSessionNr
+                && evtDispCont.fn != null)
+            {
+#if TEST
+    InvokeAsync(async () => {
+    await BlazorUtils.DisplayOrDownloadFile(JSRuntime, evtDispCont.fn, evtDispCont.mimeType);
+    this.StateHasChanged();
+    });
+#else
+                Program.signalNewData(
+                    new Program.NewDataAvailableArgs(
+                        Program.DataRedrawMode.ValueChanged, evSessionNr, newPluginResultEvent: evtDispCont));
+#endif
+            }
+
+            // Redraw All
+            //===========
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements)
+            {
+                ;
+                Program.signalNewData(
+                    new Program.NewDataAvailableArgs(
+                        Program.DataRedrawMode.RebuildTreeKeepOpen, Session.SessionId,
+                        new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: true)));
+            }
+
+            // Select AAS entity
+            //=======================
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventSelectAasEntity evSelectEntity
+                && evSelectEntity.Session?.SessionId is int sessionId)
+            {
+                ;
+                var found = AnyUiDisplayContextHtml.FindEventSession(Session.SessionId);
+                if (found != null)
+                {
+                    // select function
+                    found.htmlEventInputs.Clear();
+                    found.htmlEventOutputs.Clear();
+                    found.htmlEventType = "ModalSelectEntity";
+                    found.htmlEventIn = true;
+                    found.htmlEventOut = false;
+                    found.htmlEventInputs.Add(null); // required to pass check on receiver
+
+                    // perform
+                    Program.signalNewData(
+                        new Program.NewDataAvailableArgs(
+                            Program.DataRedrawMode.ValueChanged, found.SessionId,
+                            onlyUpdatePanel: true)); // build new tree
+
+                    while (!found.htmlEventOut) Task.Delay(1) ;
+
+                    // result
+                    if (found.htmlEventOutputs.Count == 1
+                        && found.htmlEventOutputs[0] is Aas.IReferable rf)
+                    {
+                        var kl = new List<Aas.IKey>();
+                        rf?.CollectReferencesByParent(kl);
+                        pluginInstance?.InvokeAction("event-return",
+                           new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity()
+                           {
+                               sourceEvent = evSelectEntity,
+                               resultKeys = kl
+                           },
+                           sessionId);
+                    }
+
+                    // clean
+                    found.htmlEventType = "";
+                    found.htmlEventOutputs.Clear();
+                    found.htmlEventOut = false;
+                    found.htmlEventInputs.Clear();
+                    found.htmlDotnetEventIn = false;
+                }
+            }
+
+            // Select File
+            //============
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventSelectFile fileSel
+                && fileSel.Session?.SessionId is int sessionId3)
+            {
+                var found = AnyUiDisplayContextHtml.FindEventSession(sessionId3 /* bi.sessionNumber */);
+                if (found != null)
+                {
+                    // select function
+                    found.htmlEventInputs.Clear();
+                    found.htmlEventOutputs.Clear();
+                    found.htmlEventType = "ModalSelectFile";
+                    found.htmlEventIn = true;
+                    found.htmlEventOut = false;
+                    found.htmlEventInputs.Add(null); // required to pass check on receiver
+
+                    // perform
+                    Program.signalNewData(
+                        new Program.NewDataAvailableArgs(
+                            Program.DataRedrawMode.ValueChanged, found.SessionId,
+                            onlyUpdatePanel: true)); // build new tree
+
+                    while (!found.htmlEventOut) Task.Delay(1) ;
+
+                    // result
+                    if (found.htmlEventOutputs.Count == 1
+                        && found.htmlEventOutputs[0] is string fn)
+                    {
+                        pluginInstance?.InvokeAction("event-return",
+                            new AasxIntegrationBase.AasxPluginEventReturnSelectFile()
+                            {
+                                sourceEvent = fileSel,
+                                FileNames = new [] { fn }
+                            },
+                            sessionId3);
+                    }
+
+                    // clean
+                    found.htmlEventType = "";
+                    found.htmlEventOutputs.Clear();
+                    found.htmlEventOut = false;
+                    found.htmlEventInputs.Clear();
+                    found.htmlDotnetEventIn = false;
+                }
+            }
+
+            // Message Box
+            //============
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventMessageBox evMsgBox
+                && evMsgBox.Session?.SessionId is int sessionId2
+                && context != null)
+            {
+                var res = context.MessageBoxFlyoutShow(
+                    evMsgBox.Message, evMsgBox.Caption, evMsgBox.Buttons, evMsgBox.Image);
+
+                // fire back
+                pluginInstance?.InvokeAction("event-return",
+                    new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { 
+                        sourceEvent = evt,
+                        Result = res 
+                    },
+                    sessionId2);
+            }
+
+            // Re-render Any UI Panels
+            //========================
+
+            if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
+            {
+                if (context != null)
+                {
+
+                    if (update.Mode == AnyUiRenderMode.StatusToUi)
+                    {
+                        // only update some parameters
+                        // Note: deprecated
+                        // context.UpdateRenderElements(bi.stack17, update.Mode);
+
+                        // pass on with data slightly modified data
+                        Program.signalNewData(
+                            new Program.NewDataAvailableArgs(
+                                Program.DataRedrawMode.RebuildTreeKeepOpen, Session.SessionId,
+                                new AnyUiLambdaActionPluginUpdateAnyUi()
+                                {
+                                    PluginName = update.PluginName,
+                                    UpdateMode = update.Mode,
+                                    UseInnerGrid = update.UseInnerGrid
+                                }));
+                    }
+                    else
+                    if (update.Mode == AnyUiRenderMode.All)
+                    {
+                        // next redraw will only update from plugin
+                        _onlyUpdatePluginUi = true;
+
+                        //// re-create items
+                        //Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
+
+                        // trigger redraw
+                        InvokeAsync(() => this.StateHasChanged());
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Singleton.Error(
+                ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
+        }
+    }
+
+    private AnimateDemoValues _mainTimer_AnimateDemoValues = new AnimateDemoValues();
+
+    private void MainTimer_HandleElementAnimation()
+    {
+        // access
+        if (Session.InTimer)
+            return;
+        if (Session?.significantElements == null)
+            return;
+
+        // dive in
+        Session.InTimer = true;
+
+        // find elements?
+        foreach (var rec in Session.significantElements.Retrieve(Session.env?.AasEnv, SignificantAasElement.ValueAnimation))
+        {
+            // valid?
+            if (rec?.Reference == null || rec.Reference.Keys.Count < 1 || rec.LiveObject == null)
+                continue;
+
+            // which SME?
+            if (rec.LiveObject is Aas.Property prop)
+            {
+                _mainTimer_AnimateDemoValues.Animate(prop,
+                    emitEvent: (prop2, evi2) =>
+                    {
+                    });
+            }
+        }
+
+        // dive out
+        Session.InTimer = false;
+    }
+
+    protected async void ContainerListItemSelected(BlazorExplorer.Pages.PanelPackageContainerList.ContextMenuSelectArgs args)
+    {
+        // access
+        var cmd = args?.MenuItem?.Name?.Trim().ToLower();
+        var fi = args?.RepoItem;
+        var repo = args?.ContainerList;
+        var repoList = Session.PackageCentral.Repositories;
+        if (args?.ContainerList == null || cmd?.HasContent() != true)
+            return;
+
+        var update = false;
+
+        // header of container list
+        if (fi == null)
+        {
+            if (cmd == "query" || cmd == "filerepoquery")
+            {
+                var uc = new AnyUiDialogueDataSelectFromRepository("Select from: " + repo.Header);
+                uc.Items = repo.EnumerateItems().ToList();
+                if (await Session.DisplayContext.StartFlyoverModalAsync(uc)
+                    && uc.ResultItem != null)
+                {
+                    Log.Singleton.Info($"Loading from repository {repo.Header} the item {uc.ResultItem.InfoLocation} ..");
+                    // this will update already by itself
+                    await Session?.ContainerListItemLoad(repo, fi);
+                }
+            }
+
+            if (cmd == "filerepoclose")
+            {
+                if (AnyUiMessageBoxResult.OK != await Session.DisplayContext.MessageBoxFlyoutShowAsync(
+                            "Close file repository? Pending changes might be unsaved!",
+                            "AASX File Repository",
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+                    return;
+
+                if (repoList.Contains(repo))
+                {
+                    repoList.Remove(repo);
+                    update = true;
+                }
+                else
+                    Log.Singleton.Error("Error when removing repository from list of repositories."); 
+            }
+
+            if (cmd == "filerepoeditname")
+            {
+                var uc = new AnyUiDialogueDataTextBox("Edit name of repository");
+                uc.Text = repo.Header;
+                if (await Session.DisplayContext.StartFlyoverModalAsync(uc))
+                {
+                    repo.Header = uc.Text;
+                    update = true;
+                }
+            }
+
+            if (cmd == "item-up")
+            {
+                // TODO (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase
+                int i = repoList.IndexOf(repo);
+                if (i > 0)
+                {
+                    repoList.RemoveAt(i);
+                    repoList.Insert(i - 1, repo);
+                }
+            }
+
+            if (cmd == "item-down")
+            {
+                // TODO (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase
+                int i = repoList.IndexOf(repo);
+                if (i < repoList.Count - 1)
+                {
+                    repoList.RemoveAt(i);
+                    repoList.Insert(i + 1, repo);
+                }
+            }        
+
+            if (cmd == "filereposaveas")
+            {
+                Log.Singleton.Error("FileRepoSaveAs not implemented!");
+            }
+
+            if (cmd == "filerepomakerelative")
+                if (repo is PackageContainerListLocal frl)
+                {
+                    // make sure
+                    if (AnyUiMessageBoxResult.OK != await Session.DisplayContext.MessageBoxFlyoutShowAsync(
+                            "Make filename relative to the locaton of the file repository? " +
+                            "This enables re-locating the repository.",
+                            "AASX File Repository",
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
+                        return;
+
+                    if (!frl.Filename.HasContent())
+                    {
+                        Log.Singleton.Error("AASX file repository has no valid filename!");
+                        return;
+                    }
+
+                    // execute (and display)
+                    try
+                    {
+                        Log.Singleton.Info("Make AASX file names relative to {0}",
+                            System.IO.Path.GetFullPath(System.IO.Path.GetDirectoryName("" + frl.Filename)));
+                        frl.MakeFilenamesRelative();
+                        update = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(
+                            ex, $"When making AASX file names in repository relative.");
+                    }
+                }
+
+            if (cmd == "filerepoprint")
+            {
+                // try print
+                try
+                {
+                    Log.Singleton.Error("Printing not implmented.");
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "When printing, an error occurred");
+                }
+            }
+
+            if (cmd == "filerepoaddcurrent")
+            {
+                // check
+                var veAas = Session.DisplayElements.SelectedItem as VisualElementAdminShell;
+
+                var veEnv = veAas?.FindFirstParent((ve) =>
+                (ve is VisualElementEnvironmentItem vev
+                && vev.theItemType == VisualElementEnvironmentItem.ItemType.Package), includeThis: false)
+                    as VisualElementEnvironmentItem;
+
+                if (veAas == null || veAas.theAas == null || veAas.theEnv == null || veAas.thePackage == null
+                    || veEnv == null || !veEnv.thePackageSourceFn.HasContent())
+                {
+                    await Session.DisplayContext.MessageBoxFlyoutShowAsync(
+                        "No valid AAS selected. The application needs to be in edit mode. " +
+                        "Aborting.", "AASX File repository",
+                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                    return;
+                }
+
+                // generate appropriate container
+                var cnt = PackageContainerFactory.GuessAndCreateFor(
+                    null, veEnv.thePackageSourceFn, veEnv.thePackageSourceFn,
+                    overrideLoadResident: false,
+                    containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr));
+                if (cnt is PackageContainerRepoItem ri)
+                {
+                    ri.Env = veAas.thePackage;
+                    ri.CalculateIdsTagAndDesc();
+                    repo.Add(ri);
+                }
+            }
+
+            if (cmd == "filerepoaddtoserver")
+            {
+                Log.Singleton.Error("FileRepoAddToServer not implemented!");
+            }
+
+            if (cmd == "filerepomultiadd")
+            {
+                Log.Singleton.Error("FileRepoMultiAdd not implemented!");
+            }
+
+            if (cmd == "filerepoaddfromserver")
+            {
+                // read server address
+                var uc = new AnyUiDialogueDataTextBox("REST endpoint (without \"/server/listaas\"):",
+                    symbol: AnyUiMessageBoxImage.Question);
+                uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
+                await Session.DisplayContext.StartFlyoverModalAsync(uc);
+                if (!uc.Result)
+                    return;
+
+                // execute
+                try
+                {
+                    var conn = new PackageConnectorHttpRest(null, new Uri(uc.Text));
+
+                    var task = Task.Run(() => conn.GenerateRepositoryFromEndpointAsync());
+                    var items = task.Result;
+                    if (items == null || items.Count < 1)
+                    {
+                        Log.Singleton.Error($"When adding file repo items from REST server {uc.Text}," +
+                            $"the function returned NO items!");
+                        return;
+                    }
+
+                    // loop
+                    foreach (var fi2 in items)
+                        repo.Add(fi);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"When adding file repo items from REST server {uc.Text}, " +
+                        $"an error occurred");
+                }
+            }
+        }
+
+        // specific item of container list
+        if (fi != null)
+        {
+            if (cmd == "deletelist")
+            {
+                repo.Remove(fi);
+                update = true;
+            }
+
+            if (cmd == "deletefromrepo")
+            {
+                repo.DeletePackageFromServer(fi);
+                update = true;
+            }
+
+            if (cmd == "moveup")
+            {
+                repo.MoveUp(fi);
+                update = true;
+            }
+
+            if (cmd == "movedown")
+            {
+                repo.MoveDown(fi);
+                update = true;
+            }
+
+            if (cmd == "unload")
+            {
+                fi.Close();
+                update = true;
+            }
+
+            if (cmd == "recalc")
+            {
+                await fi.LoadResidentIfPossible(repo.GetFullItemLocation(fi.Location));
+
+                if (fi.Env?.AasEnv == null)
+                {
+                    Log.Singleton.Error("AAS information not already loaded for this item.");
+                    return;
+                }
+
+                fi.CalculateIdsTagAndDesc();
+            }
+
+            if (cmd == "doubleclick")
+            {
+                // this will update already by itself
+                await Session?.ContainerListItemLoad(repo, fi);
+            }
+        }
+
+        // update?
+        if (update)
+        {
+            Session.RedrawRepositories();
+        }
+    }
+
+    protected void OnNodeClicked(VisualElementGeneric ve, BlazorInput.KeyboardModifiers modi)
+    {
+        Session.DisplayElements.NotifyTreeSelectionChanged(ve, modi);
+        Session.DisplayElements_SelectedItemChanged(Session.DisplayElements, null);
+        Session.DisposeLoadedPlugin();
+        this.StateHasChanged();
+    }
+
+}

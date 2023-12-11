@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,33 +14,30 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
+    [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    // ReSharper disable UnusedType.Global
-    public class AasxPlugin : IAasxPluginInterface
-    // ReSharper enable UnusedType.Global
+    public class AasxPlugin : AasxPluginBase
     {
-        private LogInstance _log = new LogInstance();
-        private PluginEventStack _eventStack = new PluginEventStack();
         private AasxPluginKnownSubmodels.KnownSubmodelsOptions _options
             = new AasxPluginKnownSubmodels.KnownSubmodelsOptions();
 
-        private AasxPluginKnownSubmodels.KnownSubmodelsControl _viewerControl
-            = new AasxPluginKnownSubmodels.KnownSubmodelsControl();
-
-        public string GetPluginName()
+        public class Session : PluginSessionBase
         {
-            _log.Info("GetPluginName() = {0}", "AasxPluginKnownSubmodels");
-            return "AasxPluginKnownSubmodels";
+            public AasxPluginKnownSubmodels.KnownSubmodelAnyUiControl AnyUiControl = null;
         }
 
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
+            PluginName = "AasxPluginKnownSubmodels";
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
@@ -65,15 +62,16 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             _options.IndexListOfRecords(_options.Records);
         }
 
-        public object CheckForLogMessage()
+        public new object CheckForLogMessage()
         {
             return _log.PopLastShortTermPrint();
         }
 
-        public AasxPluginActionDescriptionBase[] ListActions()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
             _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
+
             // for speed reasons, have the most often used at top!
             res.Add(new AasxPluginActionDescriptionBase("call-check-visual-extension",
                 "When called with Referable, returns possibly visual extension for it."));
@@ -86,13 +84,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 "Pops and returns the earliest event from the event stack."));
             res.Add(new AasxPluginActionDescriptionBase("get-check-visual-extension",
                 "Returns true, if plug-ins checks for visual extension."));
-            res.Add(new AasxPluginActionDescriptionBase("fill-panel-visual-extension",
-                "When called, fill given WPF panel with control for graph display."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "fill-anyui-visual-extension",
+                "When called, fill given AnyUI panel with control for graph display."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "update-anyui-visual-extension",
+                "When called, updated already presented AnyUI panel with some arguments."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "dispose-anyui-visual-extension",
+                "When called, will dispose the plugin data associated with given session id."));
 
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // for speed reasons, have the most often used at top!
             if (action == "call-check-visual-extension")
@@ -102,26 +107,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Aas.Submodel;
                 if (sm == null)
                     return null;
 
                 // check for a record in options, that matches Submodel
-#if __old
-                var found = false;
-
-                if (_options != null && _options.Records != null)
-                    foreach (var rec in _options.Records)
-                        if (rec.AllowSubmodelSemanticId != null)
-                            foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.semanticId != null && sm.semanticId.Matches(x))
-                                {
-                                    found = true;
-                                    break;
-                                }
-#else
-                bool found = _options?.ContainsIndexKey(sm?.semanticId?.GetAsExactlyOneKey()) ?? false;
-#endif               
+                bool found = _options?.ContainsIndexKey(sm?.SemanticId?.GetAsExactlyOneKey()) ?? false;
                 if (!found)
                     return null;
 
@@ -132,61 +123,67 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
-            // rest follows
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                enableGetCheckVisuExt: true);
+            if (help != null)
+                return help;
 
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
+            // rest follows           
+
+            if (action == "fill-anyui-visual-extension")
             {
-                var newOpt = JsonConvert.DeserializeObject<AasxPluginKnownSubmodels.KnownSubmodelsOptions>(
-                    args[0] as string);
-                if (newOpt != null)
-                    _options = newOpt;
-            }
-
-            if (action == "get-json-options")
-            {
-                var json = JsonConvert.SerializeObject(_options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
-
-            if (action == "get-licenses")
-            {
-                var lic = new AasxPluginResultLicense();
-                lic.shortLicense = "";
-                lic.longLicense = "";
-                lic.isStandardLicense = true;
-
-                return lic;
-            }
-
-            if (action == "get-events" && _eventStack != null)
-            {
-                // try access
-                return _eventStack.PopEvent();
-            }
-
-            if (action == "get-check-visual-extension")
-            {
-                var cve = new AasxPluginResultBaseObject();
-                cve.strType = "True";
-                cve.obj = true;
-                return cve;
-            }
-
-            if (action == "fill-panel-visual-extension" && _viewerControl != null)
-            {
-                // arguments
-                if (args?.Length < 3)
+                // arguments (package, submodel, panel, display-context, session-id)
+                if (args == null || args.Length < 5)
                     return null;
 
-                // call
-                var resobj = AasxPluginKnownSubmodels.KnownSubmodelsControl.FillWithWpfControls(
-                    _log, args?[0], args?[1],
-                    _options, _eventStack, args?[2]);
+                // create session and call
+                var session = _sessions.CreateNewSession<Session>(args[4]);
+                session.AnyUiControl = AasxPluginKnownSubmodels.KnownSubmodelAnyUiControl.FillWithAnyUiControls(
+                    _log, args[0], args[1], _options, _eventStack, args[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = resobj;
+                res.obj = session.AnyUiControl;
                 return res;
+            }
+
+            if (action == "update-anyui-visual-extension"
+                && _sessions != null)
+            {
+                // arguments (panel, display-context, session-id)
+                if (args == null || args.Length < 3)
+                    return null;
+
+                if (_sessions.AccessSession(args[2], out Session session))
+                {
+                    // call
+                    session.AnyUiControl.Update(args);
+
+                    // give object back
+                    var res = new AasxPluginResultBaseObject();
+                    res.obj = 42;
+                    return res;
+                }
+            }
+
+            if (action == "dispose-anyui-visual-extension"
+                && _sessions != null)
+            {
+                // arguments (session-id)
+                if (args == null || args.Length < 1)
+                    return null;
+
+                // ReSharper disable UnusedVariable
+                if (_sessions.AccessSession(args[0], out Session session))
+                {
+                    // dispose all ressources
+                    ;
+
+                    // remove
+                    _sessions.Remove(args[0]);
+                }
+                // ReSharper enable UnusedVariable
             }
 
             // default

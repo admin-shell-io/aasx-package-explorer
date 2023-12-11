@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -27,90 +27,81 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     // ReSharper disable once UnusedType.Global
-    public class AasxPlugin : IAasxPluginInterface
-    {
+    public class AasxPlugin : AasxPluginBase
+	{
         #region // Plug In
-        private LogInstance logger = new LogInstance();
-        private AasxUaNetServer.UaNetServerOptions options = new AasxUaNetServer.UaNetServerOptions();
-        private bool stop = false;
-
-        private UaServerWrapper server = null;
-
-        public string GetPluginName()
-        {
-            logger.Info("GetPluginName() = {0}", "Net46AasxServerPlugin");
-            return "AasxPluginUaNetServer";
-        }
+        private AasxUaNetServer.UaNetServerOptions _options = new AasxUaNetServer.UaNetServerOptions();
+        private bool _stop = false;
+        private UaServerWrapper _server = null;
 
         /* TODO (MIHO, 2021-11-17): damned, weird dependency reasons between
-         * .netstandard2.0 and .net472 seem NOT TO ALLOW referring to AasxIntegrationBase.
+         * .net6.0 and .net472 seem NOT TO ALLOW referring to AasxIntegrationBase.
          * Fix */
-        private static T LoadDefaultOptionsFromAssemblyDirXXXX<T>(
-            string pluginName, Assembly assy = null,
-            JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
+        //private static T LoadDefaultOptionsFromAssemblyDirXXXX<T>(
+        //    string pluginName, Assembly assy = null,
+        //    JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
+        //{
+        //    // expand assy?
+        //    if (assy == null)
+        //        assy = Assembly.GetExecutingAssembly();
+        //    if (pluginName == null || pluginName == "")
+        //        return null;
+
+        //    // build fn
+        //    var optfn = System.IO.Path.Combine(
+        //                System.IO.Path.GetDirectoryName(assy.Location),
+        //                pluginName + ".options.json");
+
+        //    if (File.Exists(optfn))
+        //    {
+        //        var optText = File.ReadAllText(optfn);
+
+        //        return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
+        //    }
+
+        //    // no
+        //    return null;
+        //}
+
+
+        public new void InitPlugin(string[] args)
         {
-            // expand assy?
-            if (assy == null)
-                assy = Assembly.GetExecutingAssembly();
-            if (pluginName == null || pluginName == "")
-                return null;
-
-            // build fn
-            var optfn = System.IO.Path.Combine(
-                        System.IO.Path.GetDirectoryName(assy.Location),
-                        pluginName + ".options.json");
-
-            if (File.Exists(optfn))
-            {
-                var optText = File.ReadAllText(optfn);
-
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
-            }
-
-            // no
-            return null;
-        }
-
-
-        public void InitPlugin(string[] args)
-        {
-            logger.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            PluginName = "AasxPluginUaNetServer";
+			_log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxUaNetServer.UaNetServerOptions.CreateDefault();
+            _options = AasxUaNetServer.UaNetServerOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
             {
                 var newOpt =
-                    /* AasxPluginOptionsBase */ LoadDefaultOptionsFromAssemblyDirXXXX<
-                         AasxUaNetServer.UaNetServerOptions>(
+					AasxPluginOptionsBase
+						.LoadDefaultOptionsFromAssemblyDir<AasxUaNetServer.UaNetServerOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                logger?.Error(ex, "Exception when reading default options {1}");
+                _log?.Error(ex, "Exception when reading default options {1}");
             }
-        }
 
-        public object CheckForLogMessage()
-        {
-            return logger.PopLastShortTermPrint();
-        }
+			// index them!
+			_options.IndexListOfRecords(_options.Records);
+		}
 
-        public AasxPluginActionDescriptionBase[] ListActions()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            logger.Info("ListActions() called");
-            var res = new List<AasxPluginActionDescriptionBase>();
-            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
+			var res = ListActionsBasicHelper(
+                enableCheckVisualExt: false,
+                enableLicenses: true);
             res.Add(new AasxPluginActionDescriptionBase("server-start", "Start OPC UA Server for AASX."));
             res.Add(new AasxPluginActionDescriptionBase("server-stop", "Stops server function."));
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             if (action == "get-licenses")
             {
@@ -128,23 +119,23 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
 
             if (action == "server-stop")
-                this.stop = true;
+                this._stop = true;
 
             if (action == "server-start")
             {
                 // init
-                this.stop = false;
-                logger.Info("Starting OPC UA AASX Server. Based on the OPC Foundation UA Net Standard stack.");
-                logger.Info("Copyright (c) 2018-2021 Festo AG & Co. KG " +
+                this._stop = false;
+                _log.Info("Starting OPC UA AASX Server. Based on the OPC Foundation UA Net Standard stack.");
+                _log.Info("Copyright (c) 2018-2023 Festo SE & Co. KG " +
                     "<https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister.");
-                logger.Info("Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal "
+                _log.Info("Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal "
                     + "Community License (RCL).");
-                logger.Info("See https://opcfoundation.org/license/rcl.html.");
+                _log.Info("See https://opcfoundation.org/license/rcl.html.");
 
                 // access AASX
                 if (args == null || args.Length < 1)
                 {
-                    logger.Info("No AASX package environment passed to plug-in. Stopping...");
+                    _log.Info("No AASX package environment passed to plug-in. Stopping...");
                     System.Threading.Thread.Sleep(5000);
                     return null;
                 }
@@ -152,19 +143,19 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var package = args[0] as AdminShellPackageEnv;
                 if (package == null)
                 {
-                    logger.Info("No AASX package environment passed to plug-in. Stopping...");
+                    _log.Info("No AASX package environment passed to plug-in. Stopping...");
                     System.Threading.Thread.Sleep(5000);
                     return null;
                 }
-                logger.Info("AASX package env has filename {0}", package.Filename);
+                _log.Info("AASX package env has filename {0}", package.Filename);
 
                 // configure UA here a little bit
-                ApplicationInstance.MessageDlg = new ApplicationMessageDlg(logger);
+                ApplicationInstance.MessageDlg = new ApplicationMessageDlg(_log);
 
                 // arguments
                 var externalOptions = new List<string>();
-                if (options?.Args != null)
-                    foreach (var o1 in options.Args)
+                if (_options?.Args != null)
+                    foreach (var o1 in _options.Args)
                         externalOptions.Add(o1);
 
                 if (args.Length >= 2 && args[1] is string[])
@@ -181,7 +172,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var lstr = $"Taking over {externalOptions.Count} arguments: ";
                 foreach (var ls in externalOptions)
                     lstr += ls + " ";
-                logger.Info("{0}", lstr);
+                _log.Info("{0}", lstr);
 
                 // parse
                 var internalOptions = new AasOpcUaServer.AasxUaServerOptions();
@@ -190,42 +181,41 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // run the server
                 try
                 {
-                    this.server = new UaServerWrapper(_autoAccept: true, _stopTimeout: 0, _aasxEnv: package,
-                        logger: logger, _serverOptions: internalOptions);
-                    this.server.Run();
+                    this._server = new UaServerWrapper(_stopTimeout: 0, _aasxEnv: package, logger: _log, _serverOptions: internalOptions);
+                    this._server.Run();
                 }
                 catch (Exception ex)
                 {
-                    logger.Info("Exception whenn running server: {0}", ex.Message);
+                    _log.Info("Exception whenn running server: {0}", ex.Message);
                 }
 
                 // do as long as user wants
                 int i = 0;
                 while (true)
                 {
-                    if (this.stop)
+                    if (this._stop)
                     {
-                        logger.Info("Stopping ...");
-                        if (this.server != null)
-                            this.server.Stop();
+                        _log.Info("Stopping ...");
+                        if (this._server != null)
+                            this._server.Stop();
                         break;
                     }
 
-                    // MICHA TODO : Temporary disabled
+                    //TODO (MIHO, 0000-00-00): Temporary disabled
                     // seems not to work anymore
                     ////if (this.server != null && this.server.IsNotRunningAnymore())
                     ////    break;
 
                     // new option
-                    if (true == this.server?.FinallyStopped)
+                    if (true == this._server?.FinallyStopped)
                         break;
 
                     System.Threading.Thread.Sleep(50);
                     if (i % 200 == 0)
-                        logger.Info("Heartbeat {0} x 50ms ..", i);
+                        _log.Info("Heartbeat {0} x 50ms ..", i);
                     i++;
                 }
-                logger.Info("Stopped.");
+                _log.Info("Stopped.");
             }
 
             var res = new AasxPluginResultBase();

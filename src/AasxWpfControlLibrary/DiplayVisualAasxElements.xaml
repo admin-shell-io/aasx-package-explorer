@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600" Loaded="UserControl_Loaded">
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -17,7 +17,7 @@
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
 
-    <!-- TODO: Improve data binding? -->
+    <!-- TODO (??, 0000-00-00): Improve data binding? -->
     <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
     
     <Grid>
@@ -28,18 +28,20 @@
         <!-- Other methdo:
              SelectedItemChanged="TreeViewInner_SelectedItemChanged" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp" -->
         
-        <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="#FFE0E0E0" 
+        <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="White" 
                   RequestBringIntoView="TreeViewElem_RequestBringIntoView"                   
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   TreeViewItem.Expanded="TreeViewInner_Expanded"
                   SelectedItemChanged="TreeViewMutiSelect_SelectedItemChanged"
-                  Padding="0,2,4,2">
+                  BorderThickness="0.0"
+                  BorderBrush="White"
+                  Padding="0,0,0,0">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Members}">
                     <HierarchicalDataTemplate.Resources>
                         
                     </HierarchicalDataTemplate.Resources>
-                    <Grid Margin="2" Width="2000" Height="24" >
+                    <Grid Margin="2" Width="2000" Height="22" >
                         <Grid.Resources>
                             <!--
                             <sys:Double x:Name="DblValue1" >1</sys:Double>
@@ -48,9 +50,9 @@
                         <Rectangle Fill="{Binding Background, Converter={StaticResource AnyUiColorToWpfBrushConverter}}" 
                                    Stroke="{Binding Border, Converter={StaticResource AnyUiColorToWpfBrushConverter}}" 
                                    StrokeThickness="1"/>
-                        <StackPanel Margin="2" VerticalAlignment="Center" Orientation="Horizontal">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                             <Border x:Name="VB27" Background="{Binding TagBg, Converter={StaticResource AnyUiColorToWpfBrushConverter}}" 
-                                    CornerRadius="2" Width="30" Height="18">
+                                    CornerRadius="0" Width="30" Height="22">
                                 <Viewbox Width="28" Stretch="Uniform">
                                     <TextBlock TextAlignment="Center" Text="{Binding TagString}" 
                                                FontWeight="Bold" 
@@ -58,13 +60,13 @@
                                 </Viewbox>
                             </Border>
                             <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding Caption}" FontWeight="Bold">
+                            <TextBlock Text="{Binding Caption}" FontWeight="Bold" VerticalAlignment="Center">
                                 <TextBlock.Foreground>
                                     <SolidColorBrush x:Name="myAnimatedBrush1" Color="Black" />
                                 </TextBlock.Foreground>
                             </TextBlock>
                             <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding Info}" FontWeight="Bold">
+                            <TextBlock Text="{Binding Info}" VerticalAlignment="Center">
                                 <TextBlock.Foreground>
                                     <SolidColorBrush x:Name="myAnimatedBrush2" Color="#ff555555" />
                                 </TextBlock.Foreground>

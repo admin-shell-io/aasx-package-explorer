@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,7 +14,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AdminShellNS;
+using Extensions;
 using Opc.Ua;
+using Aas = AasCore.Aas3_0;
 
 namespace AasOpcUaServer
 {
@@ -34,9 +36,9 @@ namespace AasOpcUaServer
             return clean;
         }
 
-        public static string ToOpcUaReference(AdminShell.Reference refid)
+        public static string ToOpcUaReference(Aas.IReference refid)
         {
-            if (refid == null || refid.IsEmpty)
+            if (refid == null || refid.IsEmpty())
                 return null;
 
             var semstr = "";
@@ -44,138 +46,171 @@ namespace AasOpcUaServer
             {
                 if (semstr != "")
                     semstr += ",";
-                semstr += String.Format("({0})({1})[{2}]{3}",
-                            k.type, k.local ? "local" : "no-local", k.idType, k.value);
+                semstr += String.Format("({0}){1}", k.Type, k.Value);
             }
 
             return semstr;
         }
 
-        public static List<string> ToOpcUaReferenceList(AdminShell.Reference refid)
+        public static List<string> ToOpcUaReferenceList(Aas.IReference refid)
         {
-            if (refid == null || refid.IsEmpty)
+            if (refid == null || refid.IsEmpty())
                 return null;
 
             var res = new List<string>();
             foreach (var k in refid.Keys)
             {
-                res.Add(String.Format("({0})({1})[{2}]{3}",
-                            k.type, k.local ? "local" : "no-local", k.idType, k.value));
+                res.Add(String.Format("({0}){1}", k.Type, k.Value));
             }
 
             return res;
         }
 
-        public static LocalizedText[] GetUaLocalizedTexts(IList<AdminShell.LangStr> ls)
+		public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.IAbstractLangString> ls)
+		{
+			if (ls == null || ls.Count < 1)
+				return new[] { new LocalizedText("", "") };
+			var res = new LocalizedText[ls.Count];
+			for (int i = 0; i < ls.Count; i++)
+				res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
+			return res;
+		}
+
+		public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringPreferredNameTypeIec61360> ls)
+		{
+			if (ls == null || ls.Count < 1)
+				return new[] { new LocalizedText("", "") };
+			var res = new LocalizedText[ls.Count];
+			for (int i = 0; i < ls.Count; i++)
+				res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
+			return res;
+		}
+
+		public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringShortNameTypeIec61360> ls)
+		{
+			if (ls == null || ls.Count < 1)
+				return new[] { new LocalizedText("", "") };
+			var res = new LocalizedText[ls.Count];
+			for (int i = 0; i < ls.Count; i++)
+				res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
+			return res;
+		}
+
+		public static LocalizedText[] GetUaLocalizedTexts(IList<Aas.ILangStringDefinitionTypeIec61360> ls)
         {
             if (ls == null || ls.Count < 1)
                 return new[] { new LocalizedText("", "") };
             var res = new LocalizedText[ls.Count];
             for (int i = 0; i < ls.Count; i++)
-                res[i] = new LocalizedText(ls[i].lang, ls[i].str);
+                res[i] = new LocalizedText(ls[i].Language, ls[i].Text);
             return res;
         }
 
-        public static LocalizedText GetBestUaDescriptionFromAasDescription(AdminShell.Description desc)
+        public static LocalizedText GetBestUaDescriptionFromAasDescription(List<Aas.ILangStringTextType> desc)
         {
             var res = new LocalizedText("", "");
-            if (desc != null && desc.langString != null)
+            if (desc != null)
             {
                 var found = false;
-                foreach (var ls in desc.langString)
-                    if (!found || ls.lang.Trim().ToLower().StartsWith("en"))
+                foreach (var ls in desc)
+                    if (!found || ls.Language.Trim().ToLower().StartsWith("en"))
                     {
                         found = true;
-                        res = new LocalizedText(ls.lang, ls.str);
+                        res = new LocalizedText(ls.Language, ls.Text);
                     }
             }
             return res;
         }
 
-        public static bool AasValueTypeToUaDataType(string valueType, out Type sharpType, out NodeId dataTypeId)
+        public static bool AasValueTypeToUaDataType(
+            Aas.DataTypeDefXsd valueType, out Type sharpType, out NodeId dataTypeId)
         {
             // defaults
             sharpType = "".GetType();
             dataTypeId = DataTypeIds.String;
-            if (valueType == null)
-                return false;
 
             // parse
-            var vt = valueType.ToLower().Trim();
-            if (vt == "boolean")
+            if (valueType == Aas.DataTypeDefXsd.Boolean)
             {
                 sharpType = typeof(bool);
                 dataTypeId = DataTypeIds.Boolean;
                 return true;
             }
-            else if (vt == "datetime" || vt == "datetimestamp" || vt == "time")
+            else if (valueType == Aas.DataTypeDefXsd.DateTime 
+                     || valueType == Aas.DataTypeDefXsd.Date 
+                     || valueType == Aas.DataTypeDefXsd.Time)
             {
                 sharpType = typeof(Int64);
                 dataTypeId = DataTypeIds.DateTime;
                 return true;
             }
-            else if (vt == "decimal" || vt == "integer" || vt == "long"
-                     || vt == "nonpositiveinteger" || vt == "negativeinteger")
+            else if (valueType == Aas.DataTypeDefXsd.Decimal 
+                     || valueType == Aas.DataTypeDefXsd.Integer 
+                     || valueType == Aas.DataTypeDefXsd.Long
+					 || valueType == Aas.DataTypeDefXsd.NonPositiveInteger 
+                     || valueType == Aas.DataTypeDefXsd.NegativeInteger)
             {
                 sharpType = typeof(Int64);
                 dataTypeId = DataTypeIds.Int64;
                 return true;
             }
-            else if (vt == "int")
+            else if (valueType == Aas.DataTypeDefXsd.Int)
             {
                 sharpType = typeof(Int32);
                 dataTypeId = DataTypeIds.Int32;
                 return true;
             }
-            else if (vt == "short")
+            else if (valueType == Aas.DataTypeDefXsd.Short)
             {
                 sharpType = typeof(Int16);
                 dataTypeId = DataTypeIds.Int16;
                 return true;
             }
-            else if (vt == "byte")
+            else if (valueType == Aas.DataTypeDefXsd.Byte)
             {
                 sharpType = typeof(SByte);
                 dataTypeId = DataTypeIds.Byte;
                 return true;
             }
-            else if (vt == "nonnegativeinteger" || vt == "positiveinteger" || vt == "unsignedlong")
+            else if (valueType == Aas.DataTypeDefXsd.NonNegativeInteger 
+                     || valueType == Aas.DataTypeDefXsd.PositiveInteger 
+                     || valueType == Aas.DataTypeDefXsd.UnsignedLong)
             {
                 sharpType = typeof(UInt64);
                 dataTypeId = DataTypeIds.UInt64;
                 return true;
             }
-            else if (vt == "unsignedint")
+            else if (valueType == Aas.DataTypeDefXsd.UnsignedInt)
             {
                 sharpType = typeof(UInt32);
                 dataTypeId = DataTypeIds.UInt32;
                 return true;
             }
-            else if (vt == "unsignedshort")
+            else if (valueType == Aas.DataTypeDefXsd.UnsignedShort)
             {
                 sharpType = typeof(UInt16);
                 dataTypeId = DataTypeIds.UInt16;
                 return true;
             }
-            else if (vt == "unsignedbyte")
+            else if (valueType == Aas.DataTypeDefXsd.UnsignedByte)
             {
                 sharpType = typeof(Byte);
                 dataTypeId = DataTypeIds.Byte;
                 return true;
             }
-            else if (vt == "double")
+            else if (valueType == Aas.DataTypeDefXsd.Double)
             {
                 sharpType = typeof(double);
                 dataTypeId = DataTypeIds.Double;
                 return true;
             }
-            else if (vt == "float")
+            else if (valueType == Aas.DataTypeDefXsd.Float)
             {
                 sharpType = typeof(float);
                 dataTypeId = DataTypeIds.Float;
                 return true;
             }
-            else if (vt == "string")
+            else if (valueType == Aas.DataTypeDefXsd.String)
             {
                 sharpType = typeof(string);
                 dataTypeId = DataTypeIds.String;

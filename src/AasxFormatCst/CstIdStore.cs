@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,14 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
+using Extensions;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using Newtonsoft.Json;
 
 // ReSharper disable UnassignedField.Global
 
@@ -30,7 +26,7 @@ namespace AasxFormatCst
         /// <summary>
         /// Full fledged Reference, presumably not used at all
         /// </summary>
-        public AdminShell.SemanticId semanticId;
+        public Reference semanticId;
 
         /// <summary>
         /// String based CST ID info in one string ("Reference" format)
@@ -66,14 +62,14 @@ namespace AasxFormatCst
         }
 
 
-        public void CreateEmptyItemsFromCDs(IEnumerable<AdminShell.ConceptDescription> cds)
+        public void CreateEmptyItemsFromCDs(IEnumerable<ConceptDescription> cds)
         {
             if (cds == null)
                 return;
 
             foreach (var cd in cds)
             {
-                var si = cd?.identification?.id;
+                var si = cd?.Id;
                 if (si != null)
                 {
                     var item = new CstIdDictionaryItem()
@@ -87,7 +83,7 @@ namespace AasxFormatCst
         }
 
         public void CreateEmptyItemsFromSMEs(
-            AdminShell.SubmodelElementWrapperCollection smwc,
+            List<ISubmodelElement> smwc,
             bool omitIecEclass = false)
         {
             if (smwc == null)
@@ -95,12 +91,12 @@ namespace AasxFormatCst
 
             foreach (var smw in smwc)
             {
-                var sme = smw?.submodelElement;
+                var sme = smw;
                 if (sme == null)
                     continue;
 
                 // any
-                var si = sme.semanticId?.GetAsExactlyOneKey()?.value;
+                var si = sme.SemanticId?.GetAsExactlyOneKey()?.Value;
                 if (si != null)
                 {
                     if (omitIecEclass && (si.StartsWith("0173") || si.StartsWith("0112")))
@@ -114,10 +110,10 @@ namespace AasxFormatCst
                     this.Add(item);
                 }
 
-                if (sme is AdminShell.SubmodelElementCollection smc)
+                if (sme is SubmodelElementCollection smc)
                 {
                     // SMC ? recurse!
-                    CreateEmptyItemsFromSMEs(smc.value, omitIecEclass);
+                    CreateEmptyItemsFromSMEs(smc.Value, omitIecEclass);
                 }
             }
         }
@@ -140,9 +136,9 @@ namespace AasxFormatCst
             if (fn == null)
                 return;
 
-            if (File.Exists(fn))
+            if (System.IO.File.Exists(fn))
             {
-                var tmpst = File.ReadAllText(fn);
+                var tmpst = System.IO.File.ReadAllText(fn);
                 var tmp = JsonConvert.DeserializeObject<CstIdStore>(tmpst);
                 if (tmp != null)
                     foreach (var ti in tmp)

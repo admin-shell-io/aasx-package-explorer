@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -215,5 +215,35 @@ namespace AasxPluginAdvancedTextEditor
         {
         }
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == ButtonFontPlus)
+            {
+                textEditor.FontSize += 4;
+            }
+
+            if (sender == ButtonFontMinus)
+            {
+                textEditor.FontSize = Math.Max(10, textEditor.FontSize);
+            }
+        }
+
+        private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift)
+                && e.Key == Key.OemPlus)
+            {
+                textEditor.FontSize += 4;
+                e.Handled = true;
+            }
+
+            if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift)
+                && e.Key == Key.OemPlus)
+            {
+                textEditor.FontSize = Math.Max(10, textEditor.FontSize);
+                e.Handled = true;
+            }
+        }
     }
 }

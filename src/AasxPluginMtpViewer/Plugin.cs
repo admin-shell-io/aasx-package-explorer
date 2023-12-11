@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,36 +14,32 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
+using AasxPluginMtpViewer;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     // ReSharper disable UnusedType.Global
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     // ReSharper enable UnusedType.Global
     {
-        private LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AasxPluginMtpViewer.MtpViewerOptions options = new AasxPluginMtpViewer.MtpViewerOptions();
+        private AasxPluginMtpViewer.MtpViewerOptions _options = new AasxPluginMtpViewer.MtpViewerOptions();
 
-        private AasxPluginMtpViewer.WpfMtpControlWrapper viewerControl
+        private AasxPluginMtpViewer.WpfMtpControlWrapper _viewerControl
             = new AasxPluginMtpViewer.WpfMtpControlWrapper();
 
-        public string GetPluginName()
-        {
-            Log.Info("GetPluginName() = {0}", "MtpViewer");
-            return "AasxPluginMtpViewer";
-        }
-
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            PluginName = "AasxPluginMtpViewer";
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginMtpViewer.MtpViewerOptions.CreateDefault();
+            _options = AasxPluginMtpViewer.MtpViewerOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -52,22 +48,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginMtpViewer.MtpViewerOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
+
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
-        }
-
-        public AasxPluginActionDescriptionBase[] ListActions()
-        {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
             res.Add(new AasxPluginActionDescriptionBase("call-check-visual-extension",
@@ -86,7 +80,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // for speed reasons, have the most often used at top!
             if (action == "call-check-visual-extension")
@@ -96,21 +90,16 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Aas.Submodel;
                 if (sm == null)
                     return null;
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this.options != null && this.options.Records != null)
-                    foreach (var rec in this.options.Records)
-                        if (rec.AllowSubmodelSemanticId != null)
-                            foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.semanticId != null && sm.semanticId.Matches(x))
-                                {
-                                    found = true;
-                                    break;
-                                }
+                // ReSharper disable once UnusedVariable
+                foreach (var rec in _options.LookupAllIndexKey<MtpViewerOptionsRecord>(
+                    sm.SemanticId?.GetAsExactlyOneKey()))
+                    found = true;
                 if (!found)
                     return null;
 
@@ -121,20 +110,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                disableDefaultLicense: true,
+                enableGetCheckVisuExt: true);
+            if (help != null)
+                return help;
+
             // rest follows
-
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                var newOpt = JsonConvert.DeserializeObject<AasxPluginMtpViewer.MtpViewerOptions>(args[0] as string);
-                if (newOpt != null)
-                    this.options = newOpt;
-            }
-
-            if (action == "get-json-options")
-            {
-                var json = JsonConvert.SerializeObject(this.options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
 
             if (action == "get-licenses")
             {
@@ -148,21 +131,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && this.eventStack != null)
-            {
-                // try access
-                return this.eventStack.PopEvent();
-            }
-
-            if (action == "get-check-visual-extension")
-            {
-                var cve = new AasxPluginResultBaseObject();
-                cve.strType = "True";
-                cve.obj = true;
-                return cve;
-            }
-
-            if (action == "fill-panel-visual-extension" && this.viewerControl != null)
+            if (action == "fill-panel-visual-extension" && this._viewerControl != null)
             {
                 // arguments
                 if (args?.Length < 3)
@@ -170,7 +139,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // call
                 var resobj = AasxPluginMtpViewer.WpfMtpControlWrapper.FillWithWpfControls(args?[0], args?[1],
-                    this.options, this.eventStack, this.Log, args?[2]);
+                    this._options, this._eventStack, this._log, args?[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

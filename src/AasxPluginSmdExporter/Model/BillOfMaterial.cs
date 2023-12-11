@@ -10,12 +10,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AasxPluginSmdExporter.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPluginSmdExporter
 {
@@ -23,7 +22,7 @@ namespace AasxPluginSmdExporter
     {
         #region properties
 
-        public String idShort { get; set; }
+        public string idShort { get; set; }
 
         public List<RelationshipElement> RelationshipElements { get; set; }
 
@@ -31,9 +30,9 @@ namespace AasxPluginSmdExporter
 
         public Dictionary<string, string> ReferenceToAssets { get; set; } = new Dictionary<string, string>();
 
-        public static Dictionary<string, AdminShellNS.AdminShell.SemanticId> SemanticIdDict { get; set; }
+        public static Dictionary<string, Aas.IReference> SemanticIdDict { get; set; }
 
-        public Dictionary<string, AdminShellNS.AdminShell.Entity> SubmodelElementsAsEntity { get; set; }
+        public Dictionary<string, Aas.IEntity> SubmodelElementsAsEntity { get; set; }
 
         public Dictionary<string, string> PropEntity { get; set; }
 
@@ -51,24 +50,27 @@ namespace AasxPluginSmdExporter
         public BillOfMaterial()
         {
             RelationshipElements = new List<RelationshipElement>();
-            SubmodelElementsAsEntity = new Dictionary<string, AdminShellNS.AdminShell.Entity>();
+            SubmodelElementsAsEntity = new Dictionary<string, Aas.IEntity>();
 
             if (SemanticIdDict == null)
-                SemanticIdDict = new Dictionary<string, AdminShellNS.AdminShell.SemanticId>();
+                SemanticIdDict = new Dictionary<string, Aas.IReference>();
         }
 
         public BillOfMaterial(JObject jObject)
         {
 
         }
+        
         public void SetSubmodelElementsAsEntity(JObject jObject)
         {
             foreach (var subEle in jObject["submodelElements"])
             {
+				var jsonStr = subEle.ToString();
 
-                AdminShellNS.AdminShell.Entity entity = JsonConvert.
-                    DeserializeObject<AdminShellNS.AdminShell.Entity>(subEle.ToString());
-                this.SubmodelElementsAsEntity.Add(entity?.idShort, entity);
+				Aas.IEntity entity = Aas.Jsonization.Deserialize.EntityFrom(
+					System.Text.Json.Nodes.JsonNode.Parse(jsonStr));
+
+				this.SubmodelElementsAsEntity.Add(entity?.IdShort, entity);
             }
         }
 
@@ -115,10 +117,12 @@ namespace AasxPluginSmdExporter
                     {
                         if (subEle["semanticId"] != null)
                         {
-                            AdminShellNS.AdminShell.SemanticId semantic
-                                = JsonConvert.DeserializeObject<AdminShellNS.AdminShell.SemanticId>
-                                (subEle["semanticId"].ToString());
-                            SemanticIdDict.Add(idshort, semantic);
+                            var jsonStr = subEle["semanticId"].ToString();
+
+							Aas.IReference semantic = Aas.Jsonization.Deserialize.ReferenceFrom(
+                                System.Text.Json.Nodes.JsonNode.Parse(jsonStr));
+
+							SemanticIdDict.Add(idshort, semantic);
                         }
                     }
                 }

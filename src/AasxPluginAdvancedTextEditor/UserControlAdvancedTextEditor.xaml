@@ -7,9 +7,10 @@
              xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              xmlns:local="clr-namespace:AasxPluginAdvancedTextEditor"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded"
+             PreviewKeyDown="UserControl_PreviewKeyDown">
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -77,12 +78,24 @@
             <avalonEdit:TextEditor
 				Name="textEditor"
 				FontFamily="Consolas"
-				FontSize="10pt"
-				SyntaxHighlighting="C#"
+				FontSize="12pt"
+				SyntaxHighlighting="C#" 
+                Margin="0,2,0,-2"
 			>Welcome to AvalonEdit!
             </avalonEdit:TextEditor>
             <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Left"/>
             <DockPanel Grid.Column="1" Margin="4 0 0 0">
+                <Grid DockPanel.Dock="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="ButtonFontPlus" Grid.Row="0" Grid.Column="0" Content="&#x2795;" Margin="2" Click="Button_Click"/>
+                    <Button x:Name="ButtonFontMinus" Grid.Row="0" Grid.Column="1" Content="&#x2796;" Margin="2" Click="Button_Click"/>
+                </Grid>
                 <ComboBox Name="propertyGridComboBox" DockPanel.Dock="Top"
 				          SelectedIndex="0" SelectionChanged="propertyGridComboBoxSelectionChanged">
                     <ComboBoxItem>TextEditor</ComboBoxItem>

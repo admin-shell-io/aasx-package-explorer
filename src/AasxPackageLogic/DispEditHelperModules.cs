@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,17 +7,35 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using AasCore.Samm2_2_0;
+using AasxAmlImExport;
+using AasxCompatibilityModels;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
+using Extensions;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Media;
+using System.Xaml;
+using VDS.RDF.Parsing;
+using VDS.RDF;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using Aas = AasCore.Aas3_0;
+using Samm = AasCore.Samm2_2_0;
+using System.Text.RegularExpressions;
+using System.Runtime.Intrinsics.X86;
+using Lucene.Net.Tartarus.Snowball.Ext;
+using Lucene.Net.Util;
+using System.Runtime.Serialization;
+using J2N.Text;
+using Lucene.Net.Codecs;
+using System.Text;
 
 namespace AasxPackageLogic
 {
@@ -25,8 +43,19 @@ namespace AasxPackageLogic
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
     /// editing disting modules of the GUI, such as the different (re-usable) Interfaces of the AAS entities
     /// </summary>
-    public class DispEditHelperModules : DispEditHelperCopyPaste
+    public class DispEditHelperModules : DispEditHelperExtensions
     {
+        //
+        // Members
+        //
+
+        public class UploadAssistance
+        {
+            public string SourcePath = "";
+            public string TargetPath = "/aasx/files";
+        }
+        public UploadAssistance uploadAssistance = new UploadAssistance();
+
         //
         // Inject a number of customised function in modules
         //
@@ -79,14 +108,16 @@ namespace AasxPackageLogic
         }
 
         //
-        // Referable
+        // IReferable
         //
 
-        public void DisplayOrEditEntityReferable(AnyUiStackPanel stack,
-            AdminShell.Referable referable,
+        public void DisplayOrEditEntityReferable(
+			Aas.Environment env, AnyUiStackPanel stack,
+            Aas.IReferable parentContainer,
+            Aas.IReferable referable,
+            int indexPosition,
             DispEditInjectAction injectToIdShort = null,
-            HintCheck[] addHintsCategory = null,
-            bool categoryUsual = false)
+            bool hideExtensions = false)
         {
             // access
             if (stack == null || referable == null)
@@ -95,77 +126,124 @@ namespace AasxPackageLogic
             // members
             this.AddGroup(stack, "Referable:", levelColors.SubSection);
 
-            // members
-            this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck( () => { return referable.idShort == null || referable.idShort.Length < 1; },
-                    "The idShort is meanwhile mandatory for all Referables. It is a short, " +
-                        "unique identifier that is unique just in its context, its name space. ", breakIfTrue: true),
-                new HintCheck(
-                    () => {
-                        if (referable.idShort == null) return false;
-                        return !AdminShellUtil.ComplyIdShort(referable.idShort);
-                    },
-                    "The idShort shall only feature letters, digits, underscore ('_'); " +
-                    "starting mandatory with a letter."),
-                new HintCheck(
-                    () => {
-                        return true == referable.idShort?.Contains("---");
-                    },
-                    "The idShort contains 3 dashes. Probably, the entitiy was auto-named " +
-                    "to keep it unqiue because of an operation such a copy/ paste.",
-                    severityLevel: HintCheck.Severity.Notice)
-            });
-            this.AddKeyValueRef(
-                stack, "idShort", referable, ref referable.idShort, null, repo,
+            // special case SML ..
+            if (parentContainer?.IsIndexed() == true)
+            {
+                AddKeyValue(stack, "index", $"#{indexPosition:D2}", repo: null);
+            }
+
+            // for clarity, have two kind of hints for SML and for other
+            var isIndexed = parentContainer.IsIndexed() == true;
+            if (!isIndexed)
+            {
+                // not SML
+                this.AddHintBubble(stack, hintMode, new[] {
+                    new HintCheck( () => !(referable is Aas.IIdentifiable) && !referable.IdShort.HasContent(),
+                        "The idShort is mandatory for all Referables which are not Identifiable. " +
+                        "It is a short, unique identifier that is unique just in its context, " +
+                        "its name space. ", breakIfTrue: true),
+                    new HintCheck(
+                        () => {
+                            if (referable.IdShort == null) return false;
+                            return !AdminShellUtil.ComplyIdShort(referable.IdShort);
+                        },
+                        "The idShort shall only feature letters, digits, underscore ('_'); " +
+                        "starting mandatory with a letter."),
+                    new HintCheck(
+                        () => {
+                            return true == referable.IdShort?.Contains("---");
+                        },
+                        "The idShort contains 3 dashes. Probably, the entitiy was auto-named " +
+                        "to keep it unqiue because of an operation such a copy/ paste.",
+                        severityLevel: HintCheck.Severity.Notice)
+                    });
+            }
+            else
+            {
+                // SML ..
+                this.AddHintBubble(stack, hintMode, new[] {
+                    new HintCheck( () => referable.IdShort.HasContent(),
+                        "Constraint AASd-120: idShort of SubmodelElements being a direct child of a " +
+                        "SubmodelElementList shall not be specified.")
+                    });
+            }
+            AddKeyValueExRef(
+                stack, "idShort", referable, referable.IdShort, null, repo,
                 v =>
                 {
                     var dr = new DiaryReference(referable);
-                    referable.idShort = v as string;
+                    referable.IdShort = v as string;
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
                     return new AnyUiLambdaActionNone();
                 },
                 auxButtonTitles: DispEditInjectAction.GetTitles(null, injectToIdShort),
                 auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
-                auxButtonLambda: injectToIdShort?.auxLambda
+                auxButtonLambda: injectToIdShort?.auxLambda,
+                takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(nextFocus: referable)
                 );
 
-            if (!categoryUsual)
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new HintCheck(() => { return referable.category != null && referable.category.Trim().Length >= 1; },
-                    "The use of category is unusual here.", severityLevel: HintCheck.Severity.Notice));
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => referable.DisplayName?.IsValid() != true,
+                        "The use of a display name is recommended to express a human readable name " +
+                        "for the Referable in multiple languages.",
+                        breakIfTrue: true,
+                        severityLevel: HintCheck.Severity.Notice),
+                    new HintCheck(
+                        () => { return referable.DisplayName.Count < 2; },
+                        "Consider having Display name in multiple langauges.",
+                        severityLevel: HintCheck.Severity.Notice)
+            });
+            if (this.SafeguardAccess(stack, repo, referable.DisplayName, "displayName:", "Create data element!", v =>
+            {
+                referable.DisplayName = new List<Aas.ILangStringNameType>(new List<Aas.LangStringNameType>());
+                this.AddDiaryEntry(referable, new DiaryEntryStructChange());
+                return new AnyUiLambdaActionRedrawEntity();
+            }))
+            {
+                this.AddKeyListLangStr<ILangStringNameType>(stack, "displayName", referable.DisplayName,
+                    repo, relatedReferable: referable);
+            }
 
-            this.AddHintBubble(stack, hintMode, this.ConcatHintChecks(null, addHintsCategory));
-            this.AddKeyValueRef(
-                stack, "category", referable, ref referable.category, null, repo,
+            // category deprecated
+            this.AddHintBubble(
+                stack, hintMode,
+                new HintCheck(() => referable.Category?.HasContent() == true,
+                "The use of category is deprecated. Do not plan to use this information in new developments.",
+                severityLevel: HintCheck.Severity.Notice));
+
+            AddKeyValueExRef(
+                stack, "category", referable, referable.Category, null, repo,
                 v =>
                 {
-                    referable.category = v as string;
+                    referable.Category = v as string;
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 },
-                comboBoxItems: AdminShell.Referable.ReferableCategoryNames, comboBoxIsEditable: true);
+                comboBoxItems: new string[] { "CONSTANT", "PARAMETER", "VARIABLE" }, comboBoxIsEditable: true);
 
             this.AddHintBubble(
                 stack, hintMode,
                 new[] {
                     new HintCheck(
                         () => {
-                            return referable.description == null || referable.description.langString == null ||
-                                referable.description.langString.Count < 1;
+                            return referable.Description == null || referable.Description == null ||
+                                referable.Description.Count < 1;
                         },
                         "The use of an description is recommended to allow the consumer of an Referable " +
                             "to understand the nature of it.",
                         breakIfTrue: true,
                         severityLevel: HintCheck.Severity.Notice),
                     new HintCheck(
-                        () => { return referable.description.langString.Count < 2; },
+                        () => { return referable.Description.Count < 2; },
                         "Consider having description in multiple langauges.",
                         severityLevel: HintCheck.Severity.Notice)
             });
-            if (this.SafeguardAccess(stack, repo, referable.description, "description:", "Create data element!", v =>
+            if (this.SafeguardAccess(stack, repo, referable.Description, "description:", "Create data element!", v =>
             {
-                referable.description = new AdminShell.Description();
+                referable.Description = new List<Aas.ILangStringTextType>();
                 return new AnyUiLambdaActionRedrawEntity();
             }))
             {
@@ -174,14 +252,122 @@ namespace AasxPackageLogic
                     new HintCheck(
                         () =>
                         {
-                            return referable.description.langString == null
-                            || referable.description.langString.Count < 1;
+                            return referable.Description == null
+                            || referable.Description.Count < 1;
                         },
                         "Please add some descriptions in your main languages here to help consumers " +
-                            "of your Administration shell to understand your intentions."));
-                this.AddKeyListLangStr(stack, "description", referable.description.langString,
+                            "of your Administration shell to understand your intentions.",
+                        severityLevel: HintCheck.Severity.Notice));
+                this.AddKeyListLangStr<ILangStringTextType>(stack, "description", referable.Description,
                     repo, relatedReferable: referable);
             }
+
+            // Checksum
+#if OLD
+            this.AddHintBubble(stack, hintMode, new[] {
+                    new HintCheck(
+                        () => referable.Checksum?.HasContent() == true,
+                        "The Checksum is deprecated. Do not plan to use this information in new developments.",
+                        breakIfTrue: true,
+                        severityLevel: HintCheck.Severity.Notice) });
+            AddKeyValueExRef(
+                stack, "checksum", referable, referable.Checksum, null, repo,
+                v =>
+                {
+                    var dr = new DiaryReference(referable);
+                    referable.Checksum = v as string;
+                    this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
+                    return new AnyUiLambdaActionNone();
+                },
+                auxButtonTitles: new[] { "Generate" },
+                auxButtonToolTips: new[] { "Generate a SHA256 hashcode over this Referable" },
+                auxButtonLambda: (i) =>
+                {
+                    if (i == 0)
+                    {
+                         //checksum= referable.ComputeHashcode();  
+                         //TODO (jtikekar, 0000-00-00): support attributes
+                        this.AddDiaryEntry(referable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+
+                    return new AnyUiLambdaActionNone();
+                }
+                );
+#endif
+
+            if (!hideExtensions)
+            {
+				// before extension, some helpful records
+				DisplayOrEditEntityExtensionRecords(
+					env, stack, referable.Extensions,
+					(v) => { referable.Extensions = v; },
+					relatedReferable: referable);
+
+				// Extensions (at the end to make them not so much impressive!)
+				DisplayOrEditEntityListOfExtension(
+                    stack: stack, extensions: referable.Extensions,
+                    setOutput: (v) => { referable.Extensions = v; },
+                    relatedReferable: referable);
+            }
+        }
+
+        public void DisplayOrEditEntityReferableContinue(
+            Aas.Environment env, AnyUiStackPanel stack,
+            Aas.IReferable parentContainer,
+            Aas.IReferable referable,
+            int indexPosition,
+            DispEditInjectAction injectToIdShort = null,
+            bool hideExtensions = false)
+        {
+            // access
+            if (stack == null || referable == null)
+                return;
+
+            // members
+            this.AddGroup(stack, "Referable (continue):", levelColors.SubSection);
+
+			// before extension, some helpful records
+			DisplayOrEditEntityExtensionRecords(
+				env, stack, referable.Extensions,
+				(v) => { referable.Extensions = v; },
+				relatedReferable: referable);
+
+			// Extensions (at the end to make them not so much impressive!)
+			DisplayOrEditEntityListOfExtension(
+				stack: stack, extensions: referable.Extensions,
+				setOutput: (v) => { referable.Extensions = v; },
+				relatedReferable: referable);
+		}
+
+        //
+        // Extensions
+        //
+
+        public void DisplayOrEditEntityListOfExtension(AnyUiStackPanel stack,
+            List<Aas.IExtension> extensions,
+            Action<List<Aas.IExtension>> setOutput,
+            Aas.IReferable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, "HasExtension:", levelColors.SubSection);
+
+            if (this.SafeguardAccess(
+                stack, repo, extensions, "extensions:", "Create empty list of Extensions!",
+                v =>
+                {
+                    setOutput?.Invoke(new List<Aas.IExtension>());
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                this.ExtensionHelper(stack, repo, extensions, setOutput, relatedReferable: relatedReferable);
+            }
+
         }
 
         //
@@ -189,10 +375,9 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditEntityIdentifiable(AnyUiStackPanel stack,
-            AdminShell.Identifiable identifiable,
+            Aas.IIdentifiable identifiable,
             string templateForIdString,
-            DispEditInjectAction injectToId = null,
-            bool checkForIri = true)
+            DispEditInjectAction injectToId = null)
         {
             // access
             if (stack == null || identifiable == null)
@@ -203,59 +388,42 @@ namespace AasxPackageLogic
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
-                    () => { return identifiable.identification == null; },
+                    () => { return identifiable.Id == null; },
                     "Providing a worldwide unique identification is mandatory.",
                     breakIfTrue: true),
                 new HintCheck(
-                    () => { return checkForIri
-                        && identifiable.identification.idType != AdminShell.Identification.IRI;
-                    },
-                    "Check if identification type is correct. Use of IRIs is usual here.",
-                    severityLevel: HintCheck.Severity.Notice ),
-                new HintCheck(
-                    () => { return identifiable.identification.id.Trim() == ""; },
+                    () => { return identifiable.Id == ""; },
                     "Identification id shall not be empty. You could use the 'Generate' button in order to " +
                         "generate a worldwide unique id. " +
                         "The template of this id could be set by commandline arguments." )
 
             });
             if (this.SafeguardAccess(
-                    stack, repo, identifiable.identification, "identification:", "Create data element!",
+                    stack, repo, identifiable.Id, "id:", "Create data element!",
                     v =>
                     {
-                        identifiable.identification = new AdminShell.Identification();
+                        identifiable.Id = "";
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                this.AddKeyValueRef(
-                    stack, "idType", identifiable, ref identifiable.identification.idType, null, repo,
+                AddKeyValueExRef(
+                    stack, "id", identifiable, identifiable.Id, null, repo,
                     v =>
                     {
                         var dr = new DiaryReference(identifiable);
-                        identifiable.identification.idType = v as string;
+                        identifiable.Id = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                         return new AnyUiLambdaActionNone();
                     },
-                    comboBoxItems: AdminShell.Key.IdentifierTypeNames);
-
-                this.AddKeyValueRef(
-                    stack, "id", identifiable, ref identifiable.identification.id, null, repo,
-                    v =>
-                    {
-                        var dr = new DiaryReference(identifiable);
-                        identifiable.identification.id = v as string;
-                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
-                        return new AnyUiLambdaActionNone();
-                    },
+                    takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable),
                     auxButtonTitles: DispEditInjectAction.GetTitles(new[] { "Generate" }, injectToId),
                     auxButtonLambda: (i) =>
                     {
                         if (i == 0)
                         {
                             var dr = new DiaryReference(identifiable);
-                            identifiable.identification.idType = AdminShell.Identification.IRI;
-                            identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            identifiable.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 templateForIdString);
                             this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
@@ -267,65 +435,127 @@ namespace AasxPackageLogic
                         }
                         return new AnyUiLambdaActionNone();
                     });
+
+                // further info?
+                if (identifiable.Id.HasContent())
+                {
+                    this.AddKeyValue(
+                        stack, "id (Base64)", AdminShellUtil.Base64Encode(identifiable.Id),
+                        repo: null);
+                }
+
             }
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
-                    () => { return identifiable.administration == null; },
+                    () => { return identifiable.Administration == null; },
                     "Check if providing admistrative information on version/ revision would be useful. " +
-                        "This allows for better version management.",
+                        "This allows for better life-cycle management.",
                     breakIfTrue: true,
                     severityLevel: HintCheck.Severity.Notice),
                 new HintCheck(
                     () =>
                     {
-                        return identifiable.administration.version.Trim() == "" ||
-                            identifiable.administration.revision.Trim() == "";
+                        return identifiable.Administration.Version?.HasContent() != true ||
+                            identifiable.Administration.Revision?.HasContent() != true;
                     },
                     "Admistrative information fields should not be empty.",
                     severityLevel: HintCheck.Severity.Notice )
             });
             if (this.SafeguardAccess(
-                    stack, repo, identifiable.administration, "administration:", "Create data element!",
+                    stack, repo, identifiable.Administration, "administration:", "Create data element!",
                     v =>
                     {
-                        identifiable.administration = new AdminShell.Administration();
+                        identifiable.Administration = new Aas.AdministrativeInformation();
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                this.AddKeyValueRef(
-                    stack, "version", identifiable.administration, ref identifiable.administration.version,
+                // Allow administrative information to be deleted again
+                this.AddGroup(stack, "administration:", levelColors.SubSection,
+                    requestAuxButton: repo != null,
+                    auxContextHeader: new[] { "\u2702", "Delete" },
+                    auxContextLambda: (o) =>
+                    {
+                        if (o is int i && i == 0)
+                        {
+                            identifiable.Administration = null;
+                            this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                AddKeyValueExRef(
+                    stack, "version", identifiable.Administration, identifiable.Administration.Version,
                     null, repo,
                     v =>
                     {
-                        identifiable.administration.version = v as string;
+                        identifiable.Administration.Version = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
 
-                this.AddKeyValueRef(
-                    stack, "revision", identifiable.administration, ref identifiable.administration.revision,
+                AddKeyValueExRef(
+                    stack, "revision", identifiable.Administration, identifiable.Administration.Revision,
                     null, repo,
                     v =>
                     {
-                        identifiable.administration.revision = v as string;
+                        identifiable.Administration.Revision = v as string;
+                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                if (this.SafeguardAccess(
+                    stack, repo, identifiable.Administration.Creator, "creator:", "Create data element!",
+                    v =>
+                    {
+                        identifiable.Administration.Creator =
+                            new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
+                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+                {
+                    this.AddKeyReference(
+                        stack, "creator", identifiable.Administration.Creator, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                        addExistingEntities: "All", // no restriction
+                        relatedReferable: identifiable,
+                        showRefSemId: false,
+                        auxContextHeader: new[] { "\u2702", "Delete" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                identifiable.Administration.Creator = null;
+                                this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            };
+                            return new AnyUiLambdaActionNone();
+                        },
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
+                }
+
+                AddKeyValueExRef(
+                    stack, "templateId", identifiable.Administration, identifiable.Administration.TemplateId,
+                    null, repo,
+                    v =>
+                    {
+                        identifiable.Administration.TemplateId = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
             }
         }
 
-        //
-        // Data Specification
-        //
-
+        //Added this method only to support embeddedDS from ConceptDescriptions
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
-            AdminShell.HasDataSpecification hasDataSpecification,
-            Action<AdminShell.HasDataSpecification> setOutput,
-            string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
+            List<Aas.IEmbeddedDataSpecification>? hasDataSpecification,
+            Action<List<Aas.IEmbeddedDataSpecification>> setOutput,
+            string[] addPresetNames = null, List<Aas.IKey>[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false,
-            AdminShell.Referable relatedReferable = null)
+            Aas.IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -337,6 +567,13 @@ namespace AasxPackageLogic
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
+                    () => dataSpecRefsAreUsual && (hasDataSpecification == null
+                        ||  hasDataSpecification.Count < 1),
+                    "Check if a data specification is appropriate here. " +
+                    "A ConceptDescription typically goes along with a data specification, e.g. " +
+                    "according IEC61360.",
+                    severityLevel: HintCheck.Severity.Notice),
+                new HintCheck(
                     () => { return !dataSpecRefsAreUsual && hasDataSpecification != null
                         && hasDataSpecification.Count > 0; },
                     "Check if a data specification is appropriate here.",
@@ -346,26 +583,239 @@ namespace AasxPackageLogic
                     stack, this.repo, hasDataSpecification, "DataSpecification:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new AdminShell.HasDataSpecification());
+                        setOutput?.Invoke(new List<Aas.IEmbeddedDataSpecification>());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, "Specifications:",
-                        new[] { "Add Reference", "Delete last reference" }, repo,
-                        (buttonNdx) =>
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-reference", "Add Reference",
+                                "Adds a reference to a data specification.")
+                            .AddAction("add-preset", "Add Preset",
+                                "Adds a reference to a data specification given by preset file.")
+                            .AddAction("delete-reference", "Delete last reference",
+                                "Deletes the last reference in the list."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
-                                    new AdminShell.EmbeddedDataSpecification(
-                                        new AdminShell.DataSpecificationRef()));
+                                    new Aas.EmbeddedDataSpecification(
+                                        new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>()),
+                                        null));
 
-                            if (buttonNdx == 1 && hasDataSpecification.Count > 0)
-                                hasDataSpecification.RemoveAt(
-                                    hasDataSpecification.Count - 1);
+                            if (buttonNdx == 1)
+                            {
+                                var pfn = Options.Curr.DataSpecPresetFile;
+                                if (pfn == null || !System.IO.File.Exists(pfn))
+                                {
+                                    Log.Singleton.Error(
+                                        $"JSON file for data specifcation presets not defined nor existing ({pfn}).");
+                                    return new AnyUiLambdaActionNone();
+                                }
+                                try
+                                {
+                                    // read file contents
+                                    var init = System.IO.File.ReadAllText(pfn);
+                                    var presets = JsonConvert.DeserializeObject<List<DataSpecPreset>>(init);
+
+                                    // define dialogue and map presets into dialogue items
+                                    var uc = new AnyUiDialogueDataSelectFromList();
+                                    uc.ListOfItems = presets.Select((pr)
+                                            => new AnyUiDialogueListItem() { Text = pr.name, Tag = pr }).ToList();
+
+                                    // perform dialogue
+                                    this.context.StartFlyoverModal(uc);
+                                    if (uc.Result && uc.ResultItem?.Tag is DataSpecPreset preset
+                                        && preset.value != null)
+                                    {
+                                        hasDataSpecification.Add(
+                                            new Aas.EmbeddedDataSpecification(
+                                                new Aas.Reference(
+                                                    Aas.ReferenceTypes.ExternalReference,
+                                                    new Aas.IKey[] {
+                                                        new Aas.Key(KeyTypes.GlobalReference, preset.value) }
+                                                    .ToList()),
+                                            null));
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(
+                                        ex, $"While show Qualifier presets ({pfn})");
+                                }
+                            }
+
+                            if (buttonNdx == 2)
+                            {
+                                if (hasDataSpecification.Count > 0)
+                                    hasDataSpecification.RemoveAt(hasDataSpecification.Count - 1);
+                                else
+                                    setOutput?.Invoke(null);
+                            }
+
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        });
+                }
+
+                // now use the normal mechanism to deal with editMode or not ..
+                if (hasDataSpecification != null && hasDataSpecification.Count > 0)
+                {
+                    // dead-csharp off
+                    //TODO (jtikekar, 0000-00-00): refactor
+                    // MIHO: is this at all required?
+                    //List<string>[] presetKeys = new List<string>[addPresetKeyLists.Length];
+                    //for (int j = 0; j < addPresetKeyLists.Length; j++)
+                    //{
+                    //    List<string> keys = new List<string>();
+                    //    foreach(var key in addPresetKeyLists[j])
+                    //    {
+                    //        keys.Add(key.Value);
+                    //    }
+                    //    presetKeys[j] = keys;
+                    //}
+
+                    for (int i = 0; i < hasDataSpecification.Count; i++)
+                    {
+                        //List<string> keys = new List<string>();
+                        //foreach (var key in hasDataSpecification[i].DataSpecification.Keys)
+                        //{
+                        //    keys.Add(key.Value);
+                        //}
+                        // if (hasDataSpecification[i].DataSpecification != null)
+                        // dead-csharp on
+                        int currentI = i;
+                        if (this.SafeguardAccess(
+                            stack, this.repo, hasDataSpecification[i].DataSpecification,
+                                "DataSpecification:", "Create (inner) data element!",
+                            v =>
+                            {
+                                hasDataSpecification[currentI].DataSpecification =
+                                new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }))
+                        {
+                            this.AddKeyReference(
+                            stack, String.Format("dataSpec.[{0}]", i),
+                            hasDataSpecification[i].DataSpecification,
+                            repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
+                            addExistingEntities: null /* "All" */,
+                            addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists,
+                            relatedReferable: relatedReferable,
+                            showRefSemId: false,
+                            auxContextHeader: new[] { "\u2573", "Delete this dataSpec." },
+                            auxContextLambda: (choice) =>
+                            {
+                                if (choice == 0)
+                                {
+                                    if (currentI >= 0 && currentI <= hasDataSpecification.Count)
+                                        hasDataSpecification.RemoveAt(currentI);
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+                                return new AnyUiLambdaActionNone();
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        public void DisplayOrEditEntityHasEmbeddedSpecification(
+            Aas.Environment env, AnyUiStackPanel stack,
+            List<Aas.IEmbeddedDataSpecification> hasDataSpecification,
+            Action<List<Aas.IEmbeddedDataSpecification>> setOutput,
+            string[] addPresetNames = null, List<Aas.IKey>[] addPresetKeyLists = null,
+            Aas.IReferable relatedReferable = null,
+            AasxMenu superMenu = null,
+            bool suppressNoEdsWarning = false)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, "HasDataSpecification (records of embedded data specification):", levelColors.MainSection);
+
+            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => { return !suppressNoEdsWarning && (hasDataSpecification == null ||
+                            hasDataSpecification.Count < 1); },
+                        "For ConceptDescriptions, the main data carrier lies in the embedded data specification. " +
+                        "In these elements, a Reference to a data specification is combined with content " +
+                        "attributes, which are attached to the ConceptDescription. These attributes hold the " +
+                        "descriptive information on a concept and thus allow for an off-line understanding of " +
+                        "the meaning of a concept/ SubmodelElement. Multiple data specifications " +
+                        "could be possible. The most used is the IEC61360, which is also used by ECLASS. " +
+                        "Please create this data element.",
+                        breakIfTrue: true),
+                });
+            if (this.SafeguardAccess(
+                    stack, this.repo, hasDataSpecification, "Specifications:", "Create data element!",
+                    v =>
+                    {
+                        setOutput?.Invoke(new List<Aas.IEmbeddedDataSpecification>());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                // head control
+                if (editMode)
+                {
+                    // let the user control the number of references
+                    this.AddActionPanel(
+                        stack, "Spec. records:", repo: repo,
+                        superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-record", "Add record",
+                                "Adds a record for data specification reference and content.")
+                            .AddAction("add-iec61360", "Add IEC61360",
+                                "Adds a record initialized for IEC 61360 content.")
+                            .AddAction("auto-detect", "Auto detect content",
+                                "Auto dectects known data specification contents and sets valid references.")
+                            .AddAction("delete-last", "Delete last record",
+                                "Deletes last record (data specification reference and content)."),
+                        ticketAction: (buttonNdx, ticket) =>
+                        {
+                            if (buttonNdx == 0)
+                                hasDataSpecification.Add(
+                                    new Aas.EmbeddedDataSpecification(
+                                        new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>()),
+                                        null));
+
+                            if (buttonNdx == 1)
+                                hasDataSpecification.Add(
+                                    new Aas.EmbeddedDataSpecification(
+                                        new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey> {
+                                            ExtendIDataSpecificationContent.GetKeyForIec61360()
+                                        }),
+                                        new Aas.DataSpecificationIec61360(new List<Aas.ILangStringPreferredNameTypeIec61360>() {
+                                            new Aas.LangStringPreferredNameTypeIec61360(
+                                                AdminShellUtil.GetDefaultLngIso639(), "")
+                                        })));
+
+                            if (buttonNdx == 2)
+                            {
+                                var fix = 0;
+                                foreach (var eds in hasDataSpecification)
+                                    if (eds != null && eds.FixReferenceWrtContent())
+                                        fix++;
+                                Log.Singleton.Info($"Fixed {fix} records of embedded data specification.");
+                            }
+
+                            if (buttonNdx == 3)
+                            {
+                                if (hasDataSpecification.Count > 0)
+                                    hasDataSpecification.RemoveAt(hasDataSpecification.Count - 1);
+                                else
+                                    setOutput?.Invoke(null);
+                            }
 
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
@@ -376,28 +826,127 @@ namespace AasxPackageLogic
                 if (hasDataSpecification != null && hasDataSpecification.Count > 0)
                 {
                     for (int i = 0; i < hasDataSpecification.Count; i++)
-                        if (hasDataSpecification[i].dataSpecification != null)
-                            this.AddKeyListKeys(
-                                stack, String.Format("reference[{0}]", i),
-                                hasDataSpecification[i].dataSpecification.Keys,
+                    {
+                        // indicate
+                        this.AddGroup(stack, $"dataSpec.[{i}] / Reference:", levelColors.SubSection);
+
+                        // Reference
+                        int currentI = i;
+                        if (SafeguardAccess(
+                            stack, this.repo, hasDataSpecification[i].DataSpecification,
+                                "DataSpecification:", "Create (inner) data element!",
+                            v =>
+                            {
+                                hasDataSpecification[currentI].DataSpecification =
+                                    new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }))
+                        {
+                            AddKeyReference(
+                                stack, String.Format("dataSpec.[{0}]", i),
+                                hasDataSpecification[i].DataSpecification,
                                 repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
                                 addExistingEntities: null /* "All" */,
                                 addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists,
-                                relatedReferable: relatedReferable);
+                                relatedReferable: relatedReferable,
+                                showRefSemId: false,
+                                auxContextHeader: new[] { "\u2573", "Delete this dataSpec." },
+                                auxContextLambda: (choice) =>
+                                {
+                                    if (choice == 0)
+                                    {
+                                        if (currentI >= 0 && currentI <= hasDataSpecification.Count)
+                                            hasDataSpecification.RemoveAt(currentI);
+                                        return new AnyUiLambdaActionRedrawEntity();
+                                    }
+                                    return new AnyUiLambdaActionNone();
+                                });
+                        }
+
+                        // which content is possible?
+                        var cntByDs = ExtendIDataSpecificationContent.GuessContentTypeFor(
+                                        hasDataSpecification[i].DataSpecification);
+
+                        AddHintBubble(
+                            stack, hintMode, new[] {
+                            new HintCheck(
+                                () => cntByDs == ExtendIDataSpecificationContent.ContentTypes.NoInfo,
+                                "No valid data specification Reference could be identified. Thus, no content " +
+                                "attributes could be provided. Check the Reference.")
+                            });
+
+                        // indicate new section
+                        AddGroup(stack, $"dataSpec.[{i}] / Content:", levelColors.SubSection);
+
+                        // edit content?
+                        if (cntByDs != ExtendIDataSpecificationContent.ContentTypes.NoInfo)
+                        {
+                            var cntNone = hasDataSpecification[i].DataSpecificationContent == null;
+                            var cntMismatch = ExtendIDataSpecificationContent.GuessContentTypeFor(
+                                            hasDataSpecification[i].DataSpecificationContent) !=
+                                                ExtendIDataSpecificationContent.ContentTypes.NoInfo
+                                            && ExtendIDataSpecificationContent.GuessContentTypeFor(
+                                            hasDataSpecification[i].DataSpecificationContent) != cntByDs;
+
+                            this.AddHintBubble(
+                                stack, hintMode,
+                                new[] {
+                                new HintCheck(
+                                    () => cntNone,
+                                    "No data specification content is available for this record. " +
+                                    "Create content in order to create this important descriptinve " +
+                                    "information.",
+                                    breakIfTrue: true),
+                                new HintCheck(
+                                    () => cntMismatch,
+                                    "Mismatch between data specification Reference and stored content " +
+                                    "of data specification.")
+                                });
+
+                            if (SafeguardAccess(
+                                stack, this.repo, (cntNone || cntMismatch) ? null : "NotNull",
+                                    "Content:", "Create (reset) content data element!",
+                                v =>
+                                {
+                                    hasDataSpecification[currentI].DataSpecificationContent =
+                                        ExtendIDataSpecificationContent.ContentFactoryFor(cntByDs);
+
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }))
+                            {
+                                if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.Iec61360)
+                                    this.DisplayOrEditEntityDataSpecificationIec61360(
+                                        env, stack,
+                                        hasDataSpecification[i].DataSpecificationContent
+                                            as Aas.DataSpecificationIec61360,
+                                        relatedReferable: relatedReferable, superMenu: superMenu);
+
+                                //TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
+#if SupportDataSpecificationPhysicalUnit
+                                if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.PhysicalUnit)
+                                    this.DisplayOrEditEntityDataSpecificationPhysicalUnit(
+                                        stack,
+                                        hasDataSpecification[i].DataSpecificationContent
+                                            as Aas.DataSpecificationPhysicalUnit,
+                                        relatedReferable: relatedReferable); 
+#endif
+                            }
+                        }
+                    }
                 }
             }
         }
-
         //
-        // List of References
+        // List of References (used for isCaseOf..)
         //
 
         public void DisplayOrEditEntityListOfReferences(AnyUiStackPanel stack,
-            List<AdminShell.Reference> references,
-            Action<List<AdminShell.Reference>> setOutput,
+            List<Aas.IReference> references,
+            Action<List<Aas.IReference>> setOutput,
             string entityName,
-            string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
-            AdminShell.Referable relatedReferable = null)
+            string[] addPresetNames = null, Aas.Key[] addPresetKeys = null,
+            Aas.IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -408,7 +957,7 @@ namespace AasxPackageLogic
                     stack, this.repo, references, $"{entityName}:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new List<AdminShell.Reference>());
+                        setOutput?.Invoke(new List<Aas.IReference>());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
@@ -417,12 +966,18 @@ namespace AasxPackageLogic
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
-                        stack, $"{entityName}:", new[] { "Add Reference", "Delete last reference" }, repo,
-                        (buttonNdx) =>
+                    this.AddActionPanel(
+                        stack, $"{entityName}:",
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-reference", "Add Reference",
+                                "Adds a reference to the list.")
+                            .AddAction("delete-reference", "Delete last reference",
+                                "Deletes the last reference in the list."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
-                                references.Add(new AdminShell.Reference());
+                                references.Add(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>()));
 
                             if (buttonNdx == 1 && references.Count > 0)
                                 references.RemoveAt(references.Count - 1);
@@ -435,12 +990,13 @@ namespace AasxPackageLogic
                 if (references != null && references.Count > 0)
                 {
                     for (int i = 0; i < references.Count; i++)
-                        this.AddKeyListKeys(
-                            stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
+                        this.AddKeyReference(
+                            stack, String.Format("reference[{0}]", i), references[i], repo,
                             packages, PackageCentral.PackageCentral.Selector.MainAux,
-                            AdminShell.Key.AllElements,
+                            "All",
                             addEclassIrdi: true,
-                            relatedReferable: relatedReferable);
+                            relatedReferable: relatedReferable,
+                            showRefSemId: false);
                 }
             }
         }
@@ -450,51 +1006,48 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditEntityAssetKind(AnyUiStackPanel stack,
-            AdminShell.AssetKind kind,
-            Action<AdminShell.AssetKind> setOutput,
-            AdminShell.Referable relatedReferable = null)
+            Aas.AssetKind kind,
+            Action<Aas.AssetKind> setOutput,
+            Aas.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
                 return;
 
             // members
-            this.AddGroup(stack, "Kind (of Asset):", levelColors.SubSection);
+            this.AddGroup(stack, "Kind (of AssetInformation):", levelColors.SubSection);
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
-                    () => { return kind == null; },
-                    "Providing kind information is mandatory. Typically you want to model instances. " +
-                        "A manufacturer would define types of assets, as well.",
-                    breakIfTrue: true),
-                new HintCheck(
-                    () => { return kind.kind.Trim().ToLower() != "instance"; },
+                    () => { return kind != Aas.AssetKind.Instance; },
                     "Check for kind setting. 'Instance' is the usual choice.",
                     severityLevel: HintCheck.Severity.Notice )
             });
-            if (this.SafeguardAccess(
-                    stack, repo, kind, "kind:", "Create data element!",
+            if (SafeguardAccess(
+                stack, repo, kind, "kind:", "Create data element!",
+                v =>
+                {
+                    setOutput?.Invoke(new Aas.AssetKind());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                AddKeyValueExRef(
+                    stack, "kind", kind, Aas.Stringification.ToString(kind), null, repo,
                     v =>
                     {
-                        setOutput?.Invoke(new AdminShell.AssetKind());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    }))
-                this.AddKeyValueRef(
-                    stack, "kind", kind, ref kind.kind, null, repo,
-                    v =>
-                    {
-                        kind.kind = v as string;
+                        setOutput?.Invoke((Aas.AssetKind)Aas.Stringification.AssetKindFromString((string)v));
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
-                    new[] { AdminShell.AssetKind.Type, AdminShell.AssetKind.Instance });
+                    Enum.GetNames(typeof(Aas.AssetKind)), comboBoxMinWidth: 105);
+            }
         }
 
         public void DisplayOrEditEntityModelingKind(AnyUiStackPanel stack,
-            AdminShell.ModelingKind kind,
-            Action<AdminShell.ModelingKind> setOutput,
+            Aas.ModellingKind? kind,
+            Action<Aas.ModellingKind> setOutput,
             string instanceExceptionStatement = null,
-            AdminShell.Referable relatedReferable = null)
+            Aas.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
@@ -510,27 +1063,30 @@ namespace AasxPackageLogic
                         "A manufacturer would define types of assets, as well.",
                     breakIfTrue: true),
                 new HintCheck(
-                    () => { return kind.kind.Trim().ToLower() != "instance"; },
+                    () => { return kind != Aas.ModellingKind.Instance; },
                     "Check for kind setting. 'Instance' is the usual choice." + instanceExceptionStatement,
                     severityLevel: HintCheck.Severity.Notice )
             });
+
             if (this.SafeguardAccess(
-                    stack, repo, kind, "kind:", "Create data element!",
+                stack, repo, kind, "kind:", "Create data element!",
+                v =>
+                {
+                    setOutput?.Invoke(Aas.ModellingKind.Instance);
+                    return new AnyUiLambdaActionRedrawEntity();
+                }
+                ))
+            {
+                AddKeyValueExRef(
+                    stack, "kind", kind, Aas.Stringification.ToString(kind), null, repo,
                     v =>
                     {
-                        setOutput?.Invoke(new AdminShell.ModelingKind());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    }
-                    ))
-                this.AddKeyValueRef(
-                    stack, "kind", kind, ref kind.kind, null, repo,
-                    v =>
-                    {
-                        kind.kind = v as string;
+                        setOutput?.Invoke((Aas.ModellingKind)Aas.Stringification.ModellingKindFromString((string)v));
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
-                    new[] { AdminShell.ModelingKind.Template, AdminShell.ModelingKind.Instance });
+                    Enum.GetNames(typeof(Aas.ModellingKind)), comboBoxMinWidth: 105);
+            }
         }
 
         //
@@ -538,19 +1094,21 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditEntitySemanticId(AnyUiStackPanel stack,
-            AdminShell.SemanticId semanticId,
-            Action<AdminShell.SemanticId> setOutput,
+            Aas.IHasSemantics semElem,
             string statement = null,
             bool checkForCD = false,
             string addExistingEntities = null,
             CopyPasteBuffer cpb = null,
-            AdminShell.Referable relatedReferable = null)
+            Aas.IReferable relatedReferable = null)
         {
             // access
-            if (stack == null)
+            if (stack == null || semElem == null)
                 return;
 
-            // members
+            //
+            // SemanticId
+            //
+
             this.AddGroup(stack, "Semantic ID:", levelColors.SubSection);
 
             // hint
@@ -558,15 +1116,17 @@ namespace AasxPackageLogic
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return semanticId == null || semanticId.IsEmpty; },
-                            "Check if you want to add a semantic reference. " + statement,
+                            () => { return semElem.SemanticId == null
+                                || semElem.SemanticId.IsEmpty(); },
+                            "Check if you want to add a semantic reference to an external " +
+                            "concept repository entry. " + statement,
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
                                 () => { return checkForCD &&
-                                    semanticId[0].type != AdminShell.Key.ConceptDescription; },
-                                "The semanticId usually refers to a ConceptDescription " +
-                                    "within the respective repository.",
+                                    semElem.SemanticId.Keys[0].Type != Aas.KeyTypes.GlobalReference; },
+                                "The semanticId usually features a GlobalReference to a concept " +
+                                "within a respective concept repository.",
                                 severityLevel: HintCheck.Severity.Notice)
                     });
 
@@ -575,25 +1135,126 @@ namespace AasxPackageLogic
 
             // add the keys
             if (this.SafeguardAccess(
-                    stack, repo, semanticId, "semanticId:", "Create data element!",
+                    stack, repo, semElem.SemanticId, "semanticId:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new AdminShell.SemanticId());
+                        semElem.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListKeys(
-                    stack, "semanticId", semanticId.Keys, repo,
+                AddKeyReference(
+                    stack, "semanticId", semElem.SemanticId, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
-                    addExistingEntities: addExistingEntities, addFromPool: true,
+                    showRefSemId: false,
+                    addExistingEntities: addExistingEntities, addFromKnown: true,
                     addEclassIrdi: true,
                     addPresetNames: bufferKeys.Item1,
                     addPresetKeyLists: bufferKeys.Item2,
                     jumpLambda: (kl) =>
                     {
-                        return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        return new AnyUiLambdaActionNavigateTo(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>(kl)));
                     },
-                    relatedReferable: relatedReferable);
+                    relatedReferable: relatedReferable,
+                    auxContextHeader: new[] { "\u2573", "Delete semanticId" },
+                    auxContextLambda: (i) =>
+                    {
+                        if (i == 0)
+                        {
+                            semElem.SemanticId = null;
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        return new AnyUiLambdaActionNone();
+                    });
+
+            //
+            // Supplemenatal SemanticId
+            //
+
+            this.AddGroup(stack, "Supplemental Semantic IDs:", levelColors.SubSection);
+
+            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+            this.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => semElem.SupplementalSemanticIds == null
+                        || semElem.SupplementalSemanticIds.Count < 1,
+                    "Check if a supplemental semanticId is appropriate here. This only make sense, when " +
+                    "the primary semanticId does not semantically identifies all relevant aspects of the " +
+                    "AAS element.",
+                    breakIfTrue: true,
+                    severityLevel: HintCheck.Severity.Notice) });
+            if (this.SafeguardAccess(
+                    stack, this.repo, semElem.SupplementalSemanticIds, "supplementalSem.Id:", "Create data element!",
+                    action: v =>
+                    {
+                        semElem.SupplementalSemanticIds = new List<Aas.IReference>();
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                if (editMode)
+                {
+                    // let the user control the number of references
+                    this.AddActionPanel(
+                        stack, "supplementalSem.Id:",
+                        new[] { "Add", "Delete last" }, repo,
+                        (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0)
+                                semElem.SupplementalSemanticIds.Add(
+                                    new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>()));
+
+                            if (buttonNdx == 1)
+                            {
+                                if (semElem.SupplementalSemanticIds.Count > 0)
+                                    semElem.SupplementalSemanticIds.RemoveAt(
+                                        semElem.SupplementalSemanticIds.Count - 1);
+                                else
+                                    semElem.SupplementalSemanticIds = null;
+                            }
+
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        });
+                }
+
+                // now use the normal mechanism to deal with editMode or not ..
+                if (semElem.SupplementalSemanticIds != null
+                    && semElem.SupplementalSemanticIds.Count > 0)
+                {
+                    for (int i = 0; i < semElem.SupplementalSemanticIds.Count; i++)
+                    {
+                        AddKeyReference(
+                            stack, String.Format("Suppl.Sem.Id[{0}]", i),
+                            semElem.SupplementalSemanticIds[i], repo,
+                            packages, PackageCentral.PackageCentral.Selector.MainAux,
+                            showRefSemId: false,
+                            addExistingEntities: addExistingEntities, addFromKnown: true,
+                            addEclassIrdi: true,
+                            addPresetNames: bufferKeys.Item1,
+                            addPresetKeyLists: bufferKeys.Item2,
+                            jumpLambda: (kl) =>
+                            {
+                                return new AnyUiLambdaActionNavigateTo(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>(kl)));
+                            },
+                            relatedReferable: relatedReferable,
+                            auxContextHeader: new[] { "\u2573", "Delete supplementalSemanticId" },
+                            auxContextLambda: (i) =>
+                            {
+                                if (i == 0)
+                                {
+                                    semElem.SemanticId = null;
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+                                return new AnyUiLambdaActionNone();
+                            });
+
+                        // small vertical space
+                        if (i < semElem.SupplementalSemanticIds.Count - 1)
+                            AddVerticalSpace(stack);
+                    }
+                }
+            }
         }
 
         //
@@ -601,248 +1262,768 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditEntityQualifierCollection(AnyUiStackPanel stack,
-            AdminShell.QualifierCollection qualifiers,
-            Action<AdminShell.QualifierCollection> setOutput,
-            AdminShell.Referable relatedReferable = null)
+            List<Aas.IQualifier> qualifiers,
+            Action<List<Aas.IQualifier>> setOutput,
+            Aas.IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
                 return;
 
             // members
-            this.AddGroup(stack, "Qualifiable:", levelColors.SubSection);
+            this.AddGroup(stack, "Qualifiable:", levelColors.SubSection,
+                requestAuxButton: repo != null,
+                auxContextHeader: new[] { "\u27f4", "Migrate to Extensions" },
+                auxContextLambda: (o) =>
+                {
+                    if (o is int i && i == 0 && relatedReferable != null)
+                    {
+                        if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                                "Migrate particular Qualifiers (V2.0) to Extensions (V3.0) " +
+                                "for this element and all child elements? " +
+                                "This operation cannot be reverted!", "Qualifiers",
+                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                            return new AnyUiLambdaActionNone();
+
+                        relatedReferable.RecurseOnReferables(null,
+                            includeThis: true,
+                            lambda: (o, parents, rf) =>
+                            {
+                                rf?.MigrateV20QualifiersToExtensions();
+                                return true;
+                            });
+
+                        Log.Singleton.Info("Migration of particular Qualifiers (V2.0) to Extensions (V3.0).");
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
 
             if (this.SafeguardAccess(
                 stack, repo, qualifiers, "Qualifiers:", "Create empty list of Qualifiers!",
                 v =>
                 {
-                    setOutput?.Invoke(new AdminShell.QualifierCollection());
+                    setOutput?.Invoke(new List<Aas.IQualifier>());
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable);
+                this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable,
+                        superMenu: superMenu);
             }
 
         }
 
         //
+        // List of SpecificAssetId
+        //
+
+        public void DisplayOrEditEntityListOfSpecificAssetIds(AnyUiStackPanel stack,
+            List<Aas.ISpecificAssetId> pairs,
+            Action<List<Aas.ISpecificAssetId>> setOutput,
+            string key = "IdentifierKeyValuePairs",
+            Aas.IReferable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, $"{key}:", levelColors.SubSection);
+
+            if (this.SafeguardAccess(
+                stack, repo, pairs, $"{key}:", "Create data element!",
+                v =>
+                {
+                    setOutput?.Invoke(new List<Aas.ISpecificAssetId>());
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                this.SpecificAssetIdHelper(stack, repo, pairs,
+                    key: key,
+                    relatedReferable: relatedReferable);
+            }
+
+        }
+        // dead-csharp off
+        //not anymore required?!
+        //public void DisplayOrEditEntitySingleIdentifierKeyValuePair(AnyUiStackPanel stack,
+        //    List<Aas.ISpecificAssetId> pair,
+        //    Action<List<Aas.ISpecificAssetId>> setOutput,
+        //    string key = "IdentifierKeyValuePair",
+        //    Aas.IReferable relatedReferable = null,
+        //    string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
+        //{
+        //    // access
+        //    if (stack == null)
+        //        return;
+
+        //    // members
+        //    this.AddGroup(stack, $"{key}:", levelColors.SubSection, 
+        //        requestAuxButton: repo != null,
+        //        auxContextHeader: auxContextHeader, auxContextLambda: auxContextLambda);
+
+        //    if (this.SafeguardAccess(
+        //        stack, repo, pair, $"{key}:", "Create data element!",
+        //        v =>
+        //        {
+        //            setOutput?.Invoke(new List<ISpecificAssetId>());
+        //            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+        //            return new AnyUiLambdaActionRedrawEntity();
+        //        }))
+        //    {
+        //        //TODO (jtikekar, 0000-00-00): need to test
+        //        foreach (var specificAssetId in pair)
+        //        {
+        //            this.IdentifierKeyValueSinglePairHelper(
+        //                        stack, repo, specificAssetId,
+        //                        relatedReferable: relatedReferable);
+        //        }
+        //    }
+        //}
+        // dead-csharp on
+
+        //
         // DataSpecificationIEC61360
         //
 
-        public void DisplayOrEditEntityDataSpecificationIEC61360(AnyUiStackPanel stack,
-            AdminShell.DataSpecificationIEC61360 dsiec,
-            AdminShell.Referable relatedReferable = null)
+
+        public void DisplayOrEditEntityDataSpecificationIec61360(
+            Aas.Environment env,
+            AnyUiStackPanel stack,
+            Aas.DataSpecificationIec61360 dsiec,
+            Aas.IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null || dsiec == null)
                 return;
 
             // members
-            this.AddGroup(
-                        stack, "Data Specification Content IEC61360:", levelColors.SubSection);
+            this.AddGroup(stack, "Data Specification Content IEC61360:", levelColors.SubSection);
 
-            this.AddHintBubble(
+            // PreferredName
+
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.preferredName == null || dsiec.preferredName.Count < 1; },
+                            () => { return dsiec.PreferredName == null || dsiec.PreferredName.Count < 1; },
                             "Please add a preferred name, which could be used on user interfaces " +
                                 "to identify the concept to a human person.",
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return dsiec.preferredName.Count <2; },
-                            "Please add multiple languanges.")
+                            () => { return dsiec.PreferredName.Count <2; },
+                            "Please add multiple languanges.",
+                            severityLevel: HintCheck.Severity.Notice)
                 });
-            if (this.SafeguardAccess(
-                    stack, repo, dsiec.preferredName, "preferredName:", "Create data element!",
+            if (SafeguardAccess(
+                    stack, repo, dsiec.PreferredName, "preferredName:", "Create data element!",
                     v =>
                     {
-                        dsiec.preferredName = new AdminShell.LangStringSetIEC61360();
+                        dsiec.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>();
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "preferredName", dsiec.preferredName,
+                AddKeyListLangStr<ILangStringPreferredNameTypeIec61360>(stack, "preferredName", dsiec.PreferredName,
                     repo, relatedReferable: relatedReferable);
 
-            this.AddHintBubble(
+            // ShortName
+
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; },
+                            () => { return dsiec.ShortName == null || dsiec.ShortName.Count < 1; },
                             "Please check if you can add a short name, which is a reduced, even symbolic version of " +
                                 "the preferred name. IEC 61360 defines some symbolic rules " +
                                 "(e.g. greek characters) for this name.",
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return dsiec.shortName.Count <2; },
+                            () => { return dsiec.ShortName.Count <2; },
                             "Please add multiple languanges.",
-                            severityLevel: HintCheck.Severity.Notice)
+                            severityLevel: HintCheck.Severity.Notice),
+                        new HintCheck(
+                            () => { return dsiec.ShortName
+                                .Select((ls) => ls.Text != null && ls.Text.Length > 18)
+                                .Any((c) => c == true); },
+                            "ShortNameTypeIEC61360 only allows 1..18 characters.")
                 });
-            if (this.SafeguardAccess(
-                    stack, repo, dsiec.shortName, "shortName:", "Create data element!",
+            if (SafeguardAccess(
+                    stack, repo, dsiec.ShortName, "shortName:", "Create data element!",
                     v =>
                     {
-                        dsiec.shortName = new AdminShell.LangStringSetIEC61360();
+                        dsiec.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>();
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "shortName", dsiec.shortName,
+                AddKeyListLangStr<ILangStringShortNameTypeIec61360>(stack, "shortName", dsiec.ShortName,
                     repo, relatedReferable: relatedReferable);
 
-            this.AddHintBubble(
+            // Unit
+
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
                             () => {
-                                return (dsiec.unitId == null || dsiec.unitId.Count < 1) &&
-                                    ( dsiec.unit == null || dsiec.unit.Trim().Length < 1);
+                                return (dsiec.UnitId == null || dsiec.UnitId.Keys.Count < 1) &&
+                                    ( dsiec.Unit == null || dsiec.Unit.Trim().Length < 1);
                             },
                             "Please check, if you can provide a unit or a unitId, " +
                                 "in which the concept is being measured. " +
                                 "Usage of SI-based units is encouraged.",
                             severityLevel: HintCheck.Severity.Notice)
             });
-            this.AddKeyValueRef(
-                stack, "unit", dsiec, ref dsiec.unit, null, repo,
+            AddKeyValueExRef(
+                stack, "unit", dsiec, dsiec.Unit, null, repo,
                 v =>
                 {
-                    dsiec.unit = v as string;
+                    dsiec.Unit = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
 
-            this.AddHintBubble(
+            // UnitId
+
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
                             () => {
-                                return ( dsiec.unit == null || dsiec.unit.Trim().Length < 1) &&
-                                    ( dsiec.unitId == null || dsiec.unitId.Count < 1);
+                                return ( dsiec.Unit == null || dsiec.Unit.Trim().Length < 1) &&
+                                    ( dsiec.UnitId == null || dsiec.UnitId.Keys.Count < 1);
                             },
                             "Please check, if you can provide a unit or a unitId, " +
                                 "in which the concept is being measured. " +
                                 "Usage of SI-based units is encouraged.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            if (this.SafeguardAccess(
-                    stack, repo, dsiec.unitId, "unitId:", "Create data element!",
+            if (SafeguardAccess(
+                    stack, repo, dsiec.UnitId, "unitId:", "Create data element!",
                     v =>
                     {
-                        dsiec.unitId = new AdminShell.UnitId();
+                        dsiec.UnitId = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                this.AddKeyListKeys(
-                    stack, "unitId", dsiec.unitId.Keys, repo,
+                List<string> keys = new();
+                foreach (var key in dsiec.UnitId.Keys)
+                {
+                    keys.Add(key.Value);
+                }
+                this.AddKeyReference(
+                    stack, "unitId", dsiec.UnitId, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
-                    AdminShell.Key.GlobalReference, addEclassIrdi: true,
+                    addExistingEntities: Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference),
+                    addEclassIrdi: true,
                     relatedReferable: relatedReferable);
             }
 
-            this.AddKeyValueRef(
-                stack, "valueFormat", dsiec, ref dsiec.valueFormat, null, repo,
-                v =>
-                {
-                    dsiec.valueFormat = v as string;
-                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionNone();
-                });
+            // source of definition
 
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
                             () =>
                             {
-                                return dsiec.sourceOfDefinition == null || dsiec.sourceOfDefinition.Length < 1;
+                                return dsiec.SourceOfDefinition == null || dsiec.SourceOfDefinition.Length < 1;
                             },
                             "Please check, if you can provide a source of definition for the concepts. " +
                                 "This could be an informal link to a document, glossary item etc.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            this.AddKeyValueRef(
-                stack, "sourceOfDef.", dsiec, ref dsiec.sourceOfDefinition, null, repo,
+            AddKeyValueExRef(
+                stack, "sourceOfDef.", dsiec, dsiec.SourceOfDefinition, null, repo,
                 v =>
                 {
-                    dsiec.sourceOfDefinition = v as string;
+                    dsiec.SourceOfDefinition = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
 
-            this.AddHintBubble(
+            // Symbol
+
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.symbol == null || dsiec.symbol.Trim().Length < 1; },
+                            () => { return dsiec.Symbol == null || dsiec.Symbol.Trim().Length < 1; },
                             "Please check, if you can provide formulaic character for the concept.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            this.AddKeyValueRef(
-                stack, "symbol", dsiec, ref dsiec.symbol, null, repo,
+            AddKeyValueExRef(
+                stack, "symbol", dsiec, dsiec.Symbol, null, repo,
                 v =>
                 {
-                    dsiec.symbol = v as string;
+                    dsiec.Symbol = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
 
-            this.AddHintBubble(
+            // DataType
+
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.dataType == null || dsiec.dataType.Trim().Length < 1; },
-                            "Please provide data type for the concept. " +
+                            () => { return dsiec.DataType == null; },
+                            "Please provide a data type for the concept. " +
                                 "Data types are provided by the IEC 61360.")
                 });
-            this.AddKeyValueRef(
-                stack, "dataType", dsiec, ref dsiec.dataType, null, repo,
+            AddKeyValueExRef(
+                stack, "dataType", dsiec, Aas.Stringification.ToString(dsiec.DataType), null, repo,
                 v =>
                 {
-                    dsiec.dataType = v as string;
+                    dsiec.DataType = Aas.Stringification.DataTypeIec61360FromString(v as string);
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 },
                 comboBoxIsEditable: true,
-                comboBoxItems: AdminShell.DataSpecificationIEC61360.DataTypeNames);
+                comboBoxMinWidth: 190,
+                comboBoxItems: Aas.Constants.DataTypeIec61360ForPropertyOrValue.Select(
+                    (dt) => Aas.Stringification.ToString(dt)).ToArray());
 
-            this.AddHintBubble(
+            // Definition
+
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.definition == null || dsiec.definition.Count < 1; },
+                            () => { return dsiec.Definition == null || dsiec.Definition.Count < 1; },
                             "Please check, if you can add a definition, which could be used to describe exactly, " +
                                 "how to establish a value/ measurement for the concept.",
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return dsiec.definition.Count <2; },
+                            () => { return dsiec.Definition.Count <2; },
                             "Please add multiple languanges.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            if (this.SafeguardAccess(
-                    stack, repo, dsiec.definition, "definition:", "Create data element!",
+            if (SafeguardAccess(
+                    stack, repo, dsiec.Definition, "definition:", "Create data element!",
                     v =>
                     {
-                        dsiec.definition = new AdminShell.LangStringSetIEC61360();
+                        dsiec.Definition = new List<Aas.ILangStringDefinitionTypeIec61360>();
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "definition", dsiec.definition,
+                this.AddKeyListLangStr<ILangStringDefinitionTypeIec61360>(stack, "definition", dsiec.Definition,
                     repo, relatedReferable: relatedReferable);
+
+            // ValueFormat
+
+            AddKeyValueExRef(
+                stack, "valueFormat", dsiec, dsiec.ValueFormat, null, repo,
+                v =>
+                {
+                    dsiec.ValueFormat = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // ValueList
+
+            AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => { return dsiec.ValueList == null
+                                || dsiec.ValueList.ValueReferencePairs == null
+                                || dsiec.ValueList.ValueReferencePairs.Count < 1; },
+                            "If the concept features multiple possible discrete values (enumeration), " +
+                            "please check, if you can add pairs of name and References to concepts " +
+                            "representing the single values.",
+                            severityLevel: HintCheck.Severity.Notice,
+                            breakIfTrue: true),
+                        new HintCheck(
+                            () => { return dsiec.ValueList.ValueReferencePairs.Count < 2; },
+                            "Please add multiple pairs of name and Reference.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+            if (SafeguardAccess(
+                    stack, repo, dsiec.ValueList?.ValueReferencePairs, "valueList:", "Create data element!",
+                    v =>
+                    {
+                        dsiec.ValueList ??= new Aas.ValueList(null);
+                        dsiec.ValueList.ValueReferencePairs = new();
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                this.AddGroup(stack, "IEC61360 value list items", levelColors.SubSection);
+
+                ValueListHelper(
+                    env, stack, repo, "valueList",
+                    dsiec.ValueList.ValueReferencePairs,
+                    relatedReferable: relatedReferable, superMenu: superMenu);
+            }
+
+            // Value
+
+            AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => { return dsiec.Value == null || dsiec.Value.Trim().Length < 1; },
+                            "If the concepts stands for a single vlaue, please provide the value. " +
+                            "Not required for enumerations or properties.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "value", dsiec, dsiec.Value, null, repo,
+                v =>
+                {
+                    dsiec.Value = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // LevelType
+
+            AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => dsiec.LevelType == null ||
+                                !(dsiec.LevelType.Min || dsiec.LevelType.Max
+                                  || dsiec.LevelType.Nom || dsiec.LevelType.Typ),
+                            "Consider specifying a IEC61360 level type attribute for the " +
+                            "intended values.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+            if (SafeguardAccess(
+                    stack, repo, dsiec.LevelType, "levelType:", "Create data element!",
+                    v =>
+                    {
+                        dsiec.LevelType = new Aas.LevelType(false, false, false, false);
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                var subg = AddSubGrid(stack, "levelType:",
+                1, 4, new[] { "#", "#", "#", "#" },
+                paddingCaption: new AnyUiThickness(5, 0, 0, 0),
+                marginGrid: new AnyUiThickness(4, 0, 0, 0),
+                minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
+
+                Action<int, string, bool, Action<bool>> lambda = (col, name, value, setValue) =>
+                {
+                    AnyUiUIElement.RegisterControl(
+                        AddSmallCheckBoxTo(subg, 0, col,
+                            content: name,
+                            isChecked: value,
+                            margin: new AnyUiThickness(0, 0, 15, 0)),
+                        (v) =>
+                        {
+                            setValue?.Invoke(!value);
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        });
+                };
+
+                lambda(0, "min", dsiec.LevelType.Min, (sv) => { dsiec.LevelType.Min = sv; });
+                lambda(1, "max", dsiec.LevelType.Max, (sv) => { dsiec.LevelType.Max = sv; });
+                lambda(2, "nom", dsiec.LevelType.Nom, (sv) => { dsiec.LevelType.Nom = sv; });
+                lambda(3, "typ", dsiec.LevelType.Typ, (sv) => { dsiec.LevelType.Typ = sv; });
+            }
         }
+
+        //
+        // DataSpecificationIEC61360
+        //
+
+        //TODO (jtikekar, 0000-00-00): support DataSpecificationPhysicalUnit
+#if SupportDataSpecificationPhysicalUnit
+        public void DisplayOrEditEntityDataSpecificationPhysicalUnit(
+    AnyUiStackPanel stack,
+    Aas.DataSpecificationPhysicalUnit dspu,
+    Aas.IReferable relatedReferable = null)
+        {
+            // access
+            if (stack == null || dspu == null)
+                return;
+
+            // members
+            AddGroup(
+                stack, "Data Specification Content Physical Unit:", levelColors.SubSection);
+
+            // UnitName
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.UnitName.HasContent() != true,
+                        "Please name the phyiscal unit. This is mandatory information.")
+                });
+            AddKeyValueExRef(
+                stack, "unitName", dspu, dspu.UnitName, null, repo,
+                v =>
+                {
+                    dspu.UnitName = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // UnitSymbol
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.UnitSymbol.HasContent() != true,
+                        "Please provide a symbol representation to the phyiscal unit. " +
+                        "This is mandatory information, if available.")
+                });
+            AddKeyValueExRef(
+                stack, "unitSymbol", dspu, dspu.UnitSymbol, null, repo,
+                v =>
+                {
+                    dspu.UnitSymbol = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // Definition
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => { return dspu.Definition == null || dspu.Definition.Count < 1; },
+                        "Please check, if you can add a definition, which could be used to describe exactly, " +
+                            "how to the unit is defined or measured concept.",
+                        severityLevel: HintCheck.Severity.Notice,
+                        breakIfTrue: true),
+                    new HintCheck(
+                        () => { return dspu.Definition.Count <2; },
+                        "Please add multiple languanges for the definition.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            if (this.SafeguardAccess(
+                    stack, repo, dspu.Definition, "definition:", "Create data element!",
+                    v =>
+                    {
+                        dspu.Definition = new List<Aas.LangString>();
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+                this.AddKeyListLangStr(stack, "definition", dspu.Definition,
+                    repo, relatedReferable: relatedReferable);
+
+            // SiNotation
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.SiNotation.HasContent() != true,
+                        "Please check, if you can provide a notation according to SI.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "SI notation", dspu, dspu.SiNotation, null, repo,
+                v =>
+                {
+                    dspu.SiNotation = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // SiName
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.SiName.HasContent() != true,
+                        "Please check, if you can provide a name according to SI.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "SI name", dspu, dspu.SiName, null, repo,
+                v =>
+                {
+                    dspu.SiName = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // DinNotation
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.DinNotation.HasContent() != true,
+                        "Please check, if you can provide a notation according to DIN.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "DIN notation", dspu, dspu.DinNotation, null, repo,
+                v =>
+                {
+                    dspu.DinNotation = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // EceName
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.EceName.HasContent() != true,
+                        "Please check, if you can provide a name according to ECE.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "ECE name", dspu, dspu.EceName, null, repo,
+                v =>
+                {
+                    dspu.EceName = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // EceCode
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.EceCode.HasContent() != true,
+                        "Please check, if you can provide a code according to DIN.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "ECE code", dspu, dspu.EceCode, null, repo,
+                v =>
+                {
+                    dspu.EceCode = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // NistName
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.NistName.HasContent() != true,
+                        "Please check, if you can provide a name according to NIST.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "NIST name", dspu, dspu.NistName, null, repo,
+                v =>
+                {
+                    dspu.EceName = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // source of definition
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.SourceOfDefinition.HasContent() != true,
+                        "Please check, if you can provide a source of definition for the unit. " +
+                        "This could be an informal link to a document, glossary item etc.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "sourceOfDef.", dspu, dspu.SourceOfDefinition, null, repo,
+                v =>
+                {
+                    dspu.SourceOfDefinition = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // conversion factor
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.ConversionFactor.HasContent() != true,
+                        "Please check, if you can provide a conversion factor. " +
+                        "Example could be: 1.0/60 .",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "conversionFac.", dspu, dspu.ConversionFactor, null, repo,
+                v =>
+                {
+                    dspu.ConversionFactor = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // registration authority id
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.RegistrationAuthorityId.HasContent() != true,
+                        "Please check, if you can provide a registration authority id.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "regAuthId.", dspu, dspu.RegistrationAuthorityId, null, repo,
+                v =>
+                {
+                    dspu.RegistrationAuthorityId = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // Supplier
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.Supplier.HasContent() != true,
+                        "Please check, if you can provide a supplier.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "supplier", dspu, dspu.Supplier, null, repo,
+                v =>
+                {
+                    dspu.Supplier = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+        } 
+#endif
 
         //
         // special Submodel References
         // 
 
+
+        // TODO (MIHO, 2022-12-26): seems not to be used
+#if OLD
         public void DisplayOrEditEntitySubmodelRef(AnyUiStackPanel stack,
-            AdminShell.SubmodelRef smref,
-            Action<AdminShell.SubmodelRef> setOutput,
+            Aas.Reference smref,
+            Action<Aas.Reference> setOutput,
             string entityName,
-            AdminShell.Referable relatedReferable = null)
+            Aas.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
@@ -860,12 +2041,12 @@ namespace AasxPackageLogic
                     "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new AdminShell.SubmodelRef());
+                        setOutput?.Invoke(new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>()));
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
                 this.AddGroup(
-                    stack, $"{entityName} - Reference to describing Submodel:",
+                    stack, $"{entityName} - Aas.Reference to describing Submodel:",
                     levelColors.SubSection);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,
@@ -873,5 +2054,601 @@ namespace AasxPackageLogic
                     relatedReferable: relatedReferable);
             }
         }
-    }
+#endif
+
+        //
+        // File / Resource attributes
+        // 
+
+        public void DisplayOrEditEntityFileResource(AnyUiStackPanel stack,
+            Aas.IReferable containingObject,
+            ModifyRepo repo, AasxMenu superMenu,
+            string valuePath,
+            string valueContent,
+            Action<string, string> setOutput,
+            Aas.IReferable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+
+            // Value
+
+            AddKeyValueExRef(
+                stack, "value", containingObject, valuePath, null, repo,
+                v =>
+                {
+                    valuePath = v as string;
+                    setOutput?.Invoke(valuePath, valueContent);
+                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                },
+                auxButtonTitles: new[] { "Choose supplemental file", },
+                auxButtonToolTips: new[] { "Select existing supplemental file" },
+                auxButtonLambda: (bi) =>
+                {
+                    if (bi == 0)
+                    {
+                        // Select
+                        var ve = this.SmartSelectAasEntityVisualElement(
+                                    packages, PackageCentral.PackageCentral.Selector.Main, "SupplementalFile");
+                        if (ve != null)
+                        {
+                            var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
+                            if (sf != null)
+                            {
+                                valuePath = sf.Uri.ToString();
+                                setOutput?.Invoke(valuePath, valueContent);
+                                this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                        }
+                    }
+
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // ContentType
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () =>
+                        {
+                            return valueContent == null || valueContent.Trim().Length < 1 ||
+                                valueContent.IndexOf('/') < 1 || valueContent.EndsWith("/");
+                        },
+                        "The content type of the file. Former known as MIME type. This is " +
+                        "mandatory information. See RFC2046.")
+                });
+
+            AddKeyValueExRef(
+                stack, "contentType", containingObject, valueContent, null, repo,
+                v =>
+                {
+                    valueContent = v as string;
+                    setOutput?.Invoke(valuePath, valueContent);
+                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                },
+                comboBoxIsEditable: true, comboBoxMinWidth: 140,
+                comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => { return valuePath == null || valuePath.Trim().Length < 1; },
+                            "The path to an external file or a file relative the AASX package root('/'). " +
+                                "Files are typically relative to '/aasx/' or sub-directories of it. " +
+                                "External files typically comply to an URL, e.g. starting with 'https://..'.",
+                            breakIfTrue: true),
+                        new HintCheck(
+                            () => { return valuePath.IndexOf('\\') >= 0; },
+                            "Backslashes ('\') are not allow. Please use '/' as path delimiter.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+
+            // Further actions
+
+            if (editMode && uploadAssistance != null && packages.Main != null)
+            {
+                // Remove, create text, edit
+                // More file actions
+                this.AddActionPanel(
+                    stack, "Action",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("remove-file", "Remove existing file",
+                            "Removes the file from the AASX environment.")
+                        .AddAction("create-text", "Create text file",
+                            "Creates a text file and adds it to the AAS environment.")
+                        .AddAction("edit-text", "Edit text file",
+                            "Edits the associated text file and updates it to the AAS environment."),
+                    ticketAction: (buttonNdx, ticket) =>
+
+                    {
+                        if (buttonNdx == 0 && valuePath.HasContent())
+                        {
+                            if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
+                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                            {
+                                try
+                                {
+                                    // try find ..
+                                    var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                    var psf = psfs?.FindByUri(valuePath);
+                                    if (psf == null)
+                                    {
+                                        Log.Singleton.Error(
+                                            $"Not able to locate supplmentary file {valuePath} for removal! " +
+                                            $"Aborting!");
+                                    }
+                                    else
+                                    {
+                                        Log.Singleton.Info($"Removing file {valuePath} ..");
+                                        packages.Main.DeleteSupplementaryFile(psf);
+                                        Log.Singleton.Info(
+                                            $"Added {valuePath} to pending package items to be deleted. " +
+                                            "A save-operation might be required.");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(
+                                        ex, $"Removing file {valuePath} in package");
+                                }
+
+                                // clear value
+                                valuePath = "";
+
+                                // value event
+                                setOutput?.Invoke(valuePath, valueContent);
+                                this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+
+                                // show empty
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                        }
+
+                        if (buttonNdx == 1)
+                        {
+                            // ask for a name
+                            var uc = new AnyUiDialogueDataTextBox(
+                                "Name of text file to create",
+                                symbol: AnyUiMessageBoxImage.Question,
+                                maxWidth: 1400,
+                                text: "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                            this.context?.StartFlyoverModal(uc);
+                            if (!uc.Result)
+                            {
+                                return new AnyUiLambdaActionNone();
+                            }
+
+                            var ptd = "/aasx/";
+                            var ptfn = uc.Text.Trim();
+                            packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                            // make sure the name is not already existing
+                            var psfs = packages.Main.GetListOfSupplementaryFiles();
+                            var psf = psfs?.FindByUri(ptd + ptfn);
+                            if (psf != null)
+                            {
+                                this.context?.MessageBoxFlyoutShow(
+                                    $"The supplemental file {ptd + ptfn} is already existing in the " +
+                                    "package. Please re-try with a different file name.", "Create text file",
+                                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+                                return new AnyUiLambdaActionNone();
+                            }
+
+                            // try execute
+                            try
+                            {
+                                // make temp file
+                                var tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".txt");
+                                System.IO.File.WriteAllText(tempFn, "");
+
+                                var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                                var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                    tempFn, ptd, ptfn,
+                                    embedAsThumb: false, useMimeType: mimeType);
+
+                                if (targetPath == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"Error creating text-file {ptd + ptfn} within package");
+                                }
+                                else
+                                {
+                                    Log.Singleton.Info(
+                                        $"Added empty text-file {ptd + ptfn} to pending package items. " +
+                                        $"A save-operation is required.");
+                                    valueContent = mimeType;
+                                    valuePath = targetPath;
+                                    setOutput?.Invoke(valuePath, valueContent);
+
+                                    // value + struct event
+                                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                                    this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"Creating text-file {ptd + ptfn} within package");
+                            }
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: containingObject);
+                        }
+
+                        if (buttonNdx == 2)
+                        {
+                            try
+                            {
+                                // try find ..
+                                var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                var psf = psfs?.FindByUri(valuePath);
+                                if (psf == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"Not able to locate supplmentary file {valuePath} for edit. " +
+                                        $"Aborting!");
+                                    return new AnyUiLambdaActionNone();
+                                }
+
+                                // try read ..
+                                Log.Singleton.Info($"Reading text-file {valuePath} ..");
+                                string contents;
+                                using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(valuePath))
+                                {
+                                    using (var sr = new StreamReader(stream))
+                                    {
+                                        // read contents
+                                        contents = sr.ReadToEnd();
+                                    }
+                                }
+
+                                // test
+                                if (contents == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"Not able to read contents from  supplmentary file {valuePath} " +
+                                        $"for edit. Aborting!");
+                                    return new AnyUiLambdaActionNone();
+                                }
+
+                                // edit
+                                var uc = new AnyUiDialogueDataTextEditor(
+                                            caption: $"Edit text-file '{valuePath}'",
+                                            mimeType: valueContent,
+                                            text: contents);
+                                if (!this.context.StartFlyoverModal(uc))
+                                    return new AnyUiLambdaActionNone();
+
+                                // save
+                                using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(
+                                    valuePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                                {
+                                    using (var sw = new StreamWriter(stream))
+                                    {
+                                        // write contents
+                                        sw.Write(uc.Text);
+                                    }
+                                }
+
+                                // value event
+                                this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"Edit text-file {valuePath} in package.");
+                            }
+
+                            // reshow
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                // Further file assistance
+                this.AddGroup(stack, "Supplemental file assistance", this.levelColors.SubSection);
+
+                AddKeyValueExRef(
+                    stack, "Target path", this.uploadAssistance, this.uploadAssistance.TargetPath, null, repo,
+                    v =>
+                    {
+                        this.uploadAssistance.TargetPath = v as string;
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                this.AddKeyDropTarget(
+                    stack, "Source file to add",
+                    !(this.uploadAssistance.SourcePath.HasContent())
+                        ? "(Please drop a file to set source file to add)"
+                        : this.uploadAssistance.SourcePath,
+                    null, repo,
+                    v =>
+                    {
+                        this.uploadAssistance.SourcePath = v as string;
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }, minHeight: 40);
+
+                this.AddActionPanel(
+                    stack, "Action",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("select-source", "Select source file",
+                            "Select a filename to be added later.")
+                        .AddAction("add-to-aasx", "Add or update to AASX",
+                            "Add or update file given by selected filename to the AAS environment."),
+                    ticketAction: (buttonNdx, ticket) =>
+                        {
+                            if (buttonNdx == 0)
+                            {
+                                var uc = new AnyUiDialogueDataOpenFile(
+                                message: "Select a supplemental file to add..");
+                                this.context?.StartFlyoverModal(uc);
+                                if (uc.Result && uc.TargetFileName != null)
+                                {
+                                    this.uploadAssistance.SourcePath = uc.TargetFileName;
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+                            }
+
+                            if (buttonNdx == 1)
+                            {
+                                try
+                                {
+                                    var ptd = uploadAssistance.TargetPath.Trim();
+                                    var ptfn = System.IO.Path.GetFileName(uploadAssistance.SourcePath);
+                                    packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                                    var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                                    var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                        uploadAssistance.SourcePath, ptd, ptfn,
+                                        embedAsThumb: false, useMimeType: mimeType);
+
+                                    if (targetPath == null)
+                                    {
+                                        Log.Singleton.Error(
+                                            $"Error adding file {uploadAssistance.SourcePath} to package");
+                                    }
+                                    else
+                                    {
+                                        Log.Singleton.Info(
+                                            $"Added {ptfn} to pending package items. A save-operation is required.");
+                                        valueContent = mimeType;
+                                        valuePath = targetPath;
+                                        setOutput?.Invoke(valuePath, valueContent);
+
+                                        // value + struct event
+                                        this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                                        this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(
+                                        ex, $"Adding file {uploadAssistance.SourcePath} to package");
+                                }
+
+                                // refresh dialogue
+                                uploadAssistance.SourcePath = "";
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+
+                            return new AnyUiLambdaActionNone();
+                        });
+            }
+
+        }
+
+        //
+        // Values checking
+        //
+
+        /// <summary>
+        /// Infomration carrying from the functionbelow to the main application
+        /// </summary>
+        public class DisplayOrEditEntityCheckValueHandle
+        {
+            public Aas.IReferable Referable = null;
+
+            public List<SmtAttributeCheckItem> CheckItems = new List<SmtAttributeCheckItem>();
+
+			public AnyUiBorder Border = null;
+            public AnyUiTextBlock TextBlock = null;
+        }
+
+        public List<SmtAttributeCheckItem> DisplayOrEditEntityCheckValueEvalItems(
+            Aas.IReferable rf)
+        {
+            // access
+            var checkItems = new List<SmtAttributeCheckItem>();
+            if (rf == null)
+                return checkItems;
+
+            // try gain information from the given referable itself
+            var rec = CheckReferableForExtensionRecords<SmtAttributeRecord>(rf).FirstOrDefault();
+            if (rec == null)
+            {
+                // can analyze qualifiers?
+                rec = AasSmtQualifiers.FindSmtQualifiers(rf, removeQualifers: false);
+            }            
+
+            // if not, can access semanticId -> ConcepTdescription?
+            if (rec == null && rf is Aas.IHasSemantics rfsem
+                && rfsem.SemanticId?.IsValid() == true
+                && rfsem.SemanticId.Count() == 1
+                && packages != null)
+            {
+                // try find
+                foreach (var x in packages.QuickLookupAllIdent(rfsem.SemanticId.Keys[0].Value))
+                    if (x.Item2 is Aas.IConceptDescription rfsemCd)
+                    {
+						var rec2 = CheckReferableForExtensionRecords<SmtAttributeRecord>(rfsemCd).FirstOrDefault();
+                        if (rec2 == null)
+                            rec2 = AasSmtQualifiers.FindSmtQualifiers(rf, removeQualifers: false);
+                        if (rec2 != null)
+                            rec = rec2;
+					}
+            }
+
+			// some checks can be done on the static record function, as record entities might
+			// be only on subordinate elements
+
+			Func<Aas.IReferable, SmtAttributeRecord> lambdaLookupSmtRec = (rf2) =>
+			{
+				return CheckReferableForExtensionRecords<SmtAttributeRecord>(rf2).FirstOrDefault();
+			};
+
+			if (rf is Aas.ISubmodel sm)
+				checkItems = SmtAttributeRecord.PerformAttributeCheck(
+                    sm, sm.SubmodelElements, inList: checkItems,
+					lambdaLookupSmtRec: lambdaLookupSmtRec);
+
+			if (rf is Aas.ISubmodelElementCollection smc)
+				checkItems = SmtAttributeRecord.PerformAttributeCheck(
+                    smc, smc.Value, inList: checkItems,
+					lambdaLookupSmtRec: lambdaLookupSmtRec);
+
+			if (rf is Aas.ISubmodelElementList sml)
+				checkItems = SmtAttributeRecord.PerformAttributeCheck(
+					sml, sml.Value, inList: checkItems,
+					lambdaLookupSmtRec: lambdaLookupSmtRec);
+
+			// perform the check on factual record of this element
+			if (rec != null)
+            {                
+                if (rf is Aas.IProperty prop)
+					checkItems = rec.PerformAttributeCheck(rf.IdShort, prop.Value, checkItems);
+                
+                if (rf is Aas.IMultiLanguageProperty mlp)
+					checkItems = rec.PerformAttributeCheck(mlp, checkItems);                
+			}
+
+            // okay
+            return checkItems;
+
+        }
+
+        /// <summary>
+        /// this handle is used to link edit value field and status fields together
+        /// </summary>
+        protected DisplayOrEditEntityCheckValueHandle _checkValueHandle = new DisplayOrEditEntityCheckValueHandle();
+
+		public void DisplayOrEditEntityCheckValue(
+            Aas.Environment env, AnyUiStackPanel stack,
+			DisplayOrEditEntityCheckValueHandle handle,
+			Aas.IReferable rf,
+			bool update = false)
+        {
+            // access
+            if (stack == null || rf == null || handle == null)
+                return;
+
+            // evaluate
+            bool? alarmState = null; 
+            var evalText = "Idle (no SMT spec)";
+            var indicatorBg = AnyUiBrushes.White;
+            var indicatorFg = AnyUiBrushes.Black;
+
+            // test
+            handle.CheckItems = DisplayOrEditEntityCheckValueEvalItems(rf);
+            if (handle.CheckItems != null)
+            {
+                // evaluate alarm
+                alarmState = handle.CheckItems.Where((aci) => aci.Fail).Count() > 0;
+
+                if (alarmState == true)
+                {
+                    var distinctMsg = handle.CheckItems.GroupBy((ci) => ci.ShortText).Select((gr) => gr.First().ShortText);
+                    evalText = "Fail: " + string.Join(" ", distinctMsg);
+                    indicatorBg = new AnyUiBrush(0xffFF4F0E);
+                    indicatorFg = new AnyUiBrush(0xFF541805);
+				}
+                else
+                {
+                    evalText = "PASS!";
+					indicatorBg = new AnyUiBrush(0xff00cd90);
+					indicatorFg = new AnyUiBrush(0xff009064);
+				}
+			}
+
+			// update
+			if (update && handle.Referable == rf)
+            {
+                if (handle.Border != null)
+                {
+					handle.Border.Background = indicatorBg;
+					handle.Border.BorderBrush = indicatorFg;
+					handle.Border.Touch();
+				}
+
+                if (handle.TextBlock != null)
+                {
+					handle.TextBlock.Text = evalText;
+					handle.Border.Touch();
+				}
+
+				// stop here
+				return;
+            }
+
+            // NO update, rebuild
+            handle.Referable = rf;
+
+			// add grid
+			var g = AddSubGrid(stack, "SMT value check:",
+				rows: 1, cols: 2, new[] { "*", "#" },
+				paddingCaption: new AnyUiThickness(6, 0, 0, 0),
+				minWidthFirstCol: GetWidth(FirstColumnWidth.Standard));
+
+            g.DebugTag = "TEST2";
+
+			// indicator
+			handle.Border = AddSmallBorderTo(g, 0, 0,
+                margin: new AnyUiThickness(5, 2, 2, 2),
+                background: indicatorBg,
+                borderBrush: indicatorFg,
+                borderThickness: new AnyUiThickness(1));
+            handle.TextBlock = new AnyUiTextBlock()
+            {
+                Text = "" + evalText,
+                HorizontalAlignment = AnyUiHorizontalAlignment.Center,
+                VerticalAlignment = AnyUiVerticalAlignment.Center,
+                Foreground = AnyUiBrushes.White,
+                Background = AnyUi.AnyUiBrushes.Transparent,
+                FontSize = 1.0,
+                FontWeight = AnyUiFontWeight.Bold
+            };
+			handle.Border.Child = handle.TextBlock;
+
+			AnyUiUIElement.RegisterControl(
+				AddSmallButtonTo(g, 0, 1,
+					margin: new AnyUiThickness(2, 2, 2, 2),
+					padding: new AnyUiThickness(5, 0, 5, 0),
+					content: "\u2261"),
+					setValue: (v) =>
+					{
+                        // re-evaluate
+                        Log.Singleton.Info("Starting check.");
+						var ci2 = DisplayOrEditEntityCheckValueEvalItems(rf);
+                        if (ci2 != null)
+						    foreach (var aci in handle.CheckItems)
+                                Log.Singleton.Info("" + aci.LongText);
+                        Log.Singleton.Info(StoredPrint.Color.Blue,
+                            "SMT value check: " + ((alarmState == true) ? "FAIL!" : "PASS / IDLE!") + " See log for details.");
+						return new AnyUiLambdaActionNone();
+					});            
+		}
+
+	}
 }

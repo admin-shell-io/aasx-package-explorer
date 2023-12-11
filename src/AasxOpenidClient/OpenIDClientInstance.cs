@@ -1,4 +1,11 @@
-﻿using System;
+﻿using AnyUi;
+using IdentityModel;
+using IdentityModel.Client;
+using Jose;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using SSIExtension;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -7,24 +14,11 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Permissions;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using System.Web.Helpers;
-using System.Windows;
-using System.Windows.Forms;
-using AasxOpenIdClient;
-using AnyUi;
-using IdentityModel;
-using IdentityModel.Client;
-using Jose;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SSIExtension;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -361,19 +355,20 @@ namespace AasxOpenIdClient
                 return tr;
             }
 
-            var disco = await client.GetDiscoveryDocumentAsync(authServer);
+            //var disco = await client.GetDiscoveryDocumentAsync(authServer);
+            var disco = client.GetDiscoveryDocumentAsync(authServer).Result;
             if (disco.IsError) throw new Exception(disco.Error);
 
             UiLambdaSet.MesssageBoxShow(uiLambda, disco.Raw, "", "Discovery JSON", AnyUiMessageBoxButton.OK);
 
             List<string> rootCertSubject = new List<string>();
-            dynamic discoObject = Json.Decode(disco.Raw);
-            if (discoObject.rootCertSubjects != null)
+            var discoObject = JsonSerializer.Deserialize<JsonObject>(disco.Raw);
+            var rootCertSubjects = JsonSerializer.Deserialize<List<string>>(discoObject["rootCertSubjects"]);
+            if (rootCertSubjects != null)
             {
-                int i = 0;
-                while (i < discoObject.rootCertSubjects.Length)
+                foreach (var subject in rootCertSubjects)
                 {
-                    rootCertSubject.Add(discoObject.rootCertSubjects[i++]);
+                    rootCertSubject.Add(subject);
                 }
             }
 
@@ -388,7 +383,7 @@ namespace AasxOpenIdClient
             if (ssiURL == "")
                 UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", AnyUiMessageBoxButton.OK);
 
-            var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            var response = client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = disco.TokenEndpoint,
                 Scope = "resource1.scope1",
@@ -398,7 +393,7 @@ namespace AasxOpenIdClient
                     Type = OidcConstants.ClientAssertionTypes.JwtBearer,
                     Value = clientToken
                 }
-            });
+            }).Result;
 
             if (response.IsError)
             {

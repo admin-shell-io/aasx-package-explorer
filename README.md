@@ -1,11 +1,11 @@
 # AASX Package Explorer
 
 ![Build-test-inspect](
-https://github.com/admin-shell-io/aasx-package-explorer/workflows/Build-test-inspect/badge.svg
+https://github.com/admin-shell-io/aasx-package-explorer/actions/workflows/build-test-inspect.yml/badge.svg
 ) ![Check-style](
-https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-style/badge.svg
+https://github.com/admin-shell-io/aasx-package-explorer/actions/workflows/check-style.yml/badge.svg
 ) ![Check-commit-messages](
-https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-commit-messages/badge.svg
+https://github.com/admin-shell-io/aasx-package-explorer/actions/workflows/check-commit-messages.yml/badge.svg
 ) ![Generate-docdev](
 https://github.com/admin-shell-io/aasx-package-explorer/workflows/Generate-docdev/badge.svg
 ) [![Coverage Status](
@@ -92,6 +92,10 @@ implementations of asset administration shells (AAS):
   of the AAS concept by using JavaScript and Low-code development platform (LCDP)
   Node-Red.
 
+* **Java Dataformat Library** (https://github.com/admin-shell-io/java-serializer)
+  provides serializer and derserializer for various dataformats as well as the
+  creation and validation of AAS, written in Java.
+
 While these projects try to implement a wider scope of programatic features,
 AASX Package Explorer, in contrast, is a tool with graphical user interface 
 meant for experimenting and demonstrating the potential of asset administration
@@ -100,5 +104,5 @@ shells targeting tech-savvy and less technically-inclined users alike.
 The AASX Package Explorer also includes an internal REST server and OPC UA
 server for the loaded .AASX. Based on this a separate AASX Server is
 available (https://github.com/admin-shell-io/aasx-server) which can host
-several .AASX simultanously (see example https://admin-shell-io.com:5001/).
+several .AASX simultanously (see example https://admin-shell-io.com/5001/).
 

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,12 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AdminShellNS;
+using Extensions;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -25,11 +23,11 @@ namespace AasxPackageLogic.PackageCentral
         Unknown,
         EventStructureChangeOutwards,
         EventUpdateValueOutwards,
-        QualifiedAnimation
+        ValueAnimation
     }
 
     /// <summary>
-    /// This is the datat structure which is kept for each indexed significant AAS element.
+    /// This is the data structure which is kept for each indexed significant AAS element.
     /// The idea is record is to be found fast and to index an AAS element in a way, that
     /// is can be found by an AAS reference rather than an object reference, as the AAS
     /// might have been changed (completely) between times of re-indexing it.
@@ -41,12 +39,12 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// This reference is (kind of long-lasting) stored in the <c>IndexOfSignificantAasElements</c>
         /// </summary>
-        public AdminShell.Reference Reference;
+        public Aas.IReference Reference;
 
         /// <summary>
         /// This object reference will be filled out upon retrieval!
         /// </summary>
-        public AdminShell.IAasElement LiveObject;
+        public Aas.IClass LiveObject;
     }
 
     public class IndexOfSignificantAasElements
@@ -56,28 +54,29 @@ namespace AasxPackageLogic.PackageCentral
 
         public IndexOfSignificantAasElements() { }
 
-        public IndexOfSignificantAasElements(AdminShell.AdministrationShellEnv env)
+        public IndexOfSignificantAasElements(Aas.Environment env)
         {
             Index(env);
         }
 
         public void Add(
             SignificantAasElement kind,
-            AdminShell.Submodel sm,
-            AdminShell.ListOfReferable parents,
-            AdminShell.SubmodelElement sme)
+            Aas.ISubmodel sm,
+            List<Aas.IReferable> parents,
+            Aas.ISubmodelElement sme)
         {
             var r = new SignificantAasElemRecord()
             {
                 Kind = kind,
-                Reference = sm?.GetReference()
-                    + parents?.GetReference()
-                    + sme?.GetReference(includeParents: false)
+                //Aas.Reference = sm?.GetReference()
+                //    + parents?.GetReference()
+                //    + sme?.GetReference(includeParents: false)
+                Reference = sm?.GetReference().Add(parents?.GetReference()).Add(sme?.GetModelReference())
             };
             _records.Add(kind, r);
         }
 
-        public void Index(AdminShell.AdministrationShellEnv env)
+        public void Index(Aas.Environment env)
         {
             // trivial
             if (env == null)
@@ -85,7 +84,7 @@ namespace AasxPackageLogic.PackageCentral
             _records = new MultiValueDictionary<SignificantAasElement, SignificantAasElemRecord>();
 
             // find all Submodels in use, but no one twice
-            var visited = new Dictionary<AdminShell.Submodel, bool>();
+            var visited = new Dictionary<Aas.ISubmodel, bool>();
             foreach (var sm in env.FindAllSubmodelGroupedByAAS())
                 if (!visited.ContainsKey(sm))
                     visited.Add(sm, true);
@@ -94,21 +93,21 @@ namespace AasxPackageLogic.PackageCentral
             foreach (var sm in visited.Keys)
                 sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                 {
-                    if (sme is AdminShell.BasicEvent)
+                    if (sme is Aas.BasicEventElement)
                     {
-                        if (true == sme.semanticId?.Matches(
-                            AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                            AdminShell.Key.MatchMode.Relaxed))
+                        if (true == sme.SemanticId?.Matches(
+                            AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards.GetReference(),
+                            MatchMode.Relaxed))
                             Add(SignificantAasElement.EventUpdateValueOutwards, sm, parents, sme);
 
-                        if (true == sme.semanticId?.Matches(
-                            AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
-                            AdminShell.Key.MatchMode.Relaxed))
+                        if (true == sme.SemanticId?.Matches(
+                            AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards.GetReference(),
+                            MatchMode.Relaxed))
                             Add(SignificantAasElement.EventStructureChangeOutwards, sm, parents, sme);
                     }
 
-                    if (null != sme.HasQualifierOfType("Animate.Args"))
-                        Add(SignificantAasElement.QualifiedAnimation, sm, parents, sme);
+                    if (null != sme.HasExtensionOfName("Animate.Args"))
+                        Add(SignificantAasElement.ValueAnimation, sm, parents, sme);
 
                     // recurse
                     return true;
@@ -116,7 +115,7 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         public IEnumerable<SignificantAasElemRecord> Retrieve(
-            AdminShell.AdministrationShellEnv env,
+            Aas.Environment env,
             SignificantAasElement kind)
         {
             if (env == null || true != _records.ContainsKey(kind))

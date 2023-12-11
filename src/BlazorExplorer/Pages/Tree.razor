@@ -1,0 +1,143 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using MW.Blazor
+@using BlazorUI.Data;
+
+@typeparam TNode
+
+<div class="uic-tree @(Visible ? "" : "uic-tree--hidden")" style="overflow: hidden">
+
+    @foreach (var node in Nodes ?? Enumerable.Empty<TNode>())
+    {
+        // var nodeExpanded = ExpandedNodes.Contains(node);
+        var nodeExpanded = IsExpanded?.Invoke(node) == true;
+        var nodeSelected = IsSelected?.Invoke(node) == true;
+        var hasChilds = HasChildNodes(node);
+
+    <div>
+
+        @if (hasChilds)
+        {
+            <span class="uic-tree__icon" @onclick="@(() => OnToggleNode(node, !nodeExpanded))">
+                <i class="@(nodeExpanded ? Style.CollapseNodeIconClass : Style.ExpandNodeIconClass)"></i>
+            </span>
+        }
+
+        <div class="uic-tree__title">
+            <span class="@Style.NodeTitleClass @(nodeSelected ? Style.NodeTitleSelectedClass : "")" @onclick="@(() => OnSelectNode(node))">
+                @TitleTemplate(node)
+            </span>
+        </div>
+
+        @if (hasChilds)
+        {
+            if (nodeExpanded)
+            {
+                <Tree Nodes="ChildSelector(node)"
+                      TitleTemplate="TitleTemplate"
+                      ChildSelector="ChildSelector"
+                      ExpandedNodes="ExpandedNodes"
+                      ExpandedNodesChanged="ExpandedNodesChanged"
+                      SelectedNode="SelectedNode"
+                      SelectedNodeChanged="SelectedNodeChanged"
+                      Visible="nodeExpanded"
+                      IsExpanded="IsExpanded"
+                      SetExpanded="SetExpanded"
+                      IsSelected="IsSelected"
+                      NodeClicked="NodeClicked"
+                      HasChildNodes="HasChildNodes" />
+            }
+        }
+
+    </div>
+    }
+
+</div>
+
+@code {
+
+    // Gets a reference to the MainLayout component
+
+    [CascadingParameter]
+    public BlazorExplorer.Shared.MainLayout Layout { get; set; }
+
+    // Tree parameter
+
+    [Parameter] public IEnumerable<TNode> Nodes { get; set; }
+
+    [Parameter] public RenderFragment<TNode> TitleTemplate { get; set; }
+
+    [Parameter] public TNode SelectedNode { get; set; }
+    [Parameter] public EventCallback<TNode> SelectedNodeChanged { get; set; }
+
+    [Parameter] public Func<TNode, IEnumerable<TNode>> ChildSelector { get; set; }
+
+    [Parameter] public IList<TNode> ExpandedNodes { get; set; } = new List<TNode>();
+    [Parameter] public EventCallback<IList<TNode>> ExpandedNodesChanged { get; set; }
+
+    [Parameter] public Action<TNode, BlazorInput.KeyboardModifiers> NodeClicked { get; set; }
+
+    /// <summary>
+    /// This action is called, then the expansion state (expanded, collapsed) of a node
+    /// is being state. It corresponds to the presence of the node in the expanded nodes
+    /// list.
+    /// </summary>
+    // [Parameter] public Action<TNode, bool> ExpansionStateChanged { get; set; }
+
+    [Parameter] public TreeStyle Style { get; set; } = TreeStyle.Bootstrap;
+
+    [Parameter] public bool Visible { get; set; } = true;
+
+    [Parameter] public Func<TNode, bool> HasChildNodes { get; set; } = node => true;
+
+    /// <summary>
+    /// Evaluates, if the given node is currently expanded or not.
+    /// Assumption: expanded state is held in or nearby the nodes.
+    /// </summary>
+    [Parameter] public Func<TNode, bool> IsExpanded { get; set; } = null;
+
+    /// <summary>
+    /// Sets the expansion state.
+    /// </summary>
+    [Parameter] public Action<TNode, bool> SetExpanded { get; set; } = null;
+
+    /// <summary>
+    /// Evaluates, if the given node is currently selected or not.
+    /// Assumption: selected state is held in or nearby the nodes.
+    /// </summary>
+    [Parameter] public Func<TNode, bool> IsSelected { get; set; } = null;
+
+    //private void OnToggleNode(TNode node, bool expand)
+    //{
+    //    var expanded = ExpandedNodes.Contains(node);
+
+    //    if (expanded && !expand)
+    //    {
+    //        ExpandedNodes.Remove(node);
+    //        ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
+    //        ExpansionStateChanged?.Invoke(node, false);
+    //    }
+    //    else if (!expanded && expand)
+    //    {
+    //        ExpandedNodes.Add(node);
+    //        ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
+    //        ExpansionStateChanged?.Invoke(node, true);
+    //    }
+    //}
+
+    private void OnToggleNode(TNode node, bool expand)
+    {
+        SetExpanded?.Invoke(node, expand);       
+    }
+
+    private async void OnSelectNode(TNode node)
+    {
+        var modi = BlazorUI.Data.BlazorInput.KeyboardModifiers.None;
+        if (true)
+            modi = await Layout.GetKeyboardModifiers();
+
+        SelectedNode = node;
+        NodeClicked?.Invoke(node, modi);
+        await SelectedNodeChanged.InvokeAsync(node);
+    }
+
+}

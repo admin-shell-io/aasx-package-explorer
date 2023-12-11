@@ -1,0 +1,905 @@
+﻿{
+  "SM_TechnicalData": {
+    "idShort": "TechnicalData",
+    "description": [
+      {
+        "language": "en",
+        "text": "Submodel containing techical data of the asset and associated product classificatons."
+      },
+      {
+        "language": "de",
+        "text": "Teilmodell, das die technischen Daten der Anlage und die zugeh\u00F6rigen Produktklassifizierungen enth\u00E4lt."
+      }
+    ],
+    "administration": {
+      "version": "1",
+      "revision": "2"
+    },
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/Submodel/1/2",
+    "kind": "Template",
+    "semanticId": {
+      "type": "ExternalReference",
+      "keys": [
+        {
+          "type": "Submodel",
+          "value": "https://admin-shell.io/ZVEI/TechnicalData/Submodel/1/2"
+        }
+      ]
+    },
+    "modelType": "Submodel"
+  },
+  "CD_GeneralInformation": {
+    "idShort": "GeneralInformation",
+    "description": [
+      {
+        "language": "en",
+        "text": "General information, for example ordering and manufacturer information."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/GeneralInformation/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "GeneralInformation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "General information, for example ordering and manufacturer information."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerName": {
+    "idShort": "ManufacturerName",
+    "description": [
+      {
+        "language": "en",
+        "text": "Legally valid designation of the natural or judicial body which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into the market."
+      }
+    ],
+    "id": "0173-1#02-AAO677#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerName"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Legally valid designation of the natural or judicial body which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into the market."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerLogo": {
+    "idShort": "ManufacturerLogo",
+    "description": [
+      {
+        "language": "en",
+        "text": "Imagefile for logo of manufacturer provided in common format (.png, .jpg)."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/ManufacturerLogo/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerLogo"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Imagefile for logo of manufacturer provided in common format (.png, .jpg)."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerProductDesignation": {
+    "idShort": "ManufacturerProductDesignation",
+    "description": [
+      {
+        "language": "en",
+        "text": "Product designation as given by the mnaufacturer. Short description of the product, product group or function (short text) in common language."
+      }
+    ],
+    "id": "0173-1#02-AAW338#001 ",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerProductDesignation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Product designation as given by the mnaufacturer. Short description of the product, product group or function (short text) in common language."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerArticleNumber": {
+    "idShort": "ManufacturerArticleNumber",
+    "description": [
+      {
+        "language": "en",
+        "text": "unique product identifier of the manufacturer "
+      }
+    ],
+    "id": "0173-1#02-AAO676#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerArticleNumber"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "unique product identifier of the manufacturer "
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerOrderCode": {
+    "idShort": "ManufacturerOrderCode",
+    "description": [
+      {
+        "language": "en",
+        "text": "By manufactures issued unique combination of numbers and letters used to identify the device for ordering"
+      }
+    ],
+    "id": "0173-1#02-AAO227#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerOrderCode"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "By manufacturer issued unique combination of numbers and letters used to identify the device for ordering"
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ProductImage": {
+    "idShort": "ProductImage",
+    "description": [
+      {
+        "language": "en",
+        "text": "Image file for associated product provided in common format (.png, .jpg)."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/ProductImage/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ProductImage"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Image file for associated product provided in common format (.png, .jpg)."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ProductClassifications": {
+    "idShort": "ProductClassifications",
+    "description": [
+      {
+        "language": "en",
+        "text": "Product classifications by association of product classes with common classification systems."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/ProductClassifications/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ProductClassifications"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Product classifications by association of product classes with common classification systems."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ProductClassificationItem": {
+    "idShort": "ProductClassificationItem",
+    "description": [
+      {
+        "language": "en",
+        "text": "Single product classification item by association with product class in a particular classification system or property dictionary."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/ProductClassificationItem/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ProductClassificationItem"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Single product classification item by association with product class in a particular classification system or property dictionary."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ProductClassificationSystem": {
+    "idShort": "ProductClassificationSystem",
+    "description": [
+      {
+        "language": "en",
+        "text": "Common name of the classification system."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/ProductClassificationSystem/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ProductClassificationSystem"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Common name of the classification system."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ClassificationSystemVersion": {
+    "idShort": "ClassificationSystemVersion",
+    "description": [
+      {
+        "language": "en",
+        "text": "Common version identifier of the used classification system, in order to distinguish different version of the property dictionary."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/ClassificationSystemVersion/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ClassificationSystemVersion"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Common version identifier of the used classification system, in order to distinguish different version of the property dictionary."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ProductClassId": {
+    "idShort": "ProductClassId",
+    "description": [
+      {
+        "language": "en",
+        "text": "Class of the associated product or industrial equipment in the classification system. According to the notation of the system."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/ProductClassId/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ProductClassId"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Class of the associated product or industrial equipment in the classification system. According to the notation of the system."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TechnicalProperties": {
+    "idShort": "TechnicalProperties",
+    "description": [
+      {
+        "language": "en",
+        "text": "Individual characteristics that describe the product and its technical properties."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/TechnicalProperties/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TechnicalProperties"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Individual characteristics that describe the product and its technical properties."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_SemanticIdNotAvailable": {
+    "idShort": "SemanticIdNotAvailable",
+    "description": [
+      {
+        "language": "en",
+        "text": "Represents a SubmodelElement that is not described using a common classification system, a consortium specification, an open community standard, a published manufacturer specification or such."
+      }
+    ],
+    "id": "https://admin-shell.io/SemanticIdNotAvailable/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "SemanticIdNotAvailable"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Represents a SubmodelElement that is not described using a common classification system, a consortium specification, an open community standard, a published manufacturer specification or such."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MainSection": {
+    "idShort": "MainSection",
+    "description": [
+      {
+        "language": "en",
+        "text": "Main subdivision possibility for properties."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/MainSection/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MainSection"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Main subdivision possibility for properties."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_SubSection": {
+    "idShort": "SubSection",
+    "description": [
+      {
+        "language": "en",
+        "text": "Subordinate subdivision possibility for properties."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/SubSection/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "SubSection"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Subordinate subdivision possibility for properties."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_FurtherInformation": {
+    "idShort": "FurtherInformation",
+    "description": [
+      {
+        "language": "en",
+        "text": "Further information on the product, the validity of the information provided and this data record."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/FurtherInformation/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "FurtherInformation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Further information on the product, the validity of the information provided and this data record."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TextStatement": {
+    "idShort": "TextStatement",
+    "description": [
+      {
+        "language": "en",
+        "text": "Statement by the manufacturer in text form, e.g. scope of validity of the statements, scopes of application, conditions of operation."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/TextStatement/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TextStatement"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Statement by the manufacturer in text form, e.g. scope of validity of the statements, scopes of application, conditions of operation."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ValidDate": {
+    "idShort": "ValidDate",
+    "description": [
+      {
+        "language": "en",
+        "text": "Denotes a date on which the data specified in the Submodel was valid from for the associated asset."
+      }
+    ],
+    "id": "https://admin-shell.io/ZVEI/TechnicalData/ManufacturerOrderCode/1/1",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ValidDate"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Denotes a date on which the data specified in the Submodel was valid from for the associated asset."
+            }
+          ],
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  }
+}

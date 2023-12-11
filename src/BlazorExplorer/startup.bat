@@ -1,0 +1,1 @@
+BlazorExplorer.exe -read-json options.json

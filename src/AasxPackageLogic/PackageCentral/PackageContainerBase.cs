@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,17 +7,19 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
+using AdminShellNS;
+using AnyUi;
+using Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasxIntegrationBase;
-using AasxIntegrationBase.AdminShellEvents;
-using AdminShellNS;
-using AnyUi;
-using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -65,6 +67,9 @@ namespace AasxPackageLogic.PackageCentral
         public ShowMessageDelegate ShowMesssageBox;
     }
 
+    /// <summary>
+    /// Reason why a Package Change event was released
+    /// </summary>
     public enum PackCntChangeEventReason
     {
         /// <summary>
@@ -73,7 +78,7 @@ namespace AasxPackageLogic.PackageCentral
         StartOfChanges,
 
         /// <summary>
-        /// A Referable is created within the "typical" enumeration of another Referable.
+        /// A IReferable is created within the "typical" enumeration of another Aas.IReferable.
         /// </summary>
         Create,
 
@@ -84,23 +89,23 @@ namespace AasxPackageLogic.PackageCentral
         MoveToIndex,
 
         /// <summary>
-        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a Referable.
-        /// The Referable is completely rebuild.
+        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a IReferable.
+        /// The IReferable is completely rebuild.
         /// </summary>
         StructuralUpdate,
 
         /// <summary>
-        /// A Referable is deleted
+        /// A IReferable is deleted
         /// </summary>
         Delete,
 
         /// <summary>
-        /// A value upatde of a single Referable (not children) is performed
+        /// A value upatde of a single IReferable (not children) is performed
         /// </summary>
         ValueUpdateSingle,
 
         /// <summary>
-        /// A value upatde of a Referable including possible children is performed
+        /// A value upatde of a IReferable including possible children is performed
         /// </summary>
         ValueUpdateHierarchy,
 
@@ -114,6 +119,23 @@ namespace AasxPackageLogic.PackageCentral
         /// A "session" of multiple possible changes is finalized
         /// </summary>
         EndOfChanges
+    }
+
+    /// <summary>
+    /// In particular cases, the given element in a change event is not specific
+    /// enough and needs to be refined.
+    /// </summary>
+    public enum PackCntChangeEventLocation
+    {
+        /// <summary>
+        /// No further information beyond element ist available
+        /// </summary>
+        NoFurtherInformation,
+
+        /// <summary>
+        /// For a AAS environment, specifically the list of CDs was affected
+        /// </summary>
+        ListOfConceptDescriptions
     }
 
     /// <summary>
@@ -133,16 +155,21 @@ namespace AasxPackageLogic.PackageCentral
         public PackCntChangeEventReason Reason;
 
         /// <summary>
-        /// Changed AAS element itself (typically a Referable, but could also be a SubmodelRef)
+        /// Changed AAS element itself (typically a IReferable, but could also be a SubmodelRef)
         /// </summary>
-        public AdminShell.IAasElement ThisElem;
+        public Aas.IClass ThisElem;
 
         /// <summary>
-        /// Parent object/ structure of the changed AAS element. Often a Referable, but could also be a SubmodelRef.
+        /// Further information to <c>ThisElem</c>.
+        /// </summary>
+        public PackCntChangeEventLocation ThisElemLocation;
+
+        /// <summary>
+        /// Parent object/ structure of the changed AAS element. Often a IReferable, but could also be a SubmodelRef.
         /// Can be also <c>null</c>, if the type of the ThisObj is already indicating the parent structure (e.g. 
         /// for Assets, ConceptDescriptions, ..)
         /// </summary>
-        public AdminShell.IAasElement ParentElem;
+        public Aas.IClass ParentElem;
 
         /// <summary>
         /// If create, at which index; else: -1
@@ -166,14 +193,14 @@ namespace AasxPackageLogic.PackageCentral
         /// </summary>
         /// <param name="container">Identification of the container</param>
         /// <param name="reason">The reason</param>
-        /// <param name="thisRef">Changed Referable itself</param>
-        /// <param name="parentRef">A Referable, which contains the changed Referable.</param>
+        /// <param name="thisRef">Changed IReferable itself</param>
+        /// <param name="parentRef">A IReferable, which contains the changed Aas.IReferable.</param>
         /// <param name="createAtIndex">If create, at which index; else: -1</param>
         /// <param name="info">Human readable information</param>
         public PackCntChangeEventData(PackageContainerBase container,
             PackCntChangeEventReason reason,
-            AdminShell.Referable thisRef = null,
-            AdminShell.Referable parentRef = null,
+            Aas.IReferable thisRef = null,
+            Aas.IReferable parentRef = null,
             int createAtIndex = -1,
             string info = null)
         {
@@ -208,14 +235,23 @@ namespace AasxPackageLogic.PackageCentral
 
         [JsonIgnore]
         public AdminShellPackageEnv Env = new AdminShellPackageEnv();
+        
         [JsonIgnore]
         public Format IsFormat = Format.Unknown;
 
         /// <summary>
-        /// To be used by the main application to hold important data about the package.
+        /// To be maintained by the main application to hold important data about the package.
         /// </summary>
         [JsonIgnore]
         public IndexOfSignificantAasElements SignificantElements = null;
+
+		/// <summary>
+		/// To be maintained by the main application to speed up the process of looking up 
+        /// Identifiables, esp. ConceptDescriptions.
+		/// </summary>
+		[JsonIgnore]
+        public IdentifiableLookupStore<Aas.IIdentifiable, Aas.IIdentifiable> IdentifiableLookup 
+               = new IdentifiableLookupStore<IIdentifiable, IIdentifiable>();
 
         /// <summary>
         /// Limks to the PackageCentral. Only on init.
@@ -299,7 +335,6 @@ namespace AasxPackageLogic.PackageCentral
             return res;
         }
 
-
         [JsonIgnore]
         public bool IsOpen { get { return Env != null && Env.IsOpen; } }
 
@@ -337,7 +372,8 @@ namespace AasxPackageLogic.PackageCentral
 
         public virtual async Task SaveToSourceAsync(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackCntRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null,
+            bool doNotRememberLocation = false)
         {
             await Task.Yield();
         }
@@ -356,13 +392,30 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         //
+        // Identifiable management
+        //
+
+        public void ReIndexIdentifiables()
+        {
+            // emergency
+            if (IdentifiableLookup == null)
+                IdentifiableLookup = new IdentifiableLookupStore<IIdentifiable, IIdentifiable>();
+
+            // just start again
+            IdentifiableLookup.StartDictionaryAccess(
+                new IEnumerable<Aas.IIdentifiable>[] { Env?.AasEnv?.AssetAdministrationShells, Env?.AasEnv.Submodels,
+                        Env?.AasEnv?.ConceptDescriptions},
+                lambdaSelectResult: (idf) => idf );
+		}
+
+        //
         // Event management
         //
 
         /* TODO (MIHO, 2021-08-17): check if to refactor/ move to another location 
          * and to extend to Submodels .. */
         public static bool UpdateSmeFromEventPayloadItem(
-            AdminShell.SubmodelElement smeToModify,
+            Aas.ISubmodelElement smeToModify,
             AasPayloadUpdateValueItem vl)
         {
             // access
@@ -373,38 +426,38 @@ namespace AasxPackageLogic.PackageCentral
 
             // adopt
             // TODO (MIHO, 2021-08-17): add more type specific conversions?
-            if (smeToModify is AdminShell.Property prop)
+            if (smeToModify is Aas.Property prop)
             {
                 if (vl.Value is string vls)
-                    prop.value = vls;
+                    prop.Value = vls;
                 if (vl.ValueId != null)
-                    prop.valueId = vl.ValueId;
+                    prop.ValueId = vl.ValueId;
                 changedSomething = true;
             }
 
-            if (smeToModify is AdminShell.MultiLanguageProperty mlp)
+            if (smeToModify is Aas.MultiLanguageProperty mlp)
             {
-                if (vl.Value is AdminShell.LangStringSet lss)
-                    mlp.value = lss;
+                if (vl.Value is List<Aas.ILangStringTextType> lss)
+                    mlp.Value = lss;
                 if (vl.ValueId != null)
-                    mlp.valueId = vl.ValueId;
+                    mlp.ValueId = vl.ValueId;
                 changedSomething = true;
             }
 
-            if (smeToModify is AdminShell.Range rng)
+            if (smeToModify is Aas.Range rng)
             {
                 if (vl.Value is string[] sarr && sarr.Length >= 2)
                 {
-                    rng.min = sarr[0];
-                    rng.max = sarr[1];
+                    rng.Min = sarr[0];
+                    rng.Max = sarr[1];
                 }
                 changedSomething = true;
             }
 
-            if (smeToModify is AdminShell.Blob blob)
+            if (smeToModify is Aas.Blob blob)
             {
                 if (vl.Value is string vls)
-                    blob.value = vls;
+                    blob.Value = Encoding.Default.GetBytes(vls);
                 changedSomething = true;
             }
 
@@ -433,11 +486,11 @@ namespace AasxPackageLogic.PackageCentral
             {
                 if (pluv.Values != null
                     && !pluv.IsAlreadyUpdatedToAAS
-                    && foundObservable is AdminShell.IEnumerateChildren
-                    && (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement))
+                    && foundObservable is IEnumerateChildren
+                    && (foundObservable is Aas.Submodel || foundObservable is Aas.ISubmodelElement))
                 {
                     // will later access children ..
-                    var wrappers = ((foundObservable as AdminShell.IEnumerateChildren).EnumerateChildren())?.ToList();
+                    var wrappers = ((foundObservable as Aas.IReferable).EnumerateChildren())?.ToList();
                     var changedSomething = false;
 
                     // go thru all value updates
@@ -450,14 +503,14 @@ namespace AasxPackageLogic.PackageCentral
                             // Note: currently only updating Properties
                             // TODO (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue
 
-                            AdminShell.SubmodelElement smeToModify = null;
-                            if (vl.Path == null && foundObservable is AdminShell.Property fop)
+                            Aas.ISubmodelElement smeToModify = null;
+                            if (vl.Path == null && foundObservable is Aas.Property fop)
                                 smeToModify = fop;
                             else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
                             {
-                                var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                    wrappers, AdminShell.Reference.CreateNew(vl.Path), keyIndex: 0);
-                                if (x is AdminShell.Property fpp)
+                                var x = wrappers.FindReferableByReference(
+                                    new Aas.Reference(Aas.ReferenceTypes.ExternalReference, vl.Path), keyIndex: 0);
+                                if (x is Aas.Property fpp)
                                     smeToModify = fpp;
                             }
 

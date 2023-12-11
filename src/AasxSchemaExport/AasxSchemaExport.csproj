@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AasxSchemaExport</RootNamespace>
+    <AssemblyName>AasxSchemaExport</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>  
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
+  </ItemGroup>
+
+</Project>

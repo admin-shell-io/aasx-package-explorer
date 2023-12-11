@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,64 +14,41 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable
 {
     public static class AasConvertHelper
     {
-        public static void TakeOverSmeToSm(AdminShell.SubmodelElement sme, AdminShell.Submodel sm)
+        public static void TakeOverSmeToSm(Aas.ISubmodelElement sme, Aas.ISubmodel sm)
         {
             // access
             if (sme == null || sm == null)
                 return;
 
             // tedious, manual, nor elegant
-            if (sme.description != null)
-                sm.description = sme.description;
+            if (sme.Description != null)
+                sm.Description = sme.Description.Copy();
 
-            if (sme.idShort.HasContent())
-                sm.idShort = sme.idShort;
+            if (sme.IdShort.HasContent())
+                sm.IdShort = sme.IdShort;
 
-            if (sme.category.HasContent())
-                sm.category = sme.category;
+            if (sme.Category.HasContent())
+                sm.Category = sme.Category;
 
-            if (sme.semanticId != null)
-                sm.semanticId = sme.semanticId;
+            if (sme.SemanticId != null)
+                sm.SemanticId = sme.SemanticId.Copy();
 
-            if (sme.qualifiers != null)
+            if (sme.Qualifiers != null)
             {
-                if (sm.qualifiers == null)
-                    sm.qualifiers = new AdminShell.QualifierCollection();
-                sm.qualifiers.AddRange(sme.qualifiers);
+                if (sm.Qualifiers == null)
+                    sm.Qualifiers = new List<Aas.IQualifier>();
+                sm.Qualifiers.AddRange(sme.Qualifiers.Copy());
             }
         }
 
-        public static void TakeOverSmToSme(AdminShell.Submodel sm, AdminShell.Submodel sme)
-        {
-            // access
-            if (sme == null || sm == null)
-                return;
 
-            // tedious, manual, nor elegant
-            if (sm.description != null)
-                sme.description = sm.description;
-
-            if (sm.idShort.HasContent())
-                sme.idShort = sm.idShort;
-
-            if (sm.category.HasContent())
-                sme.category = sm.category;
-
-            if (sm.semanticId != null)
-                sme.semanticId = sm.semanticId;
-
-            if (sm.qualifiers != null)
-            {
-                if (sme.qualifiers == null)
-                    sme.qualifiers = new AdminShell.QualifierCollection();
-                sme.qualifiers.AddRange(sm.qualifiers);
-            }
-        }
     }
 }

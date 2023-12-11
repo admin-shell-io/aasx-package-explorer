@@ -152,7 +152,7 @@ namespace Microsoft.Msagl.WpfGraphControl
 
         GeometryGraph GeomGraph
         {
-            get { return _drawingGraph.GeometryGraph; }
+            get { return _drawingGraph?.GeometryGraph; }
         }
 
         /// <summary>
@@ -1158,6 +1158,15 @@ namespace Microsoft.Msagl.WpfGraphControl
             }
         }
 
+        // MIHO added this
+        public IEnumerable<IViewerNode> GetViewerNodes()
+        {
+            if (drawingObjectsToIViewerObjects != null)
+                foreach (var x in drawingObjectsToIViewerObjects.Values)
+                    if (x is IViewerNode vn)
+                        yield return vn;
+        }
+
         public WFrameworkElement CreateAndRegisterFrameworkElementOfDrawingNode(Drawing.Node node)
         {
             lock (this)
@@ -1573,7 +1582,12 @@ namespace Microsoft.Msagl.WpfGraphControl
         {
             var geomEdge = GeometryGraphCreator.CreateGeometryEdgeFromDrawingEdge(drawingEdge);
             var geomGraph = _drawingGraph.GeometryGraph;
-            LayoutHelpers.RouteAndLabelEdges(geomGraph, _drawingGraph.LayoutAlgorithmSettings, new[] { geomEdge });
+            LayoutHelpers.RouteAndLabelEdges(
+                geomGraph,
+                _drawingGraph.LayoutAlgorithmSettings,
+                new[] { geomEdge },
+                10,                             // new in new nuget package
+                new CancelToken());             // new in new nuget package
             return CreateEdge(drawingEdge, _drawingGraph.LayoutAlgorithmSettings as LgLayoutSettings);
         }
 

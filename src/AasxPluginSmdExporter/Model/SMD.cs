@@ -15,6 +15,11 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxPluginSmdExporter.Model;
 using Newtonsoft.Json.Linq;
+using Aas = AasCore.Aas3_0;
+using AdminShellNS;
+using Extensions;
+using System.IdentityModel.Tokens.Jwt;
+using AasCore.Aas3_0;
 
 namespace AasxPluginSmdExporter
 {
@@ -25,10 +30,10 @@ namespace AasxPluginSmdExporter
 
         List<SimulationModel> SimulationModels { get; set; }
 
-        Dictionary<string, AdminShellNS.AdminShell.Entity> SimModelsAsEntities =
-            new Dictionary<string, AdminShellNS.AdminShell.Entity>();
+        Dictionary<string, Aas.IEntity> SimModelsAsEntities =
+            new Dictionary<string, Aas.IEntity>();
 
-        AdminShellNS.AdminShell.Submodel Bom { get; set; }
+        Aas.ISubmodel Bom { get; set; }
 
         private int relCount = 0;
 
@@ -71,19 +76,18 @@ namespace AasxPluginSmdExporter
         /// <returns></returns>
         private bool AddBomSubmodel(string name, string name_sm)
         {
-            Bom = new AdminShellNS.AdminShell.Submodel();
-            Bom.idShort = name_sm;
-            Bom.identification.id = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
-            Bom.identification.idType = "IRI";
-            Bom.semanticId = new AdminShellNS.AdminShell.SemanticId();
-            Bom.semanticId.Keys.Add(new AdminShellNS.AdminShell.Key());
-            Bom.semanticId.Keys[0].value = "http://example.com/id/type/submodel/BOM/1/1";
-            Bom.semanticId.Keys[0].type = "Submodel";
-            Bom.semanticId.Keys[0].idType = "IRI";
+            Bom = new Aas.Submodel(
+                id: "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783",
+                idShort: name_sm,
+                semanticId: new Aas.Reference(Aas.ReferenceTypes.ExternalReference,
+                    (new[] {
+                        new Aas.Key(Aas.KeyTypes.Submodel, "http://example.com/id/type/submodel/BOM/1/1") }
+                    ).Cast<Aas.IKey>().ToList()));
 
-            String bom_json = Newtonsoft.Json.JsonConvert.SerializeObject(Bom);
+            var bom_json = Jsonization.Serialize.ToJsonObject(Bom)
+						.ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-            if (AASRestClient.PutSubmodel(bom_json, name_sm, name))
+			if (AASRestClient.PutSubmodel(bom_json, name_sm, name))
             {
                 return true;
             }
@@ -100,17 +104,16 @@ namespace AasxPluginSmdExporter
         /// <returns></returns>
         private bool AddAas(string name)
         {
+            var aas = new Aas.AssetAdministrationShell(
+                id: "urn:itsowl.tedz.com:demo:aas:1:1:123",
+                idShort: name,
+                assetInformation: new Aas.AssetInformation(Aas.AssetKind.Instance));
 
-            AdminShellNS.AdminShell.AdministrationShell aas = new AdminShellNS.AdminShell.AdministrationShell();
+            var smd = Jsonization.Serialize.ToJsonObject(aas)
+						.ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-            aas.idShort = name;
-            aas.identification.id = "urn:itsowl.tedz.com:demo:aas:1:1:123";
-            aas.identification.idType = "IRI";
-
-            String smd = Newtonsoft.Json.JsonConvert.SerializeObject(aas);
-
-            //Put SMD
-            if (AASRestClient.PutAAS(smd, name))
+			//Put SMD
+			if (AASRestClient.PutAAS(smd, name))
             {
                 return true;
             }
@@ -139,11 +142,12 @@ namespace AasxPluginSmdExporter
                 {
                     foreach (var output in input.ConnectedTo)
                     {
-                        AdminShellNS.AdminShell.RelationshipElement portAsRel = GetPortsAsRelation(input, output);
+                        var portAsRel = GetPortsAsRelation(input, output);
 
-                        string test_ent_json = Newtonsoft.Json.JsonConvert.SerializeObject(portAsRel);
+                        var test_ent_json = Jsonization.Serialize.ToJsonObject(portAsRel)
+						        .ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-                        if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
+						if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
                         {
                             allsuccess = false;
                         }
@@ -156,12 +160,13 @@ namespace AasxPluginSmdExporter
                 {
                     foreach (var port in sim.PhysicalPorts)
                     {
-                        AdminShellNS.AdminShell.RelationshipElement portAsRel =
+                        var portAsRel =
                             GetPortsAsRelation(port, port.ConnectedTo[0], 1);
 
-                        string test_ent_json = Newtonsoft.Json.JsonConvert.SerializeObject(portAsRel);
+                        var test_ent_json = Jsonization.Serialize.ToJsonObject(portAsRel)
+								.ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-                        if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
+						if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
                         {
                             allsuccess = false;
                         }
@@ -186,14 +191,16 @@ namespace AasxPluginSmdExporter
             {
                 if (!((sim.Inputs.Count == 0 && sim.Outputs.Count == 0) && sim.PhysicalPorts.Count == 0))
                 {
-                    AdminShellNS.AdminShell.Entity simAsEntity = GetSimModelAsEntity(sim, name_sm);
+                    var simAsEntity = GetSimModelAsEntity(sim, name_sm);
                     foreach (var port in GetPortsAsProp(sim))
                     {
                         simAsEntity.Add(port);
                     }
-                    string test_ent_json = Newtonsoft.Json.JsonConvert.SerializeObject(simAsEntity);
+                    
+                    var test_ent_json = Jsonization.Serialize.ToJsonObject(simAsEntity)
+								.ToJsonString(new System.Text.Json.JsonSerializerOptions());
 
-                    SimModelsAsEntities.Add(sim.Name, simAsEntity);
+					SimModelsAsEntities.Add(sim.Name, simAsEntity);
 
                     if (!AASRestClient.PutEntity(test_ent_json, name, name_sm, ""))
                     {
@@ -211,9 +218,9 @@ namespace AasxPluginSmdExporter
         /// </summary>
         /// <param name="simulationModel"></param>
         /// <returns></returns>
-        private List<AdminShellNS.AdminShell.Property> GetPortsAsProp(SimulationModel simulationModel)
+        private List<Aas.IProperty> GetPortsAsProp(SimulationModel simulationModel)
         {
-            List<AdminShellNS.AdminShell.Property> ioputs = new List<AdminShellNS.AdminShell.Property>();
+            var ioputs = new List<Aas.IProperty>();
             foreach (var input in simulationModel.Inputs)
             {
                 ioputs.Add(GetPortAsProperty(input, "in"));
@@ -228,8 +235,6 @@ namespace AasxPluginSmdExporter
             {
                 ioputs.Add(GetPortAsProperty(output, "physical"));
             }
-
-
             return ioputs;
         }
 
@@ -239,19 +244,25 @@ namespace AasxPluginSmdExporter
         /// <param name="port"></param>
         /// <param name="direction"></param>
         /// <returns></returns>
-        private AdminShellNS.AdminShell.Property GetPortAsProperty(IOput port, string direction)
+        private Aas.IProperty GetPortAsProperty(IOput port, string direction)
         {
-            AdminShellNS.AdminShell.Property port_prop = new AdminShellNS.AdminShell.Property();
-            port_prop.idShort = port.IdShort;
-            port_prop.AddQualifier("direction", direction);
-            port_prop.AddQualifier("Domain", port.Domain);
-            port_prop.valueType = port.Datatype;
-            port_prop.semanticId = port.SemanticId;
+            var vt = Aas.DataTypeDefXsd.String;
+            try
+            {
+                vt = Aas.Jsonization.Deserialize.DataTypeDefXsdFrom(port.Datatype);
+            } catch { }
+
+            var port_prop = new Aas.Property(
+                valueType: vt,
+				idShort: port.IdShort,
+                semanticId: port.SemanticId,
+                qualifiers: (new[] { 
+                    new Aas.Qualifier("direction", Aas.DataTypeDefXsd.String, value: direction),
+					new Aas.Qualifier("Domain", Aas.DataTypeDefXsd.String, value: port.Domain)
+				}).Cast<Aas.IQualifier>().ToList());
 
             return port_prop;
         }
-
-
 
         /// <summary>
         /// Returns the SimulationModel as Entity
@@ -259,18 +270,18 @@ namespace AasxPluginSmdExporter
         /// <param name="simulationModel"></param>
         /// <param name="nameSubmodel"></param>
         /// <returns></returns>
-        public AdminShellNS.AdminShell.Entity GetSimModelAsEntity(SimulationModel simulationModel, string nameSubmodel)
+        public Aas.IEntity GetSimModelAsEntity(SimulationModel simulationModel, string nameSubmodel)
         {
-
-            AdminShellNS.AdminShell.Entity entity = new AdminShellNS.AdminShell.Entity();
-            entity.idShort = simulationModel.Name;
-            entity.entityType = "CoManagedEntity";
-            entity.semanticId = simulationModel.SemanticId;
+            // entity
+            var entity = new Aas.Entity(
+                entityType: Aas.EntityType.CoManagedEntity,
+                idShort: simulationModel.Name,
+                semanticId: simulationModel.SemanticId);
 
             // make new parent
-            var newpar = new AdminShellNS.AdminShell.Referable();
-            newpar.idShort = nameSubmodel;
-            entity.parent = newpar;
+            //var newpar = new AdminShellV20.Referable();
+            //newpar.idShort = nameSubmodel;
+            //entity.parent = newpar;
 
             // to be processed further
             return entity;
@@ -283,44 +294,39 @@ namespace AasxPluginSmdExporter
         /// <param name="output"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public AdminShellNS.AdminShell.RelationshipElement GetPortsAsRelation(IOput input, IOput output, int type = 0)
+        public Aas.IRelationshipElement GetPortsAsRelation(IOput input, IOput output, int type = 0)
         {
-
-            AdminShellNS.AdminShell.Submodel submodel = new AdminShellNS.AdminShell.Submodel();
-
-            submodel.identification.id = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
-            submodel.identification.idType = "IRI";
-
+            var submodel = new Aas.Submodel(
+                id: "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783");
 
             // Finden der zugehörigen properties der in und out
-            AdminShellNS.AdminShell.Entity entity = new AdminShellNS.AdminShell.Entity();
-            entity.idShort = input.Owner;
-            entity.parent = submodel;
+            var entity = new Aas.Entity(
+                entityType: Aas.EntityType.CoManagedEntity,
+                idShort: input.Owner);
+            entity.Parent = submodel;
 
-            AdminShellNS.AdminShell.Property property = new AdminShellNS.AdminShell.Property();
-            property.idShort = input.IdShort;
-            property.parent = entity;
+            var property = new Aas.Property(
+                valueType: Aas.DataTypeDefXsd.String,
+                idShort: input.IdShort);
+            property.Parent = entity;
 
+            var outentity = new Aas.Entity(
+				entityType: Aas.EntityType.CoManagedEntity,
+				idShort: output.Owner);
+            outentity.Parent = submodel;
 
-            AdminShellNS.AdminShell.Entity outentity = new AdminShellNS.AdminShell.Entity();
-            outentity.idShort = output.Owner;
-            outentity.parent = submodel;
-
-            AdminShellNS.AdminShell.Property outproperty = new AdminShellNS.AdminShell.Property();
-            outproperty.idShort = output.IdShort;
-            outproperty.parent = outentity;
-
+            var outproperty = new Aas.Property(
+				valueType: Aas.DataTypeDefXsd.String,
+				idShort: output.IdShort);
+            outproperty.Parent = outentity;
 
             // setzen als first bzw second
 
-            AdminShellNS.AdminShell.RelationshipElement relationshipElement =
-                new AdminShellNS.AdminShell.RelationshipElement();
-
-            relationshipElement.first = outproperty.GetReference();
-            relationshipElement.second = property.GetReference();
-            relationshipElement.semanticId = SetSemanticIdRelEle(input, output, type);
-            relationshipElement.idShort = $"{relCount++}";
-
+            var relationshipElement = new Aas.RelationshipElement(
+                first: outproperty.GetReference(),
+                second: property.GetReference(),
+                idShort: $"{relCount++}",
+				semanticId: SetSemanticIdRelEle(input, output, type));
 
             return relationshipElement;
         }
@@ -332,21 +338,24 @@ namespace AasxPluginSmdExporter
         /// <param name="output"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public AdminShellNS.AdminShell.SemanticId SetSemanticIdRelEle(IOput input, IOput output, int type)
+        public Aas.IReference SetSemanticIdRelEle(IOput input, IOput output, int type)
         {
-            AdminShellNS.AdminShell.SemanticId semantic = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
-            key.idType = "IRI";
-            key.index = 0;
-            key.local = true;
-            key.type = "ConceptDescription";
+            var semantic = new Aas.Reference(Aas.ReferenceTypes.ExternalReference,
+				(new[] {
+					new Aas.Key(Aas.KeyTypes.ConceptDescription, "to be filled") }
+				).Cast<Aas.IKey>().ToList());
+
             switch (type)
             {
-                case 0: key.value = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_SignalFlow"); break;
-                case 1: key.value = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_PhysicalElectric"); break;
-                case 2: key.value = "mechanic"; break;
+                case 0: semantic.Keys[0].Value = 
+                        SemanticPort.GetInstance().GetSemanticForPort("SmdComp_SignalFlow"); 
+                        break;
+                case 1: semantic.Keys[0].Value = 
+                        SemanticPort.GetInstance().GetSemanticForPort("SmdComp_PhysicalElectric"); 
+                        break;
+                case 2: semantic.Keys[0].Value = "mechanic"; 
+                        break;
             }
-            semantic.JsonKeys.Add(key);
             return semantic;
         }
     }

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,30 +7,22 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using AasxWpfControlLibrary;
-using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AnyUi;
-using JetBrains.Annotations;
+using Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using Aas = AasCore.Aas3_0;
+using Key = System.Windows.Input.Key;
 
 namespace AasxPackageExplorer
 {
@@ -39,7 +31,7 @@ namespace AasxPackageExplorer
         bool IsSelected { get; set; }
     }
 
-    public partial class DiplayVisualAasxElements : UserControl, IManageVisualAasxElements
+    public partial class DiplayVisualAasxElements : UserControl, IManageVisualAasxElements, IDisplayElements
     {
         private ListOfVisualElement displayedTreeViewLines = new ListOfVisualElement();
         private TreeViewLineCache treeViewLineCache = null;
@@ -50,7 +42,11 @@ namespace AasxPackageExplorer
         // Public events and properties
         //
 
-        public int MultiSelect = 2;
+        /// <summary>
+        /// Constant to allow fall-back behaviour of the source code
+        /// (basically a define?!)
+        /// </summary>
+        public const int MultiSelect = 2;
 
         public event EventHandler SelectedItemChanged = null;
 
@@ -62,7 +58,7 @@ namespace AasxPackageExplorer
         {
             get
             {
-                if (this.MultiSelect != 2 || _selectedItems == null)
+                if (MultiSelect != 2 || _selectedItems == null)
                     return treeViewInner.SelectedItem as VisualElementGeneric;
 
                 // ok, only return definitve results
@@ -88,6 +84,9 @@ namespace AasxPackageExplorer
             return x;
         }
 
+        /// <summary>
+        /// If it boils down to one item, which is the selected item.
+        /// </summary>
         public VisualElementGeneric GetSelectedItem()
         {
             return this.SelectedItem;
@@ -255,7 +254,7 @@ namespace AasxPackageExplorer
 
         private void TreeViewInner_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (this.MultiSelect == 1)
+            if (MultiSelect == 1)
                 return;
 
             if (sender != treeViewInner || preventSelectedItemChanged)
@@ -391,6 +390,11 @@ namespace AasxPackageExplorer
             return displayedTreeViewLines[0];
         }
 
+        public void ClearSelection()
+        {
+            _selectedItems.Clear();
+        }
+
         public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
         {
             // access?
@@ -401,6 +405,58 @@ namespace AasxPackageExplorer
             // select
             return TrySelectVisualElement(ve, wishExpanded);
         }
+
+        // duplicate, see below
+  //      public bool TrySelectMainDataObjects(IEnumerable<object> dataObjects)
+  //      {
+  //          // get ve's
+  //          var ves = new ListOfVisualElementBasic();
+  //          foreach (var dob in dataObjects)
+  //          {
+		//		var ve = SearchVisualElementOnMainDataObject(dob);
+  //              if (ve != null)
+  //                  ves.Add(ve);
+		//	}
+  //          if (ves.Count < 1)
+  //              return false;
+
+  //          // do a bulk change
+		//	// step 1 : de-select all active
+		//	// foreach (var x in _selectedItems)
+  //             // x.IsSelected = false;
+
+  //          // step 2 : expand PARENTS
+  // //         foreach (var x in ves)
+  // //         {
+		//	//	var sii = x?.Parent;
+		//	//	while (sii != null)
+		//	//	{
+		//	//		sii.IsExpanded = true;
+		//	//		sii = sii.Parent;
+		//	//	}
+		//	//}
+
+  //          // step 3 : set selections
+  //          foreach (var x in ves)
+  //          {
+  //              x.IsSelected = true;
+  //              _lastItemSelected = null;
+		//	}
+
+  //          _selectedItems.Clear();
+  //          _selectedItems.AddRange(ves);
+
+  //          // for the first, fire event
+  //          // FireSelectedItem();
+  //          UpdateLayout();
+
+
+  //          //this.treeViewInner.Items.Refresh();
+  //          //this.treeViewInner.UpdateLayout();
+
+  //          // okay
+  //          return true;
+		//}
 
         public void SelectSingleVisualElement(VisualElementGeneric ve, bool preventFireItem = false)
         {
@@ -419,8 +475,6 @@ namespace AasxPackageExplorer
             if (ve == null)
                 return false;
 
-            // select (but no callback!)
-            SelectSingleVisualElement(ve, preventFireItem: true);
 
             if (wishExpanded == true)
             {
@@ -434,7 +488,13 @@ namespace AasxPackageExplorer
             }
             if (wishExpanded == false)
                 ve.IsExpanded = false;
-            Woodoo(ve);
+
+			// select (but no callback!)
+			SelectSingleVisualElement(ve, preventFireItem: true);
+
+			Woodoo(ve);
+
+            this.Refresh();
 
             // OK
             return true;
@@ -476,14 +536,23 @@ namespace AasxPackageExplorer
                 // this member is a leaf!!
                 var isIn = false;
                 var mdo = mem.GetMainDataObject();
-                if (mdo != null && mdo is AdminShell.Referable)
+                if (mdo is Aas.IReferable mdorf)
                 {
-                    var mdoen = (mdo as AdminShell.Referable).GetElementName().Trim().ToLower();
+                    var mdoen = mdorf.GetSelfDescription().AasElementName.Trim().ToLower();
                     isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
-                if (mdo != null && mdo is AdminShell.Reference)
+                else
+                if (mdo is Aas.IClass mdoic)
                 {
-                    var mdoen = (mdo as AdminShell.Reference).GetElementName().Trim().ToLower();
+                    // this special case was intruduced because of AssetInformation
+                    var mdoen = mdoic.GetType().Name.ToLower();
+                    isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
+                }
+                else
+                if (mdo is Aas.Reference)
+                {
+                    // very special case because of importance
+                    var mdoen = (mdo as Aas.Reference).GetSelfDescription().AasElementName.Trim().ToLower();
                     isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
                 return !isIn;
@@ -527,7 +596,9 @@ namespace AasxPackageExplorer
             PackageCentral packages,
             PackageCentral.Selector selector,
             bool editMode = false, string filterElementName = null,
-            bool lazyLoadingFirst = false)
+            bool lazyLoadingFirst = false,
+            int expandModePrimary = 1,
+            int expandModeAux = 0)
         {
             // clear tree
             displayedTreeViewLines.Clear();
@@ -540,7 +611,7 @@ namespace AasxPackageExplorer
                 // generate lines, add
                 displayedTreeViewLines.AddVisualElementsFromShellEnv(
                     treeViewLineCache, packages.Main?.AasEnv, packages.Main,
-                    packages.MainItem?.Filename, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
+                    packages.MainItem?.Filename, editMode, expandMode: expandModePrimary, lazyLoadingFirst: lazyLoadingFirst);
 
                 // more?
                 if (packages.AuxAvailable &&
@@ -549,7 +620,7 @@ namespace AasxPackageExplorer
                 {
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
                         treeViewLineCache, packages.Aux?.AasEnv, packages.Aux,
-                        packages.AuxItem?.Filename, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
+                        packages.AuxItem?.Filename, editMode, expandMode: expandModeAux, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
                 // more?
@@ -561,7 +632,7 @@ namespace AasxPackageExplorer
 
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
                         treeViewLineCache, pkg?.AasEnv, pkg,
-                        null, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
+                        null, editMode, expandMode: expandModeAux, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
                 // may be filter
@@ -616,7 +687,7 @@ namespace AasxPackageExplorer
         // may kick off the selection of multiple items (referring to 2nd function)
         private void TreeViewInner_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (this.MultiSelect != 1)
+            if (MultiSelect != 1)
                 return;
 
             // If clicking on the + of the tree
@@ -634,7 +705,7 @@ namespace AasxPackageExplorer
         // Check done to avoid deselecting everything when clicking to drag
         private void TreeViewInner_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (this.MultiSelect != 1)
+            if (MultiSelect != 1)
                 return;
 
             if (_itemToCheck != null)
@@ -665,7 +736,7 @@ namespace AasxPackageExplorer
         // does the real multi select
         private void SelectedItemChangedHandler(TreeViewItem item)
         {
-            if (this.MultiSelect != 1)
+            if (MultiSelect != 1)
                 return;
 
             ITreeViewSelectable content = (ITreeViewSelectable)item.Header;
@@ -825,12 +896,19 @@ namespace AasxPackageExplorer
             }
         }
 
-        private void TreeViewInner_Expanded(object sender, RoutedEventArgs e)
+		private void TreeViewInner_Expanded(object sender, RoutedEventArgs e)
         {
             // access and check
             var tvi = e?.OriginalSource as TreeViewItem;
             var ve = tvi?.Header as VisualElementGeneric;
-            if (ve == null || !ve.NeedsLazyLoading)
+            if (ve == null)
+                return;
+
+            // select (but no callback!)
+            SelectSingleVisualElement(ve, preventFireItem: true);
+
+            // need lazy loading?
+            if (!ve.NeedsLazyLoading)
                 return;
 
             // try execute, may take some time
@@ -911,9 +989,9 @@ namespace AasxPackageExplorer
 
             IsSelectionChangeActiveProperty.SetValue(treeViewInner, true, null);
 
-            lambda.Invoke();
+			lambda.Invoke();
 
-            IsSelectionChangeActiveProperty.SetValue
+			IsSelectionChangeActiveProperty.SetValue
             (
               treeViewInner,
               isSelectionChangeActive,
@@ -1009,7 +1087,38 @@ namespace AasxPackageExplorer
             FireSelectedItem();
         }
 
-        public bool TrySelectVisualElements(ListOfVisualElementBasic ves, bool preventFireItem = false)
+        /// <summary>
+        /// This function cares, that all PARENT ABOVE the visual elements are expanded!!
+        /// </summary>
+		public bool TryExpandVisualElements(ListOfVisualElementBasic ves)
+		{
+			// access?
+			if (ves == null)
+				return false;
+
+			// suppressed
+			SuppressSelectionChangeNotification(() =>
+			{
+
+				// step 2 : expand PARENTS
+				foreach (var x in ves)
+				{
+					var sii = x?.Parent;
+					while (sii != null)
+					{
+						sii.IsExpanded = true;
+						sii = sii.Parent;
+					}
+				}
+			});
+
+			treeViewInner.UpdateLayout();
+
+			// OK
+			return true;
+		}
+
+		public bool TrySelectVisualElements(ListOfVisualElementBasic ves, bool preventFireItem = false)
         {
             // access?
             if (ves == null)
@@ -1019,12 +1128,23 @@ namespace AasxPackageExplorer
             SuppressSelectionChangeNotification(() =>
             {
 
-                // deselect all
-                foreach (var si in _selectedItems)
+				// step 1 : deselect all
+				foreach (var si in _selectedItems)
                     si.IsSelected = false;
                 _selectedItems.Clear();
 
-                // select
+                // step 2 : expand PARENTS
+                foreach (var x in ves)
+                {
+                    var sii = x?.Parent;
+                    while (sii != null)
+                    {
+                        sii.IsExpanded = true;
+                        sii = sii.Parent;
+                    }
+                }
+
+                // step 3 : select
                 foreach (var ve in ves)
                 {
                     if (ve == null)
@@ -1044,20 +1164,41 @@ namespace AasxPackageExplorer
             return true;
         }
 
-        public void TrySelectMainDataObjects(IEnumerable<object> mainObjects, bool preventFireItem = false)
+        protected ListOfVisualElementBasic TranslateMainDataObjectsToVisualElements(IEnumerable<object> mainObjects)
+        {
+			var ves = new ListOfVisualElementBasic();
+			if (mainObjects != null)
+				foreach (var mo in mainObjects)
+				{
+					var ve = SearchVisualElementOnMainDataObject(mo);
+					if (ve != null)
+						ves.Add(ve);
+				}
+            return ves;
+		}
+
+		/// <summary>
+		/// This function cares, that all PARENT ABOVE the visual elements are expanded!!
+		/// </summary>
+		public void TryExpandMainDataObjects(IEnumerable<object> mainObjects, bool preventFireItem = false)
+		{
+			// gather objects
+			var ves = TranslateMainDataObjectsToVisualElements(mainObjects);
+
+			// select
+			TryExpandVisualElements(ves);
+
+			// fire event
+			FireSelectedItem();
+		}
+
+		public void TrySelectMainDataObjects(IEnumerable<object> mainObjects, bool preventFireItem = false)
         {
             // gather objects
-            var ves = new ListOfVisualElementBasic();
-            if (mainObjects != null)
-                foreach (var mo in mainObjects)
-                {
-                    var ve = SearchVisualElementOnMainDataObject(mo);
-                    if (ve != null)
-                        ves.Add(ve);
-                }
+            var ves = TranslateMainDataObjectsToVisualElements(mainObjects);
 
-            // select
-            TrySelectVisualElements(ves, preventFireItem);
+			// select
+			TrySelectVisualElements(ves, preventFireItem);
 
             // fire event
             FireSelectedItem();

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -28,7 +28,9 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 using ScottPlot;
 
 namespace AasxPluginPlotting
@@ -45,7 +47,7 @@ namespace AasxPluginPlotting
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public AdminShell.SubmodelElement SME = null;
+        public Aas.ISubmodelElement SME = null;
         public string ArgsStr = "";
         public PlotArguments Args = null;
 
@@ -87,8 +89,8 @@ namespace AasxPluginPlotting
             set { _unit = value; OnPropertyChanged("DisplayUnit"); }
         }
 
-        private AdminShell.Description _description = new AdminShell.Description();
-        public AdminShell.Description Description
+        private List<Aas.ILangStringTextType> _description = new List<Aas.ILangStringTextType>();
+        public List<Aas.ILangStringTextType> Description
         {
             get { return _description; }
             set { _description = value; OnPropertyChanged("DisplayDescription"); }
@@ -118,14 +120,14 @@ namespace AasxPluginPlotting
 
         public PlotItem() { }
 
-        public PlotItem(AdminShell.SubmodelElement sme, string args,
-            string path, AdminShell.Description description, string lang)
+        public PlotItem(Aas.ISubmodelElement sme, string args,
+            string path, List<Aas.ILangStringTextType> description, string lang)
         {
             SME = sme;
             ArgsStr = args;
             _path = path;
             _description = description;
-            _displayDescription = description?.GetDefaultStr(lang);
+            _displayDescription = description?.GetDefaultString(lang);
             Args = PlotArguments.Parse(ArgsStr);
         }
 
@@ -260,22 +262,22 @@ namespace AasxPluginPlotting
         public void UpdateLang(string lang)
         {
             foreach (var it in this)
-                it.DisplayDescription = it.Description?.GetDefaultStr(lang);
+                it.DisplayDescription = it.Description?.GetDefaultString(lang);
         }
 
         public void UpdateValues(string lang = null)
         {
             foreach (var it in this)
-                if (it.SME != null)
+                if (it.SME is Aas.Property prop)
                 {
-                    var dbl = it.SME.ValueAsDouble();
+                    var dbl = prop.ValueAsDouble();
                     it.SetValue(dbl, lang);
                 }
         }
 
         public void RebuildFromSubmodel(
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm, string lang)
+            Aas.Submodel sm, string lang)
         {
             // clear & access
             this.Clear();
@@ -287,30 +289,30 @@ namespace AasxPluginPlotting
             sm.RecurseOnSubmodelElements(this, (state, parents, sme) =>
             {
                 // qualifier
-                var q = sme.HasQualifierOfType("Plotting.Args");
-                if (q == null)
+                var ext = sme.HasExtensionOfName("Plotting.Args");
+                if (ext == null)
                     return true;
 
                 // select for SME type
                 /* TODO (MIHO, 2021-01-04): consider at least to include MLP, as well */
-                if (!(sme is AdminShell.Property))
+                if (!(sme is Aas.Property prop))
                     return true;
 
                 // build path
-                var path = sme.idShort;
+                var path = sme.IdShort;
                 if (parents != null)
                     foreach (var par in parents)
-                        path = "" + par.idShort + " / " + path;
+                        path = "" + par.IdShort + " / " + path;
 
                 // add
-                var npi = new PlotItem(sme, "" + q.value, path, sme.description, lang);
-                npi.SetValue(sme.ValueAsDouble(), lang);
+                var npi = new PlotItem(sme, "" + ext.Value, path, sme.Description, lang);
+                npi.SetValue(prop.ValueAsDouble(), lang);
                 temp.Add(npi);
 
                 // try access CD
-                var cd = package?.AasEnv?.FindConceptDescription(sme.semanticId);
-                if (cd?.IEC61360Content?.unit != null)
-                    npi.DisplayUnit = cd.IEC61360Content.unit;
+                var cd = package?.AasEnv?.FindConceptDescriptionByReference(sme.SemanticId);
+                if (cd?.GetIEC61360()?.Unit != null)
+                    npi.DisplayUnit = cd.GetIEC61360().Unit;
 
                 // re-adjust
                 if (npi.Args?.unit != null && !npi.DisplayUnit.HasContent())
@@ -420,11 +422,11 @@ namespace AasxPluginPlotting
                 foreach (var pi in groupPI)
                 {
                     // display at all?
-                    if (true == pi.Args?.skip)
+                    if (true == pi.Args?.skip || !(pi.SME is Aas.Property prop))
                         continue;
 
                     // value
-                    var val = pi.SME?.ValueAsDouble();
+                    var val = prop.ValueAsDouble();
 
                     // integrate args
                     if (pi.Args != null)
@@ -680,7 +682,7 @@ namespace AasxPluginPlotting
                 foreach (var pi in grp)
                 {
                     // display at all?
-                    if (true == pi.Args?.skip)
+                    if (true == pi.Args?.skip || !(pi.SME is Aas.Property prop))
                         continue;
 
                     // do this NOT for event sources items
@@ -688,7 +690,7 @@ namespace AasxPluginPlotting
                         continue;
 
                     // add
-                    var val = pi.SME?.ValueAsDouble();
+                    var val = prop.ValueAsDouble();
                     if (grp.UseOAaxis)
                         pi.Buffer?.Push(
                             x: DateTime.UtcNow.ToOADate(),
@@ -737,7 +739,7 @@ namespace AasxPluginPlotting
                 foreach (var pi in grp)
                 {
                     // must be event source
-                    if (pi.Args == null || pi.Args.src != PlotArguments.Source.Event)
+                    if (pi.Args == null || pi.Args.src != PlotArguments.Source.Event || !(pi.SME is Aas.Property prop))
                         continue;
 
                     // found a hit?
@@ -746,7 +748,7 @@ namespace AasxPluginPlotting
 
                     // use the value which was already set to the SME
                     // then try newer one
-                    var val = pi.SME?.ValueAsDouble();
+                    var val = prop.ValueAsDouble();
                     if (!val.HasValue)
                         continue;
                     if (uvi.Value is double vdbl)

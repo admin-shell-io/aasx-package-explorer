@@ -1,0 +1,469 @@
+﻿@page "/test"
+@using AdminShellNS
+@using Aas = AasCore.Aas3_0_RC02
+@using AdminShellNS;
+@using Extensions
+@using AnyUi
+@using BlazorUI.Shared
+@using BlazorUI.Pages
+@using UIComponents.Flags
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
+
+@{
+    // resharper disable all
+}
+
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public Data.blazorSessionService Session { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Element { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+
+    public void EventTest(MouseEventArgs e)
+    {
+        ;
+    }
+
+    public void EventSenderTest(MouseEventArgs e, object sender)
+    {
+        ;
+    }
+}
+
+@{
+    // access
+    if (Element == null || DisplayData == null)
+        return;
+
+    // set for all elements the display context
+
+    Element.DisplayData = DisplayData;
+
+    // skipForTarget skips the element, with some special cases,
+    // which are handled particularily
+
+    if ((Element.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
+    {
+        return;
+    }
+
+    //
+    // Evaluate some style attributes
+    //
+
+    var style = new StylePile();
+
+    if (Element is AnyUiControl ctrl)
+    {
+        style.Add("color", ctrl.Foreground?.HtmlRgb(), doNotSetIfNull: true);
+        style.Add("background-color", ctrl.Background?.HtmlRgb(), doNotSetIfNull: true);
+    }
+
+    //
+    // try detect some special conditions
+    //
+
+    if (Element is AnyUiViewbox t1vb
+        && t1vb.Child is AnyUiGrid t1g
+        && t1g.Children?.Count == 2
+        && t1g.Children[0] is AnyUiImage t1img
+        && t1g.Children[1] is AnyUiCanvas t1cvs)
+    {
+        <!-- <span style="background-image: url('https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8c2FtcGxlfGVufDB8fDB8fA%3D%3D&w=1000&q=80')"> -->
+
+        <AnyUiRenderMultiCanvas DisplayData="@DisplayData"
+                                Session="@Session"
+                                Parent="@Parent"
+                                Canvas="@t1cvs"
+                                BackgroundImage="@t1img"
+                                FillMode="@FillMode" />
+    }
+
+    //
+    // elements with children
+    //
+
+    if (Element is AnyUiGrid grid)
+    {
+        <AnyUiRenderGrid DisplayData="@DisplayData"
+                         Session="@Session"
+                         Parent="@Parent"
+                         Element="@grid"
+                         FillMode="@FillMode" />
+    }
+    else
+    if (Element is AnyUiWrapPanel wrap)
+    {
+        @*<span>wp</span>*@
+        <AnyUiRenderWrapPanel DisplayData="@DisplayData"
+                              Session="@Session"
+                              Parent="@Parent"
+                              Element="@wrap"
+                              FillMode="@FillMode" />
+    }
+    else
+    if (Element is AnyUiStackPanel stack)
+    {
+        @*<span>sp</span>*@
+        <AnyUiRenderStackPanel DisplayData="@DisplayData"
+                               Session="@Session"
+                               Parent="@Parent"
+                               Element="@stack"
+                               FillMode="@FillMode" />
+    }
+    else
+    if (Element is AnyUiScrollViewer scroll)
+    {
+        @*<span>sp</span>*@
+
+        if (scroll.Content != null)
+        {
+            style.SetSpecifics(
+                margin: scroll.Margin);
+
+            if (!(scroll.FlattenForTarget == AnyUiTargetPlatform.Browser) && scroll.MaxHeight.HasValue)
+            {
+                style.Set("height", FormattableString.Invariant($"{scroll.MaxHeight.Value}px"), add: true);
+                style.Set("overflow-y", "scroll", add: true);
+            }
+            else
+            {
+                // div should work out of the box
+            }
+
+            <div style="@style" data-source="AnyUiRenderElem.razor scroll">
+                <AnyUiRenderElem DisplayData="@DisplayData"
+                                 Session="@Session"
+                                 Parent="@Element"
+                                 Element="@scroll.Content"
+                                 FillMode="@FillMode" />
+            </div>
+        }
+    }
+    else
+    if (Element is AnyUiBorder border)
+    {
+        @*<span>sp</span>*@
+
+        if (border.Child != null
+                    && !(border.SkipForTarget == AnyUiTargetPlatform.Browser))
+        {
+            style.SetSpecifics(
+                margin: border.Margin,
+                padding: border.Padding,
+                borderBrush: border.BorderBrush,
+                borderThickness: border.BorderThickness);
+
+            // Note: the following does not work; the <div> is NOT spanning the height;
+            // therefore, vertical centering does not work!
+
+            style.SetFillWidth(Element, FillMode, border.Margin, setMinMaxWidth: true, setInlineBlock: true);
+
+            style.Set("height", "100%", add: true);
+
+            //var emitOC = (border.EmitEvent & AnyUiEventMask.LeftDown) > 0;
+
+            //<div style="@style" data-source="AnyUiRenderElem.razor border"
+            //     @onclick="@((ev) => EventSenderTest(ev, Element))">
+            //    <AnyUiRenderElem DisplayData="@DisplayData"
+            //                     Session="@Session"
+            //                     Parent="@Element"
+            //                     Element="@border.Child"
+            //                     FillMode="@FillMode" />
+            //</div>
+
+            <AnyUiDecorateEmit Element="border"
+                               GrandParent="Parent"
+                               FillMode="@FillMode">
+                <AnyUiRenderElem DisplayData="@DisplayData"
+                                 Session="@Session"
+                                 Parent="@Element"
+                                 Element="@border.Child"
+                                 FillMode="@FillMode" />
+            </AnyUiDecorateEmit>
+        }
+    }
+    else
+    // Further elements referring to another razor component
+    // (because they may have further code)
+    if (Element is AnyUiImage img)
+    {
+        ;
+        <AnyUiRenderImage DisplayData="@DisplayData"
+                          Session="@Session"
+                          Parent="@Parent"
+                          Element="@img"
+                          FillMode="@FillMode" />
+    }
+
+    //
+    // "Normal" elements
+    //
+
+    if (Element is AnyUiHintBubble hb)
+    {
+        if (Session.editMode)
+        {
+
+            // outer style
+            style.SetSpecifics(
+                margin: hb.Margin,
+                padding: hb.Padding,
+                textWrapping: hb.TextWrapping,
+                fontSizeRel: hb.FontSize,
+                fontWeight: hb.FontWeight);
+
+            style.Set("color", hb.Background?.HtmlRgb(), add: true, doNotSetIfNull: true);
+
+            // inner style (pure text)
+            var innerstyle = new StylePile();
+            innerstyle.Add("color", hb.Foreground?.HtmlRgb(), doNotSetIfNull: true);
+
+            // see: https://codingislove.com/css-speech-bubbles/
+
+            // element
+            <div class="hintbox sb1" style="@style" data-source="AnyUiRenderElem.razor hint">
+                <span style="@innerstyle">@hb.Text</span>
+            </div>
+        }
+    }
+    else
+    if (Element is AnyUiSelectableTextBlock stb)
+    {
+        style.SetSpecifics(
+            margin: stb.Margin,
+            padding: stb.Padding,
+            textWrapping: stb.TextWrapping,
+            fontSizeRel: stb.FontSize,
+            fontWeight: stb.FontWeight);
+
+        style.SetFillWidth(Element, AnyUiHtmlFillMode.None, stb.Margin, setMinMaxWidth: true);
+        style.SetAlignments(Element);
+
+        if (stb.TextAsHyperlink)
+        {
+            <a href="@stb.Text" style="@style">
+                <!-- <MultiLineText InputString="@stb.Text"/> -->
+                <AnyUiRenderMultiText DisplayData="@DisplayData"
+                                      Session="@Session"
+                                      Parent="@Parent"
+                                      Element="@Element" />
+            </a>
+        }
+        else
+        {
+            <span style="@style">
+                <!-- <MultiLineText InputString="@stb.Text" /> -->
+                <AnyUiRenderMultiText DisplayData="@DisplayData"
+                                      Session="@Session"
+                                      Parent="@Parent"
+                                      Element="@Element" />
+            </span>
+        }
+    }
+    else
+    if (Element is AnyUiTextBlock tb)
+    {
+        style.SetSpecifics(
+            margin: tb.Margin,
+            padding: tb.Padding,
+            textWrapping: tb.TextWrapping,
+            fontSizeRel: tb.FontSize,
+            fontWeight: tb.FontWeight);
+
+        style.SetFillWidth(Element, AnyUiHtmlFillMode.None, tb.Margin, setMinMaxWidth: true);
+        style.SetAlignments(Element);
+
+        <span style="@style"><MultiLineText InputString="@tb.Text" /></span>
+    }
+    else
+    if (Element is AnyUiLabel chlb)
+    {
+        style.SetSpecifics(
+            margin: chlb.Margin,
+            padding: chlb.Padding,
+            fontSizeRel: chlb.FontSize,
+            fontWeight: chlb.FontWeight);
+
+        style.SetFillWidth(Element, AnyUiHtmlFillMode.None, chlb.Margin, setMinMaxWidth: true, setInlineBlock: true);
+        style.SetAlignments(Element);
+
+        <span style="@style"><MultiLineText InputString="@chlb.Content" /></span>
+    }
+
+    if (Element is AnyUiTextBox chtb)
+    {
+        style.SetSpecifics(
+            margin: chtb.Margin,
+            padding: chtb.Padding,
+            fontSizeRel: chtb.FontSize);
+
+        if (Parent is AnyUiGrid)
+        {
+            style += "width: 100%";
+            style += "box-sizing: border-box";
+        }
+
+        <input style="@style" value="@chtb.Text"
+               @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+
+        @code {
+            private void MyTextInput(AnyUiTextBox chtb, string value)
+            {
+                Program.EvalSetValueLambdaAndHandleReturn(Session.sessionNumber, chtb, value);
+            }
+        }
+    }
+
+    @if (Element is AnyUiButton chbt)
+    {
+        style.SetSpecifics(
+            margin: chbt.Margin,
+            padding: chbt.Padding,
+            fontSizeRel: chbt.FontSize,
+            forceNoWrap: true);
+
+        style.SetFillWidth(Element, FillMode, chbt.Margin, setMinMaxWidth: true);
+
+        <button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
+        @code {
+            private void MyClickButton(AnyUiButton chbt)
+            {
+                if (chbt.SpecialAction is AnyUiSpecialActionContextMenu cntlcm)
+                {
+                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm);
+                    return;
+                }
+                // chbt.setValueLambda?.Invoke(chbt.Content);
+                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
+            }
+        }
+    }
+
+    if (Element is AnyUiCheckBox cb)
+    {
+        // style.SetSpecifics(margin: cb.Margin);
+        // style.SetAlignments(Element);
+        style.Set("white-space", "nowrap", add: true);
+
+        <span style="@style">
+            <input type="checkbox" value="@cb.IsChecked"
+                   @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+            @cb.Content
+        </span>
+
+        @code {
+            private void MyCheck(AnyUiCheckBox cb, string value)
+            {
+                Program.EvalSetValueLambdaAndHandleReturn(Session.sessionNumber, cb, value.ToLower() == "true");
+            }
+        }
+    }
+
+    if (Element is AnyUiComboBox comb)
+    {
+        style.SetSpecifics(
+            margin: comb.Margin,
+            padding: comb.Padding,
+            fontSizeRel: comb.FontSize);
+
+        if (Parent is AnyUiGrid)
+        {
+            style += "width: 100%";
+            style += "box-sizing: border-box";
+
+            style.SetMinMaxWidthHeight(Element);
+        }
+        else
+        {
+            style += "width: auto";
+            style += "box-sizing: border-box";
+            style += "display:inline-block";
+
+            style.SetMinMaxWidthHeight(Element);
+
+            if (comb.Text != null)
+            {
+                string w = (comb.Text.Length * 11 + 60).ToString() + "px";
+                style += $"width: {w}";
+            }
+        }
+
+        if (comb.SelectedIndex.HasValue
+            && comb.Items != null
+            && comb.SelectedIndex.Value >= 0 && comb.SelectedIndex.Value < comb.Items.Count)
+        {
+            comb.Text = "" + comb.Items[comb.SelectedIndex.Value];
+        }
+
+        <select class="form-control selectpicker" value="@comb.Text" style="@style"
+                @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
+            @foreach (var item in comb.Items)
+            {
+                <option value="@item">@item</option>
+            }
+        </select>
+
+        @code {
+            private void MyComboSelect(AnyUiComboBox comb, string value)
+            {
+                comb.EvalSelectedIndex(value);
+                Program.EvalSetValueLambdaAndHandleReturn(Session.sessionNumber, comb, value);
+            }
+        }
+    }
+
+    if (Element is AnyUiCountryFlag flag)
+    {
+        style += "width: auto";
+        style += "box-sizing: border-box";
+        style += "display:inline-block";
+
+        style.SetMinMaxWidthHeight(Element);
+
+        var country = Country.DE;
+        var size = FlagSize.Small;
+
+        <!--
+        <CountryFlag Country="@country" Size="@size" Class="mx-3"></CountryFlag>
+        -->
+    }
+
+}
+
+
+<style>
+    .hintbox {
+        width: 100%;
+        margin: 5px auto;
+        padding: 5px;
+        text-align: left;
+        font-weight: normal;
+        font-family: arial;
+        position: relative;
+    }
+
+    .sb1:before {
+        content: "";
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        border-left: 10px solid;
+        border-right: 10px solid transparent;
+        border-top: 10px solid;
+        border-bottom: 10px solid transparent;
+        left: 19px;
+        bottom: -19px;
+    }
+</style>

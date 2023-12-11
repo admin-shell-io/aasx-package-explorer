@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -57,12 +57,6 @@ namespace AasOpcUaServer
         public Action FinalizeAction = null;
 
         /// <summary>
-        /// If true, a nodeset export will try to explicetely include the root item link within the 
-        /// export. Try this for SiOME usage.
-        /// </summary>
-        public bool AddRootItem = false;
-
-        /// <summary>
         /// If true, usage of customised data types will be reduced
         /// </summary>
         public bool SimpleDataTypes = false;
@@ -107,12 +101,6 @@ namespace AasOpcUaServer
                 if (arg == "-simple-data-types")
                 {
                     SimpleDataTypes = true;
-                    continue;
-                }
-
-                if (arg == "-add-root-item")
-                {
-                    AddRootItem = true;
                     continue;
                 }
 

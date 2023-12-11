@@ -1,0 +1,78 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AasxPackageExplorer"
+             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
+             x:Class="AasxPackageExplorer.SelectFromDataGridFlyout"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="900" Loaded="UserControl_Loaded">
+    <!--
+    Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Author: Michael Hoffmeister
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="/Themes/Generic.xaml"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="OuterGrid" Margin="10" MaxHeight="500" MaxWidth="800">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="6*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Viewbox Grid.Row="0" Grid.Column="2" Margin="2" HorizontalAlignment="Right">
+            <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
+        </Viewbox>
+
+        <TextBlock x:Name="TextBlockCaption" Grid.Row="1" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Select preset for Qualifier .."/></TextBlock>
+
+        <DataGrid x:Name="DataGridEntities" Grid.Row="2" Grid.Column="1" AutoGenerateColumns="False"
+                  Margin="5,0,5,10" Background="#c0202030" Foreground="White" FontWeight="Regular" FontSize="14" 
+                  RowHeaderWidth="0" IsReadOnly="True"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" MouseDoubleClick="DataGrid_MouseDoubleClick">
+            <DataGrid.Resources>
+                <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background" Value="#c0303040" />
+                </Style>
+                <Style BasedOn="{StaticResource {x:Type DataGridRow}}" TargetType="{x:Type DataGridRow}">
+                    <Setter Property="Background" Value="#c0202030" />
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <!--
+                <DataGridTextColumn Header="Type" Width="1*" MaxWidth="60" Binding="{Binding DisplayType, Mode=OneWay}"/>
+                <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding DisplayName, Mode=OneWay}"/>
+                <DataGridTextColumn Header="Identification" Width="5*" Binding="{Binding DisplayId, Mode=OneWay}"/>
+                -->
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!--
+        <DockPanel x:Name="ButtonsPanel" Grid.Row="4" Grid.Column="1">
+            <Button x:Name="ButtonSelect" IsDefault="True" Content="Select!" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="ButtonSelect_Click"/>
+        </DockPanel>
+        -->
+
+        <UniformGrid x:Name="ButtonsPanel" Grid.Row="4" Grid.Column="1" Rows="1">
+            <Button x:Name="ButtonSelect" IsDefault="True" Content="Select!" Style="{DynamicResource TranspRoundCorner}" 
+                    Foreground="White" FontSize="18" Padding="6" Margin="4" Click="ButtonSelect_Click"/>
+        </UniformGrid>
+        
+    </Grid>
+</UserControl>

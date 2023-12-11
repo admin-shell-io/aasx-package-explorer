@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -10,16 +10,15 @@ This source code may use other Open Source software components (see LICENSE.txt)
 // to be disabled for AASX Server
 #define UseMarkup
 
+using AasxIntegrationBase.MiniMarkup;
+using Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AasxIntegrationBase;
-using AasxIntegrationBase.MiniMarkup;
-using AdminShellNS;
-using Newtonsoft.Json;
+using static AdminShellNS.AdminShellConverters;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxIntegrationBase.AdminShellEvents
 {
@@ -35,23 +34,23 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// Reference to the source EventElement, including identification of  AAS,  Submodel, SubmodelElements.
         /// </summary>
-        public AdminShell.Reference Source { get; set; }
+        public Aas.IReference Source { get; set; }
 
         /// <summary>
-        /// SemanticId  of  the  source  EventElement,  if available.
+        /// SematicId  of  the  source  EventElement,  if available.
         /// </summary>
-        public AdminShell.SemanticId SourceSemanticId { get; set; }
+        public Aas.IReference SourceSemanticId { get; set; }
 
         /// <summary>
         /// Reference  to  the  Referable,  which  defines  the scope  of  the  event.  Can  be  AAS,  Submodel, 
         /// SubmodelElementCollection  or SubmodelElement. 
         /// </summary>
-        public AdminShell.Reference ObservableReference { get; set; }
+        public Aas.IReference ObservableReference { get; set; }
 
         /// <summary>
         /// SemanticId  of  the  Referable,  which  defines  the scope of the event, if available. 
         /// </summary>
-        public AdminShell.SemanticId ObservableSemanticId { get; set; }
+        public Aas.IReference ObservableSemanticId { get; set; }
 
         /// <summary>
         /// Information for the outer message infrastructure for  scheduling the  event to the  respective 
@@ -104,13 +103,17 @@ namespace AasxIntegrationBase.AdminShellEvents
             }
         }
 
-        public bool IsWellInformed
+        /// <summary>
+        /// Overall check if a valid event.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsWellformed
         {
             get
             {
-                return Source != null && Source.Count > 0
-                    && SourceSemanticId != null && SourceSemanticId.Count > 0
-                    && ObservableReference != null && ObservableReference.Count > 0;
+                return Source != null && Source.Keys.Count > 0
+                    && SourceSemanticId != null && SourceSemanticId.Keys.Count > 0
+                    && ObservableReference != null && ObservableReference.Keys.Count > 0;
             }
         }
 
@@ -134,13 +137,13 @@ namespace AasxIntegrationBase.AdminShellEvents
         }
 
         [JsonIgnore]
-        public string DisplaySource { get { return "" + Source?.Keys?.MostSignificantInfo(); } }
+        public string DisplaySource { get { return "" + Source?.MostSignificantInfo(); } }
 
         [JsonIgnore]
-        public string DisplaySourceSemantic { get { return "" + SourceSemanticId?.GetAsExactlyOneKey()?.value; } }
+        public string DisplaySourceSemantic { get { return "" + SourceSemanticId?.GetAsExactlyOneKey()?.Value; } }
 
         [JsonIgnore]
-        public string DisplayObservable { get { return "" + ObservableReference?.Keys?.MostSignificantInfo(); } }
+        public string DisplayObservable { get { return "" + ObservableReference?.MostSignificantInfo(); } }
 
         [JsonIgnore]
         public string DisplayInfo
@@ -166,10 +169,10 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         public AasEventMsgEnvelope(
             DateTime timestamp,
-            AdminShell.Reference source = null,
-            AdminShell.SemanticId sourceSemanticId = null,
-            AdminShell.Reference observableReference = null,
-            AdminShell.SemanticId observableSemanticId = null,
+            Aas.IReference source = null,
+            Aas.IReference sourceSemanticId = null,
+            Aas.IReference observableReference = null,
+            Aas.IReference observableSemanticId = null,
             string topic = null,
             string subject = null,
             AasPayloadBase payload = null,
@@ -239,16 +242,16 @@ namespace AasxIntegrationBase.AdminShellEvents
                         $"AAS event message @ {ts}", fontSize: 16.0f)),
                     new MiniMarkupLine(
                         new MiniMarkupRun("Source:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun(Source?.ToString())),
+                        new MiniMarkupRun(Source?.ToStringExtended())),
                     new MiniMarkupLine(
                         new MiniMarkupRun("SourceSemantic:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun(SourceSemanticId?.ToString())),
+                        new MiniMarkupRun(SourceSemanticId?.ToStringExtended())),
                     new MiniMarkupLine(
                         new MiniMarkupRun("ObservableReference:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun(ObservableReference?.ToString())),
+                        new MiniMarkupRun(ObservableReference?.ToStringExtended())),
                     new MiniMarkupLine(
                         new MiniMarkupRun("ObservableSemanticId:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun(ObservableSemanticId?.ToString())),
+                        new MiniMarkupRun(ObservableSemanticId?.ToStringExtended())),
                     new MiniMarkupLine(
                         new MiniMarkupRun("Topic:", isMonospaced: true, padsize: w1),
                         new MiniMarkupRun(Topic)),

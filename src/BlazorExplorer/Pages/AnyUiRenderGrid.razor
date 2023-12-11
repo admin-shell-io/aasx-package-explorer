@@ -1,0 +1,477 @@
+﻿@page "/test2"
+@using AdminShellNS
+@using Aas = AasCore.Aas3_0
+@using AdminShellNS;
+@using Extensions
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+
+@code{
+    // resharper disable all
+    // test a new approach
+    protected bool NewApproach = true;
+}
+
+
+@{
+
+    // access
+    if (_grid == null)
+        return;
+
+    if (_grid?.Children != null && _grid.Children.Count >= 1
+        && _grid.Children[0] is AnyUiSelectableTextBlock stb
+        && stb.Text == "id:")
+        ;
+
+    // because of not working with table, need an outer <div>
+    var divOuterStyle = new StylePile();
+    divOuterStyle.SetSpecifics(
+        margin: _grid.Margin);
+
+    if (_grid?.Children != null && _numRow == 3 && _numCol == 3)
+        ;
+
+    //
+    // Eval different table attributes
+    //
+
+    var tablestyle = new StylePile();
+    var deleteWidth = false;
+
+    // the approach of providing style from outside proved tobe difficult
+    //if (InitStyle != null) tablestyle.Add(InitStyle); 
+
+    tablestyle.Add("background-color", _grid.Background?.HtmlRgb(), doNotSetIfNull: true);
+
+    if (AnyUiDisplayDataHtml.DebugFrames)
+        tablestyle.Set("border", "1px solid black", add: true);
+
+    if (_grid.HorizontalAlignment.HasValue && _grid.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Left)
+    {
+        if (TableAttributes == null)
+            TableAttributes = new Dictionary<string, object>();
+        TableAttributes["align"] = "left";
+        deleteWidth = true;
+    }
+    else
+    if (_grid.HorizontalAlignment.HasValue && _grid.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Right)
+    {
+        // tablestyle.Set("align", "right", add: true);
+        if (TableAttributes == null)
+            TableAttributes = new Dictionary<string, object>();
+        TableAttributes["align"] = "right";
+        deleteWidth = true;
+    }
+    else
+    {
+        tablestyle.Set("width", "100%", add: true);
+    }
+
+    if ((Parent is AnyUiWrapPanel pwp && pwp.Orientation == AnyUiOrientation.Horizontal)
+    || (Parent is AnyUiStackPanel psp && psp.Orientation == AnyUiOrientation.Horizontal))
+    {
+        tablestyle -= "width";
+        deleteWidth = true;
+        tablestyle += "display: inline-table";
+    }
+
+    // do a quite painful investigation, if rounded corners are required in the table
+    // this would require "border-collapse: separate" to work
+    var hasCornerRadius = false;
+    if (_grid?.Children != null)
+        foreach (var gch in _grid.Children)
+            if (gch is AnyUiBorder gchbrd && gchbrd.BorderThickness != null && gchbrd.CornerRadius.HasValue)
+                hasCornerRadius = true;
+    if (hasCornerRadius)
+        tablestyle += "border-collapse: separate";
+
+    // test
+    if (NewApproach)
+    {
+        tablestyle.Add("table-layout", "fixed");
+    }
+
+    // background image
+    if (_grid.BackgroundImageHtml != null)
+    {
+        var path = "/api/image/" + _grid.BackgroundImageHtml.ImageGuid;
+        tablestyle.Add("background-image", "url('" + path+ "')");
+        if (_grid.BackgroundImageHtml.Stretch != AnyUiStretch.None)
+        {
+            // https://www.w3schools.com/html/html_images_background.asp
+            tablestyle.Add("background-repeat", "no-repeat");
+            tablestyle.Add("background-attachment", "fixed");
+            tablestyle.Add("background-size", "100% 100%");
+        }
+    }
+
+    // 
+    // Render
+    //
+
+    <div style="@divOuterStyle" data-source="AnyUiRenderGrid.razor outerStyle">
+        <table @attributes="@TableAttributes" style="@tablestyle" data-source="AnyUiRenderGrid.razor">
+            @if (true)
+            {
+                <thead>
+                    <tr>
+                        @for (int ci = 0; ci < _numCol; ci++)
+                        {
+                            // get the typical head style
+                            var thStyle = GetColHeadStyle(ci);
+                            if (deleteWidth)
+                                thStyle -= "width";
+
+                            // new approach?
+                            if (NewApproach)
+                            {
+                                thStyle.Set("overflow", "hidden", add: true);
+                                
+                                if (_grid.ColumnDefinitions != null && ci < _grid.ColumnDefinitions.Count)
+                                {
+                                    var cd = _grid.ColumnDefinitions[ci];
+
+                                    if (cd.Width.Type == AnyUiGridUnitType.Auto)
+                                    {
+                                        // no overflow
+                                        thStyle -= "overflow";
+
+                                        // try approximate width
+                                        double maxColWidth = 0.0;
+                                        for (int ri = 0; ri < _numRow; ri++)
+                                            foreach (var ch in _grid.GetChildsAt(ri, ci))
+                                                maxColWidth = Math.Max(maxColWidth,
+                                                (DisplayData?.GetScale() ?? 1.0f)
+                                                * (DisplayData?._context?.GetApproxElementWidth(ch) ?? 0.0));
+                                        if (maxColWidth > 0.0)
+                                            thStyle.Set("width",
+                                                FormattableString.Invariant($"{maxColWidth}px"), add: true);
+                                    }
+
+                                    if (cd.MinWidth.HasValue)
+                                    {
+                                        var mwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                                            .ScaleToPixel(cd.MinWidth.Value) ?? cd.MinWidth.Value;
+                                        thStyle.Set("width", 
+                                            FormattableString.Invariant($"{mwpx}px"), add: true);
+                                    }
+
+                                    if (cd.Width?.Type == AnyUiGridUnitType.Pixel)
+                                    {
+                                        // set specified width (but respect overflow, if set)
+                                        var mwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                                            .ScaleToPixel(cd.Width.Value) ?? cd.MinWidth.Value;
+                                        thStyle.Set("width",
+                                            FormattableString.Invariant($"{mwpx}px"), add: true);
+                                    }
+                                }
+                            }
+
+                            // do it
+                            <th style="@thStyle">
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            }
+            <tbody>
+                @{
+                    @for (int ri = 0; ri < _numRow; ri++)
+                    {
+                        <tr>
+                            @for (int ci = 0; ci < _numCol; ci++)
+                            {
+                                if (_numCol == 8 && ci == 0)
+                                    ;
+
+                                // this checks exactly for the root coordinates (no span coordinates)
+                                var foundContent = false;
+                                foreach (var ch in GetChildsAt(ri, ci))
+                                {
+                                    // allowed?
+                                    if (ch == null || (ch.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
+                                        continue;
+                                    foundContent = true;
+
+                                    // eval more grid  coordinates
+                                    var colspan = 1;
+                                    if (ch.GridColumnSpan.HasValue && ch.GridColumnSpan.Value > 1)
+                                        colspan = ch.GridColumnSpan.Value;
+
+                                    var rowspan = 1;
+                                    if (ch.GridRowSpan.HasValue && ch.GridRowSpan.Value > 1)
+                                        rowspan = ch.GridRowSpan.Value;
+
+                                    StylePile divWithStyle = null;
+                                    if (_grid.ColumnDefinitions != null && ci < _grid.ColumnDefinitions.Count)
+                                    {
+                                        var cd = _grid.ColumnDefinitions[ci];
+                                        if (cd.MinWidth.HasValue)
+                                        {
+                                            var mwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                                                .ScaleToPixel(cd.MinWidth.Value) ?? cd.MinWidth.Value;
+                                            divWithStyle = new StylePile(FormattableString.Invariant(
+                                                $"min-width: {mwpx}px"));
+                                        }
+                                    }
+
+                                    // modify td style
+                                    var tdStyle = GetCellStyle(ri, ci);
+                                    if (ch is AnyUiFrameworkElement chfe)
+                                    {
+                                        if (chfe.VerticalAlignment == null
+                                            || (chfe.VerticalAlignment.HasValue && chfe.VerticalAlignment.Value == AnyUiVerticalAlignment.Top))
+                                            tdStyle.Set("vertical-align", "top", add: true);
+                                        else
+                                        if (chfe.VerticalAlignment.HasValue && chfe.VerticalAlignment.Value == AnyUiVerticalAlignment.Center)
+                                            tdStyle.Set("vertical-align", "middle", add: true);
+                                        else
+                                        if (chfe.VerticalAlignment.HasValue && chfe.VerticalAlignment.Value == AnyUiVerticalAlignment.Bottom)
+                                            tdStyle.Set("vertical-align", "bottom", add: true);
+                                        else
+                                        if (chfe.VerticalAlignment.HasValue && chfe.VerticalAlignment.Value == AnyUiVerticalAlignment.Stretch)
+                                        {
+                                            tdStyle.Set("vertical-align", "middle", add: true);
+                                            tdStyle.Set("height", "100%", add: true);
+                                        }
+
+                                    }
+
+                                    if (ch is AnyUiControl cntl)
+                                    {
+                                        if (cntl.HorizontalContentAlignment.HasValue 
+                                            && cntl.HorizontalContentAlignment.Value == AnyUiHorizontalAlignment.Center)
+                                            tdStyle.Set("text-align", "center", add: true);
+                                    }
+
+                                    // special case for childs, which are borders. Only applying the border styles to the <td>
+                                    // will guarentee a border filling width AND height!
+
+                                    if (ch is AnyUiBorder chbrd)
+                                    {
+                                        tdStyle.SetSpecifics(
+                                            margin: chbrd.Margin,
+                                            padding: chbrd.Padding,
+                                            background: chbrd.Background,
+                                            borderBrush: chbrd.BorderBrush,
+                                            borderThickness: chbrd.BorderThickness,
+                                            cornerRadius: chbrd.CornerRadius);
+                                    }
+
+                                    if (NewApproach)
+                                        tdStyle.Set("overflow", "hidden", add: true);
+
+                                    if (_grid.ColumnDefinitions != null && ci < _grid.ColumnDefinitions.Count)
+                                    {
+                                        var cd = _grid.ColumnDefinitions[ci];
+                                        if (cd.Width.Type == AnyUiGridUnitType.Auto)
+                                            tdStyle -= "overflow";
+                                    }
+
+                                    // line height (nneds to be in tze parent of d7v/ span elements)
+                                    if (ch is AnyUiTextBlock chtb && chtb.LineHeightPercent.HasValue)
+                                        tdStyle.Add("line-height", 
+                                            FormattableString.Invariant($"{chtb.LineHeightPercent.Value:0.00}%"));
+
+                                    // now render
+                                    <td style="@tdStyle" colspan="@colspan" rowspan="@rowspan" data-source="AnyUiRenderGrid.razor tdStyle">
+
+                                        @if (divWithStyle != null)
+                                        {
+                                            <div style="@divWithStyle" data-source="AnyUiRenderGrid.razor divWithStyle">
+                                                <AnyUiRenderElem DisplayData="@DisplayData"
+                                                                 Session="@Session"
+                                                                 Parent="@Element"
+                                                                 Element="@ch"
+                                                                 FillMode="@FillMode" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <AnyUiRenderElem DisplayData="@DisplayData"
+                                                             Session="@Session"
+                                                             Parent="@Element"
+                                                             Element="@ch" 
+                                                             FillMode="@FillMode" />
+                                        }
+                                    </td>
+                                }
+
+                                // if nothing, provide <td/> in any case
+                                if (!foundContent)
+                                {
+                                    // if not root, check if a spanned coordinate
+                                    var span = _grid.IsCoveredBySpanCell(ri, ci, returnOnSpanCell: true);
+
+                                    // make a td, if NOT spanned
+                                    if (span == null)
+                                    {
+                                        <td></td>
+                                    }
+                                }
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> TableAttributes { get; set; }
+
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public BlazorUI.Data.BlazorSession Session { get; set; }
+
+    [Parameter]
+    public StylePile InitStyle { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+
+    protected AnyUiGrid _grid = null;
+
+    protected List<string> _colHeadStyles = new List<string>();
+    protected List<string> _colCellStyles = new List<string>();
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Element
+    {
+        get { return _grid; }
+        set
+        {
+            _grid = value as AnyUiGrid;
+            if (_grid?.Children == null || _grid.RowDefinitions == null || _grid.ColumnDefinitions == null)
+                return;
+
+            if (_grid.RowDefinitions.Count == 3 && _grid.ColumnDefinitions.Count == 6
+                && _grid.Children.Count == 4
+                && _grid.Children[0] is AnyUiWrapPanel wp
+                && wp.Children != null && wp.Children.Count == 1
+                && wp.Children[0] is AnyUiSelectableTextBlock stb
+                && stb.Text.StartsWith("ChargeId")
+                && _grid.Children[3] is AnyUiStackPanel sp1
+                && sp1.Children != null && sp1.Children.Count == 1
+                && sp1.Children[0] is AnyUiStackPanel sp2)
+            {
+                sp1.DebugTag = "CIDSP1";
+                sp2.DebugTag = "CIDSP2";
+            }
+
+            // try fix?
+            _grid.FixRowColDefs();
+
+            // prepare simple grid dimensions
+            _numRow = _grid.RowDefinitions.Count();
+            _numCol = _grid.ColumnDefinitions.Count();
+
+            // try to assess all column width with star
+            var sumOfStars = 0.0;
+            foreach (var cd in _grid.ColumnDefinitions)
+                if (cd?.Width?.Type == AnyUiGridUnitType.Star)
+                    sumOfStars += cd.Width.Value;
+
+            // make sure to have a weight > 0.0 for balancing single columns
+
+            _colHeadStyles = new List<string>();
+            _colCellStyles = new List<string>();
+            foreach (var cd in _grid.ColumnDefinitions)
+            {
+                var chs = "";
+                var ccs = ""; // XXX white-space: nowrap;";
+                if (AnyUiDisplayDataHtml.DebugFrames)
+                    ccs += " border: 1px solid black;";
+
+                var starWeight = Math.Max(sumOfStars, 1.0);
+                var mwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                    .ScaleToPixel(cd.Width.Value) ?? cd.Width.Value;
+                var wwpx = (_grid.DisplayData as AnyUiDisplayDataHtml)?
+                    .ScaleToPixel(Math.Floor(100.0 * cd.Width.Value / starWeight)) 
+                    ?? Math.Floor(100.0 * cd.Width.Value / starWeight);
+
+                if (cd.Width?.Type == AnyUiGridUnitType.Pixel)
+                    chs = FormattableString.Invariant($"min-width:{mwpx}px;");
+                if (cd.Width?.Type == AnyUiGridUnitType.Star)
+                    chs = FormattableString.Invariant($"width:{wwpx}%;");
+                if (cd.Width?.Type == AnyUiGridUnitType.Auto)
+                    chs = $"";
+
+                _colHeadStyles.Add(chs);
+                _colCellStyles.Add(ccs);
+            }
+
+            // if there is absolutely no star in the table, we have to introduce one!
+            // this will allow the "auto" columns to stick together left or right
+            if (sumOfStars < 0.001)
+            {
+                _numCol++;
+                _colHeadStyles.Add("width:100%;");
+                _colCellStyles.Add(";border: 1px dashed green");
+            }
+
+            ;
+        }
+    }
+
+    protected StylePile GetColHeadStyle(int col)
+    {
+        if (_colHeadStyles == null || col < 0 || col >= _colHeadStyles.Count)
+            return new StylePile();
+        return new StylePile(_colHeadStyles[col]);
+    }
+
+    protected StylePile GetCellStyle(int row, int col)
+    {
+        if (_colCellStyles == null
+            || row < 0 || row >= _numRow
+            || col < 0 || col >= _colCellStyles.Count)
+            return new StylePile();
+
+        // column style yes .. now as style pile
+        var sp = new StylePile(_colCellStyles[col]);
+
+        // attach attributes "lend" from the child?
+        foreach (var ch in GetChildsAt(row, col))
+        {
+            if (ch == null || (ch.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
+                continue;
+
+            //if (ch is AnyUi.IGetBackground igb)
+            //    sp.Add("background-color", igb.GetBackground()?.HtmlRgb(), doNotSetIfNull: true);
+
+            //if (ch is AnyUiBorder border)
+            //    sp.SetSpecifics(
+            //        margin: border.Margin,
+            //        borderBrush: border.BorderBrush,
+            //        borderThickness: border.BorderThickness);
+        }
+
+        // ok, back
+        return sp;
+    }
+
+    protected int _numRow { get; set; }
+    protected int _numCol { get; set; }
+
+    protected IEnumerable<AnyUiUIElement> GetChildsAt(int row, int col)
+    {
+        if (_grid == null)
+            yield break;
+
+        foreach (var ch in _grid.GetChildsAt(row, col))
+            yield return ch;
+    }
+
+    protected bool Debug = false;
+
+}

@@ -1,0 +1,74 @@
+﻿@page "/testAnyUiRenderImage"
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@{
+// resharper disable all
+}
+
+@{
+    // access
+    if (_image == null)
+        return;
+
+    // style
+
+    var style = new StylePile();
+
+    style.SetSpecifics(margin: _image.Margin);
+    style.SetFillWidth(Element, FillMode, _image.Margin, setMinMaxWidth: true, setMinMaxHeight: true);
+
+    //
+    // Render
+    //
+
+    var path = "/api/image/" + _image.ImageGuid;
+    <img id="@_image.ImageGuid" src="@path" style="@style"/>
+
+    // book keeping
+    // TODO (??, 0000-00-00): make it nice!!
+    _image.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context, touchLambda: TouchAction) { _component = this };
+}
+
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public BlazorUI.Data.BlazorSession Session { get; set; }
+
+    protected AnyUiImage _image = null;
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiImage Element
+    {
+        get { return _image; }
+        set
+        {
+            // hold image data
+            _image = value;
+        }
+    }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+
+    public void Redraw()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    //
+    // Touch
+    //
+
+    protected void TouchAction(AnyUiUIElement tel)
+    {
+        Redraw();
+    }
+}

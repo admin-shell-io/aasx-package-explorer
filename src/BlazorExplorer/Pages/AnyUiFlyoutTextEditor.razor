@@ -1,0 +1,93 @@
+﻿@page "/AnyUiFlyoutTextEditor"
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataTextEditor ddte)
+{
+    @* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddte.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		 <form>
+          <div class="mb-3">
+			@if (ddte.ReadOnly)
+			{
+				<textarea readonly
+					class="form-control form-control-lg" id="message-text" @bind="TextLines"
+					style="resize: none; height: 60vh; font-family: monospace,monospace;" />
+			}
+			else
+			{
+				<textarea class="form-control form-control-lg" id="message-text" @bind="TextLines"
+					style="resize: none; height: 60vh; font-family: monospace,monospace;" />
+			}
+          </div>
+        </form>
+	</div>
+	<div class="modal-footer">
+
+		@if (ddte.Presets != null && ddte.Presets.Count > 0)
+		{
+			<div class="dropdown ms-auto">
+				<button class="btn btn-lg btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+					Preset
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+					@for (int i=0; i<ddte.Presets.Count; i++)
+					{
+						var currI = i; // save iteration variable
+						<li><a class="dropdown-item" @onclick="() => SetPreset(currI)">@(ddte.Presets[i].Name)</a></li>
+					}
+				</ul>
+			</div>
+		}
+
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	public void SetPreset(int i)
+	{
+		if (!(DialogueData is AnyUiDialogueDataTextEditor ddte)
+			|| ddte.Presets == null || i < 0 || i >= ddte.Presets.Count)
+			return;
+		TextLines = "" + ddte.Presets[i]?.Text;
+	}
+
+	public string TextLines
+	{
+		get
+		{
+			if (!(DialogueData is AnyUiDialogueDataTextEditor ddte))
+				return "";
+			return "" + ddte.Text;
+		}
+		set
+		{
+			if (!(DialogueData is AnyUiDialogueDataTextEditor ddte))
+				return;
+			ddte.Text = value;
+		}
+	}
+
+	public void LeaveResult(bool result)
+	{
+		EventSession?.EndModal(result);
+	}
+}

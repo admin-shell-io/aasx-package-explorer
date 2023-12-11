@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AnyUi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace AasxIntegrationBase
         event IFlyoutControlAction ControlClosed;
 
         /// <summary>
-        /// ´Called by the main window immediately after start
+        /// Called by the main window immediately after start
         /// </summary>
         void ControlStart();
 
@@ -39,5 +40,10 @@ namespace AasxIntegrationBase
         /// <param name="e"></param>
         void ControlPreviewKeyDown(KeyEventArgs e);
 
+        /// <summary>
+        /// Called by the main window immediately to hand over a selected range
+        /// of lambda actions.
+        /// </summary>
+        void LambdaActionAvailable(AnyUiLambdaActionBase la);
     }
 }

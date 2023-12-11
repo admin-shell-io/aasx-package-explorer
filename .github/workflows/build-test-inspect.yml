@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - master
+      - MIHO/JoinMMV3RC02andDynMen_FQ1_Q1
 
 jobs:
   Build-test-inspect:
@@ -23,10 +24,10 @@ jobs:
         run: |
           Write-Host "The repository is: ${env:REPOSITORY}"
 
-      - name: Install .NET core
+      - name: Install .NET core 6.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.100'
+          dotnet-version: '6.0.x'
 
       - name: Install tools for build-test-inspect
         working-directory: src
@@ -36,22 +37,22 @@ jobs:
         working-directory: src
         run: powershell .\InstallBuildDependencies.ps1
 
-      - name: Install coveralls.net (to send test coverage)
-        working-directory: src
-        if: github.repository == 'admin-shell-io/aasx-package-explorer'
-        run: dotnet tool install coveralls.net --version 2.0.0-beta0002
+#      - name: Install coveralls.net (to send test coverage)
+#        working-directory: src
+#        if: github.repository == 'admin-shell-io/aasx-package-explorer'
+#        run: dotnet tool install coveralls.net --version 2.0.0-beta0002
 
-      - name: Build
-        working-directory: src
-        run: powershell .\BuildForDebug.ps1
+#      - name: Build
+#        working-directory: src
+#        run: powershell .\BuildForDebug.ps1
 
       - name: Check that all Doctests are there
         working-directory: src
         run: powershell .\Doctest.ps1 -check
 
-      - name: Download samples
-        working-directory: src
-        run: powershell .\DownloadSamples.ps1
+#      - name: Download samples
+#        working-directory: src
+#        run: powershell .\DownloadSamples.ps1
 
 #      - name: Test
 #        working-directory: src
@@ -82,6 +83,13 @@ jobs:
 #          echo "Commit is: $commit"
 #          dotnet tool run csmacnz.Coveralls --opencover -i ..\artefacts\CoverageResults.xml --useRelativePaths --repoToken $env:COVERALLS_REPO_TOKEN --commitId $commit --commitBranch $branch
 
-      - name: Inspect code
+      - name: Inspect code with Build
         working-directory: src
         run: powershell .\InspectCode.ps1
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: resharper-code-inspection.xml
+          path: ./artefacts/resharper-code-inspection.xml

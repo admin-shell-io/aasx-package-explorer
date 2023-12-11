@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,30 +14,29 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 using JetBrains.Annotations;
+using AasxPluginBomStructure;
+using AnyUi;
+using System.Windows.Controls;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        public LogInstance Log = new LogInstance();
-        private PluginEventStack _eventStack = new PluginEventStack();
-        private AasxPluginBomStructure.BomStructureOptions _options = new AasxPluginBomStructure.BomStructureOptions();
+        protected AasxPluginBomStructure.BomStructureOptions _options = new AasxPluginBomStructure.BomStructureOptions();
 
         private AasxPluginBomStructure.GenericBomControl _bomControl = new AasxPluginBomStructure.GenericBomControl();
 
-        public string GetPluginName()
-        {
-            return "AasxPluginBomStructure";
-        }
-
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            PluginName = "AasxPluginBomStructure";
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
             _options = AasxPluginBomStructure.BomStructureOptions.CreateDefault();
@@ -54,44 +53,24 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
+
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
+            _options.Index();
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
+            return ListActionsBasicHelper(
+                enableCheckVisualExt: true,
+                enablePanelWpf: true,
+                enableMenuItems: true,
+                enableEventsGet: true).ToArray();
         }
 
-        public AasxPluginActionDescriptionBase[] ListActions()
-        {
-            Log.Info("ListActions() called");
-            var res = new List<AasxPluginActionDescriptionBase>();
-            // for speed reasons, have the most often used at top!
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "call-check-visual-extension",
-                    "When called with Referable, returns possibly visual extension for it."));
-            // rest follows
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "set-json-options", "Sets plugin-options according to provided JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-events", "Pops and returns the earliest event from the event stack."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "fill-panel-visual-extension",
-                    "When called, fill given WPF panel with control for graph display."));
-            return res.ToArray();
-        }
-
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // for speed reasons, have the most often used at top!
             if (action == "call-check-visual-extension")
@@ -101,21 +80,18 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Aas.Submodel;
                 if (sm == null || _options == null)
                     return null;
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                // ReSharper disable UnusedVariable
-                foreach (var x in _options.MatchingRecords(sm.semanticId))
-                {
+                // ReSharper disable once UnusedVariable
+                foreach (var rec in _options.LookupAllIndexKey<BomStructureOptionsRecord>(
+                    sm.SemanticId?.GetAsExactlyOneKey()))
                     found = true;
-                    break;
-                }
                 if (!found)
                     return null;
-                // ReSharper enable UnusedVariable
 
                 // success prepare record
                 var cve = new AasxPluginResultVisualExtension("BOM", "Bill of Material - Graph display");
@@ -124,23 +100,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
+            // can basic helper help to reduce lines of code?
+            var help = ActivateActionBasicHelper(action, ref _options, args,
+                disableDefaultLicense: true,
+                enableGetCheckVisuExt: true);
+            if (help != null)
+                return help;
+
             // rest follows
-
-            if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
-            {
-                var newOpt =
-                    Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginBomStructure.BomStructureOptions>(
-                        (args[0] as string));
-                if (newOpt != null)
-                    this._options = newOpt;
-            }
-
-            if (action == "get-json-options")
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this._options, Newtonsoft.Json.Formatting.Indented);
-                return new AasxPluginResultBaseObject("OK", json);
-            }
 
             if (action == "get-licenses")
             {
@@ -153,20 +120,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
-            }
-
-            if (action == "get-events" && this._eventStack != null)
-            {
-                // try access
-                return this._eventStack.PopEvent();
-            }
-
-            if (action == "get-check-visual-extension")
-            {
-                var cve = new AasxPluginResultBaseObject();
-                cve.strType = "True";
-                cve.obj = true;
-                return cve;
             }
 
             if (action == "fill-panel-visual-extension" && this._bomControl != null)
@@ -183,6 +136,73 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var res = new AasxPluginResultBaseObject();
                 res.obj = resobj;
                 return res;
+            }
+
+            if (action == "get-menu-items")
+            {
+                // result list 
+                var res = new List<AasxPluginResultSingleMenuItem>();
+
+                // view package relations
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Visualize",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "ViewPackageRelations",
+                        Header = "Visualize package relations …",
+                        HelpText = "Visualize all relations of SME elements in a package."
+                    }
+                });
+
+                // return
+                return new AasxPluginResultProvideMenuItems()
+                {
+                    MenuItems = res
+                };
+            }
+
+            // default
+            return null;
+        }
+
+        /// <summary>
+        /// Async variant of <c>ActivateAction</c>.
+        /// Note: for some reason of type conversion, it has to return <c>Task<object></c>.
+        /// </summary>
+        public new async Task<object> ActivateActionAsync(string action, params object[] args)
+        {
+            if (action == "call-menu-item")
+            {
+                if (args != null && args.Length >= 3
+                    && args[0] is string cmd
+                    && args[1] is AasxMenuActionTicket ticket
+                    && args[2] is AnyUiContextPlusDialogs displayContext
+                    && args[3] is DockPanel masterPanel)
+                {
+                    try
+                    {
+                        if (cmd == "viewpackagerelations")
+                        {
+                            await Task.Yield();
+
+                            // call
+                            this._bomControl.SetEventStack(this._eventStack);
+                            masterPanel?.Children?.Clear();
+                            var resobj = this._bomControl.CreateViewPackageReleations(_options, ticket.Package, masterPanel);
+
+                            // give object back
+                            var res = new AasxPluginResultCallMenuItem();
+                            res.RenderWpfContent = resobj;
+                            return res;
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        _log?.Error(ex, "when executing plugin menu item " + cmd);
+                    }
+                }
             }
 
             // default

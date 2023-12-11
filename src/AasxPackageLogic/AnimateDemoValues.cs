@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,19 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
-using AnyUi;
-using Newtonsoft.Json;
+using AdminShellNS.DiaryData;
+using Extensions;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable UnassignedField.Global
 
@@ -52,6 +48,13 @@ namespace AasxPackageLogic
             public double ofs = 0.0;
 
             /// <summary>
+            /// C# string format string to format a double value pretty.
+            /// Note: e.g. F4 for 4 floating point precision digits.
+            /// Note: D0 for decimal integer
+            /// </summary>
+            public string fmt;
+
+            /// <summary>
             /// Specifies the timer interval in milli-seconds. Minimum value 100ms.
             /// Applicable on: Submodel
             /// </summary>
@@ -64,8 +67,8 @@ namespace AasxPackageLogic
             public double Phase;
         }
 
-        protected Dictionary<AdminShell.Referable, AnimateState> _states =
-            new Dictionary<AdminShell.Referable, AnimateState>();
+        protected Dictionary<Aas.IReferable, AnimateState> _states =
+            new Dictionary<Aas.IReferable, AnimateState>();
 
         public void Clear()
         {
@@ -73,7 +76,7 @@ namespace AasxPackageLogic
         }
 
         public AnimateState GetState(
-            AdminShell.Referable rf,
+            Aas.IReferable rf,
             bool createIfNeeded = false)
         {
             if (rf == null)
@@ -108,12 +111,12 @@ namespace AasxPackageLogic
         }
 
         public void Animate(
-            AdminShell.Property prop,
-            Action<AdminShell.Property, AdminShell.IAasDiaryEntry> emitEvent)
+            Aas.Property prop,
+            Action<Aas.Property, IAasDiaryEntry> emitEvent)
         {
             // prop needs to exists and have qualifiers
-            var q = prop.HasQualifierOfType("Animate.Args");
-            var args = Parse(q.value);
+            var ext = prop.HasExtensionOfName("Animate.Args");
+            var args = Parse(ext?.Value);
             if (args == null)
                 return;
 
@@ -159,22 +162,35 @@ namespace AasxPackageLogic
             if (res.HasValue)
             {
                 // set value
-                prop.value = res.Value.ToString(CultureInfo.InvariantCulture);
+                prop.Value = res.Value.ToString(CultureInfo.InvariantCulture);
+
+                // re-format?
+                if (args.fmt.HasContent())
+                {
+                    try
+                    {
+                        prop.Value = res.Value.ToString(args.fmt, CultureInfo.InvariantCulture);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogInternally.That.CompletelyIgnoredError(ex);
+                    }
+                }
 
                 // send event
                 if (emitEvent != null)
                 {
                     // create
                     var evi = new AasPayloadUpdateValueItem(
-                        path: (prop as AdminShell.IGetReference)?.GetReference()?.Keys,
+                        path: (prop)?.GetModelReference()?.Keys,
                         value: prop.ValueAsText());
 
-                    evi.ValueId = prop.valueId;
+                    evi.ValueId = prop.ValueId;
 
                     evi.FoundReferable = prop;
 
                     // add 
-                    AdminShell.DiaryDataDef.AddAndSetTimestamps(prop, evi, isCreate: false);
+                    DiaryDataDef.AddAndSetTimestamps(prop, evi, isCreate: false);
 
                     // kick lambda
                     emitEvent.Invoke(prop, evi);

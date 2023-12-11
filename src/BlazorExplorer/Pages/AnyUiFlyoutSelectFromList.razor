@@ -1,0 +1,82 @@
+﻿@page "/AnyUiFlyoutSelectFromList"
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+{
+	@* see Modal.razor: Bootstrap inner dialog classes *@
+
+	int numItems = 2;
+	if (ddsfl.ListOfItems != null && ddsfl.ListOfItems.Count >= 2)
+		numItems = (150 * ddsfl.ListOfItems.Count) / 100;
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddsfl.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+			<span @ondblclick="@DblHandler">
+				<select class="form-control selectpicker" multiple data-max-options="2"
+					style="height:@(numItems)rem; max-height: 60vh;"
+					aria-label="multiple select example" @onchange="@OnSelect">
+
+					@* <option selected>Open this select menu</option>
+						<option value="1">One</option>
+						<option value="2">Two</option>
+						<option value="3">Three</option> *@
+
+					@if (ddsfl.ListOfItems != null)
+						for (int i = 0; i < ddsfl.ListOfItems.Count; i++)
+						{
+							<option value="@(i)">@(ddsfl.ListOfItems[i].Text)</option>
+						}
+
+				</select>
+			</span>
+        </form>
+	</div>
+	<div class="modal-footer">
+
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	void OnSelect(ChangeEventArgs e)
+	{
+		if (DialogueData is AnyUiDialogueDataSelectFromList ddsfl
+			&& e.Value is string[] varr
+			&& varr.Length > 0
+			&& int.TryParse(varr[0], out int i)
+				&& ddsfl.ListOfItems != null
+				&& i >= 0 && i < ddsfl.ListOfItems.Count)
+		{
+			ddsfl.Result = true;
+			ddsfl.ResultIndex = i;
+			ddsfl.ResultItem = ddsfl.ListOfItems[i];
+		}
+	}
+
+	void DblHandler(MouseEventArgs e)
+	{
+		LeaveResult(true);
+	}
+
+	public void LeaveResult(bool result)
+	{
+		EventSession?.EndModal(result);
+	}
+}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -12,17 +12,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
+using AasxPluginExportTable.Uml;
+using AasxPluginExportTable.TimeSeries;
+using AasxPluginExportTable.Table;
 using AdminShellNS;
 
 namespace AasxPluginExportTable
 {
-    public class ExportTableOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class ExportTableOptions : AasxPluginOptionsBase
     {
         public string TemplateIdConceptDescription = "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 
-        public Uml.ExportUmlOptions UmlExport = null;
+        public string SmtExportHtmlCmd = "";
+        public string SmtExportHtmlArgs = "";
+        public string SmtExportPdfCmd = "";
+        public string SmtExportPdfArgs = "";
 
-        public List<ExportTableRecord> Presets = new List<ExportTableRecord>();
+        public ExportUmlRecord UmlExport = null;
+
+        public ImportTimeSeriesRecord TimeSeriesImport = null;
+
+        public List<ImportExportTableRecord> Presets = new List<ImportExportTableRecord>();
 
         /// <summary>
         /// Create a set of minimal options

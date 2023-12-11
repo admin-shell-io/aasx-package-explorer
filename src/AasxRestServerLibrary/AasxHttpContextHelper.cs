@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -18,6 +18,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AasxCompatibilityModels;
 using AdminShellNS;
 using Grapevine.Interfaces.Server;
 using Grapevine.Server;
@@ -556,7 +557,7 @@ namespace AasxRestServerLibrary
             }
             context.Server.Logger.Debug(
                 $"Putting AdministrationShell with idShort {aas.idShort ?? "--"} and " +
-                $"id {aas.identification.ToString() }");
+                $"id {aas.identification.ToString()}");
             var existingAas = this.Package.AasEnv.FindAAS(aas.identification);
             if (existingAas != null)
                 this.Package.AasEnv.AdministrationShells.Remove(existingAas);
@@ -803,7 +804,7 @@ namespace AasxRestServerLibrary
             // add Submodel
             context.Server.Logger.Debug(
                 $"Adding Submodel with idShort {submodel.idShort ?? "--"} and " +
-                $"id {submodel.identification?.ToString() }");
+                $"id {submodel.identification?.ToString()}");
             var existingSm = this.Package.AasEnv.FindSubmodel(submodel.identification);
             if (existingSm != null)
                 this.Package.AasEnv.Submodels.Remove(existingSm);
@@ -1595,7 +1596,7 @@ namespace AasxRestServerLibrary
             // add Submodel
             context.Server.Logger.Debug(
                 $"Adding ConceptDescription with idShort {cd.idShort ?? "--"} and " +
-                $"id {cd.identification.ToString() }");
+                $"id {cd.identification.ToString()}");
             var existingCd = this.Package.AasEnv.FindConceptDescription(cd.identification);
             if (existingCd != null)
                 this.Package.AasEnv.ConceptDescriptions.Remove(existingCd);

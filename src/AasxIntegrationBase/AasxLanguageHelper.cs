@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -17,16 +17,18 @@ namespace AasxIntegrationBase
 {
     public static class AasxLanguageHelper
     {
-        public enum LangEnum { Any = 0, EN, DE, CN, JP, KR, FR, ES };
+        public enum LangEnum { Any = 0, EN, DE, ZH, JA, KO, FR, ES };
 
         public static string[] LangEnumToISO639String = {
-                "All", "en", "de", "cn", "jp", "kr", "fr", "es" }; // ISO 639 -> List of languages
+                "All", "en", "de", "zh", "ja", "ko", "fr", "es" }; // ISO 639 -> List of languages
 
         public static string[] LangEnumToISO3166String = {
                 "All", "GB", "DE", "CN", "JP", "KR", "FR", "ES" }; // ISO 3166 -> List of countries
 
-        public static string GetLangCodeFromEnum(LangEnum le)
+        public static string GetLangCodeFromEnum(LangEnum le, bool nullForDefault = false)
         {
+            if (nullForDefault && le == LangEnum.Any)
+                return null;
             return "" + LangEnumToISO639String[(int)le];
         }
 
@@ -61,6 +63,14 @@ namespace AasxIntegrationBase
         {
             for (int i = 1; i < LangEnumToISO639String.Length; i++)
                 yield return LangEnumToISO639String[i];
+        }
+
+        public static string GetFirstLangCode(string codes)
+        {
+            if (codes == null)
+                return null;
+            var lst = codes.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return lst.FirstOrDefault();
         }
     }
 }

@@ -1,0 +1,75 @@
+﻿@using AnyUi
+
+@{
+    // resharper disable all
+}
+
+@{
+
+    var style = new StylePile();
+
+    style.SetFillWidth(Element, FillMode, null, setMinMaxWidth: true, setInlineBlock: true);
+
+    if (Element is AnyUiBorder border
+        &&!(GrandParent is AnyUiGrid))
+    {
+        style.SetSpecifics(
+            margin: border.Margin,
+            padding: border.Padding,
+            borderBrush: border.BorderBrush,
+            borderThickness: border.BorderThickness);
+    }
+
+    if ((Element.EmitEvent & AnyUiEventMask.LeftDouble) > 0)
+    {
+        <span style="@style" data-source="AnyUiDecorateEmit"
+              @ondblclick="@((ev) => EventSenderTest(ev, Element, 2))">
+            @ChildContent
+        </span>
+    }
+    else
+    if ((Element.EmitEvent & AnyUiEventMask.LeftDown) > 0)
+    {
+        <span style="@style" data-source="AnyUiDecorateEmit"
+              @onclick="@((ev) => EventSenderTest(ev, Element, 1))">
+            @ChildContent
+        </span>
+    }
+    else
+    {
+        <span style="@style" data-source="AnyUiDecorateEmit">
+            @ChildContent
+        </span>
+    }
+
+}
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public AnyUiFrameworkElement Element { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement GrandParent { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+
+    public void EventSenderTest(MouseEventArgs e, object sender, int num)
+    {
+        // access
+        if (Element == null)
+            return;
+
+        // pass on
+        if (num == 1)
+            Element.setValueLambda?.Invoke(
+                new AnyUiEventData(AnyUiEventMask.LeftDown, Element, 1));
+
+        if (num == 2)
+            Element.setValueLambda?.Invoke(
+                new AnyUiEventData(AnyUiEventMask.LeftDouble, Element, 2));
+    }
+}

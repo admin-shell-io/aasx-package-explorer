@@ -1,0 +1,69 @@
+﻿@page "/AnyUiFlyoutContextMenu"
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if(EventSession != null && SpecialAction is AnyUiSpecialActionContextMenu sacm)
+{
+	@* see Modal.razor: Bootstrap inner dialog classes *@
+
+	@*int numItems = 2;
+	if (sacm.MenuItemHeaders != null && sacm.MenuItemHeaders.Count() >= 4)
+		numItems = (150 * sacm.MenuItemHeaders.Count() / 2) / 100;*@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@sacm.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(null)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+			@* Render as a sequence of buttons *@
+			@{
+				string colw = "col-11";
+				if (sacm.MenuItemHeaders.Count() / 2 > 6)
+					colw = "col-5";
+			}
+
+			@for (int i = 0; i < sacm.MenuItemHeaders.Count() / 2; i++)
+			{
+				int currI = i;
+
+				<button type="button" class="btn btn-primary-light btn-lg @colw mx-1 my-1 text-start"
+				@onclick="() => LeaveResult(currI)">
+					<span style="display: inline-block; width: 2rem!important; ">@(sacm.MenuItemHeaders[2 * i])</span>
+					<span style="text-align: left; ">@(sacm.MenuItemHeaders[2 * i + 1])</span>
+				</button>
+			}
+        </form>
+	</div>
+	@*
+	<div class="modal-footer">
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button> 
+	</div>
+	*@
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiSpecialActionBase SpecialAction { get; set; }
+
+	public void LeaveResult(int? i)
+	{
+		if (i.HasValue && SpecialAction is AnyUiSpecialActionContextMenu sacm)
+		{
+			sacm.ResultIndex = i.Value;
+			EventSession?.EndModal(true);
+		}
+		else
+		{
+			EventSession?.EndModal(false);
+		}
+	}
+}

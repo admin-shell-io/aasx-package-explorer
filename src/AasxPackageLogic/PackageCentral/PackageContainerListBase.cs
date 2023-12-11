@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,17 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AdminShellNS;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AasxIntegrationBase;
-using AasxPackageLogic.PackageCentral;
-using AdminShellNS;
-using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -222,7 +220,7 @@ namespace AasxPackageLogic.PackageCentral
                 // load
                 var pkg = new AdminShellPackageEnv(fn);
 
-                // for each Admin Shell and then each Asset
+                // for each Admin Shell and then each AssetInformation
                 this.AddByAasPackage(packageCentral, pkg, fn);
 
                 // close directly!
@@ -232,6 +230,12 @@ namespace AasxPackageLogic.PackageCentral
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
+        }
+
+
+        public virtual void DeletePackageFromServer(PackageContainerRepoItem repoItem)
+        {
+            Remove(repoItem);
         }
 
         //
@@ -244,35 +248,40 @@ namespace AasxPackageLogic.PackageCentral
             if (pkg == null)
                 return;
 
+            int num = 0;
+
             // all files
-            int i = 0;
             foreach (var fi in this.FileMap)
             {
                 // sure?
                 if (fi == null)
                     continue;
-                i++;
+
+                // slightly incorrect: treat fi.AasIds / fi.AssetIds as synchronized
+                // pairs
 
                 // aas
                 if (fi.AasIds != null)
-                    foreach (var id in fi.AasIds)
+                    for (int i = 0; i < fi.AasIds.Count; i++)
                     {
-                        var aas = new AdminShell.AdministrationShell(String.Format("AAS{0:00}_{1}", i, fi.Tag));
-                        aas.AddDescription("en?", "" + fi.Description);
-                        aas.identification = new AdminShell.Identification(
-                            AdminShell.Identification.IRI, "" + id);
-                        pkg.AasEnv?.AdministrationShells.Add(aas);
-                    }
+                        // AAS
+                        var aasid = fi.AasIds[i];
+                        var aas = new Aas.AssetAdministrationShell(
+                            id: aasid,
+                            assetInformation: new Aas.AssetInformation(Aas.AssetKind.Instance),
+                            idShort: $"AAS{num++:00}_{fi.Tag}",
+                            description: new List<Aas.ILangStringTextType>() {
+                                new Aas.LangStringTextType(AdminShellUtil.GetDefaultLngIso639(), "" + fi.Description)
+                            });
+                        pkg.AasEnv?.AssetAdministrationShells.Add(aas);
 
-                // asset
-                if (fi.AssetIds != null)
-                    foreach (var id in fi.AssetIds)
-                    {
-                        var asset = new AdminShell.Asset(String.Format("Asset{0:00}_{1}", i, fi.Tag));
-                        asset.AddDescription("en?", "" + fi.Description);
-                        asset.identification = new AdminShell.Identification(
-                            AdminShell.Identification.IRI, "" + id);
-                        pkg.AasEnv?.Assets.Add(asset);
+                        // matching AssetId?
+                        if (fi.AssetIds != null && i < fi.AssetIds.Count)
+                        {
+                            aas.AssetInformation = new Aas.AssetInformation(
+                                Aas.AssetKind.Instance,
+                                globalAssetId: fi.AssetIds[i]);
+                        }
                     }
             }
         }
@@ -303,13 +312,13 @@ namespace AasxPackageLogic.PackageCentral
         public bool LoadFromLocalFile(string fn)
         {
             // from file
-            if (!File.Exists(fn))
+            if (!System.IO.File.Exists(fn))
                 return false;
 
             // need special settings (to handle different typs of child classes of PackageContainer)
             var settings = GetSerializerSettings();
 
-            var init = File.ReadAllText(fn);
+            var init = System.IO.File.ReadAllText(fn);
             JsonConvert.PopulateObject(init, this, settings);
 
             // return

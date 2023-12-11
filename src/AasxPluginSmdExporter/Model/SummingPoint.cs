@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
+using AdminShellNS;
 
 namespace AasxPluginSmdExporter
 {
@@ -25,13 +27,13 @@ namespace AasxPluginSmdExporter
 
         public string Name { get; set; }
 
-        public AdminShellNS.AdminShell.SemanticId SemanticId { get; set; }
+        public Aas.IReference SemanticId { get; set; }
         public SummingPoint()
         {
             inputs = new List<IOput>();
         }
 
-        public SummingPoint(IOput output, string name, AdminShellNS.AdminShell.SemanticId semanticId)
+        public SummingPoint(IOput output, string name, Aas.IReference semanticId)
         {
             this.output = output;
             this.Name = name;

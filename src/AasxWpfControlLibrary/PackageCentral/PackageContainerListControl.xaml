@@ -10,7 +10,7 @@
              Loaded="UserControl_Loaded" MouseLeave="UserControl_MouseLeave"
              AllowDrop="True" Drop="RepoControl_Drop">
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -27,10 +27,15 @@
             <anyui:AnyUiColorToWpfBrushConverter x:Key="AnyUiColorToWpfBrushConverter" />
             <anyui:AnyUiBrushToWpfBrushConverter x:Key="AnyUiBrushToWpfBrushConverter" />
 
-            <BitmapImage x:Key="Icon_AASX" UriSource="pack://application:,,,/AasxWpfControlLibrary;component/Resources/Icon_AASX_40x40_W.bmp" />
+            <BitmapImage x:Key="Icon_AASX" UriSource="pack://application:,,,/AasxWpfControlLibrary;component/Resources/Icon_AASX_72_round_corner_transp.png" />
 
             <ContextMenu x:Key="ContextMenuFileItem">
                 <MenuItem Name="MenuItemDelete" Header="Delete" Click="MenuItem_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x2702;"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="MenuItemDeleteFromFileRepo" Header="Delete From AASX File Repository" Click="MenuItem_Click">
                     <MenuItem.Icon>
                         <TextBlock Text="&#x2702;"/>
                     </MenuItem.Icon>
@@ -46,7 +51,12 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Name="MenuItemUnload" Header="Un-load" Click="MenuItem_Click">
+                <MenuItem Name="MenuItemLoad" Header="Load if resident" Click="MenuItem_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x2b8e;"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="MenuItemUnload" Header="Un-Load" Click="MenuItem_Click">
                     <MenuItem.Icon>
                         <TextBlock Text="&#x1f5d1;"/>
                     </MenuItem.Icon>

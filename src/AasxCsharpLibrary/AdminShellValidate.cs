@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,21 +7,16 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
-using JetBrains.Annotations;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
+using Environment = System.Environment;
 
 namespace AdminShellNS
 {
@@ -91,12 +86,12 @@ namespace AdminShellNS
     public class AasValidationRecord
     {
         public AasValidationSeverity Severity = AasValidationSeverity.Hint;
-        public AdminShell.Referable Source = null;
+        public IReferable Source = null;
         public string Message = "";
 
         public Action Fix = null;
 
-        public AasValidationRecord(AasValidationSeverity Severity, AdminShell.Referable Source,
+        public AasValidationRecord(AasValidationSeverity Severity, IReferable Source,
             string Message, Action Fix = null)
         {
             this.Severity = Severity;

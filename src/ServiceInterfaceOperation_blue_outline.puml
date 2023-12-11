@@ -1,0 +1,103 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 130
+
+skinparam ComponentBorderColor<<bluish>> #Blue
+skinparam PackageBorderColor<<bluish>> #Blue 
+
+hide <<bluish>> stereotype
+
+package "technology neutral" <<bluish>> {
+
+  component Service <<bluish>> [
+  Service]
+
+  component Interface <<bluish>> [
+  Interface]
+
+  component IfcOp <<bluish>> [
+  Interface-
+  Operation]
+
+  Service "0..*" o-- "0..*" Interface 
+
+  Interface "0..*" o-- "1..*" IfcOp
+
+}
+
+package "technology specific" {
+
+  component SvcSpec[
+  Service-
+  Specification]
+
+  Service "0..1" - "*" SvcSpec
+
+  component API[
+  API]
+
+  Interface "1" - "*" API
+
+  component ApiOp[
+  API-Operation]
+
+  IfcOp "1" - "*" ApiOp
+
+  SvcSpec "0..*" o-- "0..*" API
+
+  API o-- "1..*" ApiOp
+
+}
+
+package "implementation" {
+
+  component SvcImpl[
+  Service-
+  Implementation]
+
+  SvcSpec <|. SvcImpl : "<<realize>>"
+
+  component ApiImpl[
+  API-
+  Implementation]
+
+  API <|. ApiImpl : "<<realize>>"
+
+  component ApiOpImpl[
+  API-Operation-
+  Implementation]
+
+  ApiOp <|. ApiOpImpl : "<<realize>>"
+
+  SvcImpl "0..*" o-- "0..*" ApiImpl
+
+  ApiImpl o-- "1..*" ApiOpImpl
+
+}
+
+package "runtime" {
+
+  component SvcInst[
+  Service-
+  Instance]
+
+  SvcImpl <|. SvcInst : "<<instantiate>>"
+
+  component ApiInst[
+  API-Instance]
+
+  ApiImpl <|. ApiInst : "<<instantiate>>"
+
+  component OpInst[
+  Operation-
+  Instance]
+
+  ApiOpImpl <|. OpInst : "<<instantiate>>"
+
+  SvcInst o-- "*" ApiInst
+
+  ApiInst o-- "1..*" OpInst
+
+}
+@enduml

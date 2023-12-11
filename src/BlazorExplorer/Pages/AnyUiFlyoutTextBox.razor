@@ -1,0 +1,43 @@
+﻿@page "/AnyUiFlyoutTextBox"
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataTextBox ddtb)
+{
+    @* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddtb.Caption</h3>
+		<button type="button" class="btn btn-backdrop"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		 <form>
+          <div class="mb-3">
+				<input type="text" class="form-control form-control-lg autofocus" id="text" @bind-value="ddtb.Text">
+          </div>
+        </form>
+	</div>
+	<div class="modal-footer">
+
+		<button type="button" class="btn btn-enter btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }	
+
+	public void LeaveResult(bool result)
+	{
+		EventSession?.EndModal(result);
+	}
+}

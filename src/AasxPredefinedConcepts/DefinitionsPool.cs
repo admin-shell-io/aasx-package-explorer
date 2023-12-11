@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,14 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication.ExtendedProtection;
-using System.Text;
-using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AdminShellNS;
+using Extensions;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 #nullable enable
 
@@ -39,7 +35,7 @@ namespace AasxPredefinedConcepts
 
     public class DefinitionsPoolReferableEntity : DefinitionsPoolEntityBase
     {
-        public AdminShell.Referable? Ref = null;
+        public Aas.IReferable? Ref = null;
         public string Name = "";
 
         public override string DisplayType
@@ -50,21 +46,21 @@ namespace AasxPredefinedConcepts
             }
         }
 
-        public override string DisplayName { get { return (Ref != null) ? Ref.idShort : ""; } }
+        public override string DisplayName { get { return (Ref != null) ? Ref.IdShort : ""; } }
 
         public override string DisplayId
         {
             get
             {
-                if (Ref is AdminShell.Identifiable id)
-                    return "" + id.identification?.ToString();
+                if (Ref is Aas.IIdentifiable id)
+                    return "" + id.Id?.ToString();
                 return "";
             }
         }
 
         public DefinitionsPoolReferableEntity() { }
 
-        public DefinitionsPoolReferableEntity(AdminShell.Referable? Ref, string Domain = "", string Name = "")
+        public DefinitionsPoolReferableEntity(Aas.IReferable? Ref, string Domain = "", string Name = "")
         {
             this.Domain = Domain;
             this.Name = Name;
@@ -86,6 +82,7 @@ namespace AasxPredefinedConcepts
             thePool.IndexDefinitions(new DefinitionsExperimental.InteropRelations());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.ImageMap.Static);
+            thePool.IndexDefinitions(AasxPredefinedConcepts.AsciiDoc.Static);
             thePool.IndexDefinitions(AasxPredefinedConcepts.Plotting.Static);
 
             thePool.IndexDefinitions(new AasxPredefinedConcepts.DefinitionsMTP.ModuleTypePackage());
@@ -98,24 +95,36 @@ namespace AasxPredefinedConcepts
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.VDI2770v11.Static);
 
-            thePool.IndexReferables("ZVEI Digital Nameplate v1.0",
+            thePool.IndexReferables("Digital Typeplate (ZVEI) v1.0 (deprecated)",
                 new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate()).GetAllReferables());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiNameplateV10.Static);
+            thePool.IndexDefinitions(AasxPredefinedConcepts.DigitalNameplateV20.Static);
 
-            thePool.IndexReferables("ZVEI Digital Identification v1.0",
+            thePool.IndexDefinitions(AasxPredefinedConcepts.HierarchStructV10.Static);
+
+            thePool.IndexReferables("Digital Identification (ZVEI) V1.0 (deprecated)",
                 new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfIdentification(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate()).GetAllReferables());
 
-            thePool.IndexReferables("ZVEI TechnicalData v1.0",
+            thePool.IndexReferables(
+                "Generic Frame for Technical Data for Industrial Equipment (ZVEI) V1.0 (deprecated)",
                 new DefinitionsZveiTechnicalData.SetOfDefs(new DefinitionsZveiTechnicalData()).GetAllReferables());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTechnicalDataV11.Static);
 
-            thePool.IndexDefinitions(AasxPredefinedConcepts.AasEvents.Static);
+            thePool.IndexDefinitions(AasxPredefinedConcepts.IdtaTechnicalDataV12.Static);
 
-            thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static);
+			thePool.IndexDefinitions(AasxPredefinedConcepts.IdtaContactInformationV10.Static);
+
+			thePool.IndexDefinitions(AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static);
+
+			thePool.IndexDefinitions(AasxPredefinedConcepts.AasEvents.Static);
+
+			thePool.IndexDefinitions(AasxPredefinedConcepts.SmtAdditions.Static);
+
+			thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static);
         }
 
         //
@@ -167,13 +176,13 @@ namespace AasxPredefinedConcepts
         // Methods
         //
 
-        public void IndexReferables(string Domain, IEnumerable<AdminShell.Referable> indexRef)
+        public void IndexReferables(string Domain, IEnumerable<Aas.IReferable> indexRef)
         {
             foreach (var ir in indexRef)
             {
                 if (ir == null)
                     continue;
-                this.Add(new DefinitionsPoolReferableEntity(ir, Domain, ir.idShort));
+                this.Add(new DefinitionsPoolReferableEntity(ir, Domain, ir.IdShort));
             }
         }
 
@@ -184,5 +193,19 @@ namespace AasxPredefinedConcepts
                 return;
             IndexReferables(bs.DomainInfo, bs.GetAllReferables());
         }
+
+        public IEnumerable<Aas.IReferable> FindReferableByReference(string id)
+        {
+            if (id?.HasContent() != true)
+                yield break;
+
+            foreach (var ldp in pool.Values)
+                foreach (var dpeb in ldp)
+                    if (dpeb is DefinitionsPoolReferableEntity dpre
+                        && dpre.Ref is Aas.IIdentifiable dpreid
+                        && dpreid.Id == id)
+                        yield return dpre.Ref;
+
+		}
     }
 }

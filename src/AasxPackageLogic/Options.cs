@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,16 +7,17 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using System.Text;
+using System.Web;
+
+// ReSharper disable UnassignedField.Global
 
 namespace AasxPackageLogic
 {
@@ -78,7 +79,7 @@ namespace AasxPackageLogic
             }
         }
 
-        public enum ReportOptionsFormat { Markdown }
+        public enum ReportOptionsFormat { Markdown, Html }
 
         private static string MdEsc(string st)
         {
@@ -86,6 +87,11 @@ namespace AasxPackageLogic
             st = st.Replace("<", @"\<");
             st = st.Replace("<", @"\<");
             return st;
+        }
+
+        private static string HtmlEsc(string st)
+        {
+            return HttpUtility.HtmlEncode(st);
         }
 
         public static string ReportOptions(ReportOptionsFormat fmt,
@@ -97,7 +103,7 @@ namespace AasxPackageLogic
             // small lambdas
             //
 
-            Action appendTableHeader = () =>
+            Action appendTableHeaderMd = () =>
             {
                 sb.AppendLine($"| {"JSON option",-35} | {"Command line",-20} " +
                                     $"| {"Argument",-20} | Description |");
@@ -105,10 +111,22 @@ namespace AasxPackageLogic
                     $"|-{new String('-', 20)}-|-------------|");
             };
 
-            Action<string, string, string, string> appendTableRow = (json, cmd, arg, description) =>
+            Action<string, string, string, string> appendTableRowMd = (json, cmd, arg, description) =>
             {
                 sb.AppendLine($"| {MdEsc(json),-35} | {MdEsc(cmd),-20} " +
                     $"| {MdEsc(arg),-20} | {MdEsc(description)} |");
+            };
+
+            Action appendTableHeaderHtml = () =>
+            {
+                sb.AppendLine($"<tr><th>JSON option</th><th>Command line</th>" +
+                    $"<th>Argument</th><th>Description</th></tr>");
+            };
+
+            Action<string, string, string, string> appendTableRowHtml = (json, cmd, arg, description) =>
+            {
+                sb.AppendLine($"<tr><td>{HtmlEsc(json)}</td><td>{HtmlEsc(cmd)}</td>" +
+                    $"<td>{HtmlEsc(arg)}</td><td>{HtmlEsc(description)}</td></tr>");
             };
 
             //
@@ -125,6 +143,44 @@ namespace AasxPackageLogic
                 sb.AppendLine();
             }
 
+            if (fmt == ReportOptionsFormat.Html)
+            {
+                var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<!doctype html>
+                    <html lang=en>
+                    <head>
+                    <style>
+                    body {
+                      background-color: #FFFFE0;
+                      font-size: small;
+                      font-family: Arial, Helvetica, sans-serif;
+                    }
+                    table {
+                      font-family: arial, sans-serif;
+                      border-collapse: collapse;
+                      width: 100%;
+                    }
+                    tr:nth-child(odd) {
+                      background-color: #FFFFF8;
+                    }
+                    td, th {
+                      border: 1px solid #dddddd;
+                      text-align: left;
+                      padding: 8px;
+                    }
+                    </style>
+                    <meta charset=utf-8>
+                    <title>Options information</title>
+                    </head>
+                    <body>
+                    <h1>Regular options for JSON and command line</h1>
+                    <h4>The following options can be used either directly in the command line of the 
+                    exectable or in a JSON-file for configuration (via the ""-read-json"" option).</h4>
+                    <table>");
+
+                sb.AppendLine(htmlHeader);
+            }
+
             var fields = typeof(OptionsInformation).GetFields(BindingFlags.Public | BindingFlags.Instance);
             var first = true;
             foreach (var fi in fields)
@@ -137,14 +193,24 @@ namespace AasxPackageLogic
                             if (first)
                             {
                                 first = false;
-                                appendTableHeader();
+                                appendTableHeaderMd();
                             }
-                            appendTableRow(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
+                            appendTableRowMd(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
+                        }
+
+                        if (fmt == ReportOptionsFormat.Html)
+                        {
+                            if (first)
+                            {
+                                first = false;
+                                appendTableHeaderHtml();
+                            }
+                            appendTableRowHtml(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
                         }
                     }
             }
 
-            sb.AppendLine();
+            sb.AppendLine("</table>");
 
             //
             // Special options
@@ -158,10 +224,22 @@ namespace AasxPackageLogic
                     @"The following options are also be provided."));
                 sb.AppendLine();
 
-                appendTableHeader();
-                appendTableRow("", "-read-json", "<path>", "Reads a JSON formatted options file.");
-                appendTableRow("", "-write-json", "<path>", "Writes the currently loaded options " +
+                appendTableHeaderMd();
+                appendTableRowMd("", "-read-json", "<path>", "Reads a JSON formatted options file.");
+                appendTableRowMd("", "-write-json", "<path>", "Writes the currently loaded options " +
                     "into a JSON formatted file.");
+            }
+
+            if (fmt == ReportOptionsFormat.Html)
+            {
+                sb.AppendLine("<h1>Special options for JSON and command line</h1>");
+                sb.AppendLine("<h4>The following options are also be provided.</h4>");
+                sb.AppendLine("<table>");
+                appendTableHeaderHtml();
+                appendTableRowHtml("", "-read-json", "<path>", "Reads a JSON formatted options file.");
+                appendTableRowHtml("", "-write-json", "<path>", "Writes the currently loaded options " +
+                    "into a JSON formatted file.");
+                sb.AppendLine("</table>");
             }
 
             sb.AppendLine();
@@ -188,6 +266,23 @@ namespace AasxPackageLogic
 
                     sb.AppendLine();
                 }
+
+                sb.AppendLine("<h1>Current options</h1>");
+                sb.AppendLine("<h4>The following options are currently loaded or set by default.</h4>");
+
+                sb.AppendLine("<pre>");
+                sb.AppendLine(HtmlEsc(jsonStr));
+                sb.AppendLine("</pre>");
+            }
+
+            //
+            // Footer
+            //
+
+            if (fmt == ReportOptionsFormat.Markdown)
+            {
+                sb.AppendLine("</body>");
+                sb.AppendLine("</html>");
             }
 
             //
@@ -205,9 +300,14 @@ namespace AasxPackageLogic
     public class OptionsInformation
     {
 
-        [OptionDescription(Description = "This file shall be loaded at start of application")]
+        [OptionDescription(Description = "This file shall be loaded as main package at start of application",
+            Cmd = "-aasx-to-load", Arg = "<path>")]
         [SettableOption]
         public string AasxToLoad = null;
+
+        [OptionDescription(Description = "This file shall be loaded as aux package at start of application",
+            Cmd = "-aux-to-load", Arg = "<path>")]
+        public string AuxToLoad = null;
 
         [OptionDescription(Description = "if not -1, the left of window",
             Cmd = "-left", Arg = "<pixel>")]
@@ -259,6 +359,10 @@ namespace AasxPackageLogic
             Cmd = "-id-cd", Arg = "<string>")]
         public string TemplateIdConceptDescription = "https://example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 
+        [OptionDescription(Description = "Link ConceptDescriptions by ModelReferences",
+            Cmd = "-model-ref-cd")]
+        public bool ModelRefCd = false;
+
         [OptionDescription(Description = "Path to ECLASS files",
             Cmd = "-eclass", Arg = "<path>")]
         public string EclassDir = null;
@@ -277,6 +381,18 @@ namespace AasxPackageLogic
         [OptionDescription(Description = "Path to JSON file defining qualifier presets.",
             Cmd = "-qualifiers", Arg = "<path>")]
         public string QualifiersFile = null;
+
+        [OptionDescription(Description = "Path to JSON file defining IdentifierKeyValuePair presets.",
+            Cmd = "-idpairs", Arg = "<path>")]
+        public string IdentifierKeyValuePairsFile = null;
+
+        [OptionDescription(Description = "Path to JSON file defining Referable.extension presets.",
+            Cmd = "-extpreset", Arg = "<path>")]
+        public string ExtensionsPresetFile = null;
+
+        [OptionDescription(Description = "Path to JSON file defining data specification presets.",
+            Cmd = "-dataspecpreset", Arg = "<path>")]
+        public string DataSpecPresetFile = null;
 
         [OptionDescription(Description = "Path to a JSON, defining a set of AasxPackage-Files, which serve as " +
             "repository",
@@ -300,8 +416,8 @@ namespace AasxPackageLogic
             Cmd = "-intbrowse")]
         public bool InternalBrowser = false;
 
-        [OptionDescription(Description = "If true, apply second search operation to join multi-language " +
-            "information.",
+        [OptionDescription(Description = "If true, apply second search operation in ECLASS " +
+            "to join multi-language information.",
             Cmd = "-twopass")]
         public bool EclassTwoPass = false;
 
@@ -331,6 +447,32 @@ namespace AasxPackageLogic
             "plugins and will write this large data set into JSON option file.",
             Cmd = "-write-all-json", Arg = "<path>")]
         public string WriteDefaultOptionsFN = null;
+
+        [OptionDescription(Description =
+            "If not null points to the dir, where per user a directory is provided to load/ save files.",
+            Cmd = "-user-dir")]
+        public string UserDir = null;
+
+        [OptionDescription(Description =
+            "Designates the user name. Only [A-Za-z0-9_] allowed. Must be not null in order to access user files.",
+            Cmd = "-user-name")]
+        public string UserName = null;
+
+        [OptionDescription(Description =
+            "If true, will allow the storage of local files. The server functions might restrict this.",
+            Cmd = "-allow-local-files")]
+        public bool AllowLocalFiles = true;
+
+        [OptionDescription(Description =
+            "Designates the default language code in ISO639-1. This will be used for new language strings " +
+            "of uncertain language",
+            Cmd = "-default-lang")]
+        public string DefaultLang = "en?";
+
+        [OptionDescription(Description =
+            "Path to file to capture all log messages. Will be (re-) created at application startup.",
+            Cmd = "-log-file")]
+        public string LogFile = null;
 
         /// <summary>
         /// Enumeration of generic accent color names
@@ -363,6 +505,16 @@ namespace AasxPackageLogic
         public string PluginDir = null;
 
         [OptionDescription(Description =
+            "Plugin usage prefernces, e.g. WPF or ANYUI",
+            Cmd = "-plugin-prefer")]
+        public string PluginPrefer = null;
+
+		[OptionDescription(Description =
+			"Sorting order of ConceptDescriptions (ListIndex, IdShort, Id, Submodel, SME, Structured)",
+			Cmd = "-cd-sort-order")]
+		public string CdSortOrder = null;
+
+		[OptionDescription(Description =
             "For such operations as query repository, do load a new AASX file without " +
             "prompting the user.",
             Cmd = "-load-without-prompt")]
@@ -385,7 +537,7 @@ namespace AasxPackageLogic
         public bool ShowEvents = false;
 
         [OptionDescription(Description = "When activated, the UI will detect SubmodelElements which feature " +
-            "qualifiers of type \"Animate.Args\" and will cyclically animate its values.")]
+            "Extension of type \"Animate.Args\" and will cyclically animate its values.")]
         public bool AnimateElements = false;
 
         [OptionDescription(Description = "When activated, the UI will observe AAS events, which are subsequently " +
@@ -396,7 +548,11 @@ namespace AasxPackageLogic
             "the editor. ")]
         public bool CompressEvents = false;
 
-        [OptionDescription(Description = "Default value for the StayConnected options of PackageContainer. " +
+		[OptionDescription(Description = "When activated, the UI will detect presence of SMT attributes and " +
+            "will perform value checks on AAS elements. This might be slow!")]
+		public bool CheckSmtElements = false;
+
+		[OptionDescription(Description = "Default value for the StayConnected options of PackageContainer. " +
             "That is, a loaded container will automatically try receive events, e.g. for value update.",
             Cmd = "-stay-connected")]
         public bool DefaultStayConnected = false;
@@ -409,6 +565,31 @@ namespace AasxPackageLogic
 
         [OptionDescription(Description = "Preset shown in the file repo connect to AAS repository dialogue")]
         public string DefaultConnectRepositoryLocation = "";
+
+        [OptionDescription(Description = "List of tuples (Name, Text) with presets for available scripts.")]
+        public List<AnyUiDialogueDataTextEditor.Preset> ScriptPresets;
+
+        [OptionDescription(Description = "Verbosity level for script execution (0=silent, 2=very verbose).")]
+        public int ScriptLoglevel = 2;
+
+        [OptionDescription(Description = "Determins if user is prompted before starting a script..",
+            Cmd = "-script-launch-without-prompt")]
+        public bool ScriptLaunchWithoutPrompt = false;
+
+        [OptionDescription(Description = "Determins if the script is allowed to execute system commands " +
+            "on the shell (CMD.EXE).",
+            Cmd = "-script-execute-system")]
+        public bool ScriptExecuteSystem = false;
+
+        [OptionDescription(Description = "Filename for scipt to read and execute.",
+            Cmd = "-script")]
+        public string ScriptFn = "";
+
+        [OptionDescription(Description = "Rest of command line will by treated as script. " +
+            "Double quotes to be escaped by backslash. In PowerShell, overall command itself to be " +
+            "escaped by single ticks.",
+            Cmd = "-cmd")]
+        public string ScriptCmd = "";
 
         [OptionDescription(Description = "May contain different string-based options for stay connect, " +
             "event update mechanisms")]
@@ -428,11 +609,13 @@ namespace AasxPackageLogic
 
         public OptionsInformation()
         {
-            AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFCBD8EBu);
-            AccentColors[ColorNames.DarkAccentColor] = new AnyUiColor(0xFF88A6D2u);
-            AccentColors[ColorNames.DarkestAccentColor] = new AnyUiColor(0xFF4370B3u);
-            AccentColors[ColorNames.FocusErrorBrush] = new AnyUiColor(0xFFD42044u);
-            AccentColors[ColorNames.FocusErrorColor] = new AnyUiColor(0xFFD42044u);
+            // lightes blue to light: 0xFFf2f5ffu
+            // IDTA red to light: 0xFFFE4F10u
+            AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFDBE2FFu);
+            AccentColors[ColorNames.DarkAccentColor] = new AnyUiColor(0xFFc0ccffu);
+            AccentColors[ColorNames.DarkestAccentColor] = new AnyUiColor(0xFF0128CBu);
+            AccentColors[ColorNames.FocusErrorBrush] = new AnyUiColor(0xFFe53d01u);
+            AccentColors[ColorNames.FocusErrorColor] = new AnyUiColor(0xFFe53d01u);
         }
 
         public class PluginDllInfo
@@ -469,7 +652,7 @@ namespace AasxPackageLogic
             try
             {
                 var jsonStr = JsonConvert.SerializeObject(optionsInformation, Formatting.Indented);
-                File.WriteAllText(filename, jsonStr);
+                System.IO.File.WriteAllText(filename, jsonStr);
             }
             catch (Exception ex)
             {
@@ -484,7 +667,7 @@ namespace AasxPackageLogic
         {
             try
             {
-                var jsonStr = File.ReadAllText(fn);
+                var jsonStr = System.IO.File.ReadAllText(fn);
                 JsonConvert.PopulateObject(jsonStr, optionsInformation);
             }
             catch (Exception ex)
@@ -728,6 +911,44 @@ namespace AasxPackageLogic
                     index++;
                     continue;
                 }
+                if (arg == "-script" && morearg > 0)
+                {
+                    optionsInformation.ScriptFn = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-aasx-to-load" && morearg > 0)
+                {
+                    optionsInformation.AasxToLoad = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-aux-to-load" && morearg > 0)
+                {
+                    optionsInformation.AuxToLoad = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-cmd" && morearg > 0)
+                {
+                    // consume all args starting with "-cmd" into one command line
+                    // Note: the reason for this implementation is, that it seems unreasonably 
+                    // difficult to pass a C# like script with double quoted inner strings via
+                    // the command line.
+                    /// An example would be: 
+                    for (int i = index + 1; i < args.Length; i++)
+                        optionsInformation.ScriptCmd += args[i] + " ";
+
+                    // virtuall stop the parsing
+                    index = args.Length;
+                    break; ;
+                }
+                if (arg == "-log-file" && morearg > 0)
+                {
+                    optionsInformation.LogFile = args[index + 1];
+                    index++;
+                    continue;
+                }
 
                 // Sweep-line options for plugins and DLL path
                 if (arg == "-p" && morearg > 0)
@@ -793,7 +1014,7 @@ namespace AasxPackageLogic
         {
             try
             {
-                var optionsTxt = File.ReadAllText(filename);
+                var optionsTxt = System.IO.File.ReadAllText(filename);
                 var argsFromFile = optionsTxt.Split(
                     new[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 OptionsInformation.ParseArgs(argsFromFile, optionsInformation);

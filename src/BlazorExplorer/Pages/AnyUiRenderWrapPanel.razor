@@ -1,0 +1,95 @@
+﻿@page "/test4"
+@using AdminShellNS
+@using Aas = AasCore.Aas3_0
+@using Extensions
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@{
+// resharper disable all
+}
+
+@{
+
+    // access
+    if (_panel == null)
+        return;
+
+    // because of not working with table, need an outer <div>
+    var divOuterStyle = new StylePile();
+    divOuterStyle.SetSpecifics(
+        margin: _panel.Margin);
+
+    //
+    // Eval different table attributes
+    //
+
+    var panelStyle = new StylePile();
+
+    panelStyle.Add("background-color", _panel.Background?.HtmlRgb(), doNotSetIfNull: true);
+
+    if (AnyUiDisplayDataHtml.DebugFrames)
+        panelStyle.Set("border", "1px solid black", add: true);
+
+    panelStyle.Set("width", "100%", add: true);
+
+    //
+    // Render
+    //
+
+    <div style="@divOuterStyle">
+        @* Render the table. For the time being, ignore Orientation and stack always horzintally in one cell. *@
+        <table @attributes="@PanelAttributes" style="@panelStyle" data-source="AnyUiWrapPanel.razor">
+            <tr>
+                <td>
+                    @{ 
+                        if (_panel?.Children != null)
+                            foreach (var ch in _panel.Children)
+                            {
+                            @* Note: the wrap panel does NOT pass the FillMode! *@
+
+                            <AnyUiRenderElem DisplayData="@DisplayData"
+                                             Session="@Session"
+                                             Parent="@Element"
+                                             Element="@ch"
+                                             FillMode="@AnyUiHtmlFillMode.None" />
+                                }
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> PanelAttributes { get; set; }
+
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public BlazorUI.Data.BlazorSession Session { get; set; }
+
+    protected AnyUiWrapPanel _panel = null;
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiWrapPanel Element
+    {
+        get { return _panel; }
+        set
+        {
+            _panel = value;
+            if (_panel == null)
+                return;
+        }
+    }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+}

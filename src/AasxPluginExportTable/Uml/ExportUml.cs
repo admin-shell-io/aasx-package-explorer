@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -21,8 +21,10 @@ using System.Xml;
 using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
+using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable.Uml
 {
@@ -35,9 +37,9 @@ namespace AasxPluginExportTable.Uml
     public static class ExportUml
     {
         public static void ExportUmlToFile(
-            AdminShell.AdministrationShellEnv env,
-            AdminShell.Submodel submodel,
-            ExportUmlOptions options,
+            Aas.Environment env,
+            Aas.ISubmodel submodel,
+            ExportUmlRecord options,
             string fn)
         {
             // access
@@ -46,17 +48,17 @@ namespace AasxPluginExportTable.Uml
 
             // which writer?
             IBaseWriter writer = null;
-            if (options.Format == ExportUmlOptions.ExportFormat.Xmi11)
+            if (options.Format == ExportUmlRecord.ExportFormat.Xmi11)
                 writer = new Xmi11Writer();
-            if (options.Format == ExportUmlOptions.ExportFormat.Xmi21)
+            if (options.Format == ExportUmlRecord.ExportFormat.Xmi21)
                 writer = new Xmi21Writer();
-            if (options.Format == ExportUmlOptions.ExportFormat.PlantUml)
+            if (options.Format == ExportUmlRecord.ExportFormat.PlantUml)
                 writer = new PlantUmlWriter();
 
             if (writer != null)
             {
                 writer.StartDoc(options);
-                writer.ProcessSubmodel(submodel);
+                writer.ProcessTopElement(submodel);
                 writer.ProcessPost();
                 writer.SaveDoc(fn);
             }

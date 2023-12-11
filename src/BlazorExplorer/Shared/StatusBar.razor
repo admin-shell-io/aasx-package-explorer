@@ -1,0 +1,110 @@
+﻿@page "/StatusBar"
+@using System.Threading
+@using Microsoft.AspNetCore.Components.Web
+@using MW.Blazor
+@using AasxIntegrationBase
+@using AnyUi
+@using AasxPackageLogic
+@using System.Globalization;
+@inject IJSRuntime JsRuntime
+@inject BlazorUI.Data.BlazorSession Session
+
+@{
+    var innerStyle = new StylePile()
+       .Set("color", Foreground?.HtmlRgba(), doNotSetIfNull: true, add: true)
+       .Set("background-color",Background?.HtmlRgba(), doNotSetIfNull: true, add: true);
+}
+
+<div class="row" style="overflow: hidden; padding-left: 0px; padding-right: 0px; margin-left: 0px; margin-right: 0px">
+    <div style="@innerStyle">
+        <div class="col-12" style="display: inline-block; white-space: nowrap">
+            <small>@Message</small>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    //[Parameter] public string Message { get; set; }
+    //[Parameter] public AnyUiBrush Foreground { get; set; }
+    //[Parameter] public AnyUiBrush Background { get; set; }
+
+    protected string Message { get; set; }
+    protected AnyUiBrush Foreground { get; set; }
+    protected AnyUiBrush Background { get; set; }
+
+    /// <summary>
+    /// As first approach, a triggering via parameters and cascaded parameters was tried
+    /// from Index -> MainLayout -> StatusBar. However, this triggered the rerenderin of 
+    /// the layout child -> main document every 100ms.
+    /// Therefore, 2nd approach is now to use independent timer. Idea could be to have
+    /// in BalzorSession fixed Action<Tick> for different components, which are registering
+    /// by setting instead of adding to event queues..
+    /// </summary>
+    private Timer _timer;
+
+    protected override void OnInitialized()
+    {
+        // set timer
+        _timer = new System.Threading.Timer((e) =>
+        {
+            MainTimer_HandleLogMessages();
+        }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(500));
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+
+    public void StatusLineClear()
+    {
+        Message = "";
+        Foreground = AnyUiBrushes.Black;
+        Background = AnyUiBrushes.Transparent;
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    public void UpdateMessage(string message, AnyUiBrush foreground, AnyUiBrush background)
+    {
+        Message = message;
+        Foreground = foreground;
+        Background = background;
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private void MainTimer_HandleLogMessages()
+    {
+        // pop log messages from the plug-ins into the Stored Prints in Log
+        // right now, no server-listening flyouts ..
+        Plugins.PumpPluginLogsIntoLog(null /* this.FlyoutLoggingPush */);
+
+        // check for Stored Prints in Log
+        StoredPrint sp;
+        while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
+        {
+            switch (sp.color)
+            {
+                default:
+                    UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
+                    break;
+                case StoredPrint.Color.Black:
+                    UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Transparent);
+                    break;
+                case StoredPrint.Color.Blue:
+                    UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.LightBlue);
+                    break;
+                case StoredPrint.Color.Yellow:
+                    UpdateMessage(sp.msg, AnyUiBrushes.Black, AnyUiBrushes.Yellow);
+                    break;
+                case StoredPrint.Color.Red:
+                    UpdateMessage(sp.msg, AnyUiBrushes.White, AnyUiBrushes.Red);
+                    break;
+            }
+
+            // message window
+            //_messageReportWindow?.AddStoredPrint(sp);
+        }
+    }
+
+}

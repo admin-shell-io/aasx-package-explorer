@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,14 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
 {
@@ -36,7 +37,7 @@ namespace AasxPackageLogic
 
             // Factory
 
-            public static CopyPasteItemBase FactoryConvertFrom(AdminShell.Referable rf)
+            public static CopyPasteItemBase FactoryConvertFrom(Aas.IReferable rf)
             {
                 // try fake a copy paste item (order matters!)
                 CopyPasteItemBase res = CopyPasteItemSME.ConvertFrom(rf);
@@ -77,7 +78,7 @@ namespace AasxPackageLogic
         public class CopyPasteItemIdentifiable : CopyPasteItemBase
         {
             public object parentContainer = null;
-            public AdminShell.Identifiable entity = null;
+            public Aas.IIdentifiable entity = null;
 
             public override object GetMainDataObject() { return entity; }
 
@@ -85,19 +86,19 @@ namespace AasxPackageLogic
 
             public CopyPasteItemIdentifiable(
                 object parentContainer,
-                AdminShell.Identifiable entity)
+                Aas.IIdentifiable entity)
             {
                 this.parentContainer = parentContainer;
                 this.entity = entity;
             }
 
-            public static CopyPasteItemIdentifiable ConvertFrom(AdminShell.Referable rf)
+            public static CopyPasteItemIdentifiable ConvertFrom(Aas.IReferable rf)
             {
                 // access
-                var idf = rf as AdminShell.Identifiable;
+                var idf = rf as Aas.IIdentifiable;
                 if (idf == null
-                    || !(idf is AdminShell.AdministrationShell
-                         || idf is AdminShell.Asset || idf is AdminShell.ConceptDescription))
+                    || !(idf is Aas.AssetAdministrationShell
+                         || idf is Aas.AssetInformation || idf is Aas.ConceptDescription))
                     return null;
 
                 // create
@@ -111,8 +112,8 @@ namespace AasxPackageLogic
         public class CopyPasteItemSubmodel : CopyPasteItemBase
         {
             public object parentContainer = null;
-            public AdminShell.SubmodelRef smref = null;
-            public AdminShell.Submodel sm = null;
+            public Aas.IReference smref = null;
+            public Aas.ISubmodel sm = null;
 
             public override object GetMainDataObject() { return sm; }
 
@@ -121,8 +122,8 @@ namespace AasxPackageLogic
             public CopyPasteItemSubmodel(
                 object parentContainer,
                 object entity,
-                AdminShell.SubmodelRef smref,
-                AdminShell.Submodel sm)
+                Aas.IReference smref,
+                Aas.ISubmodel sm)
             {
                 this.parentContainer = parentContainer;
                 this.smref = smref;
@@ -132,18 +133,17 @@ namespace AasxPackageLogic
 
             public void TryFixSmRefIfNull()
             {
-                if (smref == null && sm?.identification != null)
+                if (smref == null && sm?.Id != null)
                 {
-                    smref = new AdminShell.SubmodelRef(new AdminShell.Reference(new AdminShell.Key(
-                    AdminShell.Key.Submodel, true, sm.identification.idType, sm.identification.id)));
+                    smref = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, sm.Id) });
                 }
             }
 
-            public static CopyPasteItemSubmodel ConvertFrom(AdminShell.Referable rf)
+            public static CopyPasteItemSubmodel ConvertFrom(Aas.IReferable rf)
             {
                 // access
-                var sm = rf as AdminShell.Submodel;
-                if (sm == null || sm.identification == null)
+                var sm = rf as Aas.Submodel;
+                if (sm == null || sm.Id == null)
                     return null;
 
                 // create
@@ -159,11 +159,11 @@ namespace AasxPackageLogic
 
         public class CopyPasteItemSME : CopyPasteItemBase
         {
-            public AdminShell.AdministrationShellEnv env = null;
-            public AdminShell.Referable parentContainer = null;
-            public AdminShell.SubmodelElementWrapper wrapper = null;
-            public AdminShell.SubmodelElement sme = null;
-            public AdminShell.EnumerationPlacmentBase Placement = null;
+            public Aas.Environment env = null;
+            public Aas.IReferable parentContainer = null;
+            public Aas.ISubmodelElement wrapper = null;
+            public Aas.ISubmodelElement sme = null;
+            public EnumerationPlacmentBase Placement = null;
 
             public override object GetMainDataObject() { return sme; }
 
@@ -171,10 +171,10 @@ namespace AasxPackageLogic
             public CopyPasteItemSME() { }
 
             public CopyPasteItemSME(
-                AdminShell.AdministrationShellEnv env,
-                AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrapper,
-                AdminShell.SubmodelElement sme,
-                AdminShell.EnumerationPlacmentBase placement = null)
+                Aas.Environment env,
+                Aas.IReferable parentContainer, Aas.ISubmodelElement wrapper,
+                Aas.ISubmodelElement sme,
+                EnumerationPlacmentBase placement = null)
             {
                 this.env = env;
                 this.parentContainer = parentContainer;
@@ -183,16 +183,16 @@ namespace AasxPackageLogic
                 this.Placement = placement;
             }
 
-            public static CopyPasteItemSME ConvertFrom(AdminShell.Referable rf)
+            public static CopyPasteItemSME ConvertFrom(Aas.IReferable rf)
             {
                 // access
-                var sme = rf as AdminShell.SubmodelElement;
+                var sme = rf as Aas.ISubmodelElement;
                 if (sme == null)
                     return null;
 
                 // new wrapper
-                var wrapper = new AdminShell.SubmodelElementWrapper();
-                wrapper.submodelElement = sme;
+                Aas.ISubmodelElement wrapper;
+                wrapper = sme;
 
                 // create
                 return new CopyPasteItemSME()
@@ -235,20 +235,18 @@ namespace AasxPackageLogic
                 this.Items = null;
             }
 
-            public static Tuple<string[], AdminShell.KeyList[]> PreparePresetsForListKeys(
+            public static Tuple<string[], List<Aas.IKey>[]> PreparePresetsForListKeys(
                 CopyPasteBuffer cpb, string label = "Paste")
             {
                 // add from Copy Buffer
-                AdminShell.KeyList bufferKey = null;
+                List<Aas.IKey> bufferKey = null;
                 if (cpb != null && cpb.Valid && cpb.Items != null && cpb.Items.Count == 1)
                 {
-                    if (cpb.Items[0] is CopyPasteItemIdentifiable cpbi && cpbi.entity?.identification != null)
-                        bufferKey = AdminShell.KeyList.CreateNew(
-                            new AdminShell.Key("" + cpbi.entity.GetElementName(), false,
-                                    cpbi.entity.identification.idType, cpbi.entity.identification.id));
+                    if (cpb.Items[0] is CopyPasteItemIdentifiable cpbi && cpbi.entity?.Id != null)
+                        bufferKey = new List<Aas.IKey>() { new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id) };
 
-                    if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
-                        bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetReference()?.First);
+                    if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.SemanticId != null)
+                        bufferKey = new List<Aas.IKey>() { cpbsm.sm.GetReference().Keys.First() };
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null
                         && cpbsme.env.Submodels != null)
@@ -258,13 +256,13 @@ namespace AasxPackageLogic
                             sm?.SetAllParents();
 
                         // collect buffer list
-                        bufferKey = new AdminShell.KeyList();
+                        bufferKey = new List<Aas.IKey>();
                         cpbsme.sme.CollectReferencesByParent(bufferKey);
                     }
                 }
 
                 // result
-                return new Tuple<string[], AdminShell.KeyList[]>(
+                return new Tuple<string[], List<Aas.IKey>[]>(
                     (bufferKey == null) ? null : new[] { label },
                     (bufferKey == null) ? null : new[] { bufferKey }
                 );
@@ -272,6 +270,7 @@ namespace AasxPackageLogic
 
             private string PrepareClipboadString()
             {
+#if V20
                 // make a pure array of objects
                 // (absolutely no unnecessary stuff to the public)
                 var oar = new List<object>();
@@ -294,6 +293,23 @@ namespace AasxPackageLogic
                 settings.TypeNameHandling = TypeNameHandling.None;
                 settings.Formatting = Formatting.Indented;
                 var json = JsonConvert.SerializeObject(objToSerialize, settings);
+#else
+                var oar = new List<Aas.IClass>();
+                if (Items != null)
+                    foreach (var it in Items)
+                    {
+                        var o = it.GetMainDataObject();
+                        if (o is Aas.IClass oir)
+                            oar.Add(oir);
+                    }
+
+                var nodes = ExtendIReferable.ToJsonObject(oar);
+                var json = nodes.ToJsonString(
+                    new System.Text.Json.JsonSerializerOptions()
+                    {
+                        WriteIndented = true
+                    });
+#endif
 
                 // ok
                 return json;
@@ -337,8 +353,8 @@ namespace AasxPackageLogic
                     // try simple way
                     if (isSingleObject)
                     {
-                        // TODO (MIHO, 2021-06-22): think of converting Referable to IAasElement
-                        var obj = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Referable>(cps);
+                        // TODO (MIHO, 2021-06-22): think of converting IReferable to IAasElement
+                        var obj = AdminShellSerializationHelper.DeserializeFromJSON<Aas.IReferable>(cps);
 
                         // try fake a copy paste item (order matters!)
                         var cpi = CopyPasteItemBase.FactoryConvertFrom(obj);
@@ -354,9 +370,8 @@ namespace AasxPackageLogic
                     else
                     if (isArrayObject)
                     {
-                        // make array of object
-                        var objarr = AdminShellSerializationHelper
-                            .DeserializePureObjectFromJSON<List<AdminShell.Referable>>(cps);
+                        var node = System.Text.Json.Nodes.JsonNode.Parse(cps);
+                        var objarr = ExtendIReferable.ListOfIReferableFrom(node);
                         if (objarr != null)
                         {
                             // overall structure
@@ -428,45 +443,74 @@ namespace AasxPackageLogic
                 return;
 
             // differentiate
-            if (item.parentContainer is AdminShell.Submodel pcsm && item.wrapper != null)
-                this.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
-                    pcsm.submodelElements, item.wrapper, null);
+            if (item.parentContainer is Aas.Submodel pcsm && item.wrapper != null)
+                this.DeleteElementInList<Aas.ISubmodelElement>(
+                    pcsm.SubmodelElements, item.wrapper, null);
 
-            if (item.parentContainer is AdminShell.SubmodelElementCollection pcsmc
+            if (item.parentContainer is Aas.SubmodelElementCollection pcsmc
                 && item.wrapper != null)
-                this.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
-                    pcsmc.value, item.wrapper, null);
+                this.DeleteElementInList<Aas.ISubmodelElement>(
+                    pcsmc.Value, item.wrapper, null);
 
-            if (item.parentContainer is AdminShell.Operation pcop && item.wrapper != null)
+            if (item.parentContainer is Aas.Operation pcop && item.wrapper != null)
             {
                 var placement = pcop.GetChildrenPlacement(item.sme) as
-                    AdminShell.Operation.EnumerationPlacmentOperationVariable;
+                    EnumerationPlacmentOperationVariable;
                 if (placement != null)
-                    pcop[placement.Direction].Remove(placement.OperationVariable);
+                {
+                    if (placement.Direction == OperationVariableDirection.In)
+                    {
+                        pcop.InputVariables.Remove(placement.OperationVariable);
+                    }
+                    else if (placement.Direction == OperationVariableDirection.Out)
+                    {
+                        pcop.OutputVariables.Remove(placement.OperationVariable);
+                    }
+                    else if (placement.Direction == OperationVariableDirection.InOut)
+                    {
+                        pcop.InoutputVariables.Remove(placement.OperationVariable);
+                    }
+                }
+
             }
         }
 
         public void DispSmeCutCopyPasteHelper(
             AnyUiPanel stack,
             ModifyRepo repo,
-            AdminShell.AdministrationShellEnv env,
-            AdminShell.Referable parentContainer,
+            Aas.Environment env,
+            Aas.IReferable parentContainer,
             CopyPasteBuffer cpbInternal,
-            AdminShell.SubmodelElementWrapper wrapper,
-            AdminShell.SubmodelElement sme,
-            string label = "Buffer:")
+            Aas.ISubmodelElement wrapper,
+            Aas.ISubmodelElement sme,
+            string label = "Buffer:",
+            AasxMenu superMenu = null)
         {
             // access
             if (parentContainer == null || cpbInternal == null || sme == null)
                 return;
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
-                new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                actionTags: new[] { "aas-elem-cut", "aas-elem-copy", "aas-elem-paste-above",
-                    "aas-elem-paste-below", "aas-elem-paste-into" },
-                action: (buttonNdx) =>
+                repo: repo,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-cut", "Cut",
+                        "Removes the currently selected element and places it in the paste buffer.",
+                        inputGesture: "Ctrl+Shift+X")
+                    .AddAction("aas-elem-copy", "Copy",
+                        "Places the currently selected element in the paste buffer.",
+                        inputGesture: "Ctrl+Shift+C")
+                    .AddAction("aas-elem-paste-above", "Paste above",
+                        "Adds the content of the paste buffer before (above) the currently selected element.",
+                        inputGesture: "Ctrl+Alt+V")
+                    .AddAction("aas-elem-paste-below", "Paste below",
+                        "Adds the content of the paste buffer after (below) the currently selected element.",
+                        inputGesture: "Ctrl+Shift+V")
+                    .AddAction("aas-elem-paste-into", "Paste into",
+                        "Adds the content of the paste buffer into the currently selected collection-like element.",
+                        inputGesture: "Ctrl+Shift+Alt+V"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
@@ -474,9 +518,8 @@ namespace AasxPackageLogic
                         cpbInternal.Clear();
                         cpbInternal.Valid = true;
                         cpbInternal.Duplicate = buttonNdx == 1;
-                        AdminShell.EnumerationPlacmentBase placement = null;
-                        if (parentContainer is AdminShell.IEnumerateChildren enc)
-                            placement = enc.GetChildrenPlacement(sme);
+                        EnumerationPlacmentBase placement = null;
+                        placement = parentContainer.GetChildrenPlacement(sme);
                         cpbInternal.Items = new ListOfCopyPasteItem(
                             new CopyPasteItemSME(env, parentContainer, wrapper, sme, placement));
                         cpbInternal.CopyToClipboard(context, cpbInternal.Watermark);
@@ -486,8 +529,8 @@ namespace AasxPackageLogic
                         // user feedback
                         Log.Singleton.Info(
                             StoredPrint.Color.Blue,
-                            "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme.idShort,
-                            "" + sme?.GetElementName(),
+                            "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme.IdShort,
+                            "" + sme?.GetSelfDescription().AasElementName,
                             cpbInternal.Duplicate
                                 ? " Paste will duplicate."
                                 : " Paste will cut at original position.");
@@ -536,50 +579,59 @@ namespace AasxPackageLogic
                             }
 
                             // apply info
-                            var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);
-                            nextBusObj = smw2.submodelElement;
+                            var smw2 = item.sme.Copy();
+                            nextBusObj = smw2;
                             var createAtIndex = -1;
 
+#if old
                             // make this unique (e.g. for event following)
                             if (cpb.Duplicate || cpb.ExternalSource)
-                                this.MakeNewReferableUnique(smw2.submodelElement);
+                                this.MakeNewReferableUnique(smw2);
+#endif
+                            // make this unique later (e.g. for event following)
+                            var makeUnique = (cpb.Duplicate || cpb.ExternalSource);
 
                             // insertation depends on parent container
                             if (buttonNdx == 2)
                             {
                                 // handle parent explicitely, as not covered by AddElementInListBefore/after
-                                smw2.submodelElement.parent = parentContainer;
+                                smw2.Parent = parentContainer;
 
-                                if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcsm.submodelElements, smw2, wrapper);
+                                if (parentContainer is Aas.Submodel pcsm && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
+                                        pcsm.SubmodelElements, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
+                                if (parentContainer is Aas.SubmodelElementCollection pcsmc && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
+                                        pcsmc.Value, smw2, wrapper, makeUnique);
+
+                                if (parentContainer is Aas.SubmodelElementList pcsml && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
+                                        pcsml.Value, smw2, wrapper, makeUnique);
+
+                                if (parentContainer is Aas.Entity pcent && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
+                                        pcent.Statements, smw2, wrapper, makeUnique);
+
+                                if (parentContainer is Aas.AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcsmc.value, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.Entity pcent &&
-                                        wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcent.statements, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel &&
-                                        wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcarel.annotations, smw2, wrapper);
+                                {
+                                    var annotations = new List<Aas.ISubmodelElement>(pcarel.Annotations);
+                                    createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
+                                        annotations, smw2, wrapper, makeUnique);
+                                }
 
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
-                                if (parentContainer is AdminShell.Operation pcop && wrapper?.submodelElement != null)
+                                if (parentContainer is Aas.Operation pcop && wrapper != null)
                                 {
-                                    var place = pcop.GetChildrenPlacement(wrapper.submodelElement) as
-                                        AdminShell.Operation.EnumerationPlacmentOperationVariable;
+                                    var place = pcop.GetChildrenPlacement(wrapper) as
+                                        EnumerationPlacmentOperationVariable;
                                     if (place?.OperationVariable != null)
                                     {
-                                        var op = new AdminShell.OperationVariable();
-                                        op.value = smw2;
-                                        createAtIndex = this.AddElementInListBefore<AdminShell.OperationVariable>(
-                                            pcop[place.Direction], op, place.OperationVariable);
+                                        var op = new Aas.OperationVariable(smw2);
+                                        var opVariables = pcop.GetVars(place.Direction);
+                                        createAtIndex = this.AddElementInListBefore<Aas.IOperationVariable>(
+                                            opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
                                     }
                                 }
@@ -588,37 +640,43 @@ namespace AasxPackageLogic
                             if (buttonNdx == 3)
                             {
                                 // handle parent explicitely, as not covered by AddElementInListBefore/after
-                                smw2.submodelElement.parent = parentContainer;
+                                smw2.Parent = parentContainer;
 
-                                if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcsm.submodelElements, smw2, wrapper);
+                                if (parentContainer is Aas.Submodel pcsm && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(
+                                        pcsm.SubmodelElements, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
+                                if (parentContainer is Aas.SubmodelElementCollection pcsmc && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(
+                                        pcsmc.Value, smw2, wrapper, makeUnique);
+
+                                if (parentContainer is Aas.SubmodelElementList pcsml && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(
+                                        pcsml.Value, smw2, wrapper, makeUnique);
+
+                                if (parentContainer is Aas.Entity pcent && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(
+                                        pcent.Statements, smw2, wrapper, makeUnique);
+
+                                if (parentContainer is Aas.AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcsmc.value, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.Entity pcent && wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcent.statements, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel &&
-                                        wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcarel.annotations, smw2, wrapper);
+                                {
+                                    var annotations = new List<Aas.ISubmodelElement>(pcarel.Annotations);
+                                    createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(
+                                        annotations, smw2, wrapper, makeUnique);
+                                }
 
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
-                                if (parentContainer is AdminShell.Operation pcop && wrapper?.submodelElement != null)
+                                if (parentContainer is Aas.Operation pcop && wrapper != null)
                                 {
-                                    var place = pcop.GetChildrenPlacement(wrapper.submodelElement) as
-                                        AdminShell.Operation.EnumerationPlacmentOperationVariable;
+                                    var place = pcop.GetChildrenPlacement(wrapper) as
+                                        EnumerationPlacmentOperationVariable;
                                     if (place?.OperationVariable != null)
                                     {
-                                        var op = new AdminShell.OperationVariable();
-                                        op.value = smw2;
-                                        createAtIndex = this.AddElementInListAfter<AdminShell.OperationVariable>(
-                                            pcop[place.Direction], op, place.OperationVariable);
+                                        var op = new Aas.OperationVariable(smw2);
+                                        var opVariables = pcop.GetVars(place.Direction);
+                                        createAtIndex = this.AddElementInListAfter<Aas.IOperationVariable>(
+                                            opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
                                     }
                                 }
@@ -626,14 +684,23 @@ namespace AasxPackageLogic
 
                             if (buttonNdx == 4)
                             {
+                                if (makeUnique)
+                                {
+                                    var found = false;
+                                    foreach (var ch in sme.DescendOnce().OfType<Aas.ISubmodelElement>())
+                                        if (ch?.IdShort?.Trim() == smw2?.IdShort?.Trim())
+                                            found = true;
+                                    if (found)
+                                        this.MakeNewReferableUnique(smw2);
+                                }
+
                                 // aprent set automatically
                                 // TODO (MIHO, 2021-08-18): createAtIndex missing here
-                                if (sme is AdminShell.IEnumerateChildren smeec)
-                                    smeec.AddChild(smw2, item.Placement);
+                                sme.AddChild(smw2, item.Placement);
                             }
 
                             // emit event
-                            this.AddDiaryEntry(smw2.submodelElement,
+                            this.AddDiaryEntry(smw2,
                                 new DiaryEntryStructChange(StructuralChangeReason.Create,
                                     createAtIndex: createAtIndex));
 
@@ -666,11 +733,13 @@ namespace AasxPackageLogic
             List<T> parentContainer,
             T entity,
             Func<T, T> cloneEntity,
-            AdminShell.SubmodelRef smref,
-            AdminShell.Submodel sm,
+            Aas.IReference smref,
+            Aas.ISubmodel sm,
             string label = "Buffer:",
             Func<T, T, bool> checkEquality = null,
-            Action<CopyPasteItemBase> extraAction = null) where T : new()
+            Action<T, bool> modifyAfterClone = null,
+            Action<CopyPasteItemBase> extraAction = null,
+            AasxMenu superMenu = null) /*where T : new()*/ //TODO (jtikekar, 0000-00-00): Test
         {
             // access
             if (parentContainer == null || cpbInternal == null || sm == null || cloneEntity == null)
@@ -683,10 +752,27 @@ namespace AasxPackageLogic
             // ReSharper enable RedundantCast
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
-                new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                (buttonNdx) =>
+                repo: repo,
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-cut", "Cut",
+                        "Removes the currently selected element and places it in the paste buffer.",
+                        inputGesture: "Ctrl+X")
+                    .AddAction("aas-elem-copy", "Copy",
+                        "Places the currently selected element in the paste buffer.",
+                        inputGesture: "Ctrl+Shift+C")
+                    .AddAction("aas-elem-paste-above", "Paste above",
+                        "Adds the content of the paste buffer before (above) the currently selected element.",
+                        inputGesture: "Ctrl+Alt+V")
+                    .AddAction("aas-elem-paste-below", "Paste below",
+                        "Adds the content of the paste buffer after (below) the currently selected element.",
+                        inputGesture: "Ctrl+Shift+V")
+                    .AddAction("aas-elem-paste-into", "Paste into",
+                        "Adds the content of the paste buffer into the currently selected collection-like element.",
+                        inputGesture: "Ctrl+Shift+Alt+V"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
@@ -701,7 +787,7 @@ namespace AasxPackageLogic
                         // user feedback
                         Log.Singleton.Info(
                             StoredPrint.Color.Blue,
-                            "Stored Submodel '{0}' to internal buffer.{1}", "" + sm.idShort,
+                            "Stored Submodel '{0}' to internal buffer.{1}", "" + sm.IdShort,
                             cpbInternal.Duplicate
                                 ? " Paste will duplicate."
                                 : " Paste will cut at original position.");
@@ -753,7 +839,7 @@ namespace AasxPackageLogic
 
                             // determine, what to clone
                             object src = item.sm;
-                            if (typeof(T) == typeof(AdminShell.SubmodelRef))
+                            if (typeof(T).IsAssignableFrom(typeof(Aas.IReference)))
                                 src = item.smref;
 
                             if (src == null)
@@ -768,8 +854,9 @@ namespace AasxPackageLogic
                                 foreach (var p in parentContainer)
                                     if (checkEquality(p, x))
                                         foundEqual = true;
-                            if (foundEqual)
+                            if (foundEqual && modifyAfterClone == null)
                             {
+                                // if modifyAfterClone cannot change, abort!
                                 Log.Singleton.Error("When pasting AAS elements, an element was found to be " +
                                     "already existing.");
                                 continue;
@@ -779,8 +866,11 @@ namespace AasxPackageLogic
                             object entity2 = cloneEntity((T)src);
                             nextBusObj = entity2;
 
+                            // modify
+                            modifyAfterClone?.Invoke((T)entity2, foundEqual);
+
                             // emit event
-                            this.AddDiaryEntry(entity2 as AdminShell.Referable,
+                            this.AddDiaryEntry(entity2 as Aas.IReferable,
                                 new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                             // different cases
@@ -798,7 +888,7 @@ namespace AasxPackageLogic
                                 this.DeleteElementInList<T>(
                                         item.parentContainer as List<T>, (T)src, null);
 
-                                this.AddDiaryEntry(src as AdminShell.Referable,
+                                this.AddDiaryEntry(src as Aas.IReferable,
                                     new DiaryEntryStructChange(StructuralChangeReason.Delete));
                             }
                         }
@@ -854,11 +944,10 @@ namespace AasxPackageLogic
                             }
 
                             // apply
-                            var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);
-                            nextBusObj = smw2.submodelElement;
+                            var smw2 = item.sme.Copy();
+                            nextBusObj = smw2;
 
-                            if (sm is AdminShell.IEnumerateChildren smeec)
-                                smeec.AddChild(smw2);
+                            sm.AddChild(smw2);
 
                             // emit event
                             this.AddDiaryEntry(item.sme, new DiaryEntryStructChange(StructuralChangeReason.Create));
@@ -894,18 +983,37 @@ namespace AasxPackageLogic
             Func<T, T> cloneEntity,
             string label = "Buffer:",
             Func<CopyPasteBuffer, bool> checkPasteInfo = null,
-            Func<CopyPasteItemBase, bool, object> doPasteInto = null)
-                where T : AdminShell.Identifiable, new()
+            Func<CopyPasteItemBase, bool, object> doPasteInto = null,
+            AasxMenu superMenu = null)
+                where T : Aas.IIdentifiable/*, new()*/
+            //TODO (jtikekar, 0000-00-00): Test
         {
             // access
             if (parentContainer == null || cpbInternal == null || entity == null || cloneEntity == null)
                 return;
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
-                new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                (buttonNdx) =>
+                repo: repo,
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-cut", "Cut",
+                        "Removes the currently selected element and places it in the paste buffer.",
+                        inputGesture: "Ctrl+X")
+                    .AddAction("aas-elem-copy", "Copy",
+                        "Places the currently selected element in the paste buffer.",
+                        inputGesture: "Ctrl+Shift+C")
+                    .AddAction("aas-elem-paste-above", "Paste above",
+                        "Adds the content of the paste buffer before (above) the currently selected element.",
+                        inputGesture: "Ctrl+Alt+V")
+                    .AddAction("aas-elem-paste-below", "Paste below",
+                        "Adds the content of the paste buffer after (below) the currently selected element.",
+                        inputGesture: "Ctrl+Shift+V")
+                    .AddAction("aas-elem-paste-into", "Paste into",
+                        "Adds the content of the paste buffer into the currently selected collection-like element.",
+                        inputGesture: "Ctrl+Shift+Alt+V"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
@@ -921,8 +1029,8 @@ namespace AasxPackageLogic
                         Log.Singleton.Info(
                             StoredPrint.Color.Blue,
                             "Stored {0} '{1}' to internal buffer.{2}",
-                            "" + entity.GetElementName(),
-                            "" + entity.idShort,
+                            "" + entity.GetSelfDescription().AasElementName,
+                            "" + entity.IdShort,
                             cpbInternal.Duplicate
                                 ? " Paste will duplicate."
                                 : " Paste will cut at original position.");
@@ -1070,18 +1178,25 @@ namespace AasxPackageLogic
             ModifyRepo repo,
             CopyPasteBuffer cpbInternal,
             string label = "Buffer:",
-            Func<CopyPasteItemBase, bool, object> lambdaPasteInto = null)
-                where T : AdminShell.Identifiable, new()
+            Func<CopyPasteItemBase, bool, object> lambdaPasteInto = null,
+            AasxMenu superMenu = null)
+                where T : Aas.IIdentifiable/*, new()*/
+            //TODO (jtikekar, 0000-00-00): test
         {
             // access
             if (cpbInternal == null || lambdaPasteInto == null)
                 return;
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
-                new[] { "Paste into" }, repo,
-                (buttonNdx) =>
+                repo: repo,
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-paste-into", "Paste into",
+                        "Adds the content of the paste buffer into the currently selected collection-like element.",
+                        inputGesture: "Ctrl+Alt+V"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0)
                     {

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -20,8 +20,10 @@ using System.Xml;
 using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0;
+using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable.Uml
 {
@@ -36,7 +38,7 @@ namespace AasxPluginExportTable.Uml
 
         public XmlElement Package;
 
-        public void StartDoc(ExportUmlOptions options)
+        public void StartDoc(ExportUmlRecord options)
         {
             if (options != null)
                 _options = options;
@@ -80,73 +82,70 @@ namespace AasxPluginExportTable.Uml
             Package = CreateAppendElement(pack, UMLNS, "Namespace.ownedElement2");
         }
 
-        public string EvalFeatureType(AdminShell.SubmodelElement sme)
+        public string EvalFeatureType(Aas.ISubmodelElement sme)
         {
             // access
             if (sme == null)
                 return "";
 
-            if (sme is AdminShell.Property p && p.valueType.HasContent())
-                return p.valueType;
+            if (sme is Aas.Property p)
+                return Aas.Stringification.ToString(p.ValueType);
 
-            return AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(sme);
+            return sme.GetSelfDescription()?.AasElementName;
         }
 
         public void AddFeatures(
             XmlElement featureContainer,
-            List<AdminShell.SubmodelElementWrapper> features)
+            List<Aas.ISubmodelElement> features)
         {
             if (featureContainer == null || features == null)
                 return;
 
-            foreach (var smw in features)
-                if (smw?.submodelElement is AdminShell.SubmodelElement sme)
-                {
-                    var type = EvalFeatureType(sme);
-                    var multiplicity = EvalMultiplicityBounds(EvalUmlMultiplicity(sme));
-                    var initialValue = "";
-                    if (sme is AdminShell.Property || sme is AdminShell.Range
-                        || sme is AdminShell.MultiLanguageProperty)
-                        initialValue = sme.ValueAsText();
+            foreach (var sme in features)
+            {
+                var type = EvalFeatureType(sme);
+                var multiplicity = EvalMultiplicityBounds(EvalUmlMultiplicity(sme));
+                var initialValue = "";
+                if (sme is Aas.Property || sme is Aas.Range
+                    || sme is Aas.MultiLanguageProperty)
+                    initialValue = sme.ValueAsText();
 
-                    var attribute = CreateAppendElement(featureContainer, UMLNS, "Attribute",
+                var attribute = CreateAppendElement(featureContainer, UMLNS, "Attribute",
+                    new[] {
+                            "name", "" + sme.IdShort,
+                            "changeable", "none",
+                            "visibility", "public",
+                            "ownerScope", "instance",
+                            "targetScope", "instance"
+                    });
+
+                if (initialValue.HasContent())
+                    CreateAppendElement(attribute, UMLNS, "Attribute.initialValue",
+                        child: CreateAppendElement(attribute, UMLNS, "Expression",
                         new[] {
-                                "name", "" + sme.idShort,
-                                "changeable", "none",
-                                "visibility", "public",
-                                "ownerScope", "instance",
-                                "targetScope", "instance"
-                        });
+                                "body", initialValue
+                        })
+                    );
 
-                    if (initialValue.HasContent())
-                        CreateAppendElement(attribute, UMLNS, "Attribute.initialValue",
-                            child: CreateAppendElement(attribute, UMLNS, "Expression",
-                            new[] {
-                                    "body", initialValue
-                            })
-                        );
-
-                    var tv = CreateAppendElement(attribute, UMLNS, "ModelElement.taggedValue");
-                    CreateAppendElement(tv, UMLNS, "TaggedValue",
-                        new[] { "tag", "type", "value", type });
-                    CreateAppendElement(tv, UMLNS, "TaggedValue",
-                        new[] { "tag", "lowerBound", "value", multiplicity.Item1 });
-                    CreateAppendElement(tv, UMLNS, "TaggedValue",
-                        new[] { "tag", "upperBound", "value", multiplicity.Item2 });
-                }
+                var tv = CreateAppendElement(attribute, UMLNS, "ModelElement.taggedValue");
+                CreateAppendElement(tv, UMLNS, "TaggedValue",
+                    new[] { "tag", "type", "value", type });
+                CreateAppendElement(tv, UMLNS, "TaggedValue",
+                    new[] { "tag", "lowerBound", "value", multiplicity.Item1 });
+                CreateAppendElement(tv, UMLNS, "TaggedValue",
+                    new[] { "tag", "upperBound", "value", multiplicity.Item2 });
+            }
         }
 
-        public void AddClass(AdminShell.Referable rf)
+        public void AddClass(Aas.IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
-            if (!(rf is AdminShell.IEnumerateChildren rfec))
-                return;
-            var features = rfec.EnumerateChildren().ToList();
+            var features = rf.EnumerateChildren().ToList();
 
             // add
             var featureContainer = CreateAppendElement(Package, UMLNS, "Class",
                 new[] {
-                        "name", "" + rf.idShort,
+                        "name", "" + rf.IdShort,
                         "visibility", "public",
                         "isRoot", "false",
                         "isLeaf", "false",
@@ -158,7 +157,7 @@ namespace AasxPluginExportTable.Uml
             AddFeatures(featureContainer, features);
         }
 
-        public void ProcessEntity(AdminShell.Referable parent, AdminShell.Referable rf)
+        public void ProcessEntity(Aas.IReferable parent, Aas.IReferable rf)
         {
             // access
             if (rf == null)
@@ -168,18 +167,13 @@ namespace AasxPluginExportTable.Uml
             AddClass(rf);
 
             // recurse
-            if (rf is AdminShell.IEnumerateChildren rfec)
-            {
-                var childs = rfec.EnumerateChildren();
-                if (childs != null)
-                    foreach (var c in childs)
-                        ProcessEntity(rf, c.submodelElement);
-            }
+            foreach (var c in rf.EnumerateChildren())
+                ProcessEntity(rf, c);
         }
 
-        public void ProcessSubmodel(AdminShell.Submodel submodel)
+        public void ProcessTopElement(Aas.IReferable rf, int remainDepth = int.MaxValue)
         {
-            ProcessEntity(null, submodel);
+            ProcessEntity(null, rf);
         }
 
         public void ProcessPost()

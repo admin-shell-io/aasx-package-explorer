@@ -1,0 +1,231 @@
+﻿@page "/PanelPackageContainerList"
+@using AasxIntegrationBase
+@using AnyUi
+@using AasxPredefinedConcepts
+@using AasxPackageLogic
+@using AasxPackageLogic.PackageCentral
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession Session
+
+@if (ContainerList != null)
+{
+
+	@* Head *@
+	@*<div class="row align-items-center container-list-header" style="padding: 4px 0px 4px 0px;">
+		<div class="col-1" style="padding:2px">
+			<button class="w-100 btn btn-tiny-bl-wh">&#x22EE</button>
+		</div>
+		<div class="col-auto" style="padding:2px">
+			<button class="w-100 btn btn-tiny-bl-wh">Query</button>
+		</div>
+		<div class="col-1">
+			&#x1f4d6;
+		</div>
+		<div class="col-auto" style="overflow: hidden">
+			<span>
+				Hallo 123
+			</span>
+		</div>
+	</div>*@
+
+	var icon = "\U0001F4BE";
+	if (ContainerList is PackageContainerListHttpRestRegistry)
+		icon = "\U0001f4d6";
+	if (ContainerList is PackageContainerListHttpRestRepository)
+		icon = "\u2601";
+	if (ContainerList is PackageContainerListLastRecentlyUsed)
+		icon = "\u2749";
+
+	<div style="">
+
+		<div style="">
+			<table class="table container-list-header mb-0" id="tableHeader">
+				<tbody>
+					<tr class="">
+						<td>
+							@*  
+							<button type="button" class="w-100 btn btn-tiny-bl-wh"
+								@onclick='() => DotMenuRepoHeader("ContextMenu")'>									
+								&#x22EE
+							</button>
+						*@
+
+							<div class="dropdown">
+								<button type="button" class="w-100 btn btn-tiny-bl-wh dropdown-toggle caret-off"
+									data-toggle="dropdown">
+									&#x22ee;
+								</button>
+								<div class="dropdown-menu">
+									<RenderDropdownItems MenuItems="@(DotMenuEnumerateContextMenu(ContainerList))" 
+										OnItemSelected="(mii) => DotMenuRepoItemClicked(null, mii)" />
+								</div>
+							</div>
+						</td>
+						<td>
+							@* > *@
+							<button type="button" class="w-100 btn btn-tiny-bl-wh"
+								@onclick='() => DotMenuRepoHeader("Query")'>
+								Query
+							</button>
+						</td>
+						<td>
+							@icon
+						</td>
+						<td>
+							<div style="white-space: nowrap; min-width: 400px">
+								@("" + ContainerList?.Header)
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		@* List *@
+		<div style="">
+			<table class="table container-list-body table-hover" id="tableRepoItems">
+				<tbody>
+					@foreach (var ri in ContainerList.EnumerateItems())
+					{
+						var currRi = ri;
+						var active = (ri == _selectedEntity) ? "table-active " : "";
+						<tr class="clickable @(active)" @onclick="() => OnSelectRepoItem(currRi)" @ondblclick="@DblHandler">
+							<td>
+								<div class="dropdown">
+									<button type="button" class="btn btn-tiny-bl-wh dropdown-toggle caret-off"
+									style="height: 38px" data-toggle="dropdown">
+										&#x22ee;
+									</button>
+									<div class="dropdown-menu">
+										<RenderDropdownItems MenuItems="@(RepoItemEnumerateContextMenu(currRi))" OnItemSelected="(mii) => DotMenuRepoItemClicked(currRi, mii)"/>
+									</div>
+								</div>
+							</td>
+							<td>
+								<img src="/image/IDTA_AAS-Logo_128x115_RGB.png" height="38" alt="">
+							</td>
+							<td>
+								<div class="container-list-item-infos" style="width: 20vw;">
+									<MultiLineText InputString="@ri.InfoIds" />
+								</div>
+							</td>
+							<td>
+								<div class="container-list-item-location" style="width: 30vw;">
+									<MultiLineText InputString="@(Environment.NewLine + ri.InfoLocation)" />					
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+}
+
+@code {
+	[Parameter]
+	public PackageContainerListBase ContainerList { get; set; }
+
+	public class ContextMenuSelectArgs
+	{
+		public PackageContainerListBase ContainerList;
+		public PackageContainerRepoItem RepoItem;
+		public AasxMenuItem MenuItem;
+	}
+
+	[Parameter]
+	public EventCallback<ContextMenuSelectArgs> ContextMenuSelected { get; set; }
+
+	protected PackageContainerRepoItem _selectedEntity = null;
+
+	protected void OnSelectRepoItem(PackageContainerRepoItem ri)
+	{
+		_selectedEntity = ri;
+		StateHasChanged();
+	}
+
+	protected IEnumerable<AasxMenuItemBase> RepoItemEnumerateContextMenu(PackageContainerRepoItem ri)
+	{
+		yield return new AasxMenuItem() { Icon = "\u2702", Header = "Delete from list", Name = "DeleteList" };
+		yield return new AasxMenuItem() { Icon = "\u2702", Header = "Delete from Repository", Name = "DeleteFromRepo" };
+		yield return new AasxMenuItem() { Icon = "\u25b2", Header = "Move Up", Name = "MoveUp" };
+		yield return new AasxMenuItem() { Icon = "\u25bc", Header = "Move Down", Name = "MoveDown" };
+		yield return new AasxMenuItem() { Icon = "\U0001f5d1", Header = "Un-load", Name = "Unload" };
+		yield return new AasxMenuItem() { Icon = "\u27f3", Header = "Re-calculate ids", Name = "Recalc" };
+		yield return new AasxMenuItem() { Icon = "\u2699", Header = "Properties", Name = "EditProperties" };
+		yield break;
+	}
+
+	protected IEnumerable<AasxMenuItemBase> DotMenuEnumerateContextMenu(PackageContainerListBase fr)
+	{
+		var menu = new AasxMenu()
+			.AddAction("FileRepoClose", "Close", icon: "\u274c")
+			.AddAction("FileRepoEditName", "Edit name", icon: "\u270e");
+
+		if (!(fr is PackageContainerListLastRecentlyUsed))
+		{
+			menu.AddAction("item-up", "Move Up", icon: "\u25b2")
+				.AddAction("item-down", "Move Down", icon: "\u25bc");
+		}
+
+		menu.AddSeparator()
+			.AddAction("FileRepoSaveAs", "Save as ..", icon: "\U0001f4be")
+			.AddSeparator();
+
+		if (!(fr is PackageContainerListLastRecentlyUsed))
+		{
+			if (fr is PackageContainerListLocal)
+				menu.AddAction(
+					"FileRepoMakeRelative", "Make AASX filenames relative ..", icon: "\u2699");
+
+			menu.AddAction("FileRepoAddCurrent", "Add current AAS", icon: "\u2699")
+				.AddAction("FileRepoAddToServer", "Add AASX File to File Repository", icon: "\u2699")
+				.AddAction("FileRepoMultiAdd", "Add multiple AASX files ..", icon: "\u2699")
+				.AddAction("FileRepoAddFromServer", "Add from REST server ..", icon: "\u2699")
+				.AddAction("FileRepoPrint", "Print 2D code sheet ..", icon: "\u2699");
+		}
+
+		foreach (var mi in menu)
+			yield return mi;
+	}
+
+	protected void DotMenuRepoItemClicked(PackageContainerRepoItem ri, AasxMenuItem mii)
+	{
+		var cmsa = new ContextMenuSelectArgs()
+		{
+			ContainerList = ContainerList,
+			RepoItem = ri,
+			MenuItem = mii
+		};
+		ContextMenuSelected.InvokeAsync(cmsa);
+	}
+
+	protected void DotMenuRepoItem(PackageContainerRepoItem ri)
+	{
+		;
+	}
+
+	protected void DotMenuRepoHeader(string name)
+	{
+		var cmsa = new ContextMenuSelectArgs()
+			{
+				ContainerList = ContainerList,
+				RepoItem = null,
+				MenuItem = new AasxMenuItem() { Header = name, Name = name }
+			};
+		ContextMenuSelected.InvokeAsync(cmsa);
+	}
+
+	void DblHandler(MouseEventArgs e)
+	{
+		var cmsa = new ContextMenuSelectArgs()
+			{
+				ContainerList = ContainerList,
+				RepoItem = _selectedEntity,
+				MenuItem = new AasxMenuItem() { Header = "DoubleClick", Name = "DoubleClick" }
+			};
+		ContextMenuSelected.InvokeAsync(cmsa);
+	}
+}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -12,16 +12,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
+using AasxIntegrationBase;
 
 namespace AasxPluginPlotting
 {
-    public class PlottingOptionsRecord
+    public class PlottingOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
     }
 
-    public class PlottingOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class PlottingOptions : AasxPluginLookupOptionsBase
     {
         public List<PlottingOptionsRecord> Records = new List<PlottingOptionsRecord>();
 

@@ -1,0 +1,422 @@
+/* resharper disable all */
+
+@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+/* resharper disable all */
+
+/* see: https://mycolor.space/?hex=%230028CD&sub=1 */
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+a, .btn-link {
+    color: #0366d6;
+}
+
+.btn-primary {
+    /* IDTA primary blue */
+    color: #fff;
+    background-color: #0028cd;
+    border-color: #1861ac;
+}
+
+.btn-primary-light {
+    /* light blue */
+    color: #fff;
+    background-color: #0060FA;
+    border-color: #fff;
+}
+
+.btn-secondary-light {
+    /* darker gray */
+    color: #fff;
+    background-color: #505050;
+    border-color: #fff;
+}
+
+.btn-backdrop {
+    color: #ffffff;
+    background-color: #00118dc0;
+    border-color: #ffffff !important;
+}
+
+.bg-primary {
+    background-color: #0028cd!important
+}
+
+.bg-secondary {
+    background-color: #e53d02!important
+}
+
+.caret-off::before {
+    display: none;
+}
+
+.caret-off::after {
+    display: none;
+}
+
+/* Disable selection of text in browser
+   see: https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting */
+* {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
+.selectable-text {
+    -webkit-touch-callout: initial; /* iOS Safari */
+      -webkit-user-select: text; /* Safari */
+       -khtml-user-select: text; /* Konqueror HTML */
+         -moz-user-select: text; /* Old versions of Firefox */
+          -ms-user-select: text; /* Internet Explorer/Edge */
+              user-select: text; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* styling of the modal dialogue box */
+dialog::backdrop {
+    background-color: #000977c0;
+    backdrop-filter: blur(3px);
+}
+
+dialog {
+    position: fixed;
+    left: 50vw;
+    top: 50vh;
+    width: 80vw !important;
+    /*height: 70vh;*/
+    /* see: https://stackoverflow.com/questions/27385126/chrome-font-appears-blurry */
+    transform: translate(-50%, -50%); /* Remark: this transform seems to make the text in dialogue blurry!! */
+    margin: 0; /*reset some browser centering*/
+    /* box-shadow: 5px 10px #888888; */
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: #ffffff !important;
+    background-color: #00118dc0;
+    color: #ffffff;
+}
+
+dialog header {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    text-align: center;
+    float: none !important;
+}
+
+/* light content portions of a modal dialog */
+.modal-content-light {
+    color: #303030;
+    background-color: #edeeff;
+}
+
+/* every nav-link?? */
+/* .nav-link {
+    color: #ffffff !important;
+} */
+/* drop down items are always prepared to have an icon / checkbox */
+/* see: https://stackoverflow.com/questions/16554172/adding-icons-to-bootstrap-drop-down-menu-items
+   for inspiration
+*/
+.dropdown-item {
+    padding-left: 30px;
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+}
+
+    .dropdown-item .dropdown-item-texticon {
+        position: absolute;
+        top: -0.18rem;
+        left: -1.6rem;
+        font-size: 1.3rem;
+        font-weight: 300;
+        color: #0028cd !important
+    }
+
+/* dropdown in top nav menu */
+.dropdown-toggle {
+    color: #ffffff !important;
+}
+
+.dropdown-menu {
+    margin: 2px;
+    list-style: none;
+    white-space: nowrap;
+    border: 2px solid black;
+    border-color: #999999;
+    color: black;
+    padding: 5px;
+    background-color: #f0f0f0;
+}
+
+/* Lower left panel, repository / container list items / infos with AAS / AssetId .. */
+.container-list-item-infos {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 0.7em;
+    color: #0028cd;
+    font-weight: bolder;
+    line-height: 100%;
+}
+
+/* Lower left panel, repository / container list items / location info .. */
+.container-list-item-location {
+    display: inline-block;
+    overflow: hidden;
+    font-size: 0.7em;
+    line-height: 100%;
+    color: #a07c7c;
+}
+
+/* Lower left panel, repository / container list : tablöe header */
+.container-list-header {
+    background: #e0e0e0
+}
+
+.container-list-body {
+    background: #ffffff
+}
+
+app {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-row {
+    height: 5rem;
+    display: flex;
+    align-items: center;
+}
+
+.main {
+    flex: 1;
+}
+
+    .main .top-row {
+        background-color: #f7f7f7;
+        border-bottom: 1px solid #d6d5d5;
+        justify-content: flex-end;
+    }
+
+        .main .top-row > a, .main .top-row .btn-link {
+            white-space: nowrap;
+            margin-left: 1.5rem;
+        }
+
+.main .top-row a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+    .sidebar .top-row {
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .sidebar .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .sidebar .oi {
+        width: 2rem;
+        font-size: 1.1rem;
+        vertical-align: text-top;
+        top: -2px;
+    }
+
+    .sidebar .nav-item {
+        font-size: 0.9rem;
+        padding-bottom: 0.5rem;
+    }
+
+        .sidebar .nav-item:first-of-type {
+            padding-top: 1rem;
+        }
+
+        .sidebar .nav-item:last-of-type {
+            padding-bottom: 1rem;
+        }
+
+        .sidebar .nav-item a {
+            color: #d7d7d7;
+            border-radius: 4px;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            line-height: 3rem;
+        }
+
+            .sidebar .nav-item a.active {
+                background-color: rgba(255,255,255,0.25);
+                color: white;
+            }
+
+            .sidebar .nav-item a:hover {
+                background-color: rgba(255,255,255,0.1);
+                color: white;
+            }
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.navbar-toggler {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.btn-tiny-bl-wh {
+    padding: 0px 2px 0px 2px;
+    vertical-align: middle;
+    background-color: #ffffff;
+    border-color: #0128CB;
+    border-width: 2px;
+    border-radius: 4px;
+    color: #0128CB!important;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 767.98px) {
+    .main .top-row:not(.auth) {
+        display: none;
+    }
+
+    .main .top-row.auth {
+        justify-content: space-between;
+    }
+
+    .main .top-row a, .main .top-row .btn-link {
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    app {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .main .top-row {
+        position: sticky;
+        z-index: 1;
+        top: 0;
+    }
+
+    .main > div {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+
+    .navbar-toggler {
+        display: none;
+    }
+
+    .sidebar .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+    }
+}
+
+/* BlazorInputFile */
+
+.drag-drop-zone {
+    border: 5px dashed #e53d02;
+    padding: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eee;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
+    color: #aeaeae;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin: 1.5rem 0 2rem 0;
+    position: relative;
+}
+
+    .drag-drop-zone:hover {
+        background-color: #f5f5f5;
+    }
+
+    .drag-drop-zone input[type=file] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+.drag-drop-zone-blue {
+    border: 1px dashed #0028cd;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eee;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
+    color: #aeaeae;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin: 1.5rem 0 2rem 0;
+    position: relative;
+}
+
+    .drag-drop-zone-blue:hover {
+        background-color: #f5f5f5;
+    }
+
+    .drag-drop-zone-blue input[type=file] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+

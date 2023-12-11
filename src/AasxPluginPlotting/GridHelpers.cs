@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -37,7 +37,7 @@ namespace AasxPluginPlotting
     // https://rachel53461.wordpress.com/2011/09/17/wpf-grids-rowcolumn-count-properties/
     public class GridHelpers
     {
-        #region DefaultLength Property
+        #region DefaultLength Aas.Property
 
         /// <summary>
         /// Adds the specified number of Rows to RowDefinitions. 
@@ -79,7 +79,7 @@ namespace AasxPluginPlotting
 
         #endregion
 
-        #region RowCount Property
+        #region RowCount Aas.Property
 
         /// <summary>
         /// Adds the specified number of Rows to RowDefinitions. 
@@ -123,7 +123,7 @@ namespace AasxPluginPlotting
 
         #endregion
 
-        #region ColumnCount Property
+        #region ColumnCount Aas.Property
 
         /// <summary>
         /// Adds the specified number of Columns to ColumnDefinitions. 
@@ -167,7 +167,7 @@ namespace AasxPluginPlotting
 
         #endregion
 
-        #region StarRows Property
+        #region StarRows Aas.Property
 
         /// <summary>
         /// Makes the specified Row's Height equal to Star. 
@@ -202,7 +202,7 @@ namespace AasxPluginPlotting
 
         #endregion
 
-        #region StarColumns Property
+        #region StarColumns Aas.Property
 
         /// <summary>
         /// Makes the specified Column's Width equal to Star. 

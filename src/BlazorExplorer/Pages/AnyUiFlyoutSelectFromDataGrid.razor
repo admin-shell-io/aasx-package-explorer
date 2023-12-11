@@ -1,0 +1,151 @@
+﻿@page "/AnyUiFlyoutSelectFromDataGrid"
+@using AnyUi
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@if (EventSession != null && DialogueData is AnyUiDialogueDataSelectFromDataGrid ddsfl)
+{
+	@* see Modal.razor: Bootstrap inner dialog classes *@
+
+	int numItems = 2;
+	if (ddsfl.Rows != null && ddsfl.Rows.Count >= 2)
+		numItems = (150 * ddsfl.Rows.Count) / 100;
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddsfl.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+				@onclick="() => LeaveResult(false, 0)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+			
+			@*
+			<span @ondblclick="@DblHandler">
+				<select class="form-control selectpicker" multiple data-max-options="2"
+						style="height:@(numItems)rem; max-height: 60vh;"
+						aria-label="multiple select example" @onchange="@OnSelect">
+
+					@if (ddsfl.Rows != null)
+						for (int i = 0; i < ddsfl.Rows.Count; i++)
+						{
+							<option value="@(i)">@(ddsfl.Rows[i].Cells[0])</option>
+						}
+
+				</select>
+			</span>
+			*@
+
+			<span @ondblclick="@DblHandler">
+				<table class="table table-primary table-hover table-bordered border-primary" id="tableIds">
+					<thead>
+						<tr>
+							@if (ddsfl.ColumnHeaders != null)
+								foreach (var ch in ddsfl.ColumnHeaders)
+								{
+									<th scope="col">@ch</th>
+								}
+						</tr>
+					</thead>
+					<tbody>
+						@if (ddsfl.Rows != null)
+							foreach (var row in ddsfl.Rows)
+							{
+								var currRow = row;
+								var active = (row == _selectedRow) ? "table-active " : "";
+								<tr class="clickable @(active)" @onclick="() => OnSelectRow(currRow)">
+
+									@if (ddsfl.ColumnHeaders != null)
+										for (int ci=0; ci < ddsfl.ColumnHeaders.Length; ci++)
+											if (currRow.Cells != null && currRow.Cells.Count() >= ci)
+											{
+												<th scope="col">@currRow.Cells[ci]</th>
+											}
+								</tr>
+							}
+					</tbody>
+				</table>
+			</span>
+
+		</form>
+	</div>
+	<div class="modal-footer">
+
+		@if (ddsfl.AlternativeSelectButtons == null || ddsfl.AlternativeSelectButtons.Length < 1)
+		{
+			<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true, 0)">OK</button>
+		}
+		else
+		{
+			for (int bi = 0; bi < ddsfl.AlternativeSelectButtons.Length; bi++)
+			{
+				var currBi = bi;
+				var title = ddsfl.AlternativeSelectButtons[bi];
+				<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true, currBi)">@title</button>
+			}
+		}
+
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	AnyUiDialogueDataGridRow _selectedRow = null;
+
+	void PrepareResult(AnyUiDialogueDataGridRow row)
+	{
+		if (DialogueData is AnyUiDialogueDataSelectFromDataGrid ddsfdg)
+		{
+			if (row != null
+				&& ddsfdg.Rows != null
+				&& ddsfdg.Rows.Contains(row))
+			{
+				ddsfdg.Result = true;
+				ddsfdg.ResultIndex = ddsfdg.Rows.IndexOf(row);
+				ddsfdg.ResultItem = row;
+				ddsfdg.ResultItems = new List<AnyUiDialogueDataGridRow>() { row };
+			}
+			else
+			{
+				ddsfdg.Result = false;
+				ddsfdg.ResultIndex = -1;
+				ddsfdg.ResultItem = null;
+			}
+		}
+	}
+
+	protected void OnSelectRow(AnyUiDialogueDataGridRow de)
+	{
+		_selectedRow = de;
+		StateHasChanged();
+	}
+
+	void DblHandler(MouseEventArgs e)
+	{
+		if (DialogueData is AnyUiDialogueDataSelectFromDataGrid ddsfl
+			&& ddsfl.AlternativeSelectButtons != null
+			&& ddsfl.AlternativeSelectButtons.Length > 0)
+			return;
+
+		LeaveResult(true, 0);
+	}
+
+	public void LeaveResult(bool result, int buttonIndex)
+	{
+		if (DialogueData is AnyUiDialogueDataSelectFromDataGrid ddsfl)
+		{
+			ddsfl.ButtonIndex = buttonIndex;
+		}
+
+		PrepareResult(_selectedRow);
+
+		EventSession?.EndModal(result);
+	}
+}

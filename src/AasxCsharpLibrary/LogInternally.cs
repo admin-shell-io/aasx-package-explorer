@@ -25,11 +25,20 @@ namespace AdminShellNS
 
         public static string FormatError(Exception ex, string where)
         {
-            return string.Format("Error: {0}: {1} {2} at {3}.",
+            var res = string.Format("Error: {0}: {1} {2} at {3}.",
                 where,
                 ex.Message,
                 ex.GetExceptionMessages(),
                 ex.StackTrace);
+
+            var inner = ex.InnerException;
+            while (inner != null)
+            {
+                res += $"Inner message: {inner.Message}" + System.Environment.NewLine;
+                inner = inner.InnerException;
+            }
+
+            return res;
         }
     }
 
@@ -52,6 +61,13 @@ namespace AdminShellNS
                 ex.Message,
                 ((ex.InnerException != null) ? ex.InnerException.Message : ""),
                 ex.StackTrace);
+        }
+
+        /// <summary>
+        /// Does no logging at all. Allows to have non-empty catch clauses.
+        /// </summary>
+        public void CompletelyIgnoredError(Exception ex)
+        {
         }
     }
 

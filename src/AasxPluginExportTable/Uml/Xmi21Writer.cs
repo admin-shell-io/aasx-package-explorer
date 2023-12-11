@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -18,10 +18,13 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Schema;
+using Aas = AasCore.Aas3_0;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
+using System.Windows.Controls;
 
 namespace AasxPluginExportTable.Uml
 {
@@ -59,7 +62,7 @@ namespace AasxPluginExportTable.Uml
 
         protected List<XmiTupleAssociationJob> _associationJobs = new List<XmiTupleAssociationJob>();
 
-        public void StartDoc(ExportUmlOptions options)
+        public void StartDoc(ExportUmlRecord options)
         {
             if (options != null)
                 _options = options;
@@ -150,56 +153,53 @@ namespace AasxPluginExportTable.Uml
 
         public void AddFeatures(
             XmlElement featureContainer,
-            List<AdminShell.SubmodelElementWrapper> features)
+            List<Aas.ISubmodelElement> features)
         {
             if (featureContainer == null || features == null)
                 return;
 
-            foreach (var smw in features)
-                if (smw?.submodelElement is AdminShell.SubmodelElement sme)
-                {
-                    var type = EvalFeatureType(sme);
-                    var multiplicity = EvalUmlMultiplicity(sme);
-                    var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
+            foreach (var sme in features)
+            {
+                var type = EvalFeatureType(sme);
+                var multiplicity = EvalUmlMultiplicity(sme);
+                var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
 
-                    var attrId = RegisterObject(sme);
+                var attrId = RegisterObject(sme);
 
-                    var attribute = CreateAppendElement(featureContainer, "ownedAttribute",
-                        new[] {
-                            "xmi:type", "uml:Property",
-                            "xmi:id", attrId,
-                            "name", "" + sme.idShort,
-                            "visibility", "public",
-                            "isStatic", "false",
-                            "isReadOnly", "false",
-                            "isDerived", "false",
-                            "isOrdered", "false",
-                            "isUnique", "true",
-                            "isDerivedUnion", "false"
-                        });
+                var attribute = CreateAppendElement(featureContainer, "ownedAttribute",
+                    new[] {
+                        "xmi:type", "uml:Aas.Property",
+                        "xmi:id", attrId,
+                        "name", "" + sme.IdShort,
+                        "visibility", "public",
+                        "isStatic", "false",
+                        "isReadOnly", "false",
+                        "isDerived", "false",
+                        "isOrdered", "false",
+                        "isUnique", "true",
+                        "isDerivedUnion", "false"
+                    });
 
-                    AddMultiplicity(attribute, attrId, multiplicity);
+                AddMultiplicity(attribute, attrId, multiplicity);
 
-                    CreateAppendElement(attribute, "defaultValue",
-                        new[] {
-                            "xmi:type", "uml:LiteralString",
-                            "xmi:id", attrId,
-                            "value", initialValue
-                        });
+                CreateAppendElement(attribute, "defaultValue",
+                    new[] {
+                        "xmi:type", "uml:LiteralString",
+                        "xmi:id", attrId,
+                        "value", initialValue
+                    });
 
-                    CreateAppendElement(attribute, "type",
-                        new[] {
-                            "xmi:idref", "EAnone_" + type
-                        });
-                }
+                CreateAppendElement(attribute, "type",
+                    new[] {
+                        "xmi:idref", "EAnone_" + type
+                    });
+            }
         }
 
-        public XmiHandle AddClass(AdminShell.Referable rf)
+        public XmiHandle AddClass(Aas.IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
-            if (!(rf is AdminShell.IEnumerateChildren rfec))
-                return null;
-            var features = rfec.EnumerateChildren().ToList();
+            var features = rf.EnumerateChildren().ToList();
 
             // add
             var classId = RegisterObject(rf);
@@ -207,7 +207,7 @@ namespace AasxPluginExportTable.Uml
                 new[] {
                         "xmi:type", "uml:Class",
                         "xmi:id", classId,
-                        "name", "" + rf.idShort,
+                        "name", "" + rf.IdShort,
                         "visibility", "public"
                 });
 
@@ -217,7 +217,7 @@ namespace AasxPluginExportTable.Uml
         }
 
         public XmiHandle ProcessEntity(
-            AdminShell.Referable parent, AdminShell.Referable rf)
+            Aas.IReferable parent, Aas.IReferable rf)
         {
             // access
             if (rf == null)
@@ -227,36 +227,30 @@ namespace AasxPluginExportTable.Uml
             var dstTuple = AddClass(rf);
 
             // recurse
-            if (rf is AdminShell.IEnumerateChildren rfec)
+            foreach (var sme in rf.EnumerateChildren())
             {
-                var childs = rfec.EnumerateChildren();
-                if (childs != null)
-                    foreach (var c in childs)
-                        if (c?.submodelElement is AdminShell.SubmodelElement sme)
-                        {
-                            // create further entities
-                            var srcTuple = ProcessEntity(rf, sme);
+                // create further entities
+                var srcTuple = ProcessEntity(rf, sme);
 
-                            // make associations (often, srcTuple will be null, because not a class!)
-                            var job = new XmiTupleAssociationJob()
-                            {
-                                AssocType = "Aggr",
-                                Name = "" + sme.idShort,
-                                Multiplicity = "" + EvalUmlMultiplicity(sme),
-                                SrcTuple = srcTuple,
-                                DstTuple = dstTuple
-                            };
-                            if (job.Valid)
-                                _associationJobs.Add(job);
-                        }
+                // make associations (often, srcTuple will be null, because not a class!)
+                var job = new XmiTupleAssociationJob()
+                {
+                    AssocType = "Aggr",
+                    Name = "" + sme.IdShort,
+                    Multiplicity = "" + EvalUmlMultiplicity(sme),
+                    SrcTuple = srcTuple,
+                    DstTuple = dstTuple
+                };
+                if (job.Valid)
+                    _associationJobs.Add(job);
             }
 
             return dstTuple;
         }
 
-        public void ProcessSubmodel(AdminShell.Submodel submodel)
+        public void ProcessTopElement(Aas.IReferable rf, int remainDepth = int.MaxValue)
         {
-            ProcessEntity(null, submodel);
+            ProcessEntity(null, rf);
         }
 
         public void ProcessPost()
@@ -272,7 +266,7 @@ namespace AasxPluginExportTable.Uml
 
                     var attribute = CreateAppendElement(job.SrcTuple.Elem, "ownedAttribute",
                         new[] {
-                            "xmi:type", "uml:Property",
+                            "xmi:type", "uml:Aas.Property",
                             "xmi:id", assocAttrId,
                             "visibility", "public",
                             "association", assocId,
@@ -316,7 +310,7 @@ namespace AasxPluginExportTable.Uml
 
                     var ownedEnd1 = CreateAppendElement(assoc, "ownedEnd",
                         new[] {
-                            "xmi:type", "uml:Property",
+                            "xmi:type", "uml:Aas.Property",
                             "xmi:id", ownEndId,
                             "visibility", "public",
                             "association", assocId,
@@ -346,8 +340,11 @@ namespace AasxPluginExportTable.Uml
             if (Doc == null || !fn.HasContent())
                 return;
 
-            // save
-            Doc.Save(fn);
+            // save (with specified encoding)
+            using (TextWriter sw = new StreamWriter(fn, false, Encoding.UTF8)) //Set encoding
+            {
+                Doc.Save(sw);
+            }
         }
     }
 }

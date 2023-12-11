@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="AasxPackageExplorer.ModalPanelFlyout"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="900" Loaded="UserControl_Loaded">
+    <!--
+    Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Author: Michael Hoffmeister
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="/Themes/Generic.xaml"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="OuterGrid" Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="40"/>
+        </Grid.ColumnDefinitions>
+
+        <Viewbox Grid.Row="0" Grid.Column="2" Margin="8,8,8,8" HorizontalAlignment="Right" VerticalAlignment="Top" MaxHeight="26">
+            <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
+        </Viewbox>
+
+        <TextBlock x:Name="TextBlockCaption" Grid.Row="0" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Caption .."/></TextBlock>
+                       
+        <Grid x:Name="GridContentAndButtons" Grid.Row="1" Grid.RowSpan="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <!-- MIHO-TEMP -->
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer x:Name="ScrollViewContent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                          VerticalScrollBarVisibility="Auto">
+            </ScrollViewer>
+
+            <!-- <Button x:Name="ButtonCancel" IsDefault="True" Grid.Row="2" Grid.Column="0" 
+                    Content="Cancel" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" 
+                    Padding="6" Margin="0,8,5,10" Click="Button_Click"/>
+            <Button x:Name="ButtonOk" IsDefault="True" Grid.Row="2" Grid.Column="1" 
+                    Content="Ok" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" 
+                    Padding="6" Margin="5,8,0,10" Click="Button_Click"/> -->
+
+            <StackPanel x:Name="StackPanelButtons"  Orientation="Horizontal"
+                        Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                        HorizontalAlignment="Right">
+                <Button Style="{DynamicResource TranspRoundCorner}" Height="28" MinWidth="80" Foreground="White" Margin="5, 8, 0, 10" Padding="6" FontSize="18">Cancel</Button>
+                <Button Style="{DynamicResource TranspRoundCorner}" Height="28" MinWidth="80" Foreground="White" Margin="5, 8, 0, 10" Padding="6" FontSize="18">OK</Button>
+            </StackPanel>
+        
+        </Grid>
+
+        <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
+
+    </Grid>
+
+</UserControl>

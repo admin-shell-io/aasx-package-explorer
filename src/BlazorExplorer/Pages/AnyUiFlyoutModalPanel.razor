@@ -1,0 +1,65 @@
+﻿@page "/AnyUiFlyoutModalPanel"
+@using AnyUi
+@using AasxIntegrationBase
+@using BlazorUI.Data
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession Session
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataModalPanel ddmp)
+{
+    @* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@ddmp.Caption</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(null)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+
+		@if (ddmp.Panel != null) {
+            // render
+            var _displayData = new AnyUiDisplayDataHtml(Session.DisplayContext);
+
+            <AnyUiRenderElem DisplayData="@_displayData"
+                Session="@Session" 
+                Element="@ddmp.Panel"
+                FillMode="@AnyUiHtmlFillMode.FillWidth"/>
+        }
+
+	</div>
+	<div class="modal-footer">
+		@{
+			var layout = MessageBoxFlyout.LayoutButtons(ddmp.DialogButtons, ddmp.ExtraButtons);
+			foreach (var btn in layout)
+			{
+				@if (btn.Primary)
+				{
+					<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(btn.FinalResult)">@btn.Title</button>
+				}
+				else
+				{
+					<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(btn.FinalResult)">@btn.Title</button>
+				}
+			}
+		}
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	public void LeaveResult(AnyUiMessageBoxResult? result)
+	{
+		if (DialogueData is AnyUiDialogueDataMessageBox ddmb && result.HasValue) {
+			ddmb.ResultButton = result.Value;
+		}
+
+		EventSession?.EndModal(result.HasValue);
+	}
+}

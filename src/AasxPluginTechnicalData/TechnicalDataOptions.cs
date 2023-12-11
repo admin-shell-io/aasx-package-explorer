@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -12,16 +12,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
+
 
 namespace AasxPluginTechnicalData
 {
-    public class TechnicalDataOptionsRecord
+    public class TechnicalDataOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
     }
 
-    public class TechnicalDataOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class TechnicalDataOptions : AasxPluginLookupOptionsBase
     {
         public List<TechnicalDataOptionsRecord> Records = new List<TechnicalDataOptionsRecord>();
 
@@ -34,10 +37,11 @@ namespace AasxPluginTechnicalData
             var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
             var defsV11 = AasxPredefinedConcepts.ZveiTechnicalDataV11.Static;
+			var defsV12 = AasxPredefinedConcepts.IdtaTechnicalDataV12.Static;
 
-            // records
+			// records
 
-            var opt = new TechnicalDataOptions();
+			var opt = new TechnicalDataOptions();
 
             var rec10 = new TechnicalDataOptionsRecord();
             rec10.AllowSubmodelSemanticId.Add(defsV10.SM_TechnicalData.GetSemanticKey());
@@ -47,7 +51,11 @@ namespace AasxPluginTechnicalData
             rec11.AllowSubmodelSemanticId.Add(defsV11.SM_TechnicalData.GetSemanticKey());
             opt.Records.Add(rec11);
 
-            return opt;
+			var rec12 = new TechnicalDataOptionsRecord();
+			rec11.AllowSubmodelSemanticId.Add(defsV12.SM_TechnicalData.GetSemanticKey());
+			opt.Records.Add(rec12);
+
+			return opt;
         }
     }
 }

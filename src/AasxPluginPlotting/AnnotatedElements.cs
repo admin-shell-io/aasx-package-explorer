@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -29,7 +29,9 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxIntegrationBase
@@ -75,7 +77,7 @@ namespace AasxIntegrationBase
         /// which features the Qualifier "Annotation.Args".
         /// </summary>
         [JsonIgnore]
-        public AdminShell.Description Description;
+        public List<Aas.ILangStringTextType> Description;
 
         // ReSharper enable UnassignedField.Global
 
@@ -104,35 +106,30 @@ namespace AasxIntegrationBase
 
         public AnnotatedElements() { }
 
-        public AnnotatedElements(AdminShell.IRecurseOnReferables root)
+        public AnnotatedElements(Aas.IReferable root)
         {
             Parse(root);
         }
 
-        public void Parse(AdminShell.IRecurseOnReferables root)
+        public void Parse(Aas.IReferable root)
         {
             root?.RecurseOnReferables(null,
                 includeThis: true,
                 lambda: (o, parents, rf) =>
                 {
-                    if (rf is AdminShell.IGetQualifiers gqs)
+                    foreach (var ext in rf.FindAllExtensionName("Annotation.Args"))
                     {
-                        var qs = gqs.GetQualifiers();
-                        if (qs != null)
-                            foreach (var q in qs.FindAllQualifierType("Annotation.Args"))
-                            {
-                                var a = AnnotatedElemArgs.Parse(q?.value);
-                                if (a == null)
-                                    continue;
+                        var a = AnnotatedElemArgs.Parse(ext?.Value);
+                        if (a == null)
+                            continue;
 
-                                if (a.desc && rf is AdminShell.Submodel sm)
-                                    a.Description = sm.description;
+                        if (a.desc && rf is Aas.Submodel sm)
+                            a.Description = sm.Description;
 
-                                if (a.desc && rf is AdminShell.SubmodelElement sme)
-                                    a.Description = sme.description;
+                        if (a.desc && rf is Aas.ISubmodelElement sme)
+                            a.Description = sme.Description;
 
-                                _args.Add(a);
-                            }
+                        _args.Add(a);
                     }
                     return true;
                 });
@@ -167,7 +164,7 @@ namespace AasxIntegrationBase
                 tb.Text = "" + a.text;
                 if (a.desc)
                 {
-                    var d = a.Description?.GetDefaultStr(defaultLang);
+                    var d = a.Description?.GetDefaultString(defaultLang);
                     if (d.HasContent())
                         tb.Text = d;
                 }

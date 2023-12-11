@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -36,7 +36,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public enum CustomButton { Query, Context }
 
-        public event Action<Control, PackageContainerListBase, CustomButton, Button>
+        public event Func<Control, PackageContainerListBase, CustomButton, Button, Task>
             ButtonClick;
         public event Action<Control, PackageContainerListBase, PackageContainerRepoItem>
             FileDoubleClick;
@@ -131,12 +131,12 @@ namespace AasxWpfControlLibrary.PackageCentral
                     this.RepoList.SelectedItem as PackageContainerRepoItem);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             if (sender == this.ButtonQuery)
-                this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Query, this.ButtonQuery);
+                await this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Query, this.ButtonQuery);
             if (sender == this.ButtonContext)
-                this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Context, this.ButtonContext);
+                await this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Context, this.ButtonContext);
         }
 
         private void RepoList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -199,6 +199,11 @@ namespace AasxWpfControlLibrary.PackageCentral
                 this.FileRepository?.Remove(fi);
             }
 
+            if (mi?.Name == "MenuItemDeleteFromFileRepo" && fi != null)
+            {
+                this.FileRepository?.DeletePackageFromServer(fi);
+            }
+
             if (mi?.Name == "MenuItemMoveUp" && fi != null)
             {
                 this.FileRepository?.MoveUp(fi);
@@ -209,12 +214,19 @@ namespace AasxWpfControlLibrary.PackageCentral
                 this.FileRepository?.MoveDown(fi);
             }
 
-            if (mi?.Name == "MenuItemUnload" && fi != null)
+			if (mi?.Name == "MenuItemLoad" && fi != null)
+			{
+				await fi.LoadResidentIfPossible(this.FileRepository?.GetFullItemLocation(fi.Location));
+                Log.Singleton.Info($"Repository item {fi.Location} loaded.");
+			}
+
+			if (mi?.Name == "MenuItemUnload" && fi != null)
             {
                 fi.Close();
-            }
+				Log.Singleton.Info($"Repository item {fi.Location} unloaded.");
+			}
 
-            if (mi?.Name == "MenuItemRecalc" && fi != null)
+			if (mi?.Name == "MenuItemRecalc" && fi != null)
             {
                 await fi.LoadResidentIfPossible(theFileRepository?.GetFullItemLocation(fi.Location));
 

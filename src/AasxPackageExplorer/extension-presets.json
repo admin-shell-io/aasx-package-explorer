@@ -1,0 +1,64 @@
+[
+  {
+    "name": "Main app | Submodel template attribute set",
+    "extension": {
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/smt-attribute-set/v1/0"
+          }
+        ]
+      },
+      "name": "smt-attrtibute-set",
+      "value": "{ type: \"Sin\", ofs: 230.0, scale: 10.0, freq: 0.05, timer: 500 }",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Main app | Animation of values",
+    "extension": {
+      "semanticId": null,
+      "name": "Animate.Args",
+      "value": "{ type: \"Sin\", ofs: 230.0, scale: 10.0, freq: 0.05, timer: 500 }",
+      "valueId": null
+    }
+  },
+  {
+    "name": "BOM Plugin | Formatting arguments",
+    "extension": {
+      "semanticId": null,
+      "name": "BOM.Args",
+      "value": "{ start: \"Tee\", end: \"Diamond\", width: 2.0, stroke: \"#000090\" }",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Plotting Plugin | Single plot arguments",
+    "extension": {
+      "semanticId": null,
+      "name": "Plotting.Args",
+      "value": "{ grp:1, src: \"Event\", title: \"Phase voltages\", fmt: \"F0\", row: 6, col: 0, rowspan: 1, colspan:1, unit: \"V\", linewidth: 1.0 }",
+      "valueId": null
+    }
+  },
+  {
+    "name": "Plotting Plugin | Time series arguments",
+    "extension": {
+      "semanticId": null,
+      "name": "TimeSeries.Args",
+      "value": "{ height: 400, palette: \"Category10\" }",
+      "valueId": null
+    }
+  },
+  {
+    "name": "ImageMap Plugin | Image map arguments",
+    "extension": {
+      "semanticId": null,
+      "name": "ImageMap.Args",
+      "value": "{  }",
+      "valueId": null
+    }
+  }
+]

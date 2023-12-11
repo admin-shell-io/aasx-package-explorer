@@ -1,0 +1,93 @@
+﻿<!-- ReSharper disable RedundantUnits -->
+<!-- ReSharper disable Html.Obsolete  -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title of the document</title>
+    <style>
+        #wrap {
+            width: 1400px;
+            height: 620px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #scaled-frame {
+            width: 1600px;
+            height: 1000px;
+            border: 0px;
+        }
+
+        #scaled-frame {
+            zoom: 0.85;
+            -moz-transform: scale(0.85);
+            -moz-transform-origin: 0 0;
+            -o-transform: scale(0.85);
+            -o-transform-origin: 0 0;
+            -webkit-transform: scale(0.85);
+            -webkit-transform-origin: 0 0;
+        }
+
+        @media screen and (-webkit-min-device-pixel-ratio:0) {
+            #scaled-frame {
+                zoom: 1.0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Demo of AASX BlazorUI embedded</h1>
+    <p style="margin-top: 5px; margin-bottom: 20px">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+        aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+        takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+        dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
+        sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+        diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
+        est Lorem ipsum dolor sit amet.
+
+        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla
+        facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te
+        feugait nulla facilisi. Lorem ipsum dolor sit amet.
+    </p>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/qC0vDKVPCrw?autoplay=1&mute=1"
+            title="Demo video" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <br />
+    <p style="margin-top: 5px; margin-bottom: 20px">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+        aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+        takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+        dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
+        sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+        diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
+        est Lorem ipsum dolor sit amet.
+
+        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla
+        facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te
+        feugait nulla facilisi. Lorem ipsum dolor sit amet.
+    </p>
+    <br />
+    <div id="wrap" style="border-width: 2px;border-color: blue; border-style: solid; padding-top: 10px;">
+        <iframe id="scaled-frame" src="https://localhost:5001/?header=2&aasndx=0&smid=aHR0cDovL3NtYXJ0LmZlc3RvLmNvbS9pZC9pbnN0YW5jZS85OTkyMDIxMTExNzA5Mzc0NjAwMDAxNzIzMg==&plugin=TED"></iframe>
+    </div>
+    <br />
+    <p style="margin-top: 20px; margin-bottom: 5px">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+        aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+        takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+        dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
+        sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+        diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
+        est Lorem ipsum dolor sit amet.
+
+        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla
+        facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te
+        feugait nulla facilisi. Lorem ipsum dolor sit amet.
+    </p>
+</body>
+</html>

@@ -8,24 +8,22 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using AasxDictionaryImport.Model;
+using AasxPackageLogic;
+using AdminShellNS;
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
-using AasxDictionaryImport.Model;
-using AasxPackageExplorer;
-using AasxPackageLogic;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
+
 
 namespace AasxDictionaryImport.Eclass
 {
@@ -198,7 +196,7 @@ namespace AasxDictionaryImport.Eclass
                 throw new ImportException($"ECLASS query failed with status code: {response.ReasonPhrase}");
             }
 
-            var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempDir = Path.Combine(Path.Combine(Path.GetTempPath(), $"aasx.import"), Path.GetRandomFileName());
             Directory.CreateDirectory(tempDir);
             var tempFile = Path.Combine(tempDir, irdi + ".xml");
 
@@ -218,7 +216,7 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        protected override Model.IDataSource OpenPath(string path, Model.DataSourceType type)
+        public override Model.IDataSource OpenPath(string path, Model.DataSourceType type = DataSourceType.Custom)
             => new DataSource(this, path, type);
     }
 
@@ -659,8 +657,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell)
+        public override bool ImportSubmodelInto(Aas.Environment env,
+            Aas.IAssetAdministrationShell adminShell)
         {
             if (!IsSelected)
                 return false;
@@ -688,8 +686,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(Aas.Environment env,
+            Aas.IReferable parent)
         {
             if (!IsSelected)
                 return false;
@@ -786,8 +784,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(Aas.Environment env,
+            Aas.IReferable parent)
         {
             if (!IsSelected)
                 return false;
@@ -820,10 +818,10 @@ namespace AasxDictionaryImport.Eclass
             // TODO (krahlro-sick, 2021-02-23): This logic is copied from EclassUtils.GenerateConceptDescription -- does
             // it handle all possible values?
             var lowerType = type.ToLower();
-            foreach (var aasType in AdminShell.DataSpecificationIEC61360.DataTypeNames)
+            foreach (var aasType in AdminShellUtil.GetEnumValues<Aas.DataTypeIec61360>())
             {
-                if (lowerType.Contains(aasType.ToLower()))
-                    return aasType;
+                if (lowerType.Contains(aasType.ToString().ToLower()))
+                    return aasType.ToString();
             }
             return string.Empty;
         }

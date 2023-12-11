@@ -465,7 +465,7 @@
 		    				<enumeration value="DataElement"></enumeration>
 		    				<enumeration value="View"></enumeration>
 		    				<enumeration value="Property"></enumeration>
-		    				<enumeration value="SubmodelElement"></enumeration>
+		    				<enumeration value="ISubmodelElement"></enumeration>
 		    				<enumeration value="File"></enumeration>
 		    				<enumeration value="Blob"></enumeration>
 		    				<enumeration value="ReferenceElement"></enumeration>
@@ -477,7 +477,7 @@
 		    				<enumeration value="AssetAdministrationShell"></enumeration>
 		    				<enumeration value="Submodel"></enumeration>
 		    				<enumeration value="ConceptDescription"></enumeration>
-		    				<enumeration value="Asset"></enumeration>    				
+		    				<enumeration value="AssetInformation"></enumeration>    				
 		        		</restriction>
 		        	</simpleType>
 		        </attribute>

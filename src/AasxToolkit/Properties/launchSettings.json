@@ -2,7 +2,8 @@
   "profiles": {
     "AasxToolkit": {
       "commandName": "Project",
-      "commandLineArgs": "load Festo_SMT.aasx export-cst cst-smt"
+      //"commandLineArgs": "load \"C:\\Development\\AASX\\01_Festo.aasx\""
+      "commandLineArgs": "load \"C:\\Development\\AASX\\TestAASV2.aasx\""
     }
   }
 }

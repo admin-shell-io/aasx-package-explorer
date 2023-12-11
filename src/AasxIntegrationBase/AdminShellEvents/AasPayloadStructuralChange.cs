@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -10,16 +10,13 @@ This source code may use other Open Source software components (see LICENSE.txt)
 // to be disabled for AASX Server
 #define UseMarkup 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
+using AdminShellNS.DiaryData;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using Aas = AasCore.Aas3_0;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -35,7 +32,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// Single item of a structural change payload
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
-    public class AasPayloadStructuralChangeItem : IAasPayloadItem, AdminShell.IAasDiaryEntry
+    public class AasPayloadStructuralChangeItem : IAasPayloadItem, IAasDiaryEntry
     {
         /// <summary>
         /// Reason for the change. According to CRUD principle.
@@ -53,7 +50,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// Observable of the defined Event. 
         /// Is null / empty, if identical to Observable.
         /// </summary>
-        public AdminShell.KeyList Path { get; set; }
+        public List<Aas.IKey> Path { get; set; }
 
         /// <summary>
         /// JSON-Serialization of the Submodel, SMC, SME which was denoted by Observabale and Path.
@@ -67,11 +64,11 @@ namespace AasxIntegrationBase.AdminShellEvents
         public int CreateAtIndex = -1;
 
         /// <summary>
-        /// Direct reference to Referable, when change item was successfully processed.
+        /// Direct reference to IReferable, when change item was successfully processed.
         /// Note: only runtime value; not specified; not interoperable
         /// </summary>
         [JsonIgnore]
-        public AdminShell.Referable FoundReferable;
+        public Aas.IReferable FoundReferable;
 
         //
         // Constructor
@@ -80,7 +77,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         public AasPayloadStructuralChangeItem(
             DateTime timeStamp,
             StructuralChangeReason reason,
-            AdminShell.KeyList path = null,
+            List<Aas.IKey> path = null,
             int createAtIndex = -1,
             string data = null)
         {
@@ -100,7 +97,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var res = "PayloadStructuralChangeItem: {Observable}";
             if (Path != null)
                 foreach (var k in Path)
-                    res += "/" + k.value;
+                    res += "/" + k.Value;
             res += " -> " + Reason.ToString();
             return res;
         }
@@ -111,7 +108,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var left = "  MsgUpdateValueItem: {Observable}";
             if (Path != null)
                 foreach (var k in Path)
-                    left += "/" + k.value;
+                    left += "/" + k.Value;
 
             var right = "";
             right += " -> " + Reason.ToString();
@@ -129,14 +126,14 @@ namespace AasxIntegrationBase.AdminShellEvents
         }
 #endif
 
-        public AdminShell.Referable GetDataAsReferable()
+        public Aas.IReferable GetDataAsReferable()
         {
             // access
             if (Data == null)
                 return null;
 
             // try deserialize
-            return AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Referable>(Data);
+            return AdminShellSerializationHelper.DeserializeFromJSON<Aas.IReferable>(Data);
         }
 
         public string GetDetailsText()
@@ -191,7 +188,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var res = base.ToString();
             if (Changes != null)
                 foreach (var chg in Changes)
-                    res += Environment.NewLine + chg.ToString();
+                    res += System.Environment.NewLine + chg.ToString();
             return res;
         }
 

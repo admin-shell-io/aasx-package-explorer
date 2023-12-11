@@ -1,0 +1,207 @@
+﻿@page "/AnyUiFlyoutSaveFile"
+@using System.Text.RegularExpressions;
+@using Aas = AasCore.Aas3_0;
+@using AdminShellNS
+@using Extensions
+@using AasxIntegrationBase
+@using AnyUi
+@using BlazorUI.Data
+@using BlazorInputFile
+@using AasxPackageLogic
+@using AasxPackageLogic.PackageCentral
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession bi
+
+@* see: https://blog.stevensanderson.com/2019/09/13/blazor-inputfile/ *@
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataSaveFile ddsf)
+{
+	@* see Modal.razor: Bootstrap inner dialog classes *@
+
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@((ddsf.Caption?.HasContent() != true) ? "Select file" : ddsf.Caption)</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+
+	<div class="modal-body my-3 row d-flex justify-content-center">
+		<h5>
+			@ddsf.Message
+		</h5>
+
+		@* existing user file name *@
+		@if (ddsf.AllowUserFiles)
+		{
+			<span class="col-12 mt-4">Select existing user file to give filename:</span>
+			<div class="dropdown col-12">
+				<button class="btn btn btn-secondary dropdown-toggle" 
+					style="width: 100%"
+					type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+					@("Select user file ..")
+				</button>
+				<ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton1">
+					@foreach (var ufn in PackageContainerUserFile.EnumerateUserFiles("*.aasx").ToList())
+					{
+						var currUfn = ufn; // save iteration variable
+						<li><a class="dropdown-item" style="display: inline-block; width: 100%" @onclick="() => OnSelectUserFileName(currUfn)">@(currUfn)</a></li>
+					}
+				</ul>
+			</div>
+		}
+
+		@* Filter index *@
+
+		@if (_filterItems != null && _filterItems.Count > 0)
+		{
+			<span class="col-12 mt-4">Select filter for filename:</span>
+			<div class="dropdown col-12">
+				<button class="btn btn btn-secondary dropdown-toggle"
+				style="width: 100%"
+				type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+					@((ddsf.FilterIndex >= 0 && ddsf.FilterIndex < _filterItems.Count) 
+						? _filterItems[ddsf.FilterIndex].Name : "Select filter ..")
+				</button>
+				<ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton1">
+					@for (int fi = 0; fi < _filterItems.Count; fi++)
+					{
+						var currFi = fi; // save iteration variable
+						<li><a class="dropdown-item" style="display: inline-block; width: 100%" 
+							@onclick="() => OnSelectFilterItem(currFi)">@(_filterItems[fi].Name)</a></li>
+					}
+				</ul>
+			</div>
+		}
+
+		@* Edit file name *@
+		@if (true)
+		{
+			<span class="col-12 mt-4">Filename to save:</span>
+
+			@* TORTURE LEARNINGS: It took two hours to find this working combination.
+               It is essential to have the labels have MATCHING fors="" to correct ids!!! *@
+
+			<div class="col-12 btn-group" role="group" aria-label="File destination"
+						 name="btnradio">
+				<input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off"
+					checked="@(ddsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Download)"
+					@onclick="() => OnSelectLocationKind(AnyUiDialogueDataSaveFile.LocationKind.Download)" />
+				<label class="btn btn-outline-primary" for="btnradio1">Download</label>
+
+				@if (ddsf.AllowUserFiles)
+				{
+					<input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
+					checked="@(ddsf.Location == AnyUiDialogueDataSaveFile.LocationKind.User)"
+					@onclick="() => OnSelectLocationKind(AnyUiDialogueDataSaveFile.LocationKind.User)" />
+					<label class="btn btn-outline-primary" for="btnradio2">User</label>
+				}
+
+				@if (ddsf.AllowLocalFiles)
+				{
+					<input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off"
+					checked="@(ddsf.Location == AnyUiDialogueDataSaveFile.LocationKind.Local)"
+					@onclick="() => OnSelectLocationKind(AnyUiDialogueDataSaveFile.LocationKind.Local)" />
+					<label class="btn btn-outline-primary" for="btnradio3">Local</label>
+				}
+			</div>
+
+			<div class="col-12 mt-2">
+				<input type="text" class="form-control form-control-lg autofocus" id="text" @bind-value="ddsf.TargetFileName">
+           </div>
+		}
+
+	</div>
+	<div class="modal-footer">
+
+		<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(false)">Cancel</button>
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	protected IList<AnyUiDialogueDataOpenFile.FilterItem> _filterItems = 
+		new List<AnyUiDialogueDataOpenFile.FilterItem>();
+
+	protected override void OnParametersSet()
+	{
+		// duties
+		base.OnParametersSet();
+
+		// reset
+		_filterItems.Clear();
+
+		// access
+		if (!(DialogueData is AnyUiDialogueDataSaveFile ddsf))
+			return;
+
+		// filter items
+		_filterItems = AnyUiDialogueDataOpenFile.DecomposeFilter(ddsf?.Filter);
+
+		// pre-set filename
+		if (ddsf.ProposeFileName?.HasContent() == true)
+			ddsf.TargetFileName = ddsf.ProposeFileName;
+	}
+
+	protected void ApplyFilterIndexToFilename(int final = 0)
+	{
+		if (DialogueData is AnyUiDialogueDataSaveFile ddsf)
+		{
+			if (ddsf.FilterIndex < 0 || _filterItems == null || ddsf.FilterIndex >= _filterItems.Count)
+				return;
+
+			ddsf.TargetFileName = AnyUiDialogueDataOpenFile.ApplyFilterItem(
+				fi: _filterItems[ddsf.FilterIndex],
+				fn: ddsf.TargetFileName,
+				final: final
+			);
+		}
+	}
+
+	protected void OnSelectFilterItem(int i)
+	{
+		if (DialogueData is AnyUiDialogueDataSaveFile ddsf)
+		{
+			ddsf.FilterIndex = i;
+		}
+		ApplyFilterIndexToFilename();
+		StateHasChanged();
+	}
+
+	protected void OnSelectUserFileName(string ufn)
+	{
+		if (DialogueData is AnyUiDialogueDataSaveFile ddsf)
+		{
+			ddsf.TargetFileName = "" + ufn;
+			ddsf.Location = AnyUiDialogueDataSaveFile.LocationKind.User;
+		}
+		ApplyFilterIndexToFilename();
+		StateHasChanged();
+	}
+
+	protected void OnSelectLocationKind(AnyUiDialogueDataSaveFile.LocationKind lk)
+	{
+		if (DialogueData is AnyUiDialogueDataSaveFile ddsf)
+		{
+			ddsf.Location = lk;
+		}
+		StateHasChanged();
+	}
+
+	public void LeaveResult(bool result)
+	{
+		if (result)
+		{
+			ApplyFilterIndexToFilename(final: 1);
+		}
+
+		EventSession?.EndModal(result);
+	}
+}

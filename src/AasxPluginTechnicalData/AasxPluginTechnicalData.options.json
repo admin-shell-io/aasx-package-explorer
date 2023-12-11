@@ -4,10 +4,7 @@
       "AllowSubmodelSemanticId": [
         {
           "type": "Submodel",
-          "local": false,
           "value": "http://admin-shell.io/tmp/SG2/TechnicalData/Submodel/1/0",
-          "index": 0,
-          "idType": "IRI"
         }
       ]
     },
@@ -15,10 +12,15 @@
       "AllowSubmodelSemanticId": [
         {
           "type": "Submodel",
-          "local": false,
           "value": "http://admin-shell.io/sandbox/SG2/TechnicalData/Submodel/1/1",
-          "index": 0,
-          "idType": "IRI"
+        }
+      ]
+    },
+    {
+      "AllowSubmodelSemanticId": [
+        {
+          "type": "Submodel",
+          "value": "https://admin-shell.io/ZVEI/TechnicalData/Submodel/1/2",
         }
       ]
     }

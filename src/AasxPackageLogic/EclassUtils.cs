@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,14 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AdminShellNS;
+using Extensions;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPackageLogic
 {
@@ -31,7 +31,7 @@ namespace AasxPackageLogic
             var res = DataFileType.Other;
             try
             {
-                using (FileStream fileSteam = File.OpenRead(fn))
+                using (FileStream fileSteam = System.IO.File.OpenRead(fn))
                 {
                     using (XmlReader reader = XmlReader.Create(fileSteam))
                     {
@@ -164,6 +164,8 @@ namespace AasxPackageLogic
 
             double progressPerFile = 1.0 / a.eclassFiles.Count;
 
+            var lastTimeOfUpdate = DateTime.Now;
+
             for (int fileNdx = 0; fileNdx < a.eclassFiles.Count; fileNdx++)
             {
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
@@ -171,7 +173,7 @@ namespace AasxPackageLogic
                 try
                 {
 
-                    using (FileStream fileSteam = File.OpenRead(a.eclassFiles[fileNdx].fn))
+                    using (FileStream fileSteam = System.IO.File.OpenRead(a.eclassFiles[fileNdx].fn))
                     {
                         var settings = new XmlReaderSettings();
                         settings.ConformanceLevel = ConformanceLevel.Document;
@@ -230,8 +232,11 @@ namespace AasxPackageLogic
                                     }
 
                                     numElems++;
-                                    if (numElems % 500 == 0)
+                                    if (numElems % 500 == 0
+                                        && (DateTime.Now - lastTimeOfUpdate).TotalMilliseconds > 1000)
                                     {
+                                        lastTimeOfUpdate = DateTime.Now;
+
                                         long currPos = fileSteam.Position;
                                         double frac = Math.Min(
                                             100.0d * progressPerFile * (fileNdx) +
@@ -283,7 +288,7 @@ namespace AasxPackageLogic
                 try
                 {
 
-                    using (FileStream fileSteam = File.OpenRead(a.eclassFiles[fileNdx].fn))
+                    using (FileStream fileSteam = System.IO.File.OpenRead(a.eclassFiles[fileNdx].fn))
                     {
                         var settings = new XmlReaderSettings();
                         settings.ConformanceLevel = ConformanceLevel.Document;
@@ -365,7 +370,7 @@ namespace AasxPackageLogic
                 try
                 {
 
-                    using (FileStream fileSteam = File.OpenRead(a.eclassFiles[fileNdx].fn))
+                    using (FileStream fileSteam = System.IO.File.OpenRead(a.eclassFiles[fileNdx].fn))
                     {
                         var settings = new XmlReaderSettings();
                         settings.ConformanceLevel = ConformanceLevel.Document;
@@ -464,9 +469,9 @@ namespace AasxPackageLogic
             return otherwise;
         }
 
-        private static void FindChildLangStrings(
+        private static void FindChildLangStrings<T>(
             XmlNode node, string childName, string childChildName, string langCodeAttrib,
-            Action<AdminShell.LangStr> action)
+            Action<T> action) where T : IAbstractLangString
         {
             if (node == null || action == null)
                 return;
@@ -478,15 +483,25 @@ namespace AasxPackageLogic
                     foreach (XmlNode ni in nl)
                         if (ni.Attributes != null && ni.Attributes[langCodeAttrib] != null)
                         {
-                            var ls = new AdminShell.LangStr();
-                            ls.lang = ni.Attributes["language_code"].InnerText;
-                            ls.str = ni.InnerText;
-                            action(ls);
+                            object ls = null;
+                            if (typeof(T) is ILangStringTextType)
+                            {
+                                ls = new LangStringTextType(ni.Attributes["language_code"].InnerText, ni.InnerText);
+                            }
+                            else if (typeof(T) is ILangStringPreferredNameTypeIec61360)
+                            {
+                                ls = new LangStringPreferredNameTypeIec61360(ni.Attributes["language_code"].InnerText, ni.InnerText);
+                            }
+                            else if (typeof(T) is ILangStringDefinitionTypeIec61360)
+                            {
+                                ls = new LangStringDefinitionTypeIec61360(ni.Attributes["language_code"].InnerText, ni.InnerText);
+                            }
+                            action((T)ls);
                         }
             }
         }
 
-        public static AdminShell.ConceptDescription GenerateConceptDescription(
+        public static Aas.ConceptDescription GenerateConceptDescription(
             List<EclassUtils.SearchItem> input, string targetIrdi)
         {
             // access
@@ -494,12 +509,15 @@ namespace AasxPackageLogic
                 return null;
 
             // new cd
-            var res = new AdminShell.ConceptDescription();
+            var res = new Aas.ConceptDescription("");
 
             // MIHO 2020-10-02: fix bug, create IEC61360 content
-            var eds = AdminShell.EmbeddedDataSpecification.CreateIEC61360WithContent();
-            res.IEC61360DataSpec = eds;
-            var ds = eds.GetIEC61360();
+            var eds = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
+            res.EmbeddedDataSpecifications = new List<Aas.IEmbeddedDataSpecification>
+            {
+                eds
+            };
+            var ds = eds.DataSpecificationContent as Aas.DataSpecificationIec61360;
 
             // over all, first is significant
             for (int i = 0; i < input.Count; i++)
@@ -516,23 +534,30 @@ namespace AasxPackageLogic
                 if (i == 0)
                 {
                     // identification
-                    res.identification.idType = AdminShell.Identification.IRDI;
-                    res.identification.id = input[i].IRDI;
+                    res.Id = input[i].IRDI;
 
                     // isCase of
-                    res.AddIsCaseOf(AdminShell.Reference.CreateIrdiReference(input[i].IRDI));
+                    if (res.IsCaseOf.IsNullOrEmpty())
+                    {
+                        res.IsCaseOf = new List<Aas.IReference>();
+                    }
+
+                    res.IsCaseOf.Add(new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.GlobalReference, input[i].IRDI) }));
 
                     // administration
-                    res.administration = new AdminShell.Administration();
+                    res.Administration = new Aas.AdministrativeInformation();
                     var n1 = node.SelectSingleNode("revision");
                     if (n1 != null)
-                        res.administration.revision = "" + n1.InnerText;
+                        res.Administration.Revision = "" + n1.InnerText;
 
                     // short name -> TBD in future
-                    FindChildLangStrings(node, "short_name", "label", "language_code", (ls) =>
+                    FindChildLangStrings<ILangStringShortNameTypeIec61360>(node, "short_name", "label", "language_code", (ls) =>
                     {
-                        ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", ls.str);
-                        res.idShort = ls.str;
+                        ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
+                        {
+                            new Aas.LangStringShortNameTypeIec61360(AdminShellUtil.GetDefaultLngIso639(), ls.Text)
+                        };
+                        res.IdShort = ls.Text;
                     });
 
                     // guess data type
@@ -543,11 +568,7 @@ namespace AasxPackageLogic
                         if (ndt != null)
                         {
                             // try find a match
-                            foreach (var dtn in AdminShell.DataSpecificationIEC61360.DataTypeNames)
-                                if (ndt.ToLower().Trim().Contains(dtn.ToLower().Trim()))
-                                {
-                                    ds.dataType = dtn;
-                                }
+                            ds.DataType = Aas.Stringification.DataTypeIec61360FromString(ndt);
                         }
                     }
 
@@ -564,10 +585,8 @@ namespace AasxPackageLogic
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            ds.unitId = AdminShell.UnitId.CreateNew(
-                                                "GlobalReference", false,
-                                                AdminShell.Identification.IRDI, urefIrdi.Trim());
-                                            ds.unit = xiun.InnerText.Trim();
+                                            ds.UnitId = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.GlobalReference, urefIrdi.Trim()) });
+                                            ds.Unit = xiun.InnerText.Trim();
                                         }
                                 }
                         }
@@ -575,41 +594,24 @@ namespace AasxPackageLogic
                 }
 
                 // all have language texts
-                FindChildLangStrings(node, "preferred_name", "label", "language_code", (ls) =>
+                FindChildLangStrings<ILangStringPreferredNameTypeIec61360>(node, "preferred_name", "label", "language_code", (ls) =>
                 {
-                    if (ds.preferredName == null)
-                        ds.preferredName = new AdminShell.LangStringSetIEC61360();
+                    if (ds.PreferredName == null)
+                        ds.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>();
 
-                    // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
-                    ds.preferredName.Add(ls);
+                    // ReSharper disable PossibleNullReferenceException -- ignore a false positive
+                    ds.PreferredName.Add(ls);
                 });
 
-                FindChildLangStrings(node, "definition", "text", "language_code", (ls) =>
+                FindChildLangStrings<ILangStringDefinitionTypeIec61360>(node, "definition", "text", "language_code", (ls) =>
                 {
-                    if (ds.definition == null)
-                        ds.definition = new AdminShell.LangStringSetIEC61360();
+                    if (ds.Definition == null)
+                        ds.Definition = new List<Aas.ILangStringDefinitionTypeIec61360>();
 
-                    // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
-                    ds.definition.Add(ls);
+                    // ReSharper disable PossibleNullReferenceException -- ignore a false positive
+                    ds.Definition.Add(ls);
                 });
 
-                // <domain xsi:type="ontoml:REAL_MEASURE_TYPE_Type">
-                //   <unit unit_ref="0173-1#05-AAA351#002"/>
-                // </domain >
-                // <unitsml:Unit dimensionURL="0173-1#Z2-AAA173#001" xml:id="id0173-1x05-AAA351x002">
-                //   <unitsml:UnitName xml:lang="de-DE">Hz</unitsml:UnitName>
-                //   <unitsml:UnitName xml:lang="en-US">Hz</unitsml:UnitName>
-                //   <unitsml:UnitSymbol type="ASCII">Hz</unitsml:UnitSymbol>
-                //   <unitsml:CodeListValue codeListName="IRDI" unitCodeValue="0173-1#05-AAA351#002" />
-                // <unitsml:Quantity dimensionURL="0173-1#Z2-AAA173#001" xml:id="id0173-1xZ4-BAJ257x001">
-                //   <unitsml:QuantityName xml:lang="de-DE">Frequenz</unitsml:QuantityName>
-                //   <unitsml:QuantityName xml:lang="en-US">frequency</unitsml:QuantityName>
-                //   <unitsml:QuantitySymbol type="IRDI">0173-1#Z4-BAJ257#001</unitsml:QuantitySymbol>
-                //   <unitsml:UnitReference xml:lang="en-US" name="hertz" url="0173-1#05-AAA351#002" />
-                //   <unitsml:UnitReference xml:lang="en-US" name="megahertz" url="0173-1#05-AAA581#002" />
-                //   <unitsml:UnitReference xml:lang="en-US" name="terahertz" url="0173-1#05-AAA190#002" />
-                //   <unitsml:UnitReference xml:lang="en-US" name="gigahertz" url="0173-1#05-AAA505#002" />
-                //   <unitsml:UnitReference xml:lang="en-US" name="kilohertz" url="0173-1#05-AAA033#002" />
             }
 
             // Phase 2: fix some shortcomings
@@ -617,20 +619,20 @@ namespace AasxPackageLogic
 
             try
             {
-                if (ds.shortName == null || ds.shortName.Count < 1) // TBD: multi-language short name?!
+                if (ds.ShortName == null || ds.ShortName.Count < 1) // TBD: multi-language short name?!
                 {
-                    if (ds.preferredName != null && !ds.preferredName.IsEmpty)
+                    if (ds.PreferredName != null && !(ds.PreferredName.Count < 1))
                     {
                         var found = false;
-                        foreach (var pn in ds.preferredName)
+                        foreach (var pn in ds.PreferredName)
                         {
                             // let have "en" always have precedence!
-                            if (found && !pn.lang.ToLower().Trim().Contains("en"))
+                            if (found && !pn.Language.ToLower().Trim().Contains("en"))
                                 continue;
                             // ok
                             found = true;
                             // Array of words
-                            var words = pn.str.Split(
+                            var words = pn.Text.Split(
                                 new[] { ' ', '\t', '-', '_' },
                                 StringSplitOptions.RemoveEmptyEntries);
                             var sn = "";
@@ -644,7 +646,10 @@ namespace AasxPackageLogic
                                 sn += part;
                             }
                             // set it
-                            ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", sn);
+                            ds.ShortName = new List<Aas.ILangStringShortNameTypeIec61360>
+                            {
+                                new Aas.LangStringShortNameTypeIec61360(AdminShellUtil.GetDefaultLngIso639(), sn)
+                            };
                         }
                     }
                 }

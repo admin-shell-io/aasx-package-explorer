@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,12 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
 {
@@ -23,29 +19,28 @@ namespace AasxPredefinedConcepts
     {
         public static ImageMap Static = new ImageMap();
 
-        public AdminShell.SemanticId
+        public Aas.Reference
             SEM_ImageMapSubmodel;
 
-        public AdminShell.ConceptDescription
+        public Aas.ConceptDescription
             CD_ImageFile,
             CD_EntityOfImageMap,
             CD_RegionRect,
             CD_RegionCircle,
             CD_RegionPolygon,
-            CD_NavigateTo;
+            CD_NavigateTo,
+            CD_VisualElement,
+            CD_TextDisplay,
+            CD_Foreground,
+            CD_Background;
 
         public ImageMap()
         {
             // info
-            this.DomainInfo = "Plugin ImageMap";
+            this.DomainInfo = "AASX PackageExplorer - Plugin ImageMap";
 
-            // Referable
-            SEM_ImageMapSubmodel = new AdminShell.SemanticId(
-                AdminShell.Key.CreateNew(
-                    type: "Submodel",
-                    local: false,
-                    idType: "IRI",
-                    value: "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0"));
+            // IReferable
+            SEM_ImageMapSubmodel = new Aas.Reference(Aas.ReferenceTypes.ExternalReference, new List<Aas.IKey>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0") });
 
             CD_ImageFile = CreateSparseConceptDescription("en", "IRI",
                 "ImageFile",
@@ -77,6 +72,26 @@ namespace AasxPredefinedConcepts
                 "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/NavigateTo/1/0",
                 @"If ReferenceElement subordinate to Entity, overrules Entity AssetId and navigates to value " +
                 "reference .");
+
+            CD_VisualElement = CreateSparseConceptDescription("en", "IRI",
+                "VisualElement",
+                "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/VisualElement/1/0",
+                @"Collection, wich represents a visual element on the image map.");
+
+            CD_TextDisplay = CreateSparseConceptDescription("en", "IRI",
+                "TextDisplay",
+                "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/TextDisplay/1/0",
+                @"Property or ReferenceElement evaluating to value of text display.");
+
+            CD_Foreground = CreateSparseConceptDescription("en", "IRI",
+                "Foreground",
+                "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Foreground/1/0",
+                @"Property or ReferenceElement evaluating to value of foreground color in #argb format.");
+
+            CD_Background = CreateSparseConceptDescription("en", "IRI",
+                "Background",
+                "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Background/1/0",
+                @"Property or ReferenceElement evaluating to value of background color in #argb format.");
 
             // reflect
             AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);

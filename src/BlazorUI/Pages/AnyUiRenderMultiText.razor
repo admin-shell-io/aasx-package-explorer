@@ -1,0 +1,94 @@
+﻿@page "/testMultiRenderText"
+@using AdminShellNS
+@using Aas = AasCore.Aas3_0_RC02
+@using AdminShellNS;
+@using Extensions
+@using AnyUi
+@using BlazorUI.Shared
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
+
+@{
+    // resharper disable all
+}
+
+@{
+    // access
+    if (Element == null)
+        return;
+
+    // book keeping
+    Element.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context, touchLambda: TouchAction) { _component = this };
+
+    // split lines
+    if (lines != null)
+        for (int i = 0; i < lines.Length; i++)
+        {
+            @lines[i];
+            @if (i < lines.Length - 1)
+            {
+                <br />
+            }
+        }
+}
+
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public Data.blazorSessionService Session { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Element
+    {
+        get { return _element; }
+        set
+        {
+            // hold image data
+            _element = value;
+        }
+    }
+
+    //
+    // Touch
+    //
+
+    protected void TouchAction(AnyUiUIElement tel)
+    {
+        // access
+        if (tel == null || tel != this.Element)
+            return;
+
+        // execute
+        OnParametersSet();
+        InvokeAsync(() => this.StateHasChanged());
+    }
+
+    //
+    // Business
+    //
+    
+    protected AnyUiUIElement _element = null;
+
+    string[] lines;
+
+    protected override void OnParametersSet()
+    {
+        var toShow = "";
+
+        if (Element is AnyUiSelectableTextBlock stb)
+            toShow = stb.Text;
+
+        if (Element is AnyUiTextBlock tb)
+            toShow = tb.Text;
+
+        if (Element is AnyUiLabel lb)
+            toShow = lb.Content;
+
+        lines = toShow?.Split('\n');
+    }
+}

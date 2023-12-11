@@ -1,0 +1,82 @@
+﻿@page "/AnyUiFlyoutDownloadFile"
+@using System.Text.RegularExpressions;
+@using Aas = AasCore.Aas3_0;
+@using AdminShellNS
+@using Extensions
+@using AasxIntegrationBase
+@using AnyUi
+@using BlazorUI.Data
+@using BlazorInputFile
+@using AasxPackageLogic
+@using AasxPackageLogic.PackageCentral
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.BlazorSession Session
+@inject IJSRuntime JSRuntime
+
+@if(EventSession != null && DialogueData is AnyUiDialogueDataDownloadFile dddf)
+{
+	<div class="modal-header">
+		<h3 class="modal-title" id="exampleModalLongTitle">@((dddf.Caption?.HasContent() != true) ? "Select file" : dddf.Caption)</h3>
+		<button type="button" class="close btn btn-backdrop" aria-label="Close"
+			@onclick="() => LeaveResult(false)">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+
+	<div class="modal-body my-3 row d-flex justify-content-center">
+		<h5>
+			@dddf.Message
+		</h5>
+
+		<button type="button" class="btn btn-primary-light btn-lg col-12" @onclick="async () => await StartDownload()">Download</button>
+
+	</div>
+	<div class="modal-footer">
+
+		<button type="button" class="btn btn-secondary-light btn-lg" @onclick="() => LeaveResult(false)">Cancel</button>
+		<button type="button" class="btn btn-primary-light btn-lg" @onclick="() => LeaveResult(true)">OK</button>
+	
+	</div>
+}
+
+@code {
+	[Parameter]
+	public AnyUiHtmlEventSession EventSession { get; set; }
+
+	[Parameter]
+	public AnyUiDialogueDataBase DialogueData { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		// duties
+		base.OnParametersSet();
+	}
+
+	public async Task StartDownload()
+	{
+		// access
+		if (!(DialogueData is AnyUiDialogueDataDownloadFile dddf))
+			return;
+
+		// prepare
+		try {
+			byte[] file = System.IO.File.ReadAllBytes(dddf.Source);
+			string onlyFn = System.IO.Path.GetFileName(dddf.Source);
+
+			await InvokeAsync(async () => {
+				await BlazorUI.Utils.BlazorUtils.DisplayOrDownloadFile(JSRuntime, dddf.Source, "application/octet-stream");
+				this.StateHasChanged();
+			});
+
+			await Task.Yield();
+		} catch (Exception ex)
+		{
+			Log.Singleton.Error(ex, "performing download");
+		}
+	}
+
+	public void LeaveResult(bool result)
+	{
+		EventSession?.EndModal(result);
+	}
+}

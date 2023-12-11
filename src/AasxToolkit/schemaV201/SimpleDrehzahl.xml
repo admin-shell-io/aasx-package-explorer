@@ -10,7 +10,7 @@
 			</aas:administration>
 			<aas:assetRef>
 				<aas:keys>
-					<aas:key type="Asset" local="false" idType="IRI">http://pk.festo.com/3s7plfdrs35</aas:key>
+					<aas:key type="AssetInformation" local="false" idType="IRI">http://pk.festo.com/3s7plfdrs35</aas:key>
 				</aas:keys>
 			</aas:assetRef>
 			<aas:submodelRefs>

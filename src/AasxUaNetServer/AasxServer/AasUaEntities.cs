@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,8 +14,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 using Opc.Ua;
+using Aas = AasCore.Aas3_0;
+using AasxIntegrationBase;
 
 // TODO (MIHO, 2020-08-29): The UA mapping needs to be overworked in order to comply the joint aligment with I4AAS
 // TODO (MIHO, 2020-08-29): The UA mapping needs to be checked for the "new" HasDataSpecification strcuture of V2.0.1
@@ -116,7 +120,7 @@ namespace AasOpcUaServer
         }
 
         public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShell.Identification identification = null,
+            string id = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -127,12 +131,10 @@ namespace AasOpcUaServer
 
             if (mode == CreateMode.Instance)
             {
-                if (identification != null)
+                if (id != null)
                 {
-                    this.entityBuilder.CreateAddPropertyState<string>(o, mode, "IdType",
-                        DataTypeIds.String, "" + "" + identification.idType, defaultSettings: true);
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Id",
-                        DataTypeIds.String, "" + "" + identification.id, defaultSettings: true);
+                        DataTypeIds.String, "" + "" + id, defaultSettings: true);
                 }
             }
 
@@ -158,7 +160,7 @@ namespace AasOpcUaServer
         }
 
         public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShell.Administration administration = null,
+            Aas.IAdministrativeInformation administration = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -175,9 +177,9 @@ namespace AasOpcUaServer
                 if (administration == null)
                     return null;
                 this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Version",
-                    DataTypeIds.String, "" + "" + administration.version, defaultSettings: true);
+                    DataTypeIds.String, "" + "" + administration.Version, defaultSettings: true);
                 this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Revision",
-                    DataTypeIds.String, "" + "" + administration.revision, defaultSettings: true);
+                    DataTypeIds.String, "" + "" + administration.Revision, defaultSettings: true);
             }
 
             return o;
@@ -206,7 +208,7 @@ namespace AasOpcUaServer
                 null, "ValueId", AasUaNodeHelper.ModellingRule.Optional);
         }
 
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.Qualifier qualifier = null,
+        public NodeState CreateAddElements(NodeState parent, CreateMode mode, Aas.IQualifier qualifier = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -230,11 +232,11 @@ namespace AasOpcUaServer
 
                 // do a little extra?
                 string extraName = null;
-                if (qualifier.type != null && qualifier.type.Length > 0)
+                if (qualifier.Type != null && qualifier.Type.Length > 0)
                 {
-                    extraName = "Qualifier:" + qualifier.type;
-                    if (qualifier.value != null && qualifier.value.Length > 0)
-                        extraName += "=" + qualifier.value;
+                    extraName = "Qualifier:" + qualifier.Type;
+                    if (qualifier.Value != null && qualifier.Value.Length > 0)
+                        extraName += "=" + qualifier.Value;
                 }
 
                 var o = this.entityBuilder.CreateAddObject(parent, mode, "Qualifier",
@@ -242,13 +244,13 @@ namespace AasOpcUaServer
                     extraName: extraName);
 
                 this.entityBuilder.AasTypes.SemanticId.CreateAddInstanceObject(o,
-                    CreateMode.Instance, qualifier.semanticId, "SemanticId");
+                    CreateMode.Instance, qualifier.SemanticId, "SemanticId");
                 this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Type",
-                    DataTypeIds.String, "" + qualifier.type, defaultSettings: true);
+                    DataTypeIds.String, "" + qualifier.Type, defaultSettings: true);
                 this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Value",
-                    DataTypeIds.String, "" + qualifier.value, defaultSettings: true);
+                    DataTypeIds.String, "" + qualifier.Value, defaultSettings: true);
                 this.entityBuilder.AasTypes.Reference.CreateAddElements(o,
-                    CreateMode.Instance, qualifier.valueId, "ValueId");
+                    CreateMode.Instance, qualifier.ValueId, "ValueId");
 
                 return o;
             }
@@ -265,14 +267,18 @@ namespace AasOpcUaServer
             // no special type here (is a string)
         }
 
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.AssetKind kind = null,
+        public NodeState CreateAddElements(NodeState parent, CreateMode mode, Aas.AssetKind? kind = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (mode == CreateMode.Instance && kind == null)
                 return null;
 
             var o = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Kind",
-                DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + kind?.kind, defaultSettings: true,
+                DataTypeIds.String, 
+                (mode == CreateMode.Type) 
+                    ? null 
+                    : "" + (kind != null ? Stringification.ToString(kind.Value) : ""), 
+                defaultSettings: true,
                 modellingRule: modellingRule);
 
             return o;
@@ -288,14 +294,18 @@ namespace AasOpcUaServer
             // no special type here (is a string)
         }
 
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.ModelingKind kind = null,
+        public NodeState CreateAddElements(NodeState parent, CreateMode mode, Aas.ModellingKind? kind = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (mode == CreateMode.Instance && kind == null)
                 return null;
 
             var o = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Kind",
-                DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + kind?.kind, defaultSettings: true,
+                DataTypeIds.String, 
+                (mode == CreateMode.Type) 
+                    ? null 
+                    : "" + ( kind != null ? Stringification.ToString(kind) : ""), 
+                defaultSettings: true,
                 modellingRule: modellingRule);
 
             return o;
@@ -314,16 +324,16 @@ namespace AasOpcUaServer
         /// <summary>
         /// This adds all Referable attributes to the parent and re-defines the descriptons 
         /// </summary>
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.Referable refdata = null)
+        public NodeState CreateAddElements(NodeState parent, CreateMode mode, Aas.IReferable refdata = null)
         {
             if (parent == null)
                 return null;
             if (mode == CreateMode.Instance && refdata == null)
                 return null;
 
-            if (mode == CreateMode.Type || refdata?.category != null)
+            if (mode == CreateMode.Type || refdata?.Category != null)
                 this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Category",
-                    DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + refdata?.category,
+                    DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + refdata?.Category,
                     defaultSettings: true, modellingRule: AasUaNodeHelper.ModellingRule.Optional);
 
             // No idShort as typically in the DisplayName of the node
@@ -332,7 +342,7 @@ namespace AasOpcUaServer
             {
                 // now, re-set the description on the parent
                 // ISSUE: only ONE language supported!
-                parent.Description = AasUaUtils.GetBestUaDescriptionFromAasDescription(refdata?.description);
+                parent.Description = AasUaUtils.GetBestUaDescriptionFromAasDescription(refdata?.Description);
             }
 
             return null;
@@ -351,7 +361,7 @@ namespace AasOpcUaServer
         /// Sets the "Keys" value information of an AAS Reference. This is especially important for referencing 
         /// outwards of the AAS (environment).
         /// </summary>
-        public void CreateAddKeyElements(NodeState parent, CreateMode mode, List<AdminShell.Key> keys = null)
+        public void CreateAddKeyElements(NodeState parent, CreateMode mode, Aas.IReference rf = null)
         {
             if (parent == null)
                 return;
@@ -361,13 +371,18 @@ namespace AasOpcUaServer
             if (this.entityBuilder != null && this.entityBuilder.theServerOptions != null
                 && this.entityBuilder.theServerOptions.ReferenceKeysAsSingleString)
             {
-                // fix for open62541
-                var keyo = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Keys",
+				// fix for open62541
+
+				var typeo = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Type",
+					DataTypeIds.String, null, defaultSettings: true);
+
+				var keyo = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Keys",
                     DataTypeIds.String, null, defaultSettings: true);
 
                 if (mode == CreateMode.Instance && keyo != null)
                 {
-                    keyo.Value = AasUaUtils.ToOpcUaReference(AdminShell.Reference.CreateNew(keys));
+                    typeo.Value = Stringification.ToString(rf.Type);
+                    keyo.Value = AasUaUtils.ToOpcUaReference(rf);
                 }
             }
             else
@@ -378,7 +393,7 @@ namespace AasOpcUaServer
 
                 if (mode == CreateMode.Instance && keyo != null)
                 {
-                    keyo.Value = AasUaUtils.ToOpcUaReferenceList(AdminShell.Reference.CreateNew(keys))?.ToArray();
+                    keyo.Value = AasUaUtils.ToOpcUaReferenceList(rf)?.ToArray();
                 }
             }
         }
@@ -388,7 +403,7 @@ namespace AasOpcUaServer
         /// structure, to be
         /// in the style of OPC UA
         /// </summary>
-        public void CreateAddReferenceElements(NodeState parent, CreateMode mode, List<AdminShell.Key> keys = null)
+        public void CreateAddReferenceElements(NodeState parent, CreateMode mode, List<Aas.IKey> keys = null)
         {
             if (parent == null)
                 return;
@@ -418,7 +433,7 @@ namespace AasOpcUaServer
         }
 
         public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShell.Reference reference, string browseDisplayName = null,
+            Aas.IReference reference, string browseDisplayName = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -439,7 +454,7 @@ namespace AasOpcUaServer
                     ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
                 // explicit strings?
-                this.CreateAddKeyElements(o, mode, reference.Keys);
+                this.CreateAddKeyElements(o, mode, reference);
 
                 // find a matching concept description or other referable?
                 // as we do not have all other nodes realized, store a late action
@@ -468,7 +483,7 @@ namespace AasOpcUaServer
         }
 
         public NodeState CreateAddInstanceObject(NodeState parent, CreateMode mode,
-            AdminShell.SemanticId semid = null, string browseDisplayName = null,
+            Aas.IReference semid = null, string browseDisplayName = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -489,14 +504,14 @@ namespace AasOpcUaServer
                     ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
                 // explicit strings?
-                this.CreateAddKeyElements(o, mode, semid.Keys);
+                this.CreateAddKeyElements(o, mode, semid);
 
                 // find a matching concept description or other referable?
                 // as we do not have all other nodes realized, store a late action
                 this.entityBuilder.AddNodeLateAction(
                     new AasEntityBuilder.NodeLateActionLinkToReference(
                         parent,
-                        new AdminShell.Reference(semid),
+                        semid.Copy(),
                         AasEntityBuilder.NodeLateActionLinkToReference.ActionType.SetDictionaryEntry
                     ));
 
@@ -536,7 +551,7 @@ namespace AasOpcUaServer
                 null, "AssetIdentificationModel", modellingRule: AasUaNodeHelper.ModellingRule.Optional);
         }
 
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.Asset asset = null,
+        public NodeState CreateAddElements(NodeState parent, CreateMode mode, Aas.IAssetInformation asset = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -556,25 +571,22 @@ namespace AasOpcUaServer
                     return null;
 
                 // register node record
-                this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, asset));
+                this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, asset.GlobalAssetId));
 
                 // Referable
-                this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, asset);
-                // Identifiable
-                this.entityBuilder.AasTypes.Identification.CreateAddElements(
-                    o, CreateMode.Instance, asset.identification);
-                this.entityBuilder.AasTypes.Administration.CreateAddElements(
-                    o, CreateMode.Instance, asset.administration);
+                // this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, asset);                
+                // Identifiable (V3.0: not anymore)
+                // this.entityBuilder.AasTypes.Identification.CreateAddElements(
+                //    o, CreateMode.Instance, asset.identification);
+                // this.entityBuilder.AasTypes.Administration.CreateAddElements(
+                //    o, CreateMode.Instance, asset.administration);
+                
                 // HasKind
-                this.entityBuilder.AasTypes.AssetKind.CreateAddElements(o, CreateMode.Instance, asset.kind);
-                // HasDataSpecification
-                if (asset.hasDataSpecification != null && asset.hasDataSpecification != null)
-                    foreach (var ds in asset.hasDataSpecification)
-                        this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
+                this.entityBuilder.AasTypes.AssetKind.CreateAddElements(o, CreateMode.Instance, asset.AssetKind);
+                
                 // own attributes
-                this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                    o, CreateMode.Instance, asset.assetIdentificationModelRef, "AssetIdentificationModel");
+                //this.entityBuilder.AasTypes.Reference.CreateAddElements(
+                //    o, CreateMode.Instance, asset.assetIdentificationModelRef, "AssetIdentificationModel");
             }
 
             return o;
@@ -612,19 +624,13 @@ namespace AasOpcUaServer
             // assets
             this.entityBuilder.AasTypes.Asset.CreateAddElements(this.typeObject, CreateMode.Type,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
-            // associated views
-            this.entityBuilder.AasTypes.View.CreateAddElements(this.typeObject, CreateMode.Type,
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
             // associated submodels
             this.entityBuilder.AasTypes.Submodel.CreateAddElements(this.typeObject, CreateMode.Type,
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
-            // concept dictionary
-            this.entityBuilder.AasTypes.ConceptDictionary.CreateAddElements(this.typeObject, CreateMode.Type,
                 modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
         }
 
         public NodeState CreateAddInstanceObject(NodeState parent,
-            AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas)
+            Aas.Environment env, Aas.IAssetAdministrationShell aas)
         {
             // access
             if (env == null || aas == null)
@@ -633,10 +639,10 @@ namespace AasOpcUaServer
             // containing element
             string extraName = null;
             string browseName = "AssetAdministrationShell";
-            if (aas.idShort != null && aas.idShort.Trim().Length > 0)
+            if (aas.IdShort != null && aas.IdShort.Trim().Length > 0)
             {
-                extraName = "AssetAdministrationShell:" + aas.idShort;
-                browseName = aas.idShort;
+                extraName = "AssetAdministrationShell:" + aas.IdShort;
+                browseName = aas.IdShort;
             }
             var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance,
                 browseName, ReferenceTypeIds.HasComponent,
@@ -649,53 +655,37 @@ namespace AasOpcUaServer
             this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, aas);
             // Identifiable
             this.entityBuilder.AasTypes.Identification.CreateAddElements(
-                o, CreateMode.Instance, aas.identification);
+                o, CreateMode.Instance, aas.Id);
             this.entityBuilder.AasTypes.Administration.CreateAddElements(
-                o, CreateMode.Instance, aas.administration);
+                o, CreateMode.Instance, aas.Administration);
             // HasDataSpecification
-            if (aas.hasDataSpecification != null && aas.hasDataSpecification != null)
-                foreach (var ds in aas.hasDataSpecification)
+            if (aas.EmbeddedDataSpecifications != null)
+                foreach (var ds in aas.EmbeddedDataSpecifications)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                        o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
+                        o, CreateMode.Instance, ds?.DataSpecification, "DataSpecification");
             // own attributes
             this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                o, CreateMode.Instance, aas.derivedFrom, "DerivedFrom");
+                o, CreateMode.Instance, aas.DerivedFrom, "DerivedFrom");
 
             // associated asset
-            if (aas.assetRef != null)
-            {
-                var asset = env.FindAsset(aas.assetRef);
-                if (asset != null)
-                    this.entityBuilder.AasTypes.Asset.CreateAddElements(
-                        o, CreateMode.Instance, asset);
-            }
-
-            // associated views
-            if (aas.views != null)
-                foreach (var vw in aas.views.views)
-                    this.entityBuilder.AasTypes.View.CreateAddElements(
-                        o, CreateMode.Instance, vw);
+            // TODO: AssetInformation
+            //if (aas.assetRef != null)
+            //{
+            //    var asset = env.FindAsset(aas.assetRef);
+            //    if (asset != null)
+            //        this.entityBuilder.AasTypes.Asset.CreateAddElements(
+            //            o, CreateMode.Instance, asset);
+            //}
 
             // associated submodels
-            if (aas.submodelRefs != null && aas.submodelRefs.Count > 0)
-                foreach (var smr in aas.submodelRefs)
+            if (aas.Submodels != null)
+                foreach (var smr in aas.Submodels)
                 {
                     var sm = env.FindSubmodel(smr);
                     if (sm != null)
                         this.entityBuilder.AasTypes.Submodel.CreateAddElements(
                             o, CreateMode.Instance, sm);
                 }
-
-            // make up CD dictionaries
-            if (aas.conceptDictionaries != null && aas.conceptDictionaries.Count > 0)
-            {
-                // ReSharper disable once UnusedVariable
-                foreach (var cdd in aas.conceptDictionaries)
-                {
-                    // TODO (MIHO, 2020-08-06): check (again) if reference to CDs is done are shall be done
-                    // here. They are stored separately.
-                }
-            }
 
             // results
             return o;
@@ -738,7 +728,7 @@ namespace AasOpcUaServer
                 modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
         }
 
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.Submodel sm = null,
+        public NodeState CreateAddElements(NodeState parent, CreateMode mode, Aas.ISubmodel sm = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -759,8 +749,8 @@ namespace AasOpcUaServer
 
                 // containing element
                 var o = this.entityBuilder.CreateAddObject(parent, mode,
-                    "" + sm.idShort, ReferenceTypeIds.HasComponent,
-                    GetTypeObject().NodeId, extraName: "Submodel:" + sm.idShort);
+                    "" + sm.IdShort, ReferenceTypeIds.HasComponent,
+                    GetTypeObject().NodeId, extraName: "Submodel:" + sm.IdShort);
 
                 // register node record
                 this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, sm));
@@ -770,32 +760,31 @@ namespace AasOpcUaServer
                     o, CreateMode.Instance, sm);
                 // Identifiable
                 this.entityBuilder.AasTypes.Identification.CreateAddElements(
-                    o, CreateMode.Instance, sm.identification);
+                    o, CreateMode.Instance, sm.Id);
                 this.entityBuilder.AasTypes.Administration.CreateAddElements(
-                    o, CreateMode.Instance, sm.administration);
+                    o, CreateMode.Instance, sm.Administration);
                 // HasSemantics
                 this.entityBuilder.AasTypes.SemanticId.CreateAddInstanceObject(
-                    o, CreateMode.Instance, sm.semanticId, "SemanticId");
+                    o, CreateMode.Instance, sm.SemanticId, "SemanticId");
                 // HasKind
                 this.entityBuilder.AasTypes.ModelingKind.CreateAddElements(
-                    o, CreateMode.Instance, sm.kind);
+                    o, CreateMode.Instance, sm.Kind);
                 // HasDataSpecification
-                if (sm.hasDataSpecification != null && sm.hasDataSpecification != null)
-                    foreach (var ds in sm.hasDataSpecification)
+                if (sm.EmbeddedDataSpecifications != null)
+                    foreach (var ds in sm.EmbeddedDataSpecifications)
                         this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
+                            o, CreateMode.Instance, ds?.DataSpecification, "DataSpecification");
                 // Qualifiable
-                if (sm.qualifiers != null)
-                    foreach (var q in sm.qualifiers)
+                if (sm.Qualifiers != null)
+                    foreach (var q in sm.Qualifiers)
                         this.entityBuilder.AasTypes.Qualifier.CreateAddElements(
                             o, CreateMode.Instance, q);
 
                 // SubmodelElements
-                if (sm.submodelElements != null)
-                    foreach (var smw in sm.submodelElements)
-                        if (smw.submodelElement != null)
-                            this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
-                                o, CreateMode.Instance, smw);
+                if (sm.SubmodelElements != null)
+                    foreach (var smw in sm.SubmodelElements)
+                        this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
+                            o, CreateMode.Instance, smw);
 
                 // result
                 return o;
@@ -850,7 +839,7 @@ namespace AasOpcUaServer
             // do NOT create type object, as this is done by sub-class
         }
 
-        public NodeState PopulateInstanceObject(NodeState o, AdminShell.SubmodelElement sme)
+        public NodeState PopulateInstanceObject(NodeState o, Aas.ISubmodelElement sme)
         {
             // access
             if (o == null || sme == null)
@@ -864,18 +853,15 @@ namespace AasOpcUaServer
                 o, CreateMode.Instance, sme);
             // HasSemantics
             this.entityBuilder.AasTypes.SemanticId.CreateAddInstanceObject(
-                o, CreateMode.Instance, sme.semanticId, "SemanticId");
-            // HasKind
-            this.entityBuilder.AasTypes.ModelingKind.CreateAddElements(
-                o, CreateMode.Instance, sme.kind);
+                o, CreateMode.Instance, sme.SemanticId, "SemanticId");
             // HasDataSpecification
-            if (sme.hasDataSpecification != null && sme.hasDataSpecification != null)
-                foreach (var ds in sme.hasDataSpecification)
+            if (sme.EmbeddedDataSpecifications != null)
+                foreach (var ds in sme.EmbeddedDataSpecifications)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                        o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
+                        o, CreateMode.Instance, ds?.DataSpecification, "DataSpecification");
             // Qualifiable
-            if (sme.qualifiers != null)
-                foreach (var q in sme.qualifiers)
+            if (sme.Qualifiers != null)
+                foreach (var q in sme.Qualifiers)
                     this.entityBuilder.AasTypes.Qualifier.CreateAddElements(
                         o, CreateMode.Instance, q);
 
@@ -896,7 +882,7 @@ namespace AasOpcUaServer
         }
 
         public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShell.SubmodelElementWrapper smw = null,
+            Aas.ISubmodelElement smw = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             // access
@@ -913,32 +899,31 @@ namespace AasOpcUaServer
             }
             else
             {
-                if (smw == null || smw.submodelElement == null)
+                if (smw == null)
                     return null;
 
-                if (smw.submodelElement is AdminShell.SubmodelElementCollection)
-                {
-                    var coll = smw.submodelElement as AdminShell.SubmodelElementCollection;
+                if (smw is Aas.ISubmodelElementCollection coll)
                     return this.entityBuilder.AasTypes.Collection.CreateAddInstanceObject(parent, coll);
-                }
-                else if (smw.submodelElement is AdminShell.Property)
+				else if (smw is Aas.ISubmodelElementList list)
+					return this.entityBuilder.AasTypes.SmeList.CreateAddInstanceObject(parent, list);
+				else if (smw is Aas.IProperty)
                     return this.entityBuilder.AasTypes.Property.CreateAddInstanceObject(
-                        parent, smw.submodelElement as AdminShell.Property);
-                else if (smw.submodelElement is AdminShell.File)
+                        parent, smw as Aas.IProperty);
+                else if (smw is Aas.IFile)
                     return this.entityBuilder.AasTypes.File.CreateAddInstanceObject(
-                        parent, smw.submodelElement as AdminShell.File);
-                else if (smw.submodelElement is AdminShell.Blob)
+                        parent, smw as Aas.IFile);
+                else if (smw is Aas.IBlob)
                     return this.entityBuilder.AasTypes.Blob.CreateAddInstanceObject(
-                        parent, smw.submodelElement as AdminShell.Blob);
-                else if (smw.submodelElement is AdminShell.ReferenceElement)
+                        parent, smw as Aas.IBlob);
+                else if (smw is Aas.IReferenceElement)
                     return this.entityBuilder.AasTypes.ReferenceElement.CreateAddInstanceObject(
-                        parent, smw.submodelElement as AdminShell.ReferenceElement);
-                else if (smw.submodelElement is AdminShell.RelationshipElement)
+                        parent, smw as Aas.IReferenceElement);
+                else if (smw is Aas.IRelationshipElement)
                     return this.entityBuilder.AasTypes.RelationshipElement.CreateAddInstanceObject(
-                        parent, smw.submodelElement as AdminShell.RelationshipElement);
-                else if (smw.submodelElement is AdminShell.Operation)
+                        parent, smw as Aas.IRelationshipElement);
+                else if (smw is Aas.IOperation)
                     return this.entityBuilder.AasTypes.Operation.CreateAddInstanceObject(
-                        parent, smw.submodelElement as AdminShell.Operation);
+                        parent, smw as Aas.IOperation);
 
                 // nope
                 return null;
@@ -967,7 +952,7 @@ namespace AasOpcUaServer
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
         }
 
-        public NodeState CreateAddInstanceObject(NodeState parent, AdminShell.Property prop)
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.IProperty prop)
         {
             // access
             if (prop == null)
@@ -977,90 +962,96 @@ namespace AasOpcUaServer
             var mode = CreateMode.Instance;
 
             // containing element
-            var o = this.entityBuilder.CreateAddObject(parent, mode, "" + prop.idShort, ReferenceTypeIds.HasComponent,
+            var o = this.entityBuilder.CreateAddObject(parent, mode, "" + prop.IdShort, ReferenceTypeIds.HasComponent,
                 GetTypeObject().NodeId);
 
             // populate common attributes
             base.PopulateInstanceObject(o, prop);
 
             // TODO (MIHO, 2020-08-06): not sure if to add these
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, prop.valueId, "ValueId");
+            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, prop.ValueId, "ValueId");
             this.entityBuilder.CreateAddPropertyState<string>(o, mode, "ValueType",
-                DataTypeIds.String, "" + prop.valueType, defaultSettings: true);
+                DataTypeIds.String, "" + prop.ValueType, defaultSettings: true);
 
             // aim is to support many types natively
-            var vt = (prop.valueType ?? "").ToLower().Trim();
-            if (vt == "boolean")
+            
+            if (prop.ValueType == DataTypeDefXsd.Boolean)
             {
-                var x = (prop.value ?? "").ToLower().Trim();
+                var x = (prop.Value ?? "").ToLower().Trim();
                 this.entityBuilder.CreateAddPropertyState<bool>(o, mode, "Value",
                     DataTypeIds.Boolean, x == "true", defaultSettings: true);
             }
-            else if (vt == "datetime" || vt == "datetimestamp" || vt == "time")
+            else if (prop.ValueType == DataTypeDefXsd.DateTime 
+                     || prop.ValueType == DataTypeDefXsd.Date 
+                     || prop.ValueType == DataTypeDefXsd.Time)
             {
-                if (DateTime.TryParse(prop.value, CultureInfo.InvariantCulture,
+                if (DateTime.TryParse(prop.Value, CultureInfo.InvariantCulture,
                     DateTimeStyles.AssumeUniversal, out var dt))
                     this.entityBuilder.CreateAddPropertyState<Int64>(o, mode, "Value",
                         DataTypeIds.DateTime, dt.ToFileTimeUtc(), defaultSettings: true);
             }
-            else if (vt == "decimal" || vt == "integer" || vt == "long"
-                     || vt == "nonpositiveinteger" || vt == "negativeinteger")
+            else if (prop.ValueType == DataTypeDefXsd.Decimal 
+                     || prop.ValueType == DataTypeDefXsd.Integer 
+                     || prop.ValueType == DataTypeDefXsd.Long
+                     || prop.ValueType == DataTypeDefXsd.NegativeInteger)
             {
-                if (Int64.TryParse(prop.value, out var v))
+                if (Int64.TryParse(prop.Value, out var v))
                     this.entityBuilder.CreateAddPropertyState<Int64>(o, mode, "Value",
                         DataTypeIds.Int64, v, defaultSettings: true);
             }
-            else if (vt == "int")
+            else if (prop.ValueType == DataTypeDefXsd.Int)
             {
-                if (Int32.TryParse(prop.value, out var v))
+                if (Int32.TryParse(prop.Value, out var v))
                     this.entityBuilder.CreateAddPropertyState<Int32>(o, mode, "Value",
                         DataTypeIds.Int32, v, defaultSettings: true);
             }
-            else if (vt == "short")
+            else if (prop.ValueType == DataTypeDefXsd.Short)
             {
-                if (Int16.TryParse(prop.value, out var v))
+                if (Int16.TryParse(prop.Value, out var v))
                     this.entityBuilder.CreateAddPropertyState<Int16>(o, mode, "Value",
                         DataTypeIds.Int16, v, defaultSettings: true);
             }
-            else if (vt == "byte")
+            else if (prop.ValueType == DataTypeDefXsd.Byte)
             {
-                if (SByte.TryParse(prop.value, out var v))
+                if (SByte.TryParse(prop.Value, out var v))
                     this.entityBuilder.CreateAddPropertyState<SByte>(o, mode, "Value",
                         DataTypeIds.Byte, v, defaultSettings: true);
             }
-            else if (vt == "nonnegativeinteger" || vt == "positiveinteger" || vt == "unsignedlong")
+            else if (prop.ValueType == DataTypeDefXsd.NonNegativeInteger 
+                     || prop.ValueType == DataTypeDefXsd.PositiveInteger 
+                     || prop.ValueType == DataTypeDefXsd.UnsignedLong)
             {
-                if (UInt64.TryParse(prop.value, out var v))
+                if (UInt64.TryParse(prop.Value, out var v))
                     this.entityBuilder.CreateAddPropertyState<UInt64>(o, mode, "Value",
                         DataTypeIds.UInt64, v, defaultSettings: true);
             }
-            else if (vt == "unsignedint")
+            else if (prop.ValueType == DataTypeDefXsd.UnsignedInt)
             {
-                if (UInt32.TryParse(prop.value, out var v))
+                if (UInt32.TryParse(prop.Value, out var v))
                     this.entityBuilder.CreateAddPropertyState<UInt32>(o, mode, "Value",
                         DataTypeIds.UInt32, v, defaultSettings: true);
             }
-            else if (vt == "unsignedshort")
+            else if (prop.ValueType == DataTypeDefXsd.UnsignedShort)
             {
-                if (UInt16.TryParse(prop.value, out var v))
+                if (UInt16.TryParse(prop.Value, out var v))
                     this.entityBuilder.CreateAddPropertyState<UInt16>(o, mode, "Value",
                         DataTypeIds.UInt16, v, defaultSettings: true);
             }
-            else if (vt == "unsignedbyte")
+            else if (prop.ValueType == DataTypeDefXsd.UnsignedByte)
             {
-                if (Byte.TryParse(prop.value, out var v))
+                if (Byte.TryParse(prop.Value, out var v))
                     this.entityBuilder.CreateAddPropertyState<Byte>(o, mode, "Value",
                         DataTypeIds.Byte, v, defaultSettings: true);
             }
-            else if (vt == "double")
+            else if (prop.ValueType == DataTypeDefXsd.Double)
             {
-                if (double.TryParse(prop.value, NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
+                if (double.TryParse(prop.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
                     this.entityBuilder.CreateAddPropertyState<double>(o, mode, "Value",
                         DataTypeIds.Double, v, defaultSettings: true);
             }
-            else if (vt == "float")
+            else if (prop.ValueType == DataTypeDefXsd.Float)
             {
-                if (float.TryParse(prop.value, NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
+                if (float.TryParse(prop.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
                     this.entityBuilder.CreateAddPropertyState<float>(o, mode, "Value",
                         DataTypeIds.Float, v, defaultSettings: true);
             }
@@ -1068,7 +1059,7 @@ namespace AasOpcUaServer
             {
                 // leave in string
                 this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Value",
-                    DataTypeIds.String, prop.value, defaultSettings: true);
+                    DataTypeIds.String, prop.Value, defaultSettings: true);
             }
 
             // result
@@ -1102,7 +1093,7 @@ namespace AasOpcUaServer
             }
         }
 
-        public NodeState CreateAddInstanceObject(NodeState parent, AdminShell.SubmodelElementCollection coll)
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.ISubmodelElementCollection coll)
         {
             // access
             if (coll == null)
@@ -1110,31 +1101,86 @@ namespace AasOpcUaServer
 
             // containing element
             var to = GetTypeObject().NodeId;
-            if (coll.ordered && this.typeObjectOrdered != null)
-                to = this.typeObjectOrdered.NodeId;
+            //if (coll.ordered && this.typeObjectOrdered != null)
+            //    to = this.typeObjectOrdered.NodeId;
             var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance,
-                "" + coll.idShort, ReferenceTypeIds.HasComponent, to);
+                "" + coll.IdShort, ReferenceTypeIds.HasComponent, to);
 
             // populate common attributes
             base.PopulateInstanceObject(o, coll);
 
             // own attributes
-            this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Instance, "AllowDuplicates",
-                DataTypeIds.Boolean, coll.allowDuplicates, defaultSettings: true);
+            //this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Instance, "AllowDuplicates",
+            //    DataTypeIds.Boolean, coll.AllowDuplicates, defaultSettings: true);
 
             // values
-            if (coll.value != null)
-                foreach (var smw in coll.value)
-                    if (smw.submodelElement != null)
-                        this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
-                            o, CreateMode.Instance, smw);
+            if (coll.Value != null)
+                foreach (var smw in coll.Value)
+                    this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
+                        o, CreateMode.Instance, smw);
 
             // result
             return o;
         }
     }
 
-    public class AasUaEntityFile : AasUaEntitySubmodelElementBase
+	public class AasUaEntitySmeList : AasUaEntitySubmodelElementBase
+	{
+		public NodeState typeObjectOrdered = null;
+
+		public AasUaEntitySmeList(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
+			: base(entityBuilder)
+		{
+			// create type object
+			this.typeObject = this.entityBuilder.CreateAddObjectType("AASSubmodelElementListType",
+				entityBuilder.AasTypes.SubmodelElement.GetTypeNodeId(), preferredTypeNumId,
+				descriptionKey: "AAS:SubmodelElementList");
+			this.typeObjectOrdered = this.entityBuilder.CreateAddObjectType("AASSubmodelElementOrderedListType",
+				this.GetTypeNodeId(), preferredTypeNumId + 1,
+				descriptionKey: "AAS:SubmodelElementList");
+
+			// some elements
+			// ReSharper disable once RedundantExplicitArrayCreation
+			foreach (var o in new NodeState[] { this.typeObject /* , this.typeObjectOrdered */ })
+			{
+				this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Type, "AllowDuplicates",
+					DataTypeIds.Boolean, false, defaultSettings: true,
+					modellingRule: AasUaNodeHelper.ModellingRule.Optional);
+			}
+		}
+
+		public NodeState CreateAddInstanceObject(NodeState parent, Aas.ISubmodelElementList list)
+		{
+			// access
+			if (list == null)
+				return null;
+
+			// containing element
+			var to = GetTypeObject().NodeId;
+            if (list.OrderRelevant.HasValue && list.OrderRelevant.Value && this.typeObjectOrdered != null)
+                to = this.typeObjectOrdered.NodeId;
+            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance,
+				"" + list.IdShort, ReferenceTypeIds.HasComponent, to);
+
+			// populate common attributes
+			base.PopulateInstanceObject(o, list);
+
+			// own attributes
+			//this.entityBuilder.CreateAddPropertyState<bool>(o, CreateMode.Instance, "AllowDuplicates",
+			//    DataTypeIds.Boolean, coll.AllowDuplicates, defaultSettings: true);
+
+			// values
+			if (list.Value != null)
+				foreach (var smw in list.Value)
+					this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
+						o, CreateMode.Instance, smw);
+
+			// result
+			return o;
+		}
+	}
+
+	public class AasUaEntityFile : AasUaEntitySubmodelElementBase
     {
         public AasUaEntityFile(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
             : base(entityBuilder)
@@ -1164,14 +1210,14 @@ namespace AasOpcUaServer
             this.entityBuilder.AasTypes.FileType.CreateAddElements(this.typeObject, CreateMode.Type);
         }
 
-        public NodeState CreateAddInstanceObject(NodeState parent, AdminShell.File file)
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.IFile file)
         {
             // access
             if (file == null)
                 return null;
 
             // containing element
-            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + file.idShort,
+            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + file.IdShort,
                 ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
             // populate common attributes
@@ -1183,13 +1229,13 @@ namespace AasOpcUaServer
                 (this.entityBuilder.theServerOptions?.SimpleDataTypes == true)
                     ? DataTypeIds.String
                     : this.entityBuilder.AasTypes.MimeType.GetTypeNodeId(),
-                file.mimeType, defaultSettings: true);
+                file.ContentType, defaultSettings: true);
             this.entityBuilder.CreateAddPropertyState<string>(
                 o, CreateMode.Instance, "Value",
                 (true == this.entityBuilder?.theServerOptions?.SimpleDataTypes)
                     ? DataTypeIds.String
                     : this.entityBuilder.AasTypes.PathType.GetTypeNodeId(),
-                file.value, defaultSettings: true);
+                file.Value, defaultSettings: true);
 
             // wonderful working
             if (this.entityBuilder.AasTypes.FileType.CheckSuitablity(this.entityBuilder.package, file))
@@ -1221,14 +1267,14 @@ namespace AasOpcUaServer
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
         }
 
-        public NodeState CreateAddInstanceObject(NodeState parent, AdminShell.Blob blob)
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.IBlob blob)
         {
             // access
             if (blob == null)
                 return null;
 
             // containing element
-            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + blob.idShort,
+            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + blob.IdShort,
                 ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
             // populate common attributes
@@ -1236,10 +1282,10 @@ namespace AasOpcUaServer
 
             // own attributes
             this.entityBuilder.CreateAddPropertyState<string>(
-                o, CreateMode.Instance, "MimeType",
-                DataTypeIds.String, blob.mimeType, defaultSettings: true);
+                o, CreateMode.Instance, "ContentType",
+                DataTypeIds.String, blob.ContentType, defaultSettings: true);
             this.entityBuilder.CreateAddPropertyState<string>(o, CreateMode.Instance, "Value",
-                DataTypeIds.String, blob.value, defaultSettings: true);
+                DataTypeIds.String, System.Text.Encoding.UTF8.GetString(blob.Value), defaultSettings: true);
 
             // result
             return o;
@@ -1261,21 +1307,21 @@ namespace AasOpcUaServer
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
         }
 
-        public NodeState CreateAddInstanceObject(NodeState parent, AdminShell.ReferenceElement refElem)
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.IReferenceElement refElem)
         {
             // access
             if (refElem == null)
                 return null;
 
             // containing element
-            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + refElem.idShort,
+            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + refElem.IdShort,
                 ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
             // populate common attributes
             base.PopulateInstanceObject(o, refElem);
 
             // own attributes
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, refElem.value, "Value");
+            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, refElem.Value, "Value");
 
             // result
             return o;
@@ -1299,22 +1345,22 @@ namespace AasOpcUaServer
                 "Second", modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
         }
 
-        public NodeState CreateAddInstanceObject(NodeState parent, AdminShell.RelationshipElement relElem)
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.IRelationshipElement relElem)
         {
             // access
             if (relElem == null)
                 return null;
 
             // containing element
-            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + relElem.idShort,
+            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + relElem.IdShort,
                 ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
             // populate common attributes
             base.PopulateInstanceObject(o, relElem);
 
             // own attributes
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, relElem.first, "First");
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, relElem.second, "Second");
+            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, relElem.First, "First");
+            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, relElem.Second, "Second");
 
             // result
             return o;
@@ -1332,22 +1378,22 @@ namespace AasOpcUaServer
                 descriptionKey: "AAS:OperationVariable");
         }
 
-        public NodeState CreateAddInstanceObject(NodeState parent, AdminShell.OperationVariable opvar)
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.IOperationVariable opvar)
         {
             // access
-            if (opvar == null || opvar.value == null || opvar.value.submodelElement == null)
+            if (opvar == null || opvar.Value == null)
                 return null;
 
             // containing element
             var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance,
-                "" + opvar.value.submodelElement.idShort,
+                "" + opvar.Value.IdShort,
                 ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
             // populate common attributes
-            base.PopulateInstanceObject(o, opvar.value.submodelElement);
+            base.PopulateInstanceObject(o, opvar.Value);
 
             // own attributes
-            this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(o, CreateMode.Instance, opvar.value);
+            this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(o, CreateMode.Instance, opvar.Value);
 
             // result
             return o;
@@ -1380,7 +1426,7 @@ namespace AasOpcUaServer
             }
         }
 
-        public NodeState CreateAddInstanceObject(NodeState parent, AdminShell.Operation op)
+        public NodeState CreateAddInstanceObject(NodeState parent, Aas.IOperation op)
         {
             // access
             if (op == null)
@@ -1388,7 +1434,7 @@ namespace AasOpcUaServer
 
             // containing element
             var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance,
-                "" + op.idShort,
+                "" + op.IdShort,
                 ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
             // populate common attributes
@@ -1397,7 +1443,7 @@ namespace AasOpcUaServer
             // own AAS attributes (in/out op vars)
             for (int i = 0; i < 2; i++)
             {
-                var opvarList = op[i];
+                var opvarList = op.GetVars((OperationVariableDirection)i);
                 if (opvarList != null && opvarList.Count > 0)
                 {
                     var o2 = this.entityBuilder.CreateAddObject(o,
@@ -1405,9 +1451,9 @@ namespace AasOpcUaServer
                         (i == 0) ? "OperationInputVariables" : "OperationOutputVariables",
                         ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
                     foreach (var opvar in opvarList)
-                        if (opvar != null && opvar.value != null)
+                        if (opvar != null && opvar.Value != null)
                             this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
-                                o2, CreateMode.Instance, opvar.value);
+                                o2, CreateMode.Instance, opvar.Value);
                 }
             }
 
@@ -1417,8 +1463,10 @@ namespace AasOpcUaServer
                 // ReSharper disable once RedundantExplicitArrayCreation
                 var args = new List<Argument>[] { new List<Argument>(), new List<Argument>() };
                 for (int i = 0; i < 2; i++)
-                    if (op[i] != null)
-                        foreach (var opvar in op[i])
+                {
+                    var opList = op.GetVars((OperationVariableDirection)i);
+                    if (opList != null)
+                        foreach (var opvar in opList)
                         {
                             // TODO (MIHO, 2020-08-06): decide to from where the name comes
                             var name = "noname";
@@ -1428,34 +1476,34 @@ namespace AasOpcUaServer
 
                             // TODO (MIHO, 2020-08-06): parse UA data type out .. OK?
                             NodeId dataType = null;
-                            if (opvar.value != null && opvar.value.submodelElement != null)
+                            if (opvar.Value != null)
                             {
                                 // better name .. but not best (see below)
-                                if (opvar.value.submodelElement.idShort != null
-                                    && opvar.value.submodelElement.idShort.Trim() != "")
-                                    name = "" + opvar.value.submodelElement.idShort;
+                                if (opvar.Value.IdShort != null
+                                    && opvar.Value.IdShort.Trim() != "")
+                                    name = "" + opvar.Value.IdShort;
 
                                 // TODO (MIHO, 2020-08-06): description: get "en" version is appropriate?
                                 desc = AasUaUtils.GetBestUaDescriptionFromAasDescription(
-                                    opvar.value.submodelElement.description);
+                                    opvar.Value.Description);
 
                                 // currenty, only accept properties as in/out arguments. 
                                 // Only these have an XSD value type!!
-                                var prop = opvar.value.submodelElement as AdminShell.Property;
-                                if (prop != null && prop.valueType != null)
+                                var prop = opvar.Value as Aas.IProperty;
+                                if (prop != null)
                                 {
                                     // TODO (MIHO, 2020-08-06): this any better?
-                                    if (prop.idShort != null && prop.idShort.Trim() != "")
-                                        name = "" + prop.idShort;
+                                    if (prop.IdShort != null && prop.IdShort.Trim() != "")
+                                        name = "" + prop.IdShort;
 
                                     // TODO (MIHO, 2020-08-06): description: get "en" version is appropriate?
                                     if (desc.Text == null || desc.Text == "")
                                         desc = AasUaUtils.GetBestUaDescriptionFromAasDescription(
-                                            opvar.value.submodelElement.description);
+                                            opvar.Value.Description);
 
                                     // try convert type
                                     if (!AasUaUtils.AasValueTypeToUaDataType(
-                                        prop.valueType, out var dummy, out dataType))
+                                        prop.ValueType, out var dummy, out dataType))
                                         dataType = null;
                                 }
                             }
@@ -1465,6 +1513,7 @@ namespace AasOpcUaServer
                             var a = new Argument(name, dataType, -1, desc.Text ?? "");
                             args[i].Add(a);
                         }
+                }
 
                 var unused = this.entityBuilder.CreateAddMethodState(o, CreateMode.Instance, "Operation",
                     inputArgs: args[0].ToArray(),
@@ -1475,137 +1524,7 @@ namespace AasOpcUaServer
             // result
             return o;
         }
-    }
-
-    public class AasUaEntityView : AasUaBaseEntity
-    {
-        public AasUaEntityView(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
-            : base(entityBuilder)
-        {
-            // create type object
-            this.typeObject = this.entityBuilder.CreateAddObjectType("AASViewType", ObjectTypeIds.BaseObjectType,
-                preferredTypeNumId, descriptionKey: "AAS:View");
-            this.entityBuilder.AasTypes.HasInterface.CreateAddInstanceReference(this.typeObject, false,
-                this.entityBuilder.AasTypes.IAASReferableType.GetTypeNodeId());
-
-            // add some elements
-            // Referable
-            this.entityBuilder.AasTypes.Referable.CreateAddElements(this.typeObject, CreateMode.Type);
-            // HasSemantics
-            this.entityBuilder.AasTypes.SemanticId.CreateAddInstanceObject(
-                this.typeObject, CreateMode.Type, null, "SemanticId",
-                modellingRule: AasUaNodeHelper.ModellingRule.Optional);
-            // HasDataSpecification
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                this.typeObject, CreateMode.Type, null, "DataSpecification",
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
-            // contained elements
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                this.typeObject, CreateMode.Type, null, "ContainedElement",
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
-        }
-
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.View view = null,
-            AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
-        {
-            if (parent == null)
-                return null;
-
-            if (mode == CreateMode.Type)
-            {
-                // create only containing element with generic name
-                var o = this.entityBuilder.CreateAddObject(parent, mode, "View",
-                    ReferenceTypeIds.HasComponent, this.GetTypeNodeId(), modellingRule: modellingRule);
-                return o;
-
-            }
-            else
-            {
-                // access
-                if (view == null)
-                    return null;
-
-                // containing element
-                var o = this.entityBuilder.CreateAddObject(parent, mode, "" + view.idShort,
-                    ReferenceTypeIds.HasComponent, GetTypeObject().NodeId, extraName: "View:" + view.idShort);
-
-                // register node record
-                this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, view));
-
-                // Referable
-                this.entityBuilder.AasTypes.Referable.CreateAddElements(
-                    o, CreateMode.Instance, view);
-                // HasSemantics
-                this.entityBuilder.AasTypes.SemanticId.CreateAddInstanceObject(
-                    o, CreateMode.Instance, view.semanticId, "SemanticId");
-                // HasDataSpecification
-                if (view.hasDataSpecification != null && view.hasDataSpecification != null)
-                    foreach (var ds in view.hasDataSpecification)
-                        this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
-
-                // contained elements
-                for (int i = 0; i < view.Count; i++)
-                {
-                    var cer = view[i];
-                    if (cer != null)
-                        this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, cer, "ContainedElement");
-                }
-
-                // OK
-                return o;
-            }
-        }
-    }
-
-    public class AasUaEntityConceptDictionary : AasUaBaseEntity
-    {
-        public AasUaEntityConceptDictionary(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
-            : base(entityBuilder)
-        {
-            // create type object
-            this.typeObject = this.entityBuilder.CreateAddObjectType("AASConceptDictionaryType",
-                ObjectTypeIds.BaseObjectType, preferredTypeNumId, descriptionKey: "AAS:ConceptDictionary");
-            this.entityBuilder.AasTypes.HasInterface.CreateAddInstanceReference(this.typeObject, false,
-                this.entityBuilder.AasTypes.IAASReferableType.GetTypeNodeId());
-
-            // add necessary type information
-            // Referable
-            this.entityBuilder.AasTypes.Referable.CreateAddElements(this.typeObject, CreateMode.Type);
-            // Dictionary Entries
-            this.entityBuilder.CreateAddObject(this.typeObject, CreateMode.Type, "DictionaryEntry",
-                ReferenceTypeIds.HasComponent, this.entityBuilder.AasTypes.DictionaryEntryType.GetTypeNodeId(),
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
-        }
-
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShell.ConceptDictionary cdd = null,
-            AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
-        {
-            if (parent == null)
-                return null;
-            // Create whole object only if required
-            if (mode == CreateMode.Instance && cdd == null)
-                return null;
-
-            // containing element
-            var o = this.entityBuilder.CreateAddObject(parent, mode, "ConceptDictionary",
-                ReferenceTypeIds.HasComponent, GetTypeObject().NodeId, modellingRule: modellingRule);
-
-            if (mode == CreateMode.Instance)
-            {
-                // access
-                if (cdd == null)
-                    return null;
-
-                // Referable
-                this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, cdd);
-            }
-
-            return o;
-        }
-    }
+    }        
 
     public class AasUaEntityDataSpecification : AasUaBaseEntity
     {
@@ -1636,11 +1555,10 @@ namespace AasOpcUaServer
                 this.entityBuilder.AasTypes.IAASIdentifiableType.GetTypeNodeId());
             this.entityBuilder.AasTypes.Referable.CreateAddElements(this.typeObject, CreateMode.Type);
             this.entityBuilder.AasTypes.Identification.CreateAddElements(this.typeObject, CreateMode.Instance,
-                new AdminShell.Identification(
-                    "URI", "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"),
+                "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
             this.entityBuilder.AasTypes.Administration.CreateAddElements(this.typeObject, CreateMode.Instance,
-                new AdminShell.Administration("1", "0"),
+                new Aas.AdministrativeInformation(version: "1", revision: "0"),
                 modellingRule: AasUaNodeHelper.ModellingRule.Optional);
 
             // add some more elements
@@ -1690,7 +1608,7 @@ namespace AasOpcUaServer
         }
 
         public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShell.DataSpecificationIEC61360 ds = null,
+            Aas.IDataSpecificationIec61360 ds = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -1700,7 +1618,7 @@ namespace AasOpcUaServer
             if (mode == CreateMode.Type)
             {
                 // containing element (only)
-                var o = this.entityBuilder.CreateAddObject(parent, mode, "DataSpecificationIEC61360",
+                var o = this.entityBuilder.CreateAddObject(parent, mode, "DataSpecificationIec61360",
                     this.entityBuilder.AasTypes.HasAddIn.GetTypeNodeId(), GetTypeObject().NodeId,
                     modellingRule: modellingRule);
                 return o;
@@ -1713,8 +1631,8 @@ namespace AasOpcUaServer
 
                 // we can only provide minimal unique naming 
                 var name = "DataSpecificationIEC61360";
-                if (ds.shortName != null && this.entityBuilder.RootDataSpecifications != null)
-                    name += "_" + ds.shortName;
+                if (ds.PreferredName != null && this.entityBuilder.RootDataSpecifications != null)
+                    name += "_" + ds.PreferredName;
 
                 // containing element (depending on root folder)
                 NodeState o = null;
@@ -1734,46 +1652,47 @@ namespace AasOpcUaServer
                 }
 
                 // add some elements        
-                if (ds.preferredName != null && ds.preferredName.Count > 0)
+                if (ds.PreferredName != null && ds.PreferredName.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, mode, "PreferredName",
                         DataTypeIds.LocalizedText,
-                        value: AasUaUtils.GetUaLocalizedTexts(ds.preferredName),
+                        value: AasUaUtils.GetUaLocalizedTexts(ds.PreferredName),
                         defaultSettings: true, valueRank: 1);
 
-                if (ds.shortName != null && ds.shortName.Count > 0)
+                if (ds.ShortName != null && ds.ShortName.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, mode, "ShortName",
                         DataTypeIds.LocalizedText,
-                        value: AasUaUtils.GetUaLocalizedTexts(ds.shortName),
+                        value: AasUaUtils.GetUaLocalizedTexts(ds.ShortName),
                         defaultSettings: true, valueRank: 1);
 
-                if (ds.unit != null)
+                if (ds.Unit != null)
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Unit",
-                        DataTypeIds.String, value: ds.unit, defaultSettings: true);
+                        DataTypeIds.String, value: ds.Unit, defaultSettings: true);
 
-                if (ds.unitId != null)
+                if (ds.UnitId != null)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(o, mode,
-                        AdminShell.Reference.CreateNew(ds.unitId?.Keys), "UnitId");
+                        ds.UnitId, "UnitId");
 
-                if (ds.sourceOfDefinition != null)
+                if (ds.SourceOfDefinition != null)
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "SourceOfDefinition",
-                        DataTypeIds.String, value: ds.sourceOfDefinition, defaultSettings: true);
+                        DataTypeIds.String, value: ds.SourceOfDefinition, defaultSettings: true);
 
-                if (ds.symbol != null)
+                if (ds.Symbol != null)
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Symbol",
-                        DataTypeIds.String, value: ds.symbol, defaultSettings: true);
+                        DataTypeIds.String, value: ds.Symbol, defaultSettings: true);
 
-                if (ds.dataType != null)
+                if (ds.DataType != null)
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "DataType",
-                        DataTypeIds.String, value: ds.dataType, defaultSettings: true);
+                        DataTypeIds.String, value: Stringification.ToString(ds.DataType.Value), 
+                        defaultSettings: true);
 
-                if (ds.definition != null && ds.definition.Count > 0)
+                if (ds.Definition != null && ds.Definition.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, mode, "Definition",
-                        DataTypeIds.LocalizedText, value: AasUaUtils.GetUaLocalizedTexts(ds.definition),
+                        DataTypeIds.LocalizedText, value: AasUaUtils.GetUaLocalizedTexts(ds.Definition),
                         defaultSettings: true, valueRank: 1);
 
-                if (ds.valueFormat != null)
+                if (ds.ValueFormat != null)
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "ValueFormat",
-                        DataTypeIds.String, value: ds.valueFormat, defaultSettings: true);
+                        DataTypeIds.String, value: ds.ValueFormat, defaultSettings: true);
 
                 // return
                 return o;
@@ -1835,20 +1754,23 @@ namespace AasOpcUaServer
             }
         }
 
-        public NodeState GetTypeObjectFor(AdminShell.Identification identification)
+        public NodeState GetTypeObjectFor(string id)
         {
             var to = this.typeObject; // shall be NULL
-            if (true == identification?.IsIRI())
+            if (id?.HasContent() != true)
+                return to;
+
+            var idt = ExtendKey.GuessIdType(id);
+            if (idt == ExtendKey.IdType.IRI)
                 to = this.typeObjectUri;
-            if (true == identification?.IsIRDI())
+            else if (idt == ExtendKey.IdType.IRDI)
                 to = this.typeObjectIrdi;
-            if (identification != null && identification.idType != null
-                && identification.idType.Trim().ToUpper() == "CUSTOM")
+            else
                 to = this.typeObjectCustom;
             return to;
         }
 
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.ConceptDescription cd = null,
+        public NodeState CreateAddElements(NodeState parent, CreateMode mode, Aas.IConceptDescription cd = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -1879,10 +1801,10 @@ namespace AasOpcUaServer
                     if (cd.GetIEC61360() != null)
                     {
                         var ds = cd.GetIEC61360();
-                        if (ds.shortName != null)
-                            name = ds.shortName.GetDefaultStr();
-                        if (cd.identification != null)
-                            name += "_" + cd.identification.ToString();
+                        if (ds.ShortName != null)
+                            name = ds.ShortName.GetDefaultString();
+                        if (cd.Id != null)
+                            name += "_" + cd.Id;
                     }
                     name = AasUaUtils.ToOpcUaName(name);
                 }
@@ -1891,13 +1813,13 @@ namespace AasOpcUaServer
                 else
                 {
                     // only identification (the type object will distinct between the id type)
-                    if (cd.identification != null)
-                        name = cd.identification.id;
+                    if (cd.Id != null)
+                        name = cd.Id;
                 }
 
                 // containing element
                 var o = this.entityBuilder.CreateAddObject(parent, mode, name,
-                    ReferenceTypeIds.HasComponent, this.GetTypeObjectFor(cd.identification)?.NodeId,
+                    ReferenceTypeIds.HasComponent, this.GetTypeObjectFor(cd.Id)?.NodeId,
                     modellingRule: modellingRule);
 
                 // Referable
@@ -1905,9 +1827,9 @@ namespace AasOpcUaServer
                     o, CreateMode.Instance, cd);
                 // Identifiable
                 this.entityBuilder.AasTypes.Identification.CreateAddElements(
-                    o, CreateMode.Instance, cd.identification);
+                    o, CreateMode.Instance, cd.Id);
                 this.entityBuilder.AasTypes.Administration.CreateAddElements(
-                    o, CreateMode.Instance, cd.administration);
+                    o, CreateMode.Instance, cd.Administration);
                 // IsCaseOf
                 if (cd.IsCaseOf != null)
                     foreach (var ico in cd.IsCaseOf)
@@ -1915,13 +1837,13 @@ namespace AasOpcUaServer
                             o, CreateMode.Instance, ico, "IsCaseOf");
 
                 // HasDataSpecification solely under the viewpoint of IEC61360
-                var eds = cd.embeddedDataSpecification?.IEC61360;
+                var eds = cd.EmbeddedDataSpecifications?.FindFirstIEC61360Spec();
                 if (eds != null)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                        o, CreateMode.Instance, eds.dataSpecification, "DataSpecification");
+                        o, CreateMode.Instance, eds.DataSpecification, "DataSpecification");
 
                 // data specification is a child
-                var ds61360 = cd.embeddedDataSpecification?.IEC61360Content;
+                var ds61360 = cd.EmbeddedDataSpecifications?.GetIEC61360Content();
                 if (ds61360 != null)
                 {
                     var unused = this.entityBuilder.AasTypes.DataSpecificationIEC61360.CreateAddElements(
@@ -1930,7 +1852,7 @@ namespace AasOpcUaServer
                 }
 
                 // remember CD as NodeRecord
-                this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, cd.identification));
+                this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, cd.Id));
 
                 return o;
             }
@@ -1977,10 +1899,7 @@ namespace AasOpcUaServer
             : base(entityBuilder)
         {
             // create type object
-            this.typeObject = this.entityBuilder.CreateAddReferenceType("AASReference", "AASReferencedBy",
-                preferredTypeNumId, useZeroNS: false,
-                extraSubtype: new NodeId(31, 0) /* request Florian */
-            );
+            this.typeObject = this.entityBuilder.CreateAddReferenceType("AASReference", "AASReferencedBy", preferredTypeNumId, useZeroNS: false, extraSubtype: new NodeId(31, 0) /* request Florian */);
         }
 
         public NodeState CreateAddInstanceReference(NodeState parent)

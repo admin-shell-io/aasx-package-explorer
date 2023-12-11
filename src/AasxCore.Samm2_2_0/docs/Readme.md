@@ -22,7 +22,6 @@
 	- [SAMM Extensions](#samm-extensions)
 
 
-
 ## Introduction
 
 ### Audience and Scope
@@ -229,7 +228,9 @@ Meta Model see
 
 ## AASX Package Explorer - Step by Step
 
+
 ### Import and View an Aspect Model
+
 
 For importing an existing aspect model use "File/Import .../Import SAMM aspect into ConceptDescriptions ...". 
 
@@ -300,6 +301,7 @@ Note: The aasx package explorer does not hinder to add fields several time or ad
 After selecting the elements (in our example only the mandatory fields were selected) they are created. As value the example value from the aspect model is inserted.
 
 ![Exmample values](src/aasx_package_explorer_AddSMEguidedBySMT_position.png "Example Values")
+
 
 
 ### Editing an Aspect Model
@@ -387,13 +389,15 @@ Traits are also supported. A Trait is a combination of a characteristic and a co
 
 For each Constraint again a separate Concept Description of SAMM model element type "Constraint" needs to be created following steps 1) to 7). Choose one of the predefined constraint types like "RangeConstraint" etc.
 
-**Step 11) (Context: Trait) Edit "BaseCharacteristic" and add IDs of cosntraints ("Constraint" and "+").**
+**Step 11) (Context: Trait) Edit "BaseCharacteristic" and add IDs of constraints ("Constraint" and "+").**
 
-### Export Aspect Model
+
+ ### Export Aspect Model
 
 For exporting an aspect model from a choosen concept description use the "File/Export .../Export SAMM aspect model by selected CD". Before calling the export function you must select an concept description of type "samm-aspect".
 
 ![Export SAMM aspect model](src/aasx_package_explorer_SAMM_export.png "Export SAMM aspect model")
+
 
 # Background on Implementation
 
@@ -460,6 +464,7 @@ The JSON value for an extension for a SAMM Measurement would look like this. It 
        }
       ]
     }</value>
+
 
 
 

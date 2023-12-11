@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,23 +7,17 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using AasxWpfControlLibrary;
-using AdminShellNS;
 using AnyUi;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using static AnyUi.AnyUiDisplayContextWpf;
 
 namespace AasxPackageExplorer
 {
@@ -33,7 +27,7 @@ namespace AasxPackageExplorer
         private ListOfVisualElementBasic _theEntities = null;
         private DispEditHelperMultiElement _helper = new DispEditHelperMultiElement();
         private AnyUiUIElement _lastRenderedRootElement = null;
-        private AnyUiDisplayContextWpf _displayContext = null;
+
 
         #region Public events and properties
         //
@@ -75,8 +69,8 @@ namespace AasxPackageExplorer
                         // redraw ourselves?
                         if (_packages != null && _theEntities != null)
                             DisplayOrEditVisualAasxElement(
-                                _packages, _theEntities, _helper.editMode, _helper.hintMode,
-                                flyoutProvider: _displayContext?.FlyoutProvider,
+                                _packages, dcwpf, _theEntities, _helper.editMode, _helper.hintMode,
+                                flyoutProvider: dcwpf?.FlyoutProvider,
                                 appEventProvider: _helper?.appEventsProvider);
                     }
 
@@ -97,9 +91,9 @@ namespace AasxPackageExplorer
         {
             try
             {
-                var changes = true == _displayContext?.CallUndoChanges(_lastRenderedRootElement);
+                var changes = true == _helper?.context?.CallUndoChanges(_lastRenderedRootElement);
                 if (changes)
-                    _displayContext.EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+                    _helper.context.EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
 
             }
             catch (Exception ex)
@@ -126,7 +120,7 @@ namespace AasxPackageExplorer
         //
         //
 
-        public AnyUiStackPanel ClearDisplayDefautlStack()
+        public AnyUiStackPanel ClearDisplayDefaultStack()
         {
             theMasterPanel.Children.Clear();
             var sp = new AnyUiStackPanel();
@@ -135,6 +129,22 @@ namespace AasxPackageExplorer
             theMasterPanel.Children.Add(spwpf);
             _lastRenderedRootElement = null;
             return sp;
+        }
+
+        public Panel GetMasterPanel()
+        {
+            return theMasterPanel;
+        }
+
+        public void SetDisplayExternalControl(System.Windows.FrameworkElement fe)
+        {
+            theMasterPanel.Children.Clear();
+            if (fe != null)
+            {
+                theMasterPanel.Children.Add(fe);
+                theMasterPanel.InvalidateVisual();
+            }
+            _lastRenderedRootElement = null;
         }
 
         public void ClearHighlight()
@@ -153,39 +163,9 @@ namespace AasxPackageExplorer
         {
             public bool scrollingPanel = true;
             public bool showDataPanel = true;
+            public bool useInnerGrid = false;
         }
 
-        // TODO (MIHO, 2020-12-24): check if required
-        private DispLevelColors GetLevelColorsFromResources()
-        {
-            // ReSharper disable CoVariantArrayConversion            
-            var res = new DispLevelColors()
-            {
-                MainSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["DarkestAccentColor"]),
-                    AnyUiBrushes.White),
-                SubSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiBrushes.Black),
-                SubSubSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiBrushes.Black),
-                HintSeverityHigh = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["FocusErrorBrush"]),
-                    AnyUiBrushes.White),
-                HintSeverityNotice = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["DarkestAccentColor"]))
-            };
-            // ReSharper enable CoVariantArrayConversion
-            return res;
-        }
 
 #if _not_needed
         public DisplayRenderHints DisplayMessage(string message)
@@ -234,12 +214,14 @@ namespace AasxPackageExplorer
 
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
+            AnyUiDisplayContextWpf displayContext,
             ListOfVisualElementBasic entities,
-            bool editMode, bool hintMode = false, bool showIriMode = false,
-            VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
+            bool editMode, bool hintMode = false, bool showIriMode = false, bool checkSmt = false,
+			VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
             IPushApplicationEvent appEventProvider = null,
-            DispEditHighlight.HighlightFieldInfo hightlightField = null)
+            DispEditHighlight.HighlightFieldInfo hightlightField = null,
+            AasxMenu superMenu = null)
         {
             //
             // Start
@@ -270,7 +252,6 @@ namespace AasxPackageExplorer
 #endif
 
             // create display context for WPF
-            _displayContext = new AnyUiDisplayContextWpf(flyoutProvider, packages);
             _helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
 
             // modify repository
@@ -284,7 +265,7 @@ namespace AasxPackageExplorer
             _helper.hintMode = hintMode;
             _helper.repo = repo;
             _helper.showIriMode = showIriMode;
-            _helper.context = _displayContext;
+            _helper.context = displayContext;
 
             // inform plug that their potential panel might not shown anymore
             Plugins.AllPluginsInvoke("clear-panel-visual-extension");
@@ -338,138 +319,129 @@ namespace AasxPackageExplorer
 
                 //
                 // Dispatch
-                //
+                //               
 
-                if (entity is VisualElementEnvironmentItem veei)
-                {
-                    _helper.DisplayOrEditAasEntityAasEnv(
-                        packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode);
-                }
-                else if (entity is VisualElementAdminShell veaas)
-                {
-                    _helper.DisplayOrEditAasEntityAas(
-                        packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode);
-                }
-                else if (entity is VisualElementAsset veas)
-                {
-                    _helper.DisplayOrEditAasEntityAsset(
-                        packages, veas.theEnv, veas.theAsset, editMode, repo, stack, hintMode: hintMode);
-                }
-                else if (entity is VisualElementSubmodelRef vesmref)
-                {
-                    // data
-                    AdminShell.AdministrationShell aas = null;
-                    if (vesmref.Parent is VisualElementAdminShell xpaas)
-                        aas = xpaas.theAas;
+                // try to delegate to common routine
+                var common = _helper.DisplayOrEditCommonEntity(
+                    packages, stack, superMenu, editMode, hintMode, checkSmt, cdSortOrder, entity);
 
-                    // edit
-                    _helper.DisplayOrEditAasEntitySubmodelOrRef(
-                        packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
-                        hintMode: hintMode);
-                }
-                else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
+                if (!common)
                 {
-                    _helper.DisplayOrEditAasEntitySubmodelOrRef(
-                        packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,
-                        hintMode: hintMode);
-                }
-                else if (entity is VisualElementSubmodelElement vesme)
-                {
-                    _helper.DisplayOrEditAasEntitySubmodelElement(
-                        packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper.submodelElement,
-                        editMode,
-                        repo, stack, hintMode: hintMode,
-                        nestedCds: cdSortOrder.HasValue &&
-                            cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
-                }
-                else if (entity is VisualElementOperationVariable vepv)
-                {
-                    _helper.DisplayOrEditAasEntityOperationVariable(
-                        packages, vepv.theEnv, vepv.theContainer, vepv.theOpVar, editMode,
-                        stack, hintMode: hintMode);
-                }
-                else if (entity is VisualElementConceptDescription vecd)
-                {
-                    _helper.DisplayOrEditAasEntityConceptDescription(
-                        packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
-                        preventMove: cdSortOrder.HasValue &&
-                            cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
-                }
-                else if (entity is VisualElementView vevw)
-                {
-                    if (vevw.Parent != null && vevw.Parent is VisualElementAdminShell xpaas)
-                        _helper.DisplayOrEditAasEntityView(
-                            packages, vevw.theEnv, xpaas.theAas, vevw.theView, editMode, stack,
-                            hintMode: hintMode);
-                    else
-                        _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
-                }
-                else if (entity is VisualElementReference verf)
-                {
-                    if (verf.Parent != null && verf.Parent is VisualElementView xpev)
-                        _helper.DisplayOrEditAasEntityViewReference(
-                            packages, verf.theEnv, xpev.theView, (AdminShell.ContainedElementRef)verf.theReference,
-                            editMode, stack);
-                    else
-                        _helper.AddGroup(stack, "Reference is corrupted!", _helper.levelColors.MainSection);
-                }
-                else
-                if (entity is VisualElementSupplementalFile vesf)
-                {
-                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf.theFile, editMode, stack);
-                }
-                else if (entity is VisualElementPluginExtension vepe)
-                {
-                    // create controls
-                    object result = null;
-
-                    try
+                    // some special cases
+                    if (entity is VisualElementPluginExtension vepe)
                     {
-                        // replace at top level
-                        theMasterPanel.Children.Clear();
-                        if (vepe.thePlugin != null)
-                            result = vepe.thePlugin.InvokeAction(
-                                "fill-panel-visual-extension", vepe.thePackage, vepe.theReferable, theMasterPanel);
-                    }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
+                        // Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
+                        var approach = 0;
+                        var hasWpf = vepe.thePlugin?.HasAction("fill-panel-visual-extension") == true;
+                        var hasAnyUi = vepe.thePlugin?.HasAction("fill-anyui-visual-extension") == true;
 
-                    // add?
-                    if (result == null)
-                    {
-                        // re-init display!
+                        if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
+                            approach = 1;
+
+                        if (hasAnyUi && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
+                            approach = 2;
+
+                        if (approach == 0 && hasAnyUi)
+                            approach = 2;
+
+                        if (approach == 0 && hasWpf)
+                            approach = 1;
+
+                        // NEW: Differentiate behaviour ..
+                        if (approach == 2)
+                        {
+                            //
+                            // Render panel via ANY UI !!
+                            //
+
+                            try
+                            {
+                                var opContext = new PluginOperationContextBase()
+                                {
+                                    DisplayMode = (editMode)
+                                                ? PluginOperationDisplayMode.MayAddEdit
+                                                : PluginOperationDisplayMode.JustDisplay
+                                };
+
+                                vepe.thePlugin?.InvokeAction(
+                                    "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
+                                    stack, _helper.context, AnyUiDisplayContextWpf.SessionSingletonWpf,
+                                    opContext);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex,
+                                    $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
+                            }
+
+                            // show no panel nor scroll
+                            renderHints.scrollingPanel = false;
+                            renderHints.showDataPanel = false;
+                            renderHints.useInnerGrid = true;
+                        }
+                        else
+                        {
+                            //
+                            // SWAP panel with NATIVE WPF CONTRAL and try render via WPF !!
+                            //
+
+                            // create controls
+                            object result = null;
+
+                            if (approach == 1)
+                                try
+                                {
+                                    // replace at top level
+                                    theMasterPanel.Children.Clear();
+                                    if (vepe.thePlugin != null)
+                                        result = vepe.thePlugin.InvokeAction(
+                                            "fill-panel-visual-extension",
+                                            vepe.thePackage, vepe.theReferable, theMasterPanel);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(ex,
+                                        $"render WPF based visual extension for plugin {vepe.thePlugin.name}");
+                                }
+
+                            // add?
+                            if (result == null)
+                            {
+                                // re-init display!
 #if MONOUI
-                    stack = ClearDisplayDefautlStack();
+                            stack = ClearDisplayDefautlStack();
 #else
-                        stack = new AnyUiStackPanel();
+                                stack = new AnyUiStackPanel();
 #endif
 
-                        // helping message
-                        _helper.AddGroup(
-                            stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                                // helping message
+                                _helper.AddGroup(
+                                    stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                            }
+                            else
+                            {
+                                // this is natively done; do NOT render Any UI to WPF
+                                inhibitRenderStackToPanel = true;
+                            }
+
+                            // show no panel nor scroll
+                            renderHints.scrollingPanel = false;
+                            renderHints.showDataPanel = false;
+                        }
+
                     }
                     else
-                    {
-                        // this is natively done; do NOT render Any UI to WPF
-                        inhibitRenderStackToPanel = true;
-                    }
-
-                    // show no panel nor scroll
-                    renderHints.scrollingPanel = false;
-                    renderHints.showDataPanel = false;
-
+                        _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
                 }
-                else
-                    _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
             }
             else
+            if (entities.Count > 1)
             {
                 //
                 // Dispatch: MULTIPLE items
                 //
-                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder);
+                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder,
+                    superMenu: superMenu);
             }
 
             // now render master stack
@@ -532,56 +504,24 @@ namespace AasxPackageExplorer
             {
                 // rendering
                 theMasterPanel.Children.Clear();
-                var spwpf = _displayContext.GetOrCreateWpfElement(stack);
+                UIElement spwpf = null;
+                if (renderHints.useInnerGrid
+                    && stack?.Children != null
+                    && stack.Children.Count == 1
+                    && stack.Children[0] is AnyUiGrid grid)
+                {
+                    // accessing the WPF version of display context!
+                    spwpf = displayContext.GetOrCreateWpfElement(grid);
+                }
+                else
+                {
+                    spwpf = displayContext.GetOrCreateWpfElement(stack);
+                    DockPanel.SetDock(spwpf, Dock.Top);
+                }
                 _helper.ShowLastHighlights();
-                DockPanel.SetDock(spwpf, Dock.Top);
+
                 theMasterPanel.Children.Add(spwpf);
 
-                // register key shortcuts
-                var num = _displayContext.PrepareNameList(stack);
-                if (num > 0)
-                {
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-up", ModifierKeys.Shift | ModifierKeys.Control, Key.Up,
-                        "Move current AAS element up by one position.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-down", ModifierKeys.Shift | ModifierKeys.Control, Key.Down,
-                        "Move current AAS element down by one position.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-top", ModifierKeys.Shift | ModifierKeys.Control, Key.Home,
-                        "Move current AAS element to the first position of the respective list.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-end", ModifierKeys.Shift | ModifierKeys.Control, Key.End,
-                        "Move current AAS element to the last position of the respective list.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-delete", ModifierKeys.Shift | ModifierKeys.Control, Key.Delete,
-                        "Delete current AAS element in the respective list. Shift key skips dialogue.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-cut", ModifierKeys.Shift | ModifierKeys.Control, Key.X,
-                        "Transfers current AAS element into paste buffer and deletes in respective list.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-copy", ModifierKeys.Shift | ModifierKeys.Control, Key.C,
-                        "Copies current AAS element into paste buffer for later pasting.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-into", ModifierKeys.Shift | ModifierKeys.Control, Key.V,
-                        "Copy existing paste buffer into the child list of the current AAS element.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-above", ModifierKeys.Shift | ModifierKeys.Control, Key.W,
-                        "Copy existing paste buffer above the current AAS element in the same list.");
-
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-below", ModifierKeys.Shift | ModifierKeys.Control, Key.Y,
-                        "Copy existing paste buffer below the current AAS element in the same list.");
-
-                }
             }
 
             // keep the stack
@@ -592,132 +532,82 @@ namespace AasxPackageExplorer
             return renderHints;
         }
 
+        public Tuple<AnyUiDisplayContextWpf, AnyUiUIElement> GetLastRenderedRoot()
+        {
+            if (!(_helper.context is AnyUiDisplayContextWpf dcwpf))
+                return null;
+
+            return new Tuple<AnyUiDisplayContextWpf, AnyUiUIElement>(
+                dcwpf, _lastRenderedRootElement);
+        }
+
+        public void RedisplayRenderedRoot(
+            AnyUiUIElement root,
+            AnyUiRenderMode mode,
+            bool useInnerGrid = false,
+			Dictionary<AnyUiUIElement, bool> updateElemsOnly = null)
+        {
+            // safe
+            _lastRenderedRootElement = root;
+            if (!(_helper?.context is AnyUiDisplayContextWpf dcwpf))
+                return;
+
+            // redisplay
+            theMasterPanel.Children.Clear();
+            UIElement spwpf = null;
+
+            var allowReUse = mode == AnyUiRenderMode.StatusToUi;
+
+            if (useInnerGrid
+                && root is AnyUiStackPanel stack
+                && stack?.Children != null
+                && stack.Children.Count == 1
+                && stack.Children[0] is AnyUiGrid grid)
+            {
+                spwpf = dcwpf.GetOrCreateWpfElement(grid, allowReUse: allowReUse, mode: mode,
+                    updateElemsOnly: updateElemsOnly);
+            }
+            else
+            {
+                spwpf = dcwpf.GetOrCreateWpfElement(root, allowReUse: allowReUse, mode: mode,
+                    updateElemsOnly: updateElemsOnly);
+                DockPanel.SetDock(spwpf, Dock.Top);
+            }
+
+            _helper.ShowLastHighlights();
+            theMasterPanel.Children.Add(spwpf);
+        }
+
         #endregion
 
         public void HandleGlobalKeyDown(KeyEventArgs e, bool preview)
         {
             // access
-            if (_displayContext == null)
+            if (!(_helper?.context is AnyUiDisplayContextWpf dcwpf))
                 return;
 
             // save keyboad states for AnyUI
-            _displayContext.ActualShiftState = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-            _displayContext.ActualControlState = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
-            _displayContext.ActualAltState = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
+            _helper.context.ActualShiftState = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+            _helper.context.ActualControlState = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+            _helper.context.ActualAltState = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
 
             // investigate event itself
             if (e == null)
                 return;
-            var num = _displayContext?.TriggerKeyShortcut(e.Key, Keyboard.Modifiers, preview);
+            var num = dcwpf.TriggerKeyShortcut(e.Key, Keyboard.Modifiers, preview);
             if (num > 0)
                 e.Handled = true;
         }
 
-        public string CreateTempFileForKeyboardShortcuts()
+        public IEnumerable<KeyShortcutRecord> EnumerateShortcuts()
         {
-            try
-            {
-                // create a temp HTML file
-                var tmpfn = System.IO.Path.GetTempFileName();
+            // access
+            if (!(_helper?.context is AnyUiDisplayContextWpf dcwpf))
+                yield break;
 
-                // rename to html file
-                var htmlfn = tmpfn.Replace(".tmp", ".html");
-                File.Move(tmpfn, htmlfn);
-
-                // create html content as string
-                var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<!doctype html>
-                    <html lang=en>
-                    <head>
-                    <style>
-                    body {
-                      background-color: #FFFFE0;
-                      font-size: small;
-                      font-family: Arial, Helvetica, sans-serif;
-                    }
-
-                    table {
-                      font-family: arial, sans-serif;
-                      border-collapse: collapse;
-                      width: 100%;
-                    }
-
-                    td, th {
-                      border: 1px solid #dddddd;
-                      text-align: left;
-                      padding: 8px;
-                    }
-
-                    tr:nth-child(even) {
-                      background-color: #fffff0;
-                    }
-                    </style>
-                    <meta charset=utf-8>
-                    <title>blah</title>
-                    </head>
-                    <body>");
-
-                var htmlFooter = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"</body>
-                    </html>");
-
-                var html = "";
-
-                html += "<h3>Keyboard shortcuts</h3>" + Environment.NewLine;
-
-                html += AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<table style=""width:100%"">
-                    <tr>
-                    <th>Modifiers & Keys</th>
-                    <th>Function</th>
-                    <th>Description</th>
-                    </tr>");
-
-                var rowfmt = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<tr>
-                    <td>{0}</th>
-                    <td>{1}</th>
-                    <td>{2}</th>
-                    </tr>");
-
-                if (_displayContext?.KeyShortcuts != null)
-                    foreach (var sc in _displayContext.KeyShortcuts)
-                    {
-                        // Keys
-                        var keys = "";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Shift))
-                            keys += "[Shift] ";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Control))
-                            keys += "[Control] ";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Alt))
-                            keys += "[Alt] ";
-
-                        keys += "[" + sc.Key.ToString() + "]";
-
-                        // Function
-                        var fnct = "";
-                        if (sc.Element is AnyUiButton btn)
-                            fnct = "" + btn.Content;
-
-                        // fill
-                        html += String.Format(rowfmt,
-                            "" + keys,
-                            "" + fnct,
-                            "" + sc.Info);
-                    }
-
-                html += AdminShellUtil.CleanHereStringWithNewlines(
-                    @"</table>");
-
-                // write
-                System.IO.File.WriteAllText(htmlfn, htmlHeader + html + htmlFooter);
-                return htmlfn;
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, "Creating HTML file for keyboard shortcuts");
-            }
-            return null;
+            if (dcwpf.KeyShortcuts != null)
+                foreach (var sc in dcwpf.KeyShortcuts)
+                    yield return sc;
         }
     }
 }

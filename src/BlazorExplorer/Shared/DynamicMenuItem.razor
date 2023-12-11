@@ -1,0 +1,137 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using MW.Blazor
+@using AasxIntegrationBase
+@using AnyUi
+@using System.Globalization;
+@inject IJSRuntime JsRuntime
+
+
+@{
+    // calculate max width of visible items
+    var maxHeaderWidth = 5;
+    foreach (var mi in MenuItems ?? Enumerable.Empty<AasxMenuItemBase>())
+        if (mi is AasxMenuItem mii && !mii.Hidden)
+            maxHeaderWidth = Math.Max(maxHeaderWidth, ("" + mii.Header).Length);
+}
+
+@foreach (var mi in MenuItems ?? Enumerable.Empty<AasxMenuItemBase>())
+{
+    // not for Blazor?
+    if ((mi.Filter & AasxMenuFilter.Blazor) == 0)
+        continue;
+
+    // better overview
+    if (mi is AasxMenuSeparator)
+    {
+        <li><hr class="dropdown-divider"></li>
+
+        // done
+        continue;
+    }
+
+    // visible items?
+    if (mi is AasxMenuItem mii && !mii.Hidden)
+    {
+        // clean header
+        var header = ("" + mii.Header).Replace("_", "");
+
+        if (mii.Childs == null || mii.Childs.Count < 1)
+        {
+            // normal item  
+            if (Depth < 2)
+            {
+                <li class="nav-item">
+                    <a class="nav-link active" id="nbi_@(mii.Name)" aria-current="page" @onclick="() => ClickOnItem(mii)" style="cursor: pointer;">
+                        @header
+                    </a>
+                </li>
+            }
+            else
+            {
+                // child item, but normal
+                <li class="nav-item">
+                    <a class="dropdown-item" id="nbi_@(mii.Name)" aria-current="page" @onclick="() => ClickOnItem(mii)" style="cursor: pointer;">
+                        <div style="position: relative">
+                            @if(mii.IsCheckable)
+                            {
+                                if (mii.IsChecked)
+                                {
+                                    <span class="dropdown-item-texticon" id="nbi_dit_@(mii.Name)">&#x2611;</span>
+                                }
+                                else
+                                {
+                                    <span class="dropdown-item-texticon">&#x2610;</span>
+                                }
+                            }
+                            <span style="display: inline-block; overflow: hidden; width: @((0.6*maxHeaderWidth).ToString(CultureInfo.InvariantCulture))rem; vertical-align:top">
+                                @header
+                            </span>
+                            <span style="display: inline-block; vertical-align:top">
+                                @("" + mii.InputGesture)
+                            </span>
+                        </div>
+                    </a>
+                </li>
+            }
+        }
+        else
+        {
+            // item with children
+            var styleDD = new StylePile().Add("cursor", "pointer");
+            if (Depth >= 2)
+            {
+                styleDD.Add("color", "black!important");
+                styleDD.Add("padding-left", "30px!important");
+            }
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" style="@styleDD" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @mii.Header
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        
+                    @* Recursion !! *@
+
+                    <DynamicMenuItem TopMenu="TopMenu"
+                        MenuItems="mii.Childs"
+                        Depth="(Depth + 1)" />
+
+                </ul>
+            </li>
+        }
+    }
+}
+
+
+@code {
+
+    [Parameter] public AasxMenu TopMenu { get; set; }
+
+    [Parameter] public AasxMenu MenuItems { get; set; }
+
+    [Parameter] public int Depth { get; set; }
+
+    public void ClickOnItem(AasxMenuItemBase mi)
+    {
+        // toggle menu item?
+        if (mi is AasxMenuItem mii && mii.IsCheckable)
+        {
+            // switch state
+            mii.IsChecked = !mii.IsChecked;
+
+            // prepare header again            
+            var header = (mii.IsChecked) ? "&#x2611;" : "&#x2610;";
+
+            // send of
+            JsRuntime.InvokeVoidAsync("setNavBarItem", "nbi_dit_" + mii.Name, header);
+        }
+
+        // in any case call the top menu
+        var ticket = new AasxMenuActionTicket()
+        {
+            MenuItem = mi
+        };
+        TopMenu?.ActivateAction(mi, ticket);
+    }
+
+}

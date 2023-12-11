@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,21 +7,29 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Aas3_0;
+using AdminShellNS;
+using Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Reflection.PortableExecutable;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
 {
     public class AasxDefinitionBase
     {
+        //
+        // Constants & members
+        //
+
+        public const string V20Tag = "AAS2.0";
+        public string ReadVersion = "";
+
         //
         // Inner classes
         //
@@ -39,13 +47,17 @@ namespace AasxPredefinedConcepts
             }
         }
 
+        public class Library : Dictionary<string, LibraryEntry>
+        {
+        }
+
         //
         // Fields
         //
 
-        protected Dictionary<string, LibraryEntry> theLibrary = new Dictionary<string, LibraryEntry>();
+        protected Library _library = new Library();
 
-        protected List<AdminShell.Referable> theReflectedReferables = new List<AdminShell.Referable>();
+        protected List<Aas.IReferable> theReflectedReferables = new List<Aas.IReferable>();
 
         public string DomainInfo = "";
 
@@ -57,7 +69,7 @@ namespace AasxPredefinedConcepts
 
         public AasxDefinitionBase(Assembly assembly, string resourceName)
         {
-            this.theLibrary = BuildLibrary(assembly, resourceName);
+            this._library = BuildLibrary(assembly, resourceName);
         }
 
         //
@@ -66,13 +78,13 @@ namespace AasxPredefinedConcepts
 
         public void ReadLibrary(Assembly assembly, string resourceName)
         {
-            this.theLibrary = BuildLibrary(assembly, resourceName);
+            this._library = BuildLibrary(assembly, resourceName);
         }
 
-        protected Dictionary<string, LibraryEntry> BuildLibrary(Assembly assembly, string resourceName)
+        protected Library BuildLibrary(Assembly assembly, string resourceName)
         {
             // empty result
-            var res = new Dictionary<string, LibraryEntry>();
+            var res = new Library();
 
             // access resource
             var stream = assembly.GetManifestResourceStream(resourceName);
@@ -95,6 +107,14 @@ namespace AasxPredefinedConcepts
                 if (prop == null)
                     continue;
 
+                // some special cases
+                if (prop.Name == "Version")
+                {
+                    // note this once for the whole class
+                    ReadVersion = prop.Value.ToString();
+                    continue;
+                }
+
                 // ok
                 var name = prop.Name;
                 var contents = prop.Value.ToString();
@@ -109,55 +129,92 @@ namespace AasxPredefinedConcepts
         public LibraryEntry RetrieveEntry(string name)
         {
             // simple access
-            if (theLibrary == null || name == null || !theLibrary.ContainsKey(name))
+            if (_library == null || name == null || !_library.ContainsKey(name))
                 return null;
 
             // return
-            return theLibrary[name];
+            return _library[name];
         }
 
-        public T RetrieveReferable<T>(string name) where T : AdminShell.Referable
+        public T RetrieveReferable<T>(string name) where T : class, Aas.IReferable
         {
             // entry
             var entry = this.RetrieveEntry(name);
             if (entry == null || entry.contents == null)
-                return null;
+                return default(T);
 
             // try de-serialize
+            T res = null;
             try
             {
-                var r = JsonConvert.DeserializeObject<T>(entry.contents);
-                return r;
+                // do some on-the-fly conversion?
+#if !DoNotUseAasxCompatibilityModels
+                if (ReadVersion == V20Tag)
+                {
+                    if (typeof(T) == typeof(Aas.Submodel))
+                    {
+                        var old = JsonConvert.DeserializeObject
+                            <AasxCompatibilityModels.AdminShellV20.Submodel>(entry.contents);
+                        if (old != null)
+                            res = new Aas.Submodel("").ConvertFromV20(old) as T;
+                    }
+
+                    if (typeof(T) == typeof(Aas.ConceptDescription))
+                    {
+                        var old = JsonConvert.DeserializeObject
+                            <AasxCompatibilityModels.AdminShellV20.ConceptDescription>(entry.contents);
+                        if (old != null)
+                            res = new Aas.ConceptDescription("").ConvertFromV20(old) as T;
+                    }
+                }
+#endif
+                // dead-csharp off
+                // TODO (MIHO, 2022-12-31): for V3.0, another method of deserialization is required!!
+                // res ??= JsonConvert.DeserializeObject<T>(entry.contents);
+                // dead-csharp on
+                var node = System.Text.Json.Nodes.JsonNode.Parse(entry.contents);
+                res ??= ExtendIClass.IClassFrom(typeof(T), node) as T;
+
+
             }
             catch (Exception ex)
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                return null;
+                return default(T);
             }
+
+            // OK
+            return res;
         }
 
-        public static AdminShell.ConceptDescription CreateSparseConceptDescription(
+        public static Aas.ConceptDescription CreateSparseConceptDescription(
             string lang,
             string idType,
             string idShort,
             string id,
             string definitionHereString,
-            AdminShell.Reference isCaseOf = null)
+            Aas.IReference isCaseOf = null)
         {
             // access
             if (idShort == null || idType == null || id == null)
                 return null;
 
             // create CD
-            var cd = AdminShell.ConceptDescription.CreateNew(idShort, idType, id);
-            var dsiec = cd.CreateDataSpecWithContentIec61360();
-            dsiec.preferredName = new AdminShellV20.LangStringSetIEC61360(lang, "" + idShort);
-            dsiec.definition = new AdminShellV20.LangStringSetIEC61360(lang,
-                "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString));
+            var cd = new Aas.ConceptDescription(id, idShort: idShort);
+            var dsiec = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
+            var dsc = dsiec.DataSpecificationContent as Aas.DataSpecificationIec61360;
+            dsc.PreferredName = new List<Aas.ILangStringPreferredNameTypeIec61360>
+            {
+                new Aas.LangStringPreferredNameTypeIec61360(lang, "" + idShort)
+            };
+            dsc.Definition = new List<Aas.ILangStringDefinitionTypeIec61360>
+            {
+                new Aas.LangStringDefinitionTypeIec61360(lang, "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString))
+            };
 
             // options
             if (isCaseOf != null)
-                cd.IsCaseOf = new List<AdminShell.Reference>(new[] { isCaseOf });
+                cd.IsCaseOf = new List<Aas.IReference>(new[] { isCaseOf });
 
             // ok
             return cd;
@@ -172,7 +229,7 @@ namespace AasxPredefinedConcepts
         {
         }
 
-        public virtual AdminShell.Referable[] GetAllReferables()
+        public virtual Aas.IReferable[] GetAllReferables()
         {
             return this.theReflectedReferables?.ToArray();
         }
@@ -181,11 +238,11 @@ namespace AasxPredefinedConcepts
             bool useAttributes = false, bool useFieldNames = false)
         {
             // access
-            if (this.theLibrary == null || typeToReflect == null)
+            if (this._library == null || typeToReflect == null)
                 return;
 
             // remember found Referables
-            this.theReflectedReferables = new List<AdminShell.Referable>();
+            this.theReflectedReferables = new List<Aas.IReferable>();
 
             // reflection
             foreach (var fi in typeToReflect.GetFields())
@@ -195,8 +252,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(AdminShell.Submodel);
-                var isCD = fi.FieldType == typeof(AdminShell.ConceptDescription);
+                var isSM = typeof(Aas.ISubmodel).IsAssignableFrom(fi.FieldType);
+                var isCD = typeof(Aas.IConceptDescription).IsAssignableFrom(fi.FieldType);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;
@@ -213,13 +270,13 @@ namespace AasxPredefinedConcepts
                 // access library
                 if (isSM)
                 {
-                    var sm = this.RetrieveReferable<AdminShell.Submodel>(libName);
+                    var sm = this.RetrieveReferable<Aas.Submodel>(libName);
                     fi.SetValue(this, sm);
                     this.theReflectedReferables.Add(sm);
                 }
                 if (isCD)
                 {
-                    var cd = this.RetrieveReferable<AdminShell.ConceptDescription>(libName);
+                    var cd = this.RetrieveReferable<Aas.ConceptDescription>(libName);
                     fi.SetValue(this, cd);
                     this.theReflectedReferables.Add(cd);
                 }
@@ -241,8 +298,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(AdminShell.Submodel);
-                var isCD = fi.FieldType == typeof(AdminShell.ConceptDescription);
+                var isSM = fi.FieldType == typeof(Aas.Submodel);
+                var isCD = fi.FieldType == typeof(Aas.ConceptDescription);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;
@@ -257,7 +314,7 @@ namespace AasxPredefinedConcepts
                     continue;
 
                 // add
-                var rf = fi.GetValue(this) as AdminShell.Referable;
+                var rf = fi.GetValue(this) as Aas.IReferable;
                 if (rf != null)
                     this.theReflectedReferables.Add(rf);
             }

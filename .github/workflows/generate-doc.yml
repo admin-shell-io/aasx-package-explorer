@@ -11,10 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Install .NET core
+      - name: Install .NET core 6.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.100'
+          dotnet-version: '6.0.x'
 
       - name: Install docdev dependencies
         working-directory: src

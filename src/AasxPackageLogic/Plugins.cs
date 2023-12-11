@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,13 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using AasxIntegrationBase;
-using AasxIntegrationBase.AdminShellEvents;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace AasxPackageLogic
 {
@@ -32,6 +33,8 @@ namespace AasxPackageLogic
 
             public string name = "";
             public AasxPluginActionDescriptionBase[] actions = new AasxPluginActionDescriptionBase[] { };
+
+            public List<AasxPluginResultSingleMenuItem> MenuItems;
 
             public PluginInstance()
             { }
@@ -54,6 +57,16 @@ namespace AasxPackageLogic
                 return mi.Invoke(plugObj, args);
             }
 
+            public async Task<object> BasicInvokeMethodAsync(string mname, params object[] args)
+            {
+                var mi = plugType.GetMethod(mname);
+                if (mi == null)
+                    return null;
+                // see: https://stackoverflow.com/questions/16153047/net-invoke-async-method-and-await
+                var promise = (Task<object>)mi.Invoke(plugObj, args);
+                return await promise;
+            }
+
             public AasxPluginActionDescriptionBase[] ListActions()
             {
                 // ReSharper disable RedundantExplicitParamsArrayCreation
@@ -72,27 +85,35 @@ namespace AasxPackageLogic
             public static PluginInstance CreateNew(
                 int sourceIndex, Assembly asm, Type plugType, IAasxPluginInterface plugObj, string[] args)
             {
+                // create a working pugin-structure
                 var pi = new PluginInstance(sourceIndex, asm, plugType, plugObj, args);
-                pi.name = pi.GetName();
                 pi.actions = pi.ListActions();
+
+                // call init plug-in on client (plug-in) side
+                var singleArg = new object[] { args };
+                pi.BasicInvokeMethod("InitPlugin", singleArg);
+
+                // get further information
+                pi.name = pi.GetName();
                 if (pi.name == null || pi.actions == null || pi.actions.Length < 1)
                     return null;
                 return pi;
             }
 
-            public AasxPluginActionDescriptionBase FindAction(string name)
+            public AasxPluginActionDescriptionBase FindAction(string name, bool useAsync = false)
             {
                 if (actions == null || actions.Length < 1)
                     return null;
                 foreach (var a in this.actions)
-                    if (a.name.Trim().ToLower() == name.Trim().ToLower())
+                    if (a.name.Trim().ToLower() == name.Trim().ToLower()
+                        && a.UseAsync == useAsync)
                         return a;
                 return null;
             }
 
-            public bool HasAction(string name)
+            public bool HasAction(string name, bool useAsync = false)
             {
-                return this.FindAction(name) != null;
+                return this.FindAction(name, useAsync: useAsync) != null;
             }
 
             public object CheckForLogMessage()
@@ -109,13 +130,21 @@ namespace AasxPackageLogic
                     return null;
                 return this.BasicInvokeMethod("ActivateAction", name, args);
             }
+
+            public Task<object> InvokeActionAsync(string name, params object[] args)
+            {
+                var a = this.FindAction(name, useAsync: true);
+                if (a == null)
+                    return null;
+                return this.BasicInvokeMethodAsync("ActivateActionAsync", name, args);
+            }
         }
 
         public static Dictionary<string, PluginInstance> LoadedPlugins = new Dictionary<string, PluginInstance>();
 
         public static PluginInstance FindPluginInstance(string pname)
         {
-            if (LoadedPlugins == null || !LoadedPlugins.ContainsKey(pname))
+            if (LoadedPlugins == null || !pname.HasContent() || !LoadedPlugins.ContainsKey(pname))
                 return null;
             return LoadedPlugins[pname];
         }
@@ -138,7 +167,7 @@ namespace AasxPackageLogic
                         Path.GetFileNameWithoutExtension(tagFn) + ".dll");
 
                 // present?
-                if (File.Exists(dllPath))
+                if (System.IO.File.Exists(dllPath))
                 {
                     var pi = new OptionsInformation.PluginDllInfo(dllPath);
                     infos.Add(pi);
@@ -158,6 +187,7 @@ namespace AasxPackageLogic
                 try
                 {
                     Log.Singleton.Info("Trying to load a DLL: {0}", pluginDll[index].Path);
+                    Console.WriteLine("Trying to load a DLL: {0}", pluginDll[index].Path);
 
                     // make full path
                     var fullfn = System.IO.Path.GetFullPath(pluginDll[index].Path);
@@ -194,17 +224,23 @@ namespace AasxPackageLogic
                         continue;
                     }
 
-                    // init plug-in
-                    var singleArg = new object[] { pluginDll[index].Args };
-                    pi.BasicInvokeMethod("InitPlugin", singleArg);
-
                     // adding
                     Log.Singleton.Info(".. adding plugin {0}", pi.name);
                     loadedPlugins.Add(pi.name, pi);
+
+                    // ask for menu items
+                    var resMi = pi.InvokeAction("get-menu-items");
+                    if (resMi is AasxPluginResultProvideMenuItems menuItems
+                        && menuItems.MenuItems != null)
+                    {
+                        pi.MenuItems = menuItems.MenuItems;
+                        Log.Singleton.Info(".. found {0} menu items.", pi.MenuItems.Count);
+                    }
                 }
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, $"Trying to activate the plugin at index {index}");
+                    Console.WriteLine($"Trying to activate the plugin at index {index} gave {ex.Message}");
                 }
             }
 
@@ -227,12 +263,12 @@ namespace AasxPackageLogic
                     if (x != null)
                     {
                         if (x.shortLicense.HasContent())
-                            res.shortLicense += x.shortLicense + Environment.NewLine;
+                            res.shortLicense += x.shortLicense + System.Environment.NewLine;
 
                         if (!x.isStandardLicense && x.longLicense.HasContent())
                         {
-                            res.longLicense += $"[{pi.name}]" + Environment.NewLine;
-                            res.longLicense += x.longLicense + Environment.NewLine + Environment.NewLine;
+                            res.longLicense += $"[{pi.name}]" + System.Environment.NewLine;
+                            res.longLicense += x.longLicense + System.Environment.NewLine + System.Environment.NewLine;
                         }
                     }
                 }

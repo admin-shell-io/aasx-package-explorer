@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
@@ -30,16 +31,18 @@ namespace AasxPackageExplorer
 
         public event IFlyoutControlAction ControlClosed;
 
+        public AnyUiDialogueDataLogMessage DiaData = new AnyUiDialogueDataLogMessage();
+
         public int ControlCloseWarnTime = -1;
-        private int timeToCloseControl = -1;
+        private int _timeToCloseControl = -1;
         public event IFlyoutControlAction ControlWillBeClosed;
 
         public bool Result = false;
 
-        private List<Regex> patternError = new List<Regex>();
-        private int counterError = 0, counterMessage = 0;
+        private List<Regex> _patternError = new List<Regex>();
+        private int _counterError = 0, _counterMessage = 0;
 
-        private System.Windows.Threading.DispatcherTimer timer = null;
+        private System.Windows.Threading.DispatcherTimer _timer = null;
 
         private string _statusCollected = "";
 
@@ -53,10 +56,10 @@ namespace AasxPackageExplorer
             this.CheckBoxAutoScroll.IsChecked = true;
 
             // timer
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
-            timer.Start();
-            timer.Tick += (object sender, EventArgs e) =>
+            _timer = new System.Windows.Threading.DispatcherTimer();
+            _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            _timer.Start();
+            _timer.Tick += (object sender, EventArgs e) =>
             {
                 if (checkForStoredPrint != null)
                 {
@@ -71,14 +74,34 @@ namespace AasxPackageExplorer
                     }
                 }
 
-                if (this.timeToCloseControl >= 0)
+                if (DiaData?.CheckForLogAndEnd != null)
                 {
-                    this.timeToCloseControl -= 100;
-                    if (this.timeToCloseControl < 0 && this.ControlClosed != null)
+                    var res = DiaData.CheckForLogAndEnd();
+
+                    if (res.Item1 is string[] lmsgs && lmsgs.Length > 0)
+                        foreach (var lmsg in lmsgs)
+                            this.LogMessage(lmsg);
+
+                    if (res.Item1 is StoredPrint[] sps)
+                        foreach (var sp in sps)
+                            this.LogMessage(sp);
+
+                    if (res.Item2 && _timeToCloseControl <= 0)
                     {
-                        if (this.timer != null)
-                            this.timer.Stop();
-                        this.ControlClosed();
+                        // trigger the time to close (below), in order
+                        // to have some visual effect
+                        _timeToCloseControl = 1000;
+                    }
+                }
+
+                if (this._timeToCloseControl >= 0)
+                {
+                    this._timeToCloseControl -= 100;
+                    if (this._timeToCloseControl <= 0)
+                    {
+                        if (this._timer != null)
+                            this._timer.Stop();
+                        ControlClosed?.Invoke();
                     }
                 }
             };
@@ -100,18 +123,18 @@ namespace AasxPackageExplorer
                 || sp.MessageType == StoredPrint.MessageTypeEnum.Log)
             {
                 // count
-                this.counterMessage++;
+                this._counterMessage++;
 
                 // check for error
                 var isError = false;
-                foreach (var pattern in patternError)
+                foreach (var pattern in _patternError)
                     if (pattern.IsMatch(sp.msg))
                         isError = true;
 
                 var sumError = false;
                 if (isError || sp.isError || sp.MessageType == StoredPrint.MessageTypeEnum.Error)
                 {
-                    counterError++;
+                    _counterError++;
                     sumError = true;
                 }
 
@@ -138,9 +161,9 @@ namespace AasxPackageExplorer
             }
 
             // display status
-            var status = $"Messages: {this.counterMessage}";
-            if (this.counterError > 0)
-                status += $" and Errors: {this.counterError}";
+            var status = $"Messages: {this._counterMessage}";
+            if (this._counterError > 0)
+                status += $" and Errors: {this._counterError}";
             this.TextBoxSummary.Text = status;
             if (_statusCollected.HasContent())
                 this.TextBoxSummary.Text += "; " + _statusCollected;
@@ -166,7 +189,7 @@ namespace AasxPackageExplorer
         {
             if (pattern == null)
                 return;
-            this.patternError.Add(pattern);
+            this._patternError.Add(pattern);
         }
 
         public void EnableLargeScreen()
@@ -203,10 +226,14 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
+        }
+
         public void CloseControlExplicit()
         {
-            if (this.timer != null)
-                this.timer.Stop();
+            if (this._timer != null)
+                this._timer.Stop();
             this.ControlClosed?.Invoke();
         }
 
@@ -228,23 +255,23 @@ namespace AasxPackageExplorer
                 {
                     // simply close
                     this.Result = false;
-                    if (this.timer != null)
-                        this.timer.Stop();
+                    if (this._timer != null)
+                        this._timer.Stop();
                     ControlClosed?.Invoke();
                 }
                 else
                 {
                     if (ControlWillBeClosed != null)
                         ControlWillBeClosed();
-                    timeToCloseControl = ControlCloseWarnTime;
+                    _timeToCloseControl = ControlCloseWarnTime;
                 }
             }
 
             if (sender == ButtonMinimize)
             {
                 // minimize will immediately stop log popping!
-                if (this.timer != null)
-                    this.timer.Stop();
+                if (this._timer != null)
+                    this._timer.Stop();
                 ControlMinimize?.Invoke();
             }
         }

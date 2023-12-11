@@ -7,14 +7,31 @@
   /* "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx", */
   /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json", */
-  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json",
+  // "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json",
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\Festo_Demo_Box\\Festo-DemoBox-repo-CPX_E.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\new-aasx-repo.json", */
+  // "AasxRepositoryFn": "C:\\HOMI\\Develop\\Aasx\\repo_demo_case\\Festo-DemoCase-repo-local.json",
+  // "AasxRepositoryFn": "C:\\HOMI\\Develop\\Aasx\\repo\\samm-smt-templates.json",
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
-  "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx",
-  "WindowLeft": -1,
+  /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
+  /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx", */
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\PxC_aasT_2900542_ELR_H3_I_SC__24DC_500AC_0_6.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\Festo_SPAU-B2R-H-G18FD-L-PNLK-PNVBA-M8U_V3c.aasx",
+  // "AasxToLoad": "C:\\Users\\homi0002\\Desktop\\TempDesktop\\230619 Digi Twin Festo AASX Assessment\\231002_Feedback_1\\8001203_64be10f8-d4c8-4226-a56b-901b9fcbe29c_fb1.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_DPPV2.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\bomtest1.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\leitungssatz_tier1.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\IDTA 02006-2-1_Template_Digital Nameplate_V3_lang.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_B.aasx",
+  // "AuxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_Sample_A.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\00_FestoDemoBox-Module-2-Kopie2.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\SMT_and_SAMM_Showcase_v01.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\Run2_DNP_plus_CD_SM_step_2.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\Test1.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\SMT_and_SAMM_Showcase_v02.aasx",
+  "WindowLeft": 200,
   "WindowTop": -1,
   "WindowWidth": 900,
   "WindowHeight": 600,
@@ -25,12 +42,16 @@
   "TemplateIdSubmodelTemplate": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
   "TemplateIdConceptDescription": "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
   "EclassDir": ".\\eclass\\",
+  "DefaultLang": "en,de",
   /* "LogoFile": "SpecPI40_t.png", */
-  "LogoFile": "SpecPI40_t.png",
+  "LogoFile": "PI40_and_IDTA.png",
   "QualifiersFile": "qualifier-presets.json",
+  "ExtensionsPresetFile": "extension-presets.json",
+  "IdentifierKeyValuePairsFile": "local-identifier-presets.json",
+  "DataSpecPresetFile": "data-spec-presets.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
-  "SplashTime": 1000,
+  "SplashTime": 0,
   "InternalBrowser": false,
   "EclassTwoPass": true,
   "BackupDir": ".\\backup",
@@ -43,6 +64,11 @@
   "LoadWithoutPrompt": true,
   "ShowIdAsIri": false,
   "VerboseConnect": true,
+  "WorkDir": ".\\work",
+  "CdSortOrder": "Structured",
+  "ObserveEvents": true,
+  "CompressEvents": true,
+  "CheckSmtElements": false,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
   "StayConnectOptions": "REST-QUEUE", // SIM
@@ -51,7 +77,7 @@
   /* "DefaultConnectRepositoryLocation": "https://admin-shell-io.com:51711", */
   "DefaultConnectRepositoryLocation": "https://admin-shell-io.com/51711",
   "MqttPublisherOptions": {
-    "BrokerUrl": "192.168.178.97:1883",
+    "BrokerUrl": "localhost:1883",
     "MqttRetain": false,
     "EnableFirstPublish": true,
     "FirstTopicAAS": "AAS",
@@ -65,10 +91,10 @@
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
+  "PluginPrefer": "ANYUI",
   "PluginDll": [
-    /*
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net6.0-windows\\AasxPluginUaNetServer.dll",
       "Args": [
         "-single-nodeids",
         "-single-keys",
@@ -79,55 +105,80 @@
       ],
       "Options": null
     },
+    /*
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
       "Args": [],
       "Options": null
-    }, */
+    }, 
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
       "Args": []
     },
+    */
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net472\\AasxPluginExportTable.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net472\\AasxPluginWebBrowser.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginDigitalNameplate\\bin\\Debug\\net6.0-windows\\AasxPluginDigitalNameplate.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
-      "Args": []
-    }, 
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginContactInformation\\bin\\Debug\\net6.0-windows\\AasxPluginContactInformation.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net6.0-windows\\AasxPluginAdvancedTextEditor.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net472\\AasxPluginKnownSubmodels.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net6.0-windows\\AasxPluginTechnicalData.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net6.0-windows\\AasxPluginBomStructure.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net6.0-windows\\AasxPluginPlotting.dll",
       "Args": []
-    } /*,
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net6.0-windows\\AasxPluginImageMap.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net6.0-windows\\AasxPluginMtpViewer.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net6.0-windows\\AasxPluginExportTable.dll",
+      "Args": []
+    } /* ,    
+,
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
+      "Args": []
+    }
+
+    // Festo specific from here on
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\net6.0-windows\\AasxPluginFluiddrawViewer.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\net6.0-windows\\AasxPluginFluiddrawBom.dll",
+      "Args": []
+    }
     // Festo specific from here on
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
@@ -256,5 +307,83 @@
       "StayConnected": true,
       "AutoClose": false
     }
-  ]
+  ],
+  "FontSizePreset": 16,
+  "ScriptPresets": [
+    {
+      "Name": "Test1",
+      "Lines": [
+        "Select(\"AAS\", \"First\");",
+        "Sleep(1000);",
+        "Location(\"Push\");",
+        "Sleep(1000);",
+        "Select(\"Submodel\", \"First\");",
+        "Sleep(1000);",
+        "while (true) {",
+        "  rf = Select(\"This\");",
+        "  WriteLine(\"Approaching Referable \" + rf);",
+        "  if (Select(\"Submodel\", \"Next\") == null) break;",
+        "}"
+      ]
+    },
+    {
+      "Name": "Test2",
+      "Lines": [
+        "Select(\"Submodel\", \"First\");",
+        "Sleep(1000);",
+        "Tool(\"ImportTimeSeries\", ",
+        "  \"Format\", \"Excel\", \"File\", \"Test.xlsx\", ",
+        "  \"ColData\", \"3\" );",
+        "Sleep(1000);",
+        "WriteLine(\"Done\");"
+      ]
+    },
+    {
+      "Name": "Select Test 3",
+      "Lines": [
+        "Select(\"AAS\", \"Next\");"
+      ]
+    },
+    {
+      "Name": "Select Test 4",
+      "Lines": [
+        "Select(\"AAS\", \"Prev\");"
+      ]
+    },
+    {
+      "Name": "Test 5",
+      "Lines": [
+        "Tool(\"EditMenu\", \"Mode\", true);",
+        "res = Tool(\"ToolsFindText\", \"FindText\", \"DE\"); ",
+        "num = 0;",
+        "while (res) {",
+        "    x = Select(\"This\"); ",
+        "    WriteLine(num, \":\", x.idShort);",
+        "    num = num + 1;",
+        "    if (num > 18)",
+        "        break;",
+        "    res = Tool(\"ToolsFindForward\");",
+        "    Sleep(200);",
+        "}"
+      ]
+    },
+    {
+      "Name": "Test 6",
+      "Lines": [
+        "Tool(\"EditMenu\", \"Mode\", true);",
+        "res = Tool(\"ToolsReplaceText\", \"FindText\", \"DE\", \"ReplaceText\", \"GDR\", \"Do\", \"All\"); "
+      ]
+    },
+    {
+      "Name": "Test 7",
+      "Lines": [
+        "Tool(\"aas-elem-delete\");"
+      ]
+    }
+  ],
+  "ScriptLoglevel": 2,
+  "ScriptLaunchWithoutPrompt": true,
+  "ScriptExecuteSystem": true
+  // "ScriptCmd":  "WriteLine(\"Hallo\");"
+  // "ScriptFn" :  "test-script.txt"
 }

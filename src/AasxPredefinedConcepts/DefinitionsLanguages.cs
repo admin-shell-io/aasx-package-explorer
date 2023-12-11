@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -13,10 +13,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// ReSharper disable UnusedType.Global
+
 namespace AasxPredefinedConcepts
 {
     public static class DefinitionsLanguages
     {
-        public static string[] DefaultLanguages = new string[] { "en", "de", "fr", "es", "it", "cn", "kr", "jp" };
+        public static string[] DefaultLanguages = new string[] { "en", "de", "fr", "es", "it", "zh", "ko", "ja" };
     }
 }

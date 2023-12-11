@@ -1,0 +1,1740 @@
+﻿/* official Submodel Template Spec IDTA 02004-1-2 Handover Documentation
+   from March 2023. */
+{
+  "SM_HandoverDocumentation": {
+    "idShort": "HandoverDocumentation",
+    "description": [
+      {
+        "language": "en",
+        "text": "The Submodel defines a set meta data for the handover of documentation from the manufacturer to the operator for industrial equipment."
+      }
+    ],
+    "administration": {
+      "version": "1",
+      "revision": "2"
+    },
+    "id": "0173-1#01-AHF578#001",
+    "semanticId": {
+      "type": "ExternalReference",
+      "keys": [
+        {
+          "type": "Submodel",
+          "value": "0173-1#01-AHF578#001"
+        }
+      ]
+    },
+    "modelType": "Submodel"
+  },
+  "CD_numberOfDocuments": {
+    "idShort": "numberOfDocuments",
+    "description": [
+      {
+        "language": "en",
+        "text": "Number of Documents"
+      },
+      {
+        "language": "de",
+        "text": "Anzahl der Dokumente"
+      }
+    ],
+    "id": "0173-1#02-ABH990#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Number of documents (handover documentation)"
+            },
+            {
+              "language": "de",
+              "text": " Anzahl der Dokumente (\u00DCbergabedokumentation)"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Number of documents (handover documentation)"
+            },
+            {
+              "language": "de",
+              "text": " Anzahl der Dokumente (\u00DCbergabedokumentation)"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Number of documents (handover documentation)"
+            },
+            {
+              "language": "de",
+              "text": " Anzahl der Dokumente (\u00DCbergabedokumentation)"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABH990#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Document": {
+    "idShort": "Document",
+    "id": "0173-1#02-ABI500#001/0173-1#01-AHF579#001*01",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Document (handover documentation)"
+            },
+            {
+              "language": "de",
+              "text": "Dokument (\u00DCbergabedokumentation)"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Document (handover documentation)"
+            },
+            {
+              "language": "de",
+              "text": "Dokument (\u00DCbergabedokumentation)"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Each SubmodelElementCollection describes a document by standard, which is associated to the particular Asset Administration Shell"
+            },
+            {
+              "language": "de",
+              "text": "Jede SubmodelElementCollection beschreibt ein Dokument (siehe IEC 82045-1 und IEC 8245-2), das der jeweiligen Asset Administration Shell zugeordnet ist\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI500#001/0173-1#01-AHF579#001*01"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DocumentId": {
+    "idShort": "DocumentId",
+    "id": "0173-1#02-ABI501#001/0173-1#01-AHF580#001*01",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Document identifier"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentidentifikator"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Document identifier"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentidentifikator"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Set of document identifiers for the Document. One ID in this collection should be used as a preferred ID"
+            },
+            {
+              "language": "de",
+              "text": "Satz von Dokument-IDs f\u00FCr das Dokument. Eine ID in dieser Sammlung sollte als bevorzugte ID verwendet werden\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI501#001/0173-1#01-AHF580#001*01"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DocumentDomainId": {
+    "idShort": "DocumentDomainId",
+    "id": "0173-1#02-ABH994#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "DocumentDomainId"
+            },
+            {
+              "language": "de",
+              "text": "Document Domain Identifikator"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "DocumentDomainId"
+            },
+            {
+              "language": "de",
+              "text": "Document Domain Identifikator"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Identification of the domain in which the given DocumentId is unique. The domain ID can e.g., be the name or acronym of the providing organisation"
+            },
+            {
+              "language": "de",
+              "text": "Identifikation der Dom\u00E4ne, in der die angegebene DocumentId eindeutig ist. Die Domain-ID kann z. B. der Name oder das Akronym der bereitstellenden Organisation sein\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABH994#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ValueId": {
+    "idShort": "ValueId",
+    "id": "0173-1#02-AAO099#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "document number"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentennummer"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "document number"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentennummer"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "alphanumeric character sequence uniquely identifying a document"
+            },
+            {
+              "language": "de",
+              "text": "alphanumerische Zeichenfolge, die ein Dokument eindeutig identifiziert\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-AAO099#002"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_IsPrimary": {
+    "idShort": "IsPrimary",
+    "id": "0173-1#02-ABH995#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Document is primary"
+            },
+            {
+              "language": "de",
+              "text": "Dokument ist prim\u00E4r"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Document is primary"
+            },
+            {
+              "language": "de",
+              "text": "Dokument ist prim\u00E4r"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Flag indicating that a DocumentId within a collection of at least two DocumentId\u0060s is the \u2018primary\u2019 identifier for the document. This is the preferred ID of the document (commonly from the point of view of the owner of the asset)"
+            },
+            {
+              "language": "de",
+              "text": "Flag, das angibt, dass eine DocumentId innerhalb einer Sammlung von mindestens zwei DocumentIds die \u201Eprim\u00E4re\u201C Kennung f\u00FCr das Dokument ist. Dies ist die bevorzugte ID des Dokuments (\u00FCblicherweise aus Sicht des Eigent\u00FCmers des Assets)\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABH995#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DocumentClassification": {
+    "idShort": "DocumentClassification",
+    "id": "0173-1#02-ABI502#001/0173-1#01-AHF581#001*01",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Document classification"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenklassifizierung"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Document classification"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenklassifizierung"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Set of information for describing the classification of the Document according to ClassificationSystems"
+            },
+            {
+              "language": "de",
+              "text": "Satz von Informationen zur Beschreibung der Klassifizierung des Dokuments gem\u00E4\u00DF Klassifizierungssystemen\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI502#001/0173-1#01-AHF581#001*01"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ClassId": {
+    "idShort": "ClassId",
+    "id": "0173-1#02-ABH996#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Class identifyer"
+            },
+            {
+              "language": "de",
+              "text": "Klassenidentifikator"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Class identifyer"
+            },
+            {
+              "language": "de",
+              "text": "Klassenidentifikator"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Unique ID of the document class within a ClassficationSystem"
+            },
+            {
+              "language": "de",
+              "text": "Eindeutige ID der Dokumentenklasse innerhalb eines ClassificationSystems"
+            }
+          ],
+          "valueFormat": "",
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABH996#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ClassName": {
+    "idShort": "ClassName",
+    "id": "0173-1#02-AAO102#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "type of document"
+            },
+            {
+              "language": "de",
+              "text": "Dokumententyp"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "type of document"
+            },
+            {
+              "language": "de",
+              "text": "Dokumententyp"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "classification of a document according to its purpose or the information it contains"
+            },
+            {
+              "language": "de",
+              "text": "Charakterisierung eines Dokuments bez\u00FCglich des Zwecks oder der Information, die es beinhaltet"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-AAO102#003"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ClassificationSystem": {
+    "idShort": "ClassificationSystem",
+    "id": "0173-1#02-ABH997#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Classification system"
+            },
+            {
+              "language": "de",
+              "text": "Klassifizierungssystem"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Classification system"
+            },
+            {
+              "language": "de",
+              "text": "Klassifizierungssystem"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Identification of the classification system"
+            },
+            {
+              "language": "de",
+              "text": "Identifikation des Klassifikationssystems\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABH997#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DocumentVersion": {
+    "idShort": "DocumentVersion",
+    "id": "0173-1#02-ABI503#001/0173-1#01-AHF582#001*01",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Document version"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenversion"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Document version"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenversion"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Information elements of individual Document Version entities"
+            },
+            {
+              "language": "de",
+              "text": "Informationselemente einzelner VDI 2770 DocumentVersion Entit\u00E4ten\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI503#001/0173-1#01-AHF582#001*01"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Language": {
+    "idShort": "Language",
+    "id": "0173-1#02-AAN468#006",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "language of document"
+            },
+            {
+              "language": "de",
+              "text": "Sprache des Dokuments"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "language of document"
+            },
+            {
+              "language": "de",
+              "text": "Sprache des Dokuments"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "language style of the document"
+            },
+            {
+              "language": "de",
+              "text": "Sprachstil des Dokuments\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-AAN468#006"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DocumentVersionId": {
+    "idShort": "DocumentVersionId",
+    "id": "0173-1#02-AAO100#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Document version"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenversion"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Document version"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenversion"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Information elements of individual VDI 2770 DocumentVersion entities"
+            },
+            {
+              "language": "de",
+              "text": "Informationselemente einzelner VDI 2770 DocumentVersion Entit\u00E4ten\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-AAO100#002"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Title": {
+    "idShort": "Title",
+    "id": "0173-1#02-AAO105#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "document name"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenname"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "document name"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenname"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "name of the document"
+            },
+            {
+              "language": "de",
+              "text": "Name des Dokuments\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-AAO105#002"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_SubTitle": {
+    "idShort": "SubTitle",
+    "id": "0173-1#02-ABH998#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Subtitle"
+            },
+            {
+              "language": "de",
+              "text": "Untertitel"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Subtitle"
+            },
+            {
+              "language": "de",
+              "text": "Untertitel"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "List of language-dependent subtitles of the Document"
+            },
+            {
+              "language": "de",
+              "text": "Liste der sprachabh\u00E4ngigen Untertitel des Dokuments\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABH998#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Summary": {
+    "idShort": "Summary",
+    "id": "0173-1#02-AAO106#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "document description"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenbeschreibung"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "document description"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentenbeschreibung"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "plain text characterizing the content of the document"
+            },
+            {
+              "language": "de",
+              "text": "Klartext, der den Inhalt des Dokuments kennzeichnet\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-AAO106#002"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_KeyWords": {
+    "idShort": "KeyWords",
+    "id": "0173-1#02-ABH999#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Keyword"
+            },
+            {
+              "language": "de",
+              "text": "Stichwort"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Keyword"
+            },
+            {
+              "language": "de",
+              "text": "Stichwort"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "List of language-dependent keywords of the document"
+            },
+            {
+              "language": "de",
+              "text": "Liste der sprachabh\u00E4ngigen Schl\u00FCsselw\u00F6rter des Dokuments\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABH999#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_StatusSetDate": {
+    "idShort": "StatusSetDate",
+    "id": "0173-1#02-ABI000#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Document status set date"
+            },
+            {
+              "language": "de",
+              "text": "Datum der Einstellung des Dokumentenstatus"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Document status set date"
+            },
+            {
+              "language": "de",
+              "text": "Datum der Einstellung des Dokumentenstatus"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Date when the document status was set"
+            },
+            {
+              "language": "de",
+              "text": "Datum, an dem der Dokumentenstatus gesetzt wurde\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI000#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_StatusValue": {
+    "idShort": "StatusValue",
+    "id": "0173-1#02-ABI001#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Document status"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentstatus"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Document status"
+            },
+            {
+              "language": "de",
+              "text": "Dokumentstatus"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Each document version represents a point in time in the document life cycle. This status value refers to the milestones in the document life cycle. The following two values should be used for the application of this guideline: InReview (under review), Released (released)"
+            },
+            {
+              "language": "de",
+              "text": "Jede Dokumentversion repr\u00E4sentiert einen Zeitpunkt im Dokumentlebenszyklus. Dieser Statuswert bezieht sich auf die Meilensteine \u200B\u200Bim Dokumentenlebenszyklus. F\u00FCr die Anwendung dieser Richtlinie sollten die folgenden zwei Werte verwendet werden: InReview (in \u00DCberpr\u00FCfung), Released (freigegeben)\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI001#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_OrganizationName": {
+    "idShort": "OrganizationName",
+    "id": "0173-1#02-ABI002#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Organization short name"
+            },
+            {
+              "language": "de",
+              "text": "Kurzname der Organisation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Organization short name"
+            },
+            {
+              "language": "de",
+              "text": "Kurzname der Organisation"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Organiziation name of the author of the document"
+            },
+            {
+              "language": "de",
+              "text": "Name der Organisation des Autors des Dokuments\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI002#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_OrganizationOfficialName": {
+    "idShort": "OrganizationOfficialName",
+    "id": "0173-1#02-ABI004#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Organization official name"
+            },
+            {
+              "language": "de",
+              "text": "Offizieller Name der Organisation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Organization official name"
+            },
+            {
+              "language": "de",
+              "text": "Offizieller Name der Organisation"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Official name of the organization of author of the document"
+            },
+            {
+              "language": "de",
+              "text": "Offizieller Name der Organisation des Autors des Dokuments\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI004#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_RefersTo": {
+    "idShort": "RefersTo",
+    "id": "0173-1#02-ABI006#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Reference to other document"
+            },
+            {
+              "language": "de",
+              "text": "Verweis auf ein anderes Dokument"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Reference to other document"
+            },
+            {
+              "language": "de",
+              "text": "Verweis auf ein anderes Dokument"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Forms a generic RefersTo-relationship to another Document or DocumentVersion. They have a loose relationship"
+            },
+            {
+              "language": "de",
+              "text": "Bildet eine generische RefersTo-Beziehung zu einem anderen Dokument oder einer anderen Dokumentversion. Sie haben ein lockeres Verh\u00E4ltnis\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI006#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_BasedOn": {
+    "idShort": "BasedOn",
+    "id": "0173-1#02-ABI007#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Based on other document"
+            },
+            {
+              "language": "de",
+              "text": "Basierend auf einem anderen Dokument"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Based on other document"
+            },
+            {
+              "language": "de",
+              "text": "Basierend auf einem anderen Dokument"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Forms a BasedOn-relationship to another Document or DocumentVersion. Typically states, that the content of the document bases on another document (e.g. specification requirements). Both have a strong relationship"
+            },
+            {
+              "language": "de",
+              "text": "Bildet eine BasedOn-Beziehung zu einem anderen Dokument oder einer anderen Dokumentversion. Gibt typischerweise an, dass der Inhalt des Dokuments auf einem anderen Dokument basiert (z. B. Spezifikationsanforderungen). Beide haben eine starke Beziehung\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI007#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TranslationOf": {
+    "idShort": "TranslationOf",
+    "id": "0173-1#02-ABI008#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Translation of other document"
+            },
+            {
+              "language": "de",
+              "text": "\u00DCbersetzung eines anderen Dokuments"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Translation of other document"
+            },
+            {
+              "language": "de",
+              "text": "\u00DCbersetzung eines anderen Dokuments"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Forms a TranslationOf-relationship to another Document or DocumentVersion. Both have a strong relationship"
+            },
+            {
+              "language": "de",
+              "text": "Bildet eine TranslationOf-Beziehung zu einem anderen Dokument oder einer anderen Dokumentversion. Beide haben eine starke Beziehung\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI008#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DigitalFile": {
+    "idShort": "DigitalFile",
+    "id": "0173-1#02-ABI504#001/0173-1#01-AHF583#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Digital file"
+            },
+            {
+              "language": "de",
+              "text": "Digitale Datei"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Digital file"
+            },
+            {
+              "language": "de",
+              "text": "Digitale Datei"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "MIME-Type, file name and file contents given by the file SubmodelElement"
+            },
+            {
+              "language": "de",
+              "text": "MIME-Typ, Dateiname und Dateiinhalt, die von der Datei SubmodelElement vorgegeben werden\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI504#001/0173-1#01-AHF583#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_PreviewFile": {
+    "idShort": "PreviewFile",
+    "id": "0173-1#02-ABI505#001/0173-1#01-AHF584#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Preview file"
+            },
+            {
+              "language": "de",
+              "text": "Vorschaudatei"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Preview file"
+            },
+            {
+              "language": "de",
+              "text": "Vorschaudatei"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Provides a preview image of the Document Version, e.g. first page, in a commonly used image format and low resolution"
+            },
+            {
+              "language": "de",
+              "text": "Liefert ein Vorschaubild der DocumentVersion, z.B. erste Seite, in einem g\u00E4ngigen Bildformat und niedriger Aufl\u00F6sung.\t"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI505#001/0173-1#01-AHF584#001"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DocumentedEntity": {
+    "idShort": "DocumentedEntity",
+    "id": "0173-1#02-ABI501#001/0173-1#01-AHF580#001*00",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Reference to entity documented"
+            },
+            {
+              "language": "de",
+              "text": "Verweis auf dokumentierte Einheit"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Reference to entity documented"
+            },
+            {
+              "language": "de",
+              "text": "Verweis auf dokumentierte Einheit"
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Identifies entities, which are subject to the Document."
+            },
+            {
+              "language": "de",
+              "text": "Identifiziert Einheiten, die durch dieses Dokument dokumentiert werden."
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "value": "0173-1#02-ABI501#001/0173-1#01-AHF580#001*00"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  }
+}

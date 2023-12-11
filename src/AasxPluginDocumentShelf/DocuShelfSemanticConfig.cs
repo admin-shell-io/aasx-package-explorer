@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -16,7 +16,9 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AasxPredefinedConcepts;
+using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxPluginDocumentShelf
@@ -28,39 +30,39 @@ namespace AasxPluginDocumentShelf
     /// </summary>
     public class DocuShelfSemanticConfig
     {
-        public AdminShell.Key SemIdDocumentation = null;
-        public AdminShell.Key SemIdDocument = null;
-        public AdminShell.Key SemIdDocumentIdValue = null;
-        public AdminShell.Key SemIdDocumentClassId = null;
-        public AdminShell.Key SemIdDocumentClassName = null;
-        public AdminShell.Key SemIdDocumentClassificationSystem = null;
-        public AdminShell.Key SemIdOrganizationName = null;
-        public AdminShell.Key SemIdOrganizationOfficialName = null;
-        public AdminShell.Key SemIdDocumentVersion = null;
-        public AdminShell.Key SemIdLanguage = null;
-        public AdminShell.Key SemIdTitle = null;
-        public AdminShell.Key SemIdDate = null;
-        public AdminShell.Key SemIdDocumentVersionIdValue = null;
-        public AdminShell.Key SemIdDigitalFile = null;
+        public Aas.Key SemIdDocumentation = null;
+        public Aas.Key SemIdDocument = null;
+        public Aas.Key SemIdDocumentIdValue = null;
+        public Aas.Key SemIdDocumentClassId = null;
+        public Aas.Key SemIdDocumentClassName = null;
+        public Aas.Key SemIdDocumentClassificationSystem = null;
+        public Aas.Key SemIdOrganizationName = null;
+        public Aas.Key SemIdOrganizationOfficialName = null;
+        public Aas.Key SemIdDocumentVersion = null;
+        public Aas.Key SemIdLanguage = null;
+        public Aas.Key SemIdTitle = null;
+        public Aas.Key SemIdDate = null;
+        public Aas.Key SemIdDocumentVersionIdValue = null;
+        public Aas.Key SemIdDigitalFile = null;
 
-        public AdminShell.Key SemIdDocumentId = null;
-        public AdminShell.Key SemIdIsPrimaryDocumentId = null;
-        public AdminShell.Key SemIdDocumentVersionId = null;
-        public AdminShell.Key SemIdSummary = null;
-        public AdminShell.Key SemIdKeywords = null;
-        public AdminShell.Key SemIdStatusValue = null;
-        public AdminShell.Key SemIdRole = null;
-        public AdminShell.Key SemIdDomainId = null;
-        public AdminShell.Key SemIdReferencedObject = null;
+        public Aas.Key SemIdDocumentId = null;
+        public Aas.Key SemIdIsPrimaryDocumentId = null;
+        public Aas.Key SemIdDocumentVersionId = null;
+        public Aas.Key SemIdSummary = null;
+        public Aas.Key SemIdKeywords = null;
+        public Aas.Key SemIdStatusValue = null;
+        public Aas.Key SemIdRole = null;
+        public Aas.Key SemIdDomainId = null;
+        public Aas.Key SemIdReferencedObject = null;
 
         public FormDescSubmodelElementCollection FormVdi2770 = null;
 
-        public static DocuShelfSemanticConfig Singleton = CreateDefault();
+        public static DocuShelfSemanticConfig Singleton = CreateDefaultV10();
 
         /// <summary>
-        /// Create a set of minimal options
+        /// Create a set of minimal options; based on the options approach for V10
         /// </summary>
-        public static DocuShelfSemanticConfig CreateDefault()
+        public static DocuShelfSemanticConfig CreateDefaultV10()
         {
             var opt = new DocuShelfSemanticConfig();
 
@@ -68,7 +70,7 @@ namespace AasxPluginDocumentShelf
             var preDefLib = new AasxPredefinedConcepts.DefinitionsVDI2770();
             var preDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(preDefLib);
 
-            opt.SemIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsExactlyOneKey();
+            opt.SemIdDocumentation = preDefs.SM_VDI2770_Documentation?.SemanticId?.GetAsExactlyOneKey();
 
             opt.SemIdDocument = preDefs.CD_VDI2770_Document?.GetCdReference()?.GetAsExactlyOneKey();
             opt.SemIdDocumentIdValue = preDefs.CD_VDI2770_DocumentIdValue?.GetCdReference()?.GetAsExactlyOneKey();
@@ -103,16 +105,110 @@ namespace AasxPluginDocumentShelf
         }
 
         /// <summary>
+        /// Create a set of minimal options suitable for V11
+        /// </summary>
+        public static DocuShelfSemanticConfig CreateDefaultV11()
+        {
+            var opt = new DocuShelfSemanticConfig();
+
+            // use pre-definitions
+            var preDefs = AasxPredefinedConcepts.VDI2770v11.Static;
+
+            opt.SemIdDocumentation = preDefs.SM_ManufacturerDocumentation.GetSemanticKey();
+            opt.SemIdDocument = preDefs.CD_Document?.GetSingleKey();
+            opt.SemIdDocumentIdValue = preDefs.CD_DocumentIdValue?.GetSingleKey();
+            opt.SemIdDocumentClassId = preDefs.CD_ClassId?.GetSingleKey();
+            opt.SemIdDocumentClassName = preDefs.CD_ClassName?.GetSingleKey();
+            opt.SemIdDocumentClassificationSystem = preDefs.CD_ClassificationSystem?.GetSingleKey();
+            opt.SemIdOrganizationName = preDefs.CD_OrganizationName?.GetSingleKey();
+            opt.SemIdOrganizationOfficialName = preDefs.CD_OrganizationOfficialName?.GetSingleKey();
+            opt.SemIdDocumentVersion = preDefs.CD_DocumentVersion?.GetSingleKey();
+            opt.SemIdLanguage = preDefs.CD_Language?.GetSingleKey();
+            opt.SemIdTitle = preDefs.CD_Title?.GetSingleKey();
+            opt.SemIdDate = preDefs.CD_SetDate?.GetSingleKey();
+            opt.SemIdDocumentVersionIdValue = preDefs.CD_DocumentVersionId?.GetSingleKey();
+            opt.SemIdDigitalFile = preDefs.CD_DigitalFile?.GetSingleKey();
+            opt.SemIdDocumentId = preDefs.CD_DocumentId?.GetSingleKey();
+            opt.SemIdIsPrimaryDocumentId = preDefs.CD_IsPrimary?.GetSingleKey();
+            opt.SemIdDocumentVersionId = preDefs.CD_DocumentVersionId?.GetSingleKey();
+            opt.SemIdSummary = preDefs.CD_Summary?.GetSingleKey();
+            opt.SemIdKeywords = preDefs.CD_KeyWords?.GetSingleKey();
+            opt.SemIdStatusValue = preDefs.CD_StatusValue?.GetSingleKey();
+            opt.SemIdDomainId = preDefs.CD_DocumentDomainId?.GetSingleKey();
+
+            return opt;
+        }
+
+		/// <summary>
+		/// Create a set of minimal options suitable for V12
+		/// </summary>
+		public static DocuShelfSemanticConfig CreateDefaultV12()
+		{
+			var opt = new DocuShelfSemanticConfig();
+
+			// use pre-definitions
+			var preDefs = AasxPredefinedConcepts.IdtaHandoverDocumentationV12.Static;
+
+			opt.SemIdDocumentation = preDefs.SM_HandoverDocumentation.GetSemanticKey();
+			opt.SemIdDocument = preDefs.CD_Document?.GetSingleKey();
+			opt.SemIdDocumentIdValue = preDefs.CD_ValueId?.GetSingleKey();
+			opt.SemIdDocumentClassId = preDefs.CD_ClassId?.GetSingleKey();
+			opt.SemIdDocumentClassName = preDefs.CD_ClassName?.GetSingleKey();
+			opt.SemIdDocumentClassificationSystem = preDefs.CD_ClassificationSystem?.GetSingleKey();
+			opt.SemIdOrganizationName = preDefs.CD_OrganizationName?.GetSingleKey();
+			opt.SemIdOrganizationOfficialName = preDefs.CD_OrganizationOfficialName?.GetSingleKey();
+			opt.SemIdDocumentVersion = preDefs.CD_DocumentVersion?.GetSingleKey();
+			opt.SemIdLanguage = preDefs.CD_Language?.GetSingleKey();
+			opt.SemIdTitle = preDefs.CD_Title?.GetSingleKey();
+			opt.SemIdDate = preDefs.CD_StatusSetDate?.GetSingleKey();
+			opt.SemIdDocumentVersionIdValue = preDefs.CD_DocumentVersionId?.GetSingleKey();
+			opt.SemIdDigitalFile = preDefs.CD_DigitalFile?.GetSingleKey();
+			opt.SemIdDocumentId = preDefs.CD_DocumentId?.GetSingleKey();
+			opt.SemIdIsPrimaryDocumentId = preDefs.CD_IsPrimary?.GetSingleKey();
+			opt.SemIdDocumentVersionId = preDefs.CD_DocumentVersionId?.GetSingleKey();
+			opt.SemIdSummary = preDefs.CD_Summary?.GetSingleKey();
+			opt.SemIdKeywords = preDefs.CD_KeyWords?.GetSingleKey();
+			opt.SemIdStatusValue = preDefs.CD_StatusValue?.GetSingleKey();
+			opt.SemIdDomainId = preDefs.CD_DocumentDomainId?.GetSingleKey();
+
+			return opt;
+		}
+
+		/// <summary>
+		/// Create a set of minimal options suitable for given version
+		/// </summary>
+		public static DocuShelfSemanticConfig CreateDefaultFor(DocumentEntity.SubmodelVersion ver)
+        {
+			if (ver == DocumentEntity.SubmodelVersion.V12)
+				return CreateDefaultV12();
+			if (ver == DocumentEntity.SubmodelVersion.V11)
+                return CreateDefaultV11();
+            return CreateDefaultV10();
+        }
+
+        /// <summary>
         /// Create a default template description for VDI2770 based on the SemanticIds from the <c>options</c>
         /// </summary>
-        /// <param name="opt"></param>
-        /// <returns></returns>
+        public static FormDescSubmodelElementCollection CreateVdi2770TemplateDescFor(
+            DocumentEntity.SubmodelVersion ver, DocumentShelfOptions opt)
+        {
+			if (ver == DocumentEntity.SubmodelVersion.V12)
+                // needs to be handle on level of calling function
+				return null;
+			if (ver == DocumentEntity.SubmodelVersion.V11)
+                return CreateVdi2770v11TemplateDesc();
+            return CreateVdi2770TemplateDesc(opt);
+        }
+
+        /// <summary>
+        /// Create a default template description for VDI2770 based on the SemanticIds from the <c>options</c>
+        /// </summary>
         public static FormDescSubmodelElementCollection CreateVdi2770TemplateDesc(DocumentShelfOptions opt)
         {
             if (opt == null)
                 return null;
 
-            var semConfig = DocuShelfSemanticConfig.CreateDefault();
+            var semConfig = DocuShelfSemanticConfig.CreateDefaultV10();
 
             // DocumentItem
 
@@ -178,7 +274,7 @@ namespace AasxPluginDocumentShelf
             // DocumentVersion
 
             var descDocVer = new FormDescSubmodelElementCollection(
-                "DocumentVersion", FormMultiplicity.OneToMany, semConfig.SemIdDocumentVersion, "DocumentVersion",
+                "DocumentVersion", FormMultiplicity.OneToMany, semConfig.SemIdDocumentVersion, "DocumentVersion{0:00}",
                 "VDI2770 allows for multiple DocumentVersions for a document to be delivered.");
             descDoc.Add(descDocVer);
 
@@ -269,7 +365,7 @@ namespace AasxPluginDocumentShelf
                 "Identification of the Domain, e.g. the providing organisation."));
 
             descDocIdDom.Add(new FormDescProperty(
-                "DocumentId", FormMultiplicity.One, defs.CD_DocumentId?.GetSingleKey(),
+                "DocumentId", FormMultiplicity.One, defs.CD_DocumentIdValue?.GetSingleKey(),
                 "DocumentId",
                 "Identification of the Document within a given domain, e.g. the providing organisation."));
 
@@ -342,7 +438,7 @@ namespace AasxPluginDocumentShelf
 
             var descDocVer = new FormDescSubmodelElementCollection(
                 "DocumentVersion", FormMultiplicity.OneToMany, defs.CD_DocumentVersion?.GetSingleKey(),
-                "DocumentVersion",
+                "DocumentVersion{0:00}",
                 "VDI2770 allows for multiple DocumentVersions for a document to be delivered.");
             descDoc.Add(descDocVer);
 

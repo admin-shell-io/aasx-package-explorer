@@ -1,0 +1,141 @@
+﻿@inherits LayoutComponentBase
+@using AdminShellNS;
+@using AasxIntegrationBase
+@using AnyUi
+@using AasxPackageLogic;
+@using AasxPackageLogic.PackageCentral;
+@using BlazorUI.Data;
+@inject IJSRuntime JsRuntime
+@inject BlazorUI.Data.BlazorSession Session
+
+@{
+// resharper disable all
+
+// see: https://stackoverflow.com/questions/65198814/how-to-pass-a-value-from-a-page-to-the-layout-in-blazor
+}
+
+<CascadingValue Value="this">
+    <div class="main" style="margin:0px 0px 2px 0px">
+        <!-- 
+            Header == 1
+            Standard header of Blazor UI
+        -->
+        @if (_showHeader == 1)
+        {
+            @* Deleted for clarity. See in GitHub. *@
+        }
+
+        <!-- 
+            Header == 2
+            AssetID and Repo item select
+        -->
+        @if (_showHeader == 2)
+        {
+            @* Deleted for clarity. See in GitHub. *@
+        }
+
+        <!--
+            Header == 3
+            Top menu
+        -->
+        @if (_showHeader == 3)
+        {
+            <div class="top-row px-2">
+                <div class="col-12">
+                    <MainMenu/>
+                    <div style="width: 90vw">
+                        <StatusBar @ref="childStatusBar" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- 
+            Main content
+        -->
+        <div class="content">
+            @Body
+        </div>
+    </div>
+</CascadingValue>
+
+@code
+{
+    //protected string _message = "Starting ..";
+    //protected AnyUiBrush _msgForeground = AnyUiBrushes.Black;
+    //protected AnyUiBrush _msgBackground = AnyUiBrushes.Transparent;
+
+    //public void UpdateMessage(string message, AnyUiBrush foreground = null, AnyUiBrush background = null)
+    //{
+    //    _message = message;
+    //    if (foreground != null)
+    //        _msgForeground = foreground;
+    //    if (background != null)
+    //        _msgBackground = background;
+    //    InvokeAsync(() => StateHasChanged());
+    //}
+
+    //public string Message
+    //{
+    //    get { return _message; }
+    //    set { 
+    //        _message = value; 
+    //        InvokeAsync(() => StateHasChanged()); 
+    //    }
+    //}
+
+    protected StatusBar childStatusBar;
+
+    public void StatusLineClear()
+    {
+        if (childStatusBar != null)
+            childStatusBar.StatusLineClear();
+    }
+
+    protected int _showHeader = 3;
+    public int ShowHeader { 
+        get { 
+            return _showHeader; 
+        } 
+        set { 
+            _showHeader = value; 
+            StateHasChanged(); 
+        } 
+    }
+
+    // ---------
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            JsRuntime.InvokeVoidAsync("mainLayoutAttachHandlers");            
+            JsRuntime.InvokeVoidAsync("mainLayoutAttachKeyboard");
+
+            var hks = Session.MainMenu?.Menu?.PrepareJavaScriptHotkeys();
+            if (hks != null)
+            {
+                // https://stackoverflow.com/questions/68654640/passing-arrays-to-blazors-ijsruntime-invokeasync
+                JsRuntime.InvokeVoidAsync("mainLayoutSetHotkeys", new object[] { Session.SessionId, hks });
+            }
+        }
+    }
+    
+    public async Task<BlazorInput.KeyboardModifiers> GetKeyboardModifiers()
+    {
+        BlazorInput.KeyboardModifiers res = BlazorInput.KeyboardModifiers.None;
+        int taskRes = await JsRuntime.InvokeAsync<int>("mainLayoutGetModifiers");
+        res = (BlazorInput.KeyboardModifiers)taskRes;
+        return res;
+    }
+
+    [JSInvokable]
+    public static Task<bool> MainLayoutNetHandleKey(int sessionId, string itemName)
+    {
+        // var mi = Session.MainMenu?.Menu?.FindName(itemName);
+        Program.signalNewData(new Program.NewDataAvailableArgs() { 
+            SessionNumber = sessionId,
+            ExecuteMenuItem = itemName });
+        return Task.FromResult(true);
+    }
+}

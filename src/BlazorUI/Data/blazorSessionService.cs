@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
@@ -17,12 +17,15 @@ using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Microsoft.JSInterop;
 
 namespace BlazorUI.Data
 {
     public class blazorSessionService : IDisposable
     {
         public AdminShellPackageEnv env = null;
+        public IndexOfSignificantAasElements significantElements = null;
+
         public string[] aasxFiles = new string[1];
         public string aasxFileSelected = "";
         public bool editMode = false;
@@ -40,11 +43,18 @@ namespace BlazorUI.Data
 
         public string thumbNail = null;
 
+        public IJSRuntime renderJsRuntime = null;
+
         public static int sessionCounter = 0;
         public int sessionNumber = 0;
         public static int sessionTotal = 0;
-        public List<Item> items = null;
+        public ListOfItems items = null;
         public Thread htmlDotnetThread = null;
+
+        public static int totalIndexTimer = 0;
+
+        public Plugins.PluginInstance LoadedPluginInstance = null;
+        public object LoadedPluginSessionId = null;
 
         public blazorSessionService()
         {
@@ -69,19 +79,45 @@ namespace BlazorUI.Data
 
             stack17 = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
 
-            if (env?.AasEnv?.AdministrationShells != null)
+            if (env?.AasEnv?.AssetAdministrationShells != null)
                 helper.DisplayOrEditAasEntityAas(packages, env.AasEnv,
-                    env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+                    env.AasEnv.AssetAdministrationShells[0], editMode, stack17, hintMode: hintMode);
 
             htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
             htmlDotnetThread.Start();
         }
+
         public void Dispose()
         {
             AnyUiDisplayContextHtml.deleteSession(sessionNumber);
             sessionTotal--;
             if (env != null)
                 env.Close();
+        }
+
+        public void DisposeLoadedPlugin()
+        {
+            // access
+            if (LoadedPluginInstance == null || LoadedPluginSessionId == null)
+            {
+                LoadedPluginInstance = null;
+                LoadedPluginSessionId = null;
+                return;
+            }
+
+            // try release
+            try
+            {
+                LoadedPluginInstance.InvokeAction("dispose-anyui-visual-extension",
+                    LoadedPluginSessionId);
+
+                LoadedPluginInstance = null;
+                LoadedPluginSessionId = null;
+            }
+            catch (Exception ex)
+            {
+                LogInternally.That.CompletelyIgnoredError(ex);
+            }
         }
     }
 }

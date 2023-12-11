@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,10 +7,13 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Extensions;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using AdminShellNS;
+using System.Linq;
+using System.Windows.Annotations;
+using static System.Windows.Forms.AxHost;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxIntegrationBase.AdminShellEvents
 {
@@ -28,13 +31,14 @@ namespace AasxIntegrationBase.AdminShellEvents
                 _events.Add(ev);
         }
 
+#if __old
         protected class TraceStateBase
         {
         }
 
         protected class TraceStateStructuralChangeOneModify : TraceStateBase
         {
-            public AdminShell.KeyList CurrentPath;
+            public List<Aas.IKey> CurrentPath;
         }
 
         protected TraceStateBase FollowTraceState(TraceStateBase stateIn, AasEventMsgEnvelope ev)
@@ -44,8 +48,8 @@ namespace AasxIntegrationBase.AdminShellEvents
                 return null;
 
             // basically a unfold state machine
-            if (ev.SourceSemanticId.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
-                    AdminShell.Key.MatchMode.Relaxed)
+            if (ev.SourceSemanticId.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards.GetReference(),
+                    MatchMode.Relaxed)
                 // a in special format
                 && ev.PayloadItems != null && ev.PayloadItems.Count == 1
                 && ev.PayloadItems[0] is AasPayloadStructuralChange evplsc
@@ -56,8 +60,8 @@ namespace AasxIntegrationBase.AdminShellEvents
 
                 // get a current key
                 var rf = evplsc.Changes[0].GetDataAsReferable();
-                rf.parent = null;
-                var currKey = rf.GetReference()?.Last;
+                rf.Parent = null;
+                Aas.IKey currKey = rf.GetReference()?.Keys.Last();
 
                 // Transition NULL -> structural change
                 if (currKey != null && stateIn == null)
@@ -65,17 +69,17 @@ namespace AasxIntegrationBase.AdminShellEvents
                     // start new state
                     var res = new TraceStateStructuralChangeOneModify()
                     {
-                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(AdminShell.KeyList.CreateNew(currKey))
+                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.IKey>() { currKey })
                     };
                     return res;
                 }
                 else
                 if (currKey != null
                     && stateIn is TraceStateStructuralChangeOneModify stateCurr
-                    && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath, AdminShell.Key.MatchMode.Relaxed))
+                    && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath, MatchMode.Relaxed))
                 {
                     // happy path: continue state
-                    stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(AdminShell.KeyList.CreateNew(currKey));
+                    stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(new List<Aas.IKey>() { currKey });
                     return stateCurr;
                 }
             }
@@ -109,7 +113,11 @@ namespace AasxIntegrationBase.AdminShellEvents
             // result
             var res = new List<AasEventMsgEnvelope>();
             if (_events.Count < 2)
+            {
+                res.AddRange(_events);
+                _events.Clear();
                 return res;
+            }
 
             // split into parts of compressable items
 
@@ -177,5 +185,212 @@ namespace AasxIntegrationBase.AdminShellEvents
             // result
             return res;
         }
+#endif
+
+        /// <summary>
+        /// The stream of events to be compressed will be mapped to a stream of trace links.
+        /// First, 1:1. Second, these trace links will try to "join".
+        /// </summary>
+        protected class TraceLinkBase
+        {
+            public AasEventMsgEnvelope MsgEnv;
+
+            /// <summary>
+            /// Try to join contents with next element. If possible, take over
+            /// the (newer) data from <c>next</c>. In this case, return <c>true</c>.
+            /// On <c>true</c>, the next element will be deleted by the caller 
+            /// and <c>this</c> will remain.
+            /// </summary>
+            public virtual bool TryJoinWith(TraceLinkBase next)
+            {
+                return false;
+            }
+
+            public virtual AasEventMsgEnvelope GetResult() { 
+                return MsgEnv; 
+            }
+        }
+
+        /// <summary>
+        /// Various different payloads found; not to be handled anymore.
+        /// </summary>
+        protected class TraceLinkOther : TraceLinkBase
+        {
+        }
+
+        /// <summary>
+        /// Exactly one structure changed.
+        /// Could be join with another structure change of same path.
+        /// </summary>
+        protected class TraceLinkOneStructChange : TraceLinkBase
+        {
+            public AasPayloadStructuralChangeItem OneStructChange;
+            public List<Aas.IKey> Path;
+
+            public override bool TryJoinWith(TraceLinkBase next)
+            {
+                // ok?
+                if (next == null || !(next is TraceLinkOneStructChange nsc)
+                    || this.OneStructChange == null || nsc.OneStructChange == null
+                    || this.OneStructChange.Reason != StructuralChangeReason.Modify
+                    || nsc.OneStructChange.Reason != StructuralChangeReason.Modify
+                    || this.Path == null || this.Path.Count < 1
+                    || nsc.Path == null || nsc.Path.Count < 1)
+                    // first stage NO
+                    return false;
+
+                // now, we have similar changes, but just checking if the pathes are equal
+                // will not work, as the e.g. id/ idShort is also subject of change in these changes.
+                // Therefore, from the older event (this), we will construct a path INCLUDE the contained
+                // changes and will match these pathes with each other. This should cover both cases
+                // (id/ idShort modified / not modified)
+
+                // get the path updated
+                var rf = this.OneStructChange.GetDataAsReferable();
+                rf.Parent = null;
+                Aas.IKey currKey = rf.GetReference()?.Keys.Last();
+                var updatedPath = this.OneStructChange.Path.ReplaceLastKey(new List<Aas.IKey>() { currKey });
+
+                // now compare
+                if (!updatedPath.Matches(nsc.Path, MatchMode.Relaxed))
+                    // second stage NO
+                    return false;
+
+                // take over next
+                this.OneStructChange.Data = "" + nsc.OneStructChange.Data;
+                this.OneStructChange.Timestamp = nsc.OneStructChange.Timestamp;
+
+                // take over the updated path
+                this.OneStructChange.Path = updatedPath;
+
+                // ok!
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Exactly one structure changed.
+        /// Could be accummulated with another structure change of same path.
+        /// </summary>
+        protected class TraceLinkOneValueUpdate : TraceLinkBase
+        {
+            public AasPayloadUpdateValueItem OneValueUpdate;
+            public List<Aas.IKey> Path;
+
+            public override bool TryJoinWith(TraceLinkBase next)
+            {
+                // ok?
+                if (next == null || !(next is TraceLinkOneValueUpdate nvu)
+                    || this.OneValueUpdate == null || nvu.OneValueUpdate == null
+                    || this.Path == null || this.Path.Count < 1 
+                    || nvu.Path == null || nvu.Path.Count < 1 
+                    || !this.Path.Matches(nvu.Path, MatchMode.Relaxed))
+                return false;
+
+                // take over next
+                this.OneValueUpdate.Value = nvu.OneValueUpdate.Value;
+                this.OneValueUpdate.ValueId = nvu.OneValueUpdate.ValueId;
+
+                // ok!
+                return true;
+            }
+        }
+
+        protected TraceLinkBase MapMsgEnvelope(AasEventMsgEnvelope ev)
+        {
+            // access
+            if (ev?.PayloadItems == null || ev?.PayloadItems.Count < 1)
+                return new TraceLinkBase() { MsgEnv = ev };
+
+            // one structural change?
+            if (ev.SourceSemanticId.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards.GetReference(),
+                    MatchMode.Relaxed)
+                // a in special format
+                && ev.PayloadItems != null && ev.PayloadItems.Count == 1
+                && ev.PayloadItems[0] is AasPayloadStructuralChange evplsc
+                && evplsc.Changes != null && evplsc.Changes.Count == 1
+                && evplsc.Changes[0].Reason == StructuralChangeReason.Modify)
+            {
+                // structural change with exactly 1 modification 
+
+                // get a current key
+                var rf = evplsc.Changes[0].GetDataAsReferable();
+                rf.Parent = null;
+                Aas.IKey currKey = rf.GetReference()?.Keys.Last();
+
+                // whole path
+                var currentPath = evplsc.Changes[0].Path;  // evplsc.Changes[0].Path.ReplaceLastKey(new List<Aas.IKey>() { currKey });
+
+                // create a mapping
+                return new TraceLinkOneStructChange()
+                {
+                    MsgEnv = ev,
+                    OneStructChange = evplsc.Changes[0],
+                    Path = currentPath
+                };
+            }
+
+            // one value update?
+            if (ev.SourceSemanticId.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards.GetReference(),
+                    MatchMode.Relaxed)
+                // a in special format
+                && ev.PayloadItems != null && ev.PayloadItems.Count == 1
+                && ev.PayloadItems[0] is AasPayloadUpdateValue evpluv
+                && evpluv.Values != null && evpluv.Values.Count == 1)
+            {
+                // update value with exactly 1 modification 
+
+                // whole path
+                var currentPath = evpluv.Values[0].Path;
+
+                // create a mapping
+                return new TraceLinkOneValueUpdate()
+                {
+                    MsgEnv = ev,
+                    OneValueUpdate = evpluv.Values[0],
+                    Path = currentPath
+                };
+            }
+
+            // not found
+            return new TraceLinkBase() { MsgEnv = ev };
+        }
+
+        public List<AasEventMsgEnvelope> Flush()
+        {
+            // result
+            var res = new List<AasEventMsgEnvelope>();
+            if (_events.Count < 2)
+            {
+                res.AddRange(_events);
+                _events.Clear();
+                return res;
+            }
+
+            // ok, initial map, consume events
+            var traceLinks = _events.Select((ev) => MapMsgEnvelope(ev)).ToList();
+            _events.Clear();
+
+            // try to do the joining
+            int i = 0;
+            while (i < traceLinks.Count - 1)
+            {
+                // test
+                var join = traceLinks[i].TryJoinWith(traceLinks[i + 1]);
+                if (!join)
+                {
+                    i++;
+                    continue;
+                }
+
+                // ok, [i] already joined .. ignore next .. keep index
+                traceLinks.RemoveAt(i + 1);
+            }
+
+            // reconstruct
+            res = traceLinks.Select((tl) => tl.GetResult()).ToList();
+            return res;
+        }
+
     }
 }

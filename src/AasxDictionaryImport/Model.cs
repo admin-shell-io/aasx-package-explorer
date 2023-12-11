@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AdminShellNS;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxDictionaryImport.Model
 {
@@ -75,10 +75,11 @@ namespace AasxDictionaryImport.Model
         /// returns true for this path, this method will always succeed.  Otherwise it will throw an exception.
         /// </summary>
         /// <param name="path">The path of the data set to open</param>
+        /// <param name="type">Type</param>
         /// <returns>A data source that reads from the given path</returns>
         /// <exception cref="ImportException">If the path could not be accessed or does not contain valid data for this
         /// data provider</exception>
-        IDataSource OpenPath(string path);
+        IDataSource OpenPath(string path, Model.DataSourceType type = Model.DataSourceType.Custom);
 
         /// <summary>
         /// Fetch data from this data provider from the network using the given query string provided by the user.
@@ -119,7 +120,7 @@ namespace AasxDictionaryImport.Model
         /// <returns>The data stored in this data source</returns>
         /// <exception cref="ImportException">If the data source could not be accessed or does not contain valid
         /// data</exception>
-        IDataContext Load();
+        IDataContext Load(); // cache this
     }
 
     /// <summary>
@@ -237,8 +238,8 @@ namespace AasxDictionaryImport.Model
         /// <param name="adminShell">The admin shell to add the submodel to</param>
         /// <returns>true if the import was successful, or false if the import failed or if this element cannot be
         /// converted to an AAS submodel</returns>
-        bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell);
+        bool ImportSubmodelInto(Aas.Environment env,
+            Aas.IAssetAdministrationShell adminShell);
 
         /// <summary>
         /// Converts this element into a AAS submodel element (i. e. a property or a collection) and adds it to the
@@ -253,8 +254,8 @@ namespace AasxDictionaryImport.Model
         /// <param name="parent">The parent element to add the submodel elements to</param>
         /// <returns>true if the import was successful, or false if the import failed or
         /// if this element cannot be converted to an AAS submodel element</returns>
-        bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
-            AdminShell.IManageSubmodelElements parent);
+        bool ImportSubmodelElementsInto(Aas.Environment env,
+            Aas.IReferable parent);
 
         /// <summary>
         /// Returns all detail information for this element, suitable for the user interface.  The keys of the returned
@@ -371,10 +372,6 @@ namespace AasxDictionaryImport.Model
         public abstract bool IsValidPath(string path);
 
         /// <inheritdoc/>
-        public virtual IDataSource OpenPath(string path)
-            => OpenPath(path, DataSourceType.Custom);
-
-        /// <inheritdoc/>
         public virtual IDataSource Fetch(string query) =>
             throw new ImportException("Fetch not supported by this data provider");
 
@@ -395,7 +392,7 @@ namespace AasxDictionaryImport.Model
         /// <returns>A data source that reads from the given path</returns>
         /// <exception cref="ImportException">If the path could not be accessed or does not contain valid data for this
         /// data provider</exception>
-        protected abstract IDataSource OpenPath(string path, DataSourceType type);
+        public abstract IDataSource OpenPath(string path, DataSourceType type = Model.DataSourceType.Custom);
     }
 
     /// <summary>
@@ -437,12 +434,12 @@ namespace AasxDictionaryImport.Model
         public virtual Uri? GetDetailsUrl() => null;
 
         /// <inheritdoc/>
-        public virtual bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell) => false;
+        public virtual bool ImportSubmodelInto(Aas.Environment env,
+            Aas.IAssetAdministrationShell adminShell) => false;
 
         /// <inheritdoc/>
-        public virtual bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
-            AdminShell.IManageSubmodelElements parent) => false;
+        public virtual bool ImportSubmodelElementsInto(Aas.Environment env,
+            Aas.IReferable parent) => false;
 
         /// <inheritdoc/>
         public virtual bool Match(IEnumerable<string> queryParts)

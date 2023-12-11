@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -87,9 +87,13 @@ namespace AasxPackageExplorer
 
         public static void PrintCodeSheet(CodeSheetItem[] codeSheetItems, string title = "Asset repository code sheet")
         {
+            // access
+            if (codeSheetItems == null || codeSheetItems.Length < 1)
+                return;
+
             // grid
-            var numrow = 4;
             var numcol = 4;
+            var numrow = 1 + ((codeSheetItems.Length - 1) / 4);
             var overSize = new System.Windows.Size(12000, 12000);
 
             var g = new Grid();
@@ -131,13 +135,13 @@ namespace AasxPackageExplorer
                 Bitmap bmp = null;
                 if (csi.code.Trim().ToLower() == "dmc")
                 {
-                    // DMC
-                    var barcodeWriter = new BarcodeWriter();
+                    var barcodeWriter = new BarcodeWriter<Bitmap>()
+                    {
+                        Format = BarcodeFormat.DATA_MATRIX,
+                        Renderer = new ZXing.Windows.Compatibility.BitmapRenderer()
+                    };
 
-                    // set the barcode format
-                    barcodeWriter.Format = BarcodeFormat.DATA_MATRIX;
-
-                    // write text and generate a 2-D barcode as a bitmap
+                    //// write text and generate a 2-D barcode as a bitmap
                     bmp = barcodeWriter.Write(csi.id);
                 }
                 else
@@ -153,6 +157,7 @@ namespace AasxPackageExplorer
                         IntPtr.Zero,
                         System.Windows.Int32Rect.Empty,
                         BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+
                 var img = new System.Windows.Controls.Image();
                 img.Source = imgsrc;
                 img.Height = 200 * csi.normSize;
@@ -267,7 +272,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                MessageBox.Show("" + ex.Message, "Disappointment");
+                Log.Singleton.Error(ex, "when printing Code Sheet");
                 return false;
             }
             return true;

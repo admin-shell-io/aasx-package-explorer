@@ -1,0 +1,4225 @@
+﻿/* official Submodel Template Spec Digital Nameplate V2.0 from 20 OCT 2022 */
+{
+  "SM_Nameplate": {
+    "idShort": "Nameplate",
+    "description": [
+      {
+        "language": "en",
+        "text": "Contains the nameplate information attached to the product"
+      }
+    ],
+    "administration": {
+      "version": "2",
+      "revision": "0"
+    },
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate",
+    "kind": "Template",
+    "semanticId": {
+      "type": "ExternalReference",
+      "keys": [
+        {
+          "type": "Submodel",
+          "value": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate"
+        }
+      ]
+    },
+    "modelType": "Submodel"
+  },
+  "CD_URIOfTheProduct": {
+    "idShort": "URIOfTheProduct",
+    "id": "0173-1#02-AAY811#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "URIOfTheProduct"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "unique global identification of the product using an universal resource identifier (URI)"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerName": {
+    "idShort": "ManufacturerName",
+    "id": "0173-1#02-AAO677#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerName"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerProductDesignation": {
+    "idShort": "ManufacturerProductDesignation",
+    "id": "0173-1#02-AAW338#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerProductDesignation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Short description of the product (short text) "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ContactInformation": {
+    "idShort": "ContactInformation",
+    "administration": {
+      "version": "",
+      "revision": ""
+    },
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ContactInformation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "The SMC \u201CContactInformation\u201D contains information on how to contact the manufacturer or an authorised service provider, e.g. when a maintenance service is required"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "0173-1#02-AAQ837#005"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_RoleOfContactPerson": {
+    "idShort": "RoleOfContactPerson",
+    "id": "0173-1#02-AAO204#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "RoleOfContactPerson"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "function of a contact person in a process"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_NationalCode": {
+    "idShort": "NationalCode",
+    "id": "0173-1#02-AAO134#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "NationalCode"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "code of a country"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Language": {
+    "idShort": "Language",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/Language",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Language"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Available language"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "type": "ModelReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "0173-1#02-AAO895#003"
+          }
+        ]
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TimeZone": {
+    "idShort": "TimeZone",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/TimeZone",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TimeZone"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "offsets from Coordinated Universal Time (UTC)"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_CityTown": {
+    "idShort": "CityTown",
+    "id": "0173-1#02-AAO132#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "CityTown"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "town or city"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Company": {
+    "idShort": "Company",
+    "id": "0173-1#02-AAW001#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Company"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "name of the company"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Department": {
+    "idShort": "Department",
+    "id": "0173-1#02-AAO127#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Department"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "administrative section within an organisation where a business partner is located"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Phone": {
+    "idShort": "Phone",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/Phone",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Phone"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Phone number including type"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TelephoneNumber": {
+    "idShort": "TelephoneNumber",
+    "id": "0173-1#02-AAO136#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TelephoneNumber"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "complete telephone number to be called to reach a business partner"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfTelephone": {
+    "idShort": "TypeOfTelephone",
+    "id": "0173-1#02-AAO137#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfTelephone"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of a telephone according to its location or usage"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_AvailableTime": {
+    "idShort": "AvailableTime",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/ContactInformation/AvailableTime/",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "AvailableTime"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Specification of the available time window"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Fax": {
+    "idShort": "Fax",
+    "id": "0173-1#02-AAQ834#005",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Fax"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Fax number including type"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_FaxNumber": {
+    "idShort": "FaxNumber",
+    "id": "0173-1#02-AAO195#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "FaxNumber"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "complete telephone number to be called to reach a business partner\u0027s fax machine"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfFaxNumber": {
+    "idShort": "TypeOfFaxNumber",
+    "id": "0173-1#02-AAO196#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfFaxNumber"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of the fax according its location or usage"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Email": {
+    "idShort": "Email",
+    "id": "0173-1#02-AAQ836#005",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Email"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "E-mail address and encryption method"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_EmailAddress": {
+    "idShort": "EmailAddress",
+    "id": "0173-1#02-AAO198#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "EmailAddress"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "electronic mail address of a business partner"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_PublicKey": {
+    "idShort": "PublicKey",
+    "id": "0173-1#02-AAO200#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "PublicKey"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "public part of an unsymmetrical key pair to sign or encrypt text or messages"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfEmailAddress": {
+    "idShort": "TypeOfEmailAddress",
+    "id": "0173-1#02-AAO199#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfEmailAddress"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of an e-mail address according to its location or usage"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfPublicKey": {
+    "idShort": "TypeOfPublicKey",
+    "id": "0173-1#02-AAO201#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfPublicKey"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of a public key according to its encryption process"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_IPCommunication": {
+    "idShort": "IPCommunication",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations/",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "IPCommunication"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "ContactInformation/IPCommunication IP-based communication channels, e.g. chat or video call"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_AddressOfAdditionalLink": {
+    "idShort": "AddressOfAdditionalLink",
+    "id": "0173-1#02-AAQ326#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "AddressOfAdditionalLink"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "web site address where information about the product or contact is given"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfCommunication": {
+    "idShort": "TypeOfCommunication",
+    "id": "https://admin-shell.io/zvei/nameplate/1/0/ ContactInformations/ContactInformation/IPCommunication/TypeOfCommunication",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfCommunication"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of an IP-based communication channel"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Street": {
+    "idShort": "Street",
+    "id": "0173-1#02-AAO128#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Street"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "street name and house number"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Zipcode": {
+    "idShort": "Zipcode",
+    "id": "0173-1#02-AAO129#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Zipcode"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "ZIP code of address"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_POBox": {
+    "idShort": "POBox",
+    "id": "0173-1#02-AAO130#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "POBox"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "P.O. box number"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ZipCodeOfPOBox": {
+    "idShort": "ZipCodeOfPOBox",
+    "id": "0173-1#02-AAO131#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ZipCodeOfPOBox"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "ZIP code of P.O. box address"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_StateCounty": {
+    "idShort": "StateCounty",
+    "id": "0173-1#02-AAO133#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "StateCounty"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "federal state a part of a state"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_NameOfContact": {
+    "idShort": "NameOfContact",
+    "id": "0173-1#02-AAO205#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "NameOfContact"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "surname of a contact person"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_FirstName": {
+    "idShort": "FirstName",
+    "id": "0173-1#02-AAO206#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "FirstName"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "first name of a contact person"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MiddleNames": {
+    "idShort": "MiddleNames",
+    "id": "0173-1#02-AAO207#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MiddleNames"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "middle names of contact person"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Title": {
+    "idShort": "Title",
+    "id": "0173-1#02-AAO208#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Title"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "common, formal, religious, or other title preceding a contact person\u0027s name"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_AcademicTitle": {
+    "idShort": "AcademicTitle",
+    "id": "0173-1#02-AAO209#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "AcademicTitle"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "academic title preceding a contact person\u0027s name"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_FurtherDetailsOfContact": {
+    "idShort": "FurtherDetailsOfContact",
+    "id": "0173-1#02-AAO210#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "FurtherDetailsOfContact"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "additional information of the contact person"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerProductRoot": {
+    "idShort": "ManufacturerProductRoot",
+    "id": "0173-1#02-AAU732#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerProductRoot"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Top level of a 3 level manufacturer specific product hierarchy"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerProductFamily": {
+    "idShort": "ManufacturerProductFamily",
+    "id": "0173-1#02-AAU731#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerProductFamily"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "2nd level of a 3 level manufacturer specific product hierarchy"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ManufacturerProductType": {
+    "idShort": "ManufacturerProductType",
+    "id": "0173-1#02-AAO057#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ManufacturerProductType"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Characteristic to differentiate between different products of a product family or special variants"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_OrderCodeOfManufacturer": {
+    "idShort": "OrderCodeOfManufacturer",
+    "id": "0173-1#02-AAO227#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "OrderCodeOfManufacturer"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "By manufactures issued unique combination of numbers and letters used to identify the device for ordering"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ProductArticleNumberOfManufacturer": {
+    "idShort": "ProductArticleNumberOfManufacturer",
+    "id": "0173-1#02-AAO676#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ProductArticleNumberOfManufacturer"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "unique product identifier of the manufacturer"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_SerialNumber": {
+    "idShort": "SerialNumber",
+    "id": "0173-1#02-AAM556#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "SerialNumber"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "unique combination of numbers and letters used to identify the device once it has been manufactured"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_YearOfConstruction": {
+    "idShort": "YearOfConstruction",
+    "id": "0173-1#02-AAP906#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "YearOfConstruction"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Year as completion date of object"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DateOfManufacture": {
+    "idShort": "DateOfManufacture",
+    "id": "0173-1#02-AAR972#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "DateOfManufacture"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Date from which the production and / or development process is completed or from which a service is provided completely"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_HardwareVersion": {
+    "idShort": "HardwareVersion",
+    "id": "0173-1#02-AAN270#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "HardwareVersion"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Version of the hardware supplied with the device"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_FirmwareVersion": {
+    "idShort": "FirmwareVersion",
+    "id": "0173-1#02-AAM985#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "FirmwareVersion"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Version of the firmware supplied with the device"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_SoftwareVersion": {
+    "idShort": "SoftwareVersion",
+    "id": "0173-1#02-AAM737#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "SoftwareVersion"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Version of the software used by the device"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_CountryOfOrigin": {
+    "idShort": "CountryOfOrigin",
+    "id": "0173-1#02-AAO259#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "CountryOfOrigin"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Country where the product was manufactured"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_CompanyLogo": {
+    "idShort": "CompanyLogo",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/CompanyLogo ",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "CompanyLogo"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "A graphic mark used to represent a company, an organisation or a product"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Markings": {
+    "idShort": "Markings",
+    "id": "0173-1#01-AGZ673#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Markings"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Collection of product markings"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Marking": {
+    "idShort": "Marking",
+    "id": "0173-1#01-AHD206#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Marking"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Collection of product markings"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MarkingName": {
+    "idShort": "MarkingName",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/MarkingName",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MarkingName"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "common name of the marking"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DesignationOfCertificateOrApproval": {
+    "idShort": "DesignationOfCertificateOrApproval",
+    "id": "0112/2///61987#ABH783#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "DesignationOfCertificateOrApproval"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "alphanumeric character sequence identifying a certificate or approval"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_IssueDate": {
+    "idShort": "IssueDate",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/IssueDate",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "IssueDate"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Date, at which the specified certificate is issued "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ExpiryDate": {
+    "idShort": "ExpiryDate",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExpiryDate",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ExpiryDate"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Date, at which the specified certificate expires "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MarkingFile": {
+    "idShort": "MarkingFile",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/MarkingFile",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MarkingFile"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "conformity symbol of the marking "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MarkingAdditionalText": {
+    "idShort": "MarkingAdditionalText",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/MarkingAdditionalText",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MarkingAdditionalText"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "where applicable, additional information on the marking in plain text, e.g. the ID-number of the notified body involved in the conformity process"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ExplosionSafeties": {
+    "idShort": "ExplosionSafeties",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ExplosionSafeties"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Collection of explosion safety specifications"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ExplosionSafety": {
+    "idShort": "ExplosionSafety",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ExplosionSafety"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "contains information related to explosion safety according to device nameplate"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfApproval": {
+    "idShort": "TypeOfApproval",
+    "id": "0173-1#02-AAM812#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfApproval"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "classification according to the standard or directive to which the approval applies"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ApprovalAgencyTestingAgency": {
+    "idShort": "ApprovalAgencyTestingAgency",
+    "id": "0173-1#02-AAM632#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ApprovalAgencyTestingAgency"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "certificates and approvals pertaining to general usage and compliance with constructional standards and directives"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TypeOfProtection": {
+    "idShort": "TypeOfProtection",
+    "id": "0173-1#02-AAQ325#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TypeOfProtection"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "classification of an explosion protection according to the specific measures applied to avoid ignition of a surrounding explosive atmosphere"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_RatedInsulationVoltage": {
+    "idShort": "RatedInsulationVoltage",
+    "id": "0173-1#02-AAN532#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "RatedInsulationVoltage"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "V",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA153#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "from the manufacturer for the capital assets limited isolation with given(indicated) operating conditions"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_InstructionsControlDrawing": {
+    "idShort": "InstructionsControlDrawing",
+    "id": "0112/2///61987#ABO102#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "InstructionsControlDrawing"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "designation used to uniquely identify a control/reference drawing stored in a file system"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_SpecificConditionsForUse": {
+    "idShort": "SpecificConditionsForUse",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/SpecificConditionsForUse",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "SpecificConditionsForUse"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Note: X if any, otherwise no entry"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_IncompleteDevice": {
+    "idShort": "IncompleteDevice",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/IncompleteDevice",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "IncompleteDevice"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "U if any, otherwise no entry"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_AmbientConditions": {
+    "idShort": "AmbientConditions",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/AmbientConditions",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "AmbientConditions"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Contains properties which are related to the ambient conditions of the device. "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DeviceCategory": {
+    "idShort": "DeviceCategory",
+    "id": "0173-1#02-AAK297#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "DeviceCategory"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "category of device in accordance with directive 94/9/EC"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_EquipmentProtectionLevel": {
+    "idShort": "EquipmentProtectionLevel",
+    "id": "0173-1#02-AAM668#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "EquipmentProtectionLevel"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "part of a hazardous area classification system indicating the likelihood of the existence of a classified hazard"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_RegionalSpecificMarking": {
+    "idShort": "RegionalSpecificMarking",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/RegionalSpecificMarking",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "RegionalSpecificMarking"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Marking used only in specific regions, e.g. North America: class/divisions, EAC: \u201C1\u201D or NEC: \u201CAIS\u201D"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ExplosionGroup": {
+    "idShort": "ExplosionGroup",
+    "id": "0173-1#02-AAT372#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ExplosionGroup"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "classification of dangerous gaseous substances based on their ability to cause an explosion"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MinimumAmbientTemperature": {
+    "idShort": "MinimumAmbientTemperature",
+    "id": "0173-1#02-AAZ952#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MinimumAmbientTemperature"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "\u00BAC",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA567#004"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "lower limit of the temperature range of the surrounding space in which the component, the pipework or the system can be operated"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxAmbientTemperature": {
+    "idShort": "MaxAmbientTemperature",
+    "id": "0173-1#02-BAA039#010",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxAmbientTemperature"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "\u00BAC",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA567#004"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "upper limit of the temperature range of the surrounding space in which the component, the pipework or the system can be operated"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxSurfaceTemperatureForDustProof": {
+    "idShort": "MaxSurfaceTemperatureForDustProof",
+    "id": "0173-1#02-AAM666#005",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxSurfaceTemperatureForDustProof"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "\u00BAC",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA567#004"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum permissible surface temperature of a device used in an explosion hazardous area with combustible dust"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TemperatureClass": {
+    "idShort": "TemperatureClass",
+    "id": "0173-1#02-AAO371#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TemperatureClass"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "classification system of electrical apparatus, based on its maximum surface temperature, related to the specific explosive atmosphere for which it is intended to be used"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ProcessConditions": {
+    "idShort": "ProcessConditions",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/ProcessConditions",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ProcessConditions"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Contains properties which are related to the process conditions of the device. "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_LowerLimitingValueOfProcessTemperature": {
+    "idShort": "LowerLimitingValueOfProcessTemperature",
+    "id": "0173-1#02-AAN309#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "LowerLimitingValueOfProcessTemperature"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "\u00BAC",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA567#004"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "lowest temperature to which the wetted parts of the equipment can be subjected without permanent impairment of operating characteristics"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_UpperLimitingValueOfProcessTemperature": {
+    "idShort": "UpperLimitingValueOfProcessTemperature",
+    "id": "0173-1#02-AAN307#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "UpperLimitingValueOfProcessTemperature"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "\u00BAC",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA567#004"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "highest temperature to which the wetted parts of the device may be subjected without permanent impairment of operating characteristics "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_ExternalElectricalCircuit": {
+    "idShort": "ExternalElectricalCircuit",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/ExternalElectricalCircuit",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "ExternalElectricalCircuit"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "specifies the parameters of external electrical circuits. "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_DesignationOfElectricalTerminal": {
+    "idShort": "DesignationOfElectricalTerminal",
+    "id": "0112/2///61987#ABB147#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "DesignationOfElectricalTerminal"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "alphanumeric character sequence identifying an electrical terminal"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Characteristics": {
+    "idShort": "Characteristics",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/ExternalElectricalCircuit/Characteristics",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Characteristics"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Characteristic of the intrinsically safe circuit "
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_Fisco": {
+    "idShort": "Fisco",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/ExternalElectricalCircuit/Fisco",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Fisco"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "FISCO certified intrinsically safe fieldbus circuit (IEC 60079-11)"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_TwoWISE": {
+    "idShort": "TwoWISE",
+    "id": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate/Markings/Marking/ExplosionSafeties/ExplosionSafety/ExternalElectricalCircuit/TwoWISE",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "TwoWISE"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "2-WISE certified intrinsically safe circuit (IEC 60079-47)"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_SafetyRelatedPropertiesForPassiveBehaviour": {
+    "idShort": "SafetyRelatedPropertiesForPassiveBehaviour",
+    "id": "0173-1#02-AAQ380#006",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "SafetyRelatedPropertiesForPassiveBehaviour"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "properties characterizing the safety related parameters of a loop-powered, intrinsically safe input or output circuit"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxInputPower": {
+    "idShort": "MaxInputPower",
+    "id": "0173-1#02-AAQ372#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxInputPower"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "mW",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA143#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum power that can be applied to the connection facilities of the apparatus without invalidating the type of protection"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxInputVoltage": {
+    "idShort": "MaxInputVoltage",
+    "id": "0173-1#02-AAM638#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxInputVoltage"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "V",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA153#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum voltage (peak a.c. or d.c.) that can be applied to the connection facilities of the apparatus without invalidating the type of protection"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxInputCurrent": {
+    "idShort": "MaxInputCurrent",
+    "id": "0173-1#02-AAM642#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxInputCurrent"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": " mA",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA723#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum current (peak a.c. or d.c) that can be applied to the connection facilities of the apparatus without invalidating the type of protection"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxInternalCapacitance": {
+    "idShort": "MaxInternalCapacitance",
+    "id": "0173-1#02-AAM640#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxInternalCapacitance"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "\u00B5F",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA007#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum equivalent internal capacitance of the apparatus which is considered as appearing across the connection facilities"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxInternalInductance": {
+    "idShort": "MaxInternalInductance",
+    "id": "0173-1#02-AAM639#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxInternalInductance"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "mH",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA047#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum equivalent internal inductance of the apparatus which is considered as appearing across the connection facilities"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_SafetyRelatedPropertiesForActiveBehaviour": {
+    "idShort": "SafetyRelatedPropertiesForActiveBehaviour",
+    "id": "0173-1#02-AAQ381#006",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "SafetyRelatedPropertiesForActiveBehaviour"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "properties characterizing the safety related parameters of an intrinsically safe circuit"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxOutputPower": {
+    "idShort": "MaxOutputPower",
+    "id": "0173-1#02-AAQ371#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxOutputPower"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": " mW",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA143#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum electrical power that can be taken from the apparatus"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxOutputVoltage": {
+    "idShort": "MaxOutputVoltage",
+    "id": "0173-1#02-AAM635#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxOutputVoltage"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "V",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA153#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum voltage (peak a.c. or d.c.) that can occur at the connection facilities of the apparatus at any applied voltage up to the maximum voltage"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxOutputCurrent": {
+    "idShort": "MaxOutputCurrent",
+    "id": "0173-1#02-AAM641#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxOutputCurrent"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "mA",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA723#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum current (peak a.c. or d.c.) in the apparatus that can be taken from the connection facilities of the apparatus"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxExternalCapacitance": {
+    "idShort": "MaxExternalCapacitance",
+    "id": "0173-1#02-AAM637#004",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxExternalCapacitance"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": " \u00B5F",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA007#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum capacitance that can be connected to the connection facilities of the apparatus without invalidating the type of protection"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxExternalInductance": {
+    "idShort": "MaxExternalInductance",
+    "id": "0173-1#02-AAM636#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxExternalInductance"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": " mH",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA047#003"
+              }
+            ]
+          },
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum value of inductance that can be connected to the connection facilities of the apparatus without invalidating the type of protection"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_MaxExternalInductanceResistanceRatio": {
+    "idShort": "MaxExternalInductanceResistanceRatio",
+    "id": "0173-1#02-AAM634#003",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "MaxExternalInductanceResistanceRatio"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "unit": "mH/\u2126",
+          "unitId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#05-AAA188#003"
+              }
+            ]
+          },
+          "symbol": " Lo/Ro",
+          "definition": [
+            {
+              "language": "en",
+              "text": "maximum value of ratio of inductance (Lo) to resistance (Ro) of any external circuit that can be connected to the connection facilities of the electrical apparatus without invalidating intrinsic safety"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_AssetSpecificProperties": {
+    "idShort": "AssetSpecificProperties",
+    "id": "0173-1#01-AGZ672#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "AssetSpecificProperties"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Group of properties that are listed on the asset\u0027s nameplate and are grouped based on guidelines"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_GuidelineSpecificProperties": {
+    "idShort": "GuidelineSpecificProperties",
+    "id": "0173-1#01-AHD205#001",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "GuidelineSpecificProperties"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "Asset specific nameplate information required by guideline, stipulation or legislation."
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  },
+  "CD_GuidelineForConformityDeclaration": {
+    "idShort": "GuidelineForConformityDeclaration",
+    "id": "0173-1#02-AAO856#002",
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "type": "ExternalReference",
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "GuidelineForConformityDeclaration"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": ""
+            }
+          ],
+          "definition": [
+            {
+              "language": "en",
+              "text": "guideline, stipulation or legislation used for determining conformity"
+            }
+          ],
+          "value": "",
+          "modelType": "DataSpecificationIec61360"
+        }
+      }
+    ],
+    "modelType": "ConceptDescription"
+  }
+}

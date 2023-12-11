@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -66,55 +66,119 @@ namespace AasxIntegrationBase
                     new Uri(
                         "/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 
-            // buttons
-            List<string> buttonDefs = new List<string>();
-            List<AnyUiMessageBoxResult> buttonResults = new List<AnyUiMessageBoxResult>();
-            if (buttons == AnyUiMessageBoxButton.OK)
+            var layout = LayoutButtons(buttons);
+            RenderButtonLayout(
+                this, this.StackPanelButtons, layout,
+                StackPanelButton_Click, out buttonToResult);
+        }
+
+        /// <summary>
+        /// Single description of a button in a modal dialogue
+        /// </summary>
+        public class ModalFooterButton
+        {
+            /// <summary>
+            /// Title of the button to display
+            /// </summary>
+            public string Title = "";
+
+            /// <summary>
+            /// Indicate the "hero" button
+            /// </summary>
+            public bool Primary = false;
+
+            /// <summary>
+            /// Result this very button shall trigger
+            /// </summary>
+            public AnyUiMessageBoxResult FinalResult = new AnyUiMessageBoxResult();
+
+            public ModalFooterButton() { }
+
+            public ModalFooterButton(string title, AnyUiMessageBoxResult result, bool primary = false)
             {
-                buttonDefs.Add("OK");
-                buttonResults.Add(AnyUiMessageBoxResult.OK);
+                Title = title;
+                FinalResult = result;
+                Primary = primary;
             }
-            if (buttons == AnyUiMessageBoxButton.OKCancel)
+        }
+
+        /// <summary>
+        /// Layout of all buttons in a modal dialogue
+        /// </summary>
+        public class ModalFooterButtonLayout : List<ModalFooterButton>
+        {
+        }
+
+        public static ModalFooterButtonLayout LayoutButtons(
+            AnyUiMessageBoxButton dialogButtons,
+            string[] extraButtons = null)
+        {
+            var res = new ModalFooterButtonLayout();
+
+            // build up from left to right!
+
+            if (extraButtons != null)
+                for (int i = 0; i < extraButtons.Length; i++)
+                    res.Add(new ModalFooterButton(extraButtons[i], AnyUiMessageBoxResult.Extra0 + i));
+
+            if (dialogButtons == AnyUiMessageBoxButton.OK)
             {
-                buttonDefs.Add("OK");
-                buttonResults.Add(AnyUiMessageBoxResult.OK);
-                buttonDefs.Add("Cancel");
-                buttonResults.Add(AnyUiMessageBoxResult.Cancel);
+                res.Add(new ModalFooterButton("OK", AnyUiMessageBoxResult.OK, primary: true));
             }
-            if (buttons == AnyUiMessageBoxButton.YesNo)
+            if (dialogButtons == AnyUiMessageBoxButton.OKCancel)
             {
-                buttonDefs.Add("Yes");
-                buttonResults.Add(AnyUiMessageBoxResult.Yes);
-                buttonDefs.Add("No");
-                buttonResults.Add(AnyUiMessageBoxResult.No);
+                res.Add(new ModalFooterButton("Cancel", AnyUiMessageBoxResult.Cancel));
+                res.Add(new ModalFooterButton("OK", AnyUiMessageBoxResult.OK, primary: true));
             }
-            if (buttons == AnyUiMessageBoxButton.YesNoCancel)
+            if (dialogButtons == AnyUiMessageBoxButton.YesNo)
             {
-                buttonDefs.Add("Yes");
-                buttonResults.Add(AnyUiMessageBoxResult.Yes);
-                buttonDefs.Add("No");
-                buttonResults.Add(AnyUiMessageBoxResult.No);
-                buttonDefs.Add("Cancel");
-                buttonResults.Add(AnyUiMessageBoxResult.Cancel);
+                res.Add(new ModalFooterButton("No", AnyUiMessageBoxResult.No));
+                res.Add(new ModalFooterButton("Yes", AnyUiMessageBoxResult.Yes, primary: true));
             }
-            this.StackPanelButtons.Children.Clear();
+            if (dialogButtons == AnyUiMessageBoxButton.YesNoCancel)
+            {
+                res.Add(new ModalFooterButton("Cancel", AnyUiMessageBoxResult.Cancel));
+                res.Add(new ModalFooterButton("No", AnyUiMessageBoxResult.No));
+                res.Add(new ModalFooterButton("Yes", AnyUiMessageBoxResult.Yes, primary: true));
+            }
+
+            return res;
+        }
+
+        public static void RenderButtonLayout(
+            UserControl control,
+            StackPanel stack,
+            ModalFooterButtonLayout layout,
+            RoutedEventHandler click,
+            out Dictionary<Button, AnyUiMessageBoxResult> buttonToResult,
+            double fontSize = 14,
+            double buttonWidth = 40,
+            double buttonHeight = 40)
+        {
+            // access
             buttonToResult = new Dictionary<Button, AnyUiMessageBoxResult>();
-            foreach (var bd in buttonDefs)
+            if (control == null || stack == null || layout == null)
+                return;
+
+            // clear state
+            stack.Children.Clear();
+            stack.Visibility = (layout.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+
+            // render
+            foreach (var btn in layout)
             {
                 var b = new Button();
-                b.Style = (Style)FindResource("TranspRoundCorner");
-                b.Content = "" + bd;
-                b.Height = 40;
-                b.Width = 40;
+                b.Style = (Style)control.FindResource("TranspRoundCorner");
+                b.Content = "" + btn.Title;
+                b.Height = buttonHeight;
+                b.MinWidth = buttonWidth;
+                b.Padding = new Thickness(8, 0, 8, 10);
+                b.FontSize = fontSize;
                 b.Margin = new Thickness(5, 0, 5, 0);
                 b.Foreground = Brushes.White;
-                b.Click += StackPanelButton_Click;
-                this.StackPanelButtons.Children.Add(b);
-                if (buttonResults.Count > 0)
-                {
-                    buttonToResult[b] = buttonResults[0];
-                    buttonResults.RemoveAt(0);
-                }
+                b.Click += click;
+                stack.Children.Add(b);
+                buttonToResult[b] = btn.FinalResult;
             }
         }
 
@@ -133,6 +197,10 @@ namespace AasxIntegrationBase
                 this.Result = buttonToResult[sender as Button];
                 ControlClosed?.Invoke();
             }
+        }
+
+        public void LambdaActionAvailable(AnyUiLambdaActionBase la)
+        {
         }
 
         //

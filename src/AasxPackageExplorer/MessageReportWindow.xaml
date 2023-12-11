@@ -7,9 +7,10 @@
         mc:Ignorable="d"
         Title="Message Report"
         Height="600" 
-        Width="800">
+        Width="800"
+        Loaded="Window_Loaded">
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2023 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -19,8 +20,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -28,6 +29,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- <TextBox x:Name="TextReport" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" AcceptsReturn="true" AcceptsTab="true" Margin="2" Background="LightGray"/> -->
+        <!--
         <RichTextBox x:Name="RichTextTextReport" Grid.Row="0" Grid.Column="0" 
                      IsDocumentEnabled="true" IsReadOnly="True" Margin="2" Background="LightGray"
                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console">
@@ -37,6 +39,30 @@
                 </Style>
             </RichTextBox.Resources>
         </RichTextBox>
-        <Button x:Name="ButtonCopyToClipboard" Grid.Row="1" Grid.Column="0" Margin="2" Click="ButtonCopyToClipboard_Click">Copy report to clipboard and close</Button>
+        <Button x:Name="ButtonCopyToClipboard" Grid.Row="1" Grid.Column="0" Margin="2" Click="ButtonCopyToClipboard_Click">Copy report to clipboard and close</Button> 
+        -->
+
+        <WrapPanel Grid.Row="0" Grid.Column="0">
+            <ToggleButton x:Name="ButtonToggleWrap" Content="&#x2bb0; Wrap" Margin="2" Padding="2,0,2,0" FontSize="14" Click="Button_Click"/>
+            <Button x:Name="ButtonGoTop" Content="&#x2b85; Top" Margin="2" Padding="4,0,4,0" FontSize="14" Click="Button_Click"/>
+            <Button x:Name="ButtonGoBottom" Content="&#x21ca; Bottom" Margin="2" Padding="4,0,4,0" FontSize="14" Click="Button_Click"/>
+            <Button x:Name="ButtonClear" Content="&#x239a; Clear" Margin="2" Padding="4,0,4,0" FontSize="14" Click="Button_Click"/>
+        </WrapPanel>
+        
+        <FlowDocumentScrollViewer x:Name="FlowDocViewer"  Grid.Row="1" Grid.Column="0"
+                                  Margin="2" Background="LightGray"
+                                  BorderBrush="Black" BorderThickness="0">
+            <FlowDocumentScrollViewer.Resources>
+                <Style TargetType="{x:Type FlowDocument}">
+                    <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="FontFamily" Value="Lucida Console"/>
+                    <Setter Property="FontSize" Value="12"/>
+                </Style>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="0,0,0,2" />
+                    <Setter Property="TextAlignment" Value="Left" />
+                </Style>
+            </FlowDocumentScrollViewer.Resources>
+        </FlowDocumentScrollViewer>
     </Grid>
 </Window>
