@@ -984,7 +984,7 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => !extension.Name.HasContent(),
-                            "A name specification shall be given and unqiue within this list!")
+                            "A name specification shall be given and unique within this list!")
                     });
                 AddKeyValueExRef(
                     substack, "name", extension, extension.Name, null, repo,

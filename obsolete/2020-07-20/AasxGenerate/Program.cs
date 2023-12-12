@@ -71,7 +71,7 @@ namespace opctest
                 unit: "",
                 definition: new[] {
                     "DE", "Eindeutige Kennung Format der eingebetteten CAD Datei im eCl@ss Standard.",
-                    "EN", "Unambigous ID of format of embedded CAD file in eCl@ss standard." }
+                    "EN", "Unambiguous ID of format of embedded CAD file in eCl@ss standard." }
             );
 
             // SUB MODEL
@@ -175,7 +175,7 @@ namespace opctest
                 preferredNames: new [] { "DE", "Datei-Identifikation Dokument", "EN", "File identification for document" },
                 shortName: "FileId",
                 definition: new [] { "DE", "Eindeutige Kennung, um bereitgestellte Dokumente unabhängig von Name und Version sicher unterscheiden zu können.",
-                "EN", "Unambigous ID of file, in order to safely distinguish provided files independent from name and version." }
+                "EN", "Unambiguous ID of file, in order to safely distinguish provided files independent from name and version." }
             );
 
             var cdFilename = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAD005#005");

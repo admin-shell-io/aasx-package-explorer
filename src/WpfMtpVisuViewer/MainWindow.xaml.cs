@@ -347,7 +347,7 @@ namespace WpfMtpVisuViewer
                 AddToRichTextBox(rtb,
                     "The following JSON elements could be pasted into the options file named " + "" +
                     "'AasxPluginMtpViewer.options.json'. " +
-                    "Prior to pasting, an appropriate symbol full name needs to be choosen from above list. " +
+                    "Prior to pasting, an appropriate symbol full name needs to be chosen from above list. " +
                     "For the eClass strings, multiples choices can be delimited by ';'. " +
                     "For EClassVersions, 'null' disables version checking. " +
                     "Either EClassClasses or EClassIRDIs shall be different to 'null'.");

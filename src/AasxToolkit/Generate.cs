@@ -260,7 +260,7 @@ namespace AasxToolkit
                 unit: "",
                 definition: new[] {
                     "de", "Eindeutige Kennung Format der eingebetteten CAD Datei im ECLASS Standard.",
-                    "en", "Unambigous ID of format of embedded CAD file in ECLASS standard." }
+                    "en", "Unambiugous ID of format of embedded CAD file in ECLASS standard." }
             );
 
             // SUB MODEL

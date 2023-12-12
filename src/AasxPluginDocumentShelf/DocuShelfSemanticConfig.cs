@@ -221,7 +221,7 @@ namespace AasxPluginDocumentShelf
 
             descDoc.Add(new FormDescProperty(
                 "DocumentId", FormMultiplicity.One, semConfig.SemIdDocumentId, "DocumentId",
-                "The combination of DocumentId and DocumentVersionId shall be unqiue."));
+                "The combination of DocumentId and DocumentVersionId shall be unique."));
 
             descDoc.Add(new FormDescProperty(
                 "IsPrimary", FormMultiplicity.One, semConfig.SemIdIsPrimaryDocumentId, "IsPrimary",
@@ -248,7 +248,7 @@ namespace AasxPluginDocumentShelf
 
             var descDocName = new FormDescProperty(
                 "ClassName", FormMultiplicity.One, semConfig.SemIdDocumentClassName, "ClassName",
-                "VDI2770 ClassName of the document. This property is automaticall computed based on ClassId.",
+                "VDI2770 ClassName of the document. This property is automatically computed based on ClassId.",
                 isReadOnly: true);
 
             descDocName.SlaveOfIdShort = "ClassId";
@@ -280,7 +280,7 @@ namespace AasxPluginDocumentShelf
 
             descDocVer.Add(new FormDescProperty(
                 "DocumentVersionId", FormMultiplicity.One, semConfig.SemIdDocumentVersionIdValue, "DocumentVersionId",
-                "The combination of DocumentId and DocumentVersionId shall be unqiue."));
+                "The combination of DocumentId and DocumentVersionId shall be unique."));
 
             descDocVer.Add(new FormDescProperty(
                 "Languages", FormMultiplicity.ZeroToMany, semConfig.SemIdLanguage, "Language{0}",
@@ -450,7 +450,7 @@ namespace AasxPluginDocumentShelf
             descDocVer.Add(new FormDescProperty(
                 "DocumentVersionId", FormMultiplicity.One, defs.CD_DocumentVersionId?.GetSingleKey(),
                 "DocumentVersionId",
-                "Unambigous identification number of a DocumentVersion."));
+                "Unambiguous identification number of a DocumentVersion."));
 
             descDocVer.Add(new FormDescMultiLangProp(
                 "Title", FormMultiplicity.One, defs.CD_Title?.GetSingleKey(), "Title",

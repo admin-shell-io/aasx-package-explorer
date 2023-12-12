@@ -134,7 +134,7 @@ namespace AasxPackageLogic
                             return true == referable.IdShort?.Contains("---");
                         },
                         "The idShort contains 3 dashes. Probably, the entitiy was auto-named " +
-                        "to keep it unqiue because of an operation such a copy/ paste.",
+                        "to keep it unique because of an operation such a copy/ paste.",
                         severityLevel: HintCheck.Severity.Notice)
                     });
             }
