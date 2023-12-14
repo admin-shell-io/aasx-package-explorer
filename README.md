@@ -35,17 +35,17 @@ Asset Administration Shell.
 https://github.com/admin-shell-io/aasx-package-explorer/raw/master/screenshot.png
 )
 
-To help you familiarize with the concept of Asset Administration Shell 
-we provide the screencasts (both in English and German) at: 
+To help you familiarize with the concept of Asset Administration Shell and editing an Asset Administration Shell with the AASX Package Explorer
+we provide screencasts (both in English and German) for V2.0 at: 
 https://admin-shell-io.com/screencasts/.
 
-For further information about the Asset Administration Shell, see the 
-publication [Details of the Asset Administration Shell](
-https://www.plattform-i40.de/IP/Redaktion/EN/Standardartikel/specification-administrationshell.html
-) by Plattform Industrie 4.0.
+For V3.0 (including changes to V2.0) please have a look at the tutorials for the Specifications itself at the [Youtube Channel Industrial Digital Twin](https://www.youtube.com/playlist?list=PLCO0zeX96Ia1hsToD9lRPDMI4P-kbt_CT) 
+
+The basis for the implementatzion are the [Specifications of the Asset Administration Shell](https://industrialdigitaltwin.org/en/content-hub/aasspecifications
+) by [IDTA]A(https://industrialdigitaltwin.org).
 
 We provide a couple of sample admin shells (packaged as .aasx) for you to 
-test and play with the software at:
+test and play with the software at (V2.0):
 http://www.admin-shell-io.com/samples/
 
 ## Installation
@@ -100,6 +100,9 @@ While these projects try to implement a wider scope of programatic features,
 AASX Package Explorer, in contrast, is a tool with graphical user interface 
 meant for experimenting and demonstrating the potential of asset administration
 shells targeting tech-savvy and less technically-inclined users alike.
+
+In 2021 the [Eclipse Digital Twin Top Level Project](https://projects.eclipse.org/projects/dt) 
+was created. See sub-projects for more projects featuring digital twins and the Asset Administration Shell.
 
 The AASX Package Explorer also includes an internal REST server and OPC UA
 server for the loaded .AASX. Based on this a separate AASX Server is
