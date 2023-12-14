@@ -72,6 +72,11 @@ If you want to contribute in code, see [Section "Getting started"](
 https://admin-shell-io.github.io/aasx-package-explorer/devdoc/getting-started/intro.html
 ).
 
+## Documentation
+
+You may find additional documentation in sub-folders, e.g. for
+- [BAMM Import](https://github.com/admin-shell-io/aasx-package-explorer/tree/main/src/AasxBammRdfImExport)
+
 ## Other Open Source Implementations of AAS
 
 At the time of this writing (2020-08-14), we are aware of the following related
