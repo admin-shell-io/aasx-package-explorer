@@ -5,7 +5,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-    - [Audience and Scope](#audience--scope)
+    - [Audience and Scope](#audience-and-scope)
     - [Terminology](#terminology)
 - [AASX Package Explorer: Basics for Structured Concept Descriptions](#aasx-package-explorer-basics-for-structured-concept-decriptions)
 	- [Dynamic Order for Concepts Descriptions](#dynamic-order-for-concept-descriptions)
@@ -19,7 +19,7 @@
 	- [Export Aspect Model](#export-aspect-model)
 - [Background on Implementation](#background-on-implementation)
 	- [Data Specifications and Extensions](#data-specifications-and-extensions)
-	- [Structured Cocnept Description Extensions](#samm-extensions)
+	- [SMT-attribute-set Extensions](#smt-attribute-set-extensions)
 - [Annex](#annex)
 	- [Aspect Models (SAMM) and ESMF](#aspect-models-samm-and-esmf)
 		- [Semantic Aspect Meta Model](#semantic-aspect-meta-model)
