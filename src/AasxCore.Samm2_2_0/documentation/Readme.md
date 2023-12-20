@@ -715,44 +715,39 @@ In this section the mapping from the Concept Descriptions defined using the SMT-
       <th>SMT-attribute-set</th>
       <th>isSubmodel</th>
       <th>organizes</th>
-	  <th>SubmodelElement Selected</th>
+      <th>SubmodelElement Selected</th>
       <th>Comment</th>
-	
     </tr>
   </thead>
-
+  <tbody>
     <tr>
       	<td>SMT-attribute-set</td>
       	<td>True</td>
       	<td></td>
       	<td>Submodel (SM)</td>
-		<td>A Submodel should have at least one property organized</td>
-	</tr>
-
+	<td>A Submodel should have at least one property organized</td>
+    </tr>
     <tr>
       	<td>SMT-attribute-set</td>
       	<td>False</td>
       	<td>not empty, more than one property</td>
       	<td>Select SubmodelElementCollection</td>
-		<td></td>
-	</tr>
-
+	<td></td>
+    </tr>
     <tr>
       	<td>SMT-attribute-set</td>
       	<td>False</td>
       	<td>not empty, but exactly one property</td>
       	<td>Select either SubmodelElementCollection or SubmodelElementList</td>
-		<td></td>
-	</tr>
-
+	<td></td>
+    </tr>
     <tr>
       	<td>SMT-attribute-set</td>
       	<td>False</td>
       	<td>empty</td>
       	<td>Select any SubmodelElement type except SubmodelElementCollection or SubmodelElementList</td>
-		<td>In case you are not yet finished with the definition via "organize" you may of course already select the target type</td>
-	</tr>
-
+	<td>In case you are not yet finished with the definition via "organize" you may of course already select the target type</td>
+    </tr>
   </tbody>
 </table>
 
