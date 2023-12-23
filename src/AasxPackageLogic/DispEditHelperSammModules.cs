@@ -2592,7 +2592,7 @@ namespace AasxPackageLogic
 			var childs = new List<Samm.SammReference>();
 
 			// lambda for going deeper (Property) -> Characteristics -> Entity -> Property
-			Func<Samm.Property, Samm.Entity> lambdaTryProp2Entity = (propTest) =>
+			Func<Samm.Property, Tuple<Samm.Characteristic, Samm.Entity>> lambdaTryProp2Entity = (propTest) =>
 			{
 				var propCharCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(propTest.Characteristic?.Value);
 				var propCharMe = DispEditHelperSammModules.CheckReferableForSammElements(propCharCd)?.FirstOrDefault();
@@ -2601,7 +2601,7 @@ namespace AasxPackageLogic
 					var propEntCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(propChar.DataType?.Value);
 					var propEntMe = DispEditHelperSammModules.CheckReferableForSammElements(propEntCd)?.FirstOrDefault();
 					if (propEntMe is Samm.Entity ent)
-						return ent;
+						return new Tuple<Characteristic, Samm.Entity>(propChar, ent);
 				}
 				return null;
 			};
@@ -2620,22 +2620,9 @@ namespace AasxPackageLogic
 			// Property
 			if (me is Samm.Property prop)
 			{
-#if old
-				var propCharCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(prop.Characteristic?.Value);
-				var propCharMe = DispEditHelperSammModules.CheckReferableForSammElements(propCharCd)?.FirstOrDefault();
-				if (propCharMe is Samm.Characteristic propChar)
-				{
-					var propEntCd = packages.QuickLookupFirstIdent<Aas.IConceptDescription>(propChar.DataType?.Value);
-					var propEntMe = DispEditHelperSammModules.CheckReferableForSammElements(propEntCd)?.FirstOrDefault();
-					if (propEntMe is Samm.Entity ent && ent.Properties != null)
-						foreach (var p in ent.Properties)
-							childs.Add(p);
-				}
-#endif
-
 				var propEnt = lambdaTryProp2Entity(prop);
-				if (propEnt?.Properties != null)
-                    foreach (var p in propEnt.Properties)
+				if (propEnt?.Item2?.Properties != null)
+                    foreach (var p in propEnt.Item2.Properties)
                         childs.Add(p);
             }
 
@@ -2661,16 +2648,37 @@ namespace AasxPackageLogic
 
 					// poor mens SME type
 					var childSmeType = AasSubmodelElements.Property;
+
+					// test for MLP?
+					if (SammIdSets.IsCharInstMultiLanguage(childProp.Characteristic?.Value))
+						childSmeType = AasSubmodelElements.MultiLanguageProperty;
+
+					// test for SMC/ SML?
+					var smlNoOrderRelevant = false;
 					var childEntTest = lambdaTryProp2Entity(childProp);
 					if (childEntTest != null)
-                        childSmeType = AasSubmodelElements.SubmodelElementCollection;
+					{
+						childSmeType = AasSubmodelElements.SubmodelElementCollection;
+						
+						if (childEntTest.Item1 is Samm.Set
+							|| childEntTest.Item1 is Samm.Collection
+							|| childEntTest.Item1 is Samm.List
+							|| childEntTest.Item1 is Samm.SortedSet
+							|| childEntTest.Item1 is Samm.TimeSeries)
+							childSmeType = AasSubmodelElements.SubmodelElementList;
+
+						if (childEntTest.Item1 is Samm.Set
+							|| childEntTest.Item1 is Samm.Collection)
+							smlNoOrderRelevant = true;
+					}
                     smtRec.SubmodelElements = new List<AasSubmodelElements>() { childSmeType };
 
-                    // put into item
-                    yield return new DispEditHelperMiniModules.ConceptOrganizedChildItem() 
-					{ 
-						Cd = childCd, 
+					// put into item
+					yield return new DispEditHelperMiniModules.ConceptOrganizedChildItem()
+					{
+						Cd = childCd,
 						Card = smtRec.SmeCardinality,
+						SmlNoOrderRelevant = smlNoOrderRelevant,
 						SmtRec = smtRec 
 					};
 				}

@@ -1559,6 +1559,7 @@ namespace AasxPackageLogic
         {
             public Aas.IConceptDescription Cd;
             public AasSmtQualifiers.SmtCardinality Card = AasSmtQualifiers.SmtCardinality.One;
+            public bool SmlNoOrderRelevant = false;
 			public SmtAttributeRecord SmtRec;
         }
 

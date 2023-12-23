@@ -9,14 +9,18 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Runtime.Serialization;
+using System.Security.Cryptography;
 using AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Aas = AasCore.Aas3_0;
 
@@ -203,6 +207,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:preferredName", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:preferredName", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:preferredName", SammVersion.V_2_1_0)]
 		public List<LangString>? PreferredName { get; set; } = null;
 
 		// Note: Description is already in the Referable
@@ -220,6 +225,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:see", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:see", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:see", SammVersion.V_2_1_0)]
 		[SammPropertyFlags("anyuri")]
 		public List<string>? See { get; set; } = null;
 	}
@@ -541,6 +547,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:languageCode", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:languageCode", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:languageCode", SammVersion.V_2_1_0)]
 		public string? LanguageCode { get; set; }
 	}
 
@@ -560,6 +567,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:localeCode", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:localeCode", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:localeCode", SammVersion.V_2_1_0)]
 		public string? LocaleCode { get; set; }
 	}
 
@@ -578,6 +586,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:maxValue", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:maxValue", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:maxValue", SammVersion.V_2_1_0)]
 		public string? MaxValue { get; set; }
 
 		/// <summary>
@@ -585,6 +594,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:minValue", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:minValue", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:minValue", SammVersion.V_2_1_0)]
 		public string? MinValue { get; set; }
 
 		/// <summary>
@@ -593,8 +603,10 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:upperBoundDefinition", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:upperBoundDefinition", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:upperBoundDefinition", SammVersion.V_2_1_0)]
 		[SammPropertyPrefix("bamm-c:", SammVersion.V_1_0_0)]
 		[SammPropertyPrefix("samm-c:", SammVersion.V_2_0_0)]
+		[SammPropertyPrefix("samm-c:", SammVersion.V_2_1_0)]
 		public SammUpperBoundDefinition? UpperBoundDefinition { get; set; }
 
 		/// <summary>
@@ -603,8 +615,10 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:lowerBoundDefinition", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:lowerBoundDefinition", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:lowerBoundDefinition", SammVersion.V_2_1_0)]
 		[SammPropertyPrefix("bamm-c:", SammVersion.V_1_0_0)]
 		[SammPropertyPrefix("samm-c:", SammVersion.V_2_0_0)]
+		[SammPropertyPrefix("samm-c:", SammVersion.V_2_1_0)]
 		public SammLowerBoundDefinition? LowerBoundDefinition { get; set; }
 	}
 
@@ -625,8 +639,10 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:value", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:value", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:value", SammVersion.V_2_1_0)]
 		[SammPropertyPrefix("bamm-c:", SammVersion.V_1_0_0)]
 		[SammPropertyPrefix("samm-c:", SammVersion.V_2_0_0)]
+		[SammPropertyPrefix("samm-c:", SammVersion.V_2_1_0)]
 		public SammEncoding? Value { get; set; }
 	}
 
@@ -650,6 +666,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:maxValue", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:maxValue", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:maxValue", SammVersion.V_2_1_0)]
 		public uint? MaxValue { get; set; }
 
 		/// <summary>
@@ -657,6 +674,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:minValue", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:minValue", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:minValue", SammVersion.V_2_1_0)]
 		public uint? MinValue { get; set; }
 	}
 
@@ -679,6 +697,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:value", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:value", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:value", SammVersion.V_2_1_0)]
 		public string? Value { get; set; }
 	}
 
@@ -701,6 +720,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:scale", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:scale", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:scale", SammVersion.V_2_1_0)]
 		public uint? Scale { get; set; }
 
 		/// <summary>
@@ -710,6 +730,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:integer", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:integer", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:integer", SammVersion.V_2_1_0)]
 		public uint? Integer { get; set; }
 	}
 
@@ -740,6 +761,7 @@ namespace AasCore.Samm2_2_0
 		[SammPresetList("SammXsdDataTypes")]
 		[SammPropertyUri("bamm:dataType", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:dataType", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:dataType", SammVersion.V_2_1_0)]
 		public SammReference DataType { get; set; }
 
 		public Characteristic()
@@ -778,6 +800,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:baseCharacteristic", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:baseCharacteristic", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:baseCharacteristic", SammVersion.V_2_1_0)]
 		public SammReference? BaseCharacteristic { get; set; }
 
 		/// <summary>
@@ -786,6 +809,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:constraint", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:constraint", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:constraint", SammVersion.V_2_1_0)]
 		[SammPropertyFlags("constraints")]
 		public List<SammReference>? Constraint { get; set; }
 	}
@@ -807,6 +831,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:unit", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:unit", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:unit", SammVersion.V_2_1_0)]
 		public SammReference? Unit { get; set; }
 	}
 
@@ -826,6 +851,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:unit", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:unit", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:unit", SammVersion.V_2_1_0)]
 		public SammReference Unit { get; set; }
 
 		public Measurement()
@@ -851,6 +877,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:values", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:values", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:values", SammVersion.V_2_1_0)]
 		public List<string> Values { get; set; }
 
 		public Enumeration()
@@ -875,6 +902,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:defaultValue", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:defaultValue", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:defaultValue", SammVersion.V_2_1_0)]
 		public string DefaultValue { get; set; }
 
 		public State()
@@ -906,6 +934,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:unit", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:unit", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:unit", SammVersion.V_2_1_0)]
 		public SammReference Unit { get; set; }
 
 		public Duration()
@@ -931,6 +960,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:elementCharacteristic", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:elementCharacteristic", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:elementCharacteristic", SammVersion.V_2_1_0)]
 		public SammReference ElementCharacteristic { get; set; }
 
 		public Collection()
@@ -1026,6 +1056,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:left", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:left", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:left", SammVersion.V_2_1_0)]
 		public string Left { get; set; }
 
 		/// <summary>
@@ -1033,6 +1064,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:right", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:right", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:right", SammVersion.V_2_1_0)]
 		public string Right { get; set; }
 
 		public Either()
@@ -1077,6 +1109,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:deconstructionRule", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:deconstructionRule", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:deconstructionRule", SammVersion.V_2_1_0)]
 		public string DeconstructionRule { get; set; }
 
 		/// <summary>
@@ -1085,6 +1118,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm-c:elements", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm-c:elements", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm-c:elements", SammVersion.V_2_1_0)]
 		public List<string> Elements { get; set; }
 
 		public StructuredValue()
@@ -1121,6 +1155,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:exampleValue", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:exampleValue", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:exampleValue", SammVersion.V_2_1_0)]
 		public string? ExampleValue { get; set; }
 
 		/// <summary>
@@ -1129,6 +1164,7 @@ namespace AasCore.Samm2_2_0
 		[SammPresetList("Characteristics")]
 		[SammPropertyUri("bamm:characteristic", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:characteristic", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:characteristic", SammVersion.V_2_1_0)]
 		public SammReference Characteristic { get; set; }
 
 		public Property()
@@ -1158,8 +1194,10 @@ namespace AasCore.Samm2_2_0
 		// own
 		[SammPropertyUri("bamm:properties", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:properties", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:properties", SammVersion.V_2_1_0)]
 		[SammCollectionContentUri("bamm:property", SammVersion.V_1_0_0)]
 		[SammCollectionContentUri("samm:property", SammVersion.V_2_0_0)]
+		[SammCollectionContentUri("samm:property", SammVersion.V_2_1_0)]
 		public List<OptionalSammReference> Properties { get; set; } 
 			   = new List<OptionalSammReference>();
 	}
@@ -1203,8 +1241,10 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:properties", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:properties", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:properties", SammVersion.V_2_1_0)]
 		[SammCollectionContentUri("bamm:property", SammVersion.V_1_0_0)]
 		[SammCollectionContentUri("samm:property", SammVersion.V_2_0_0)]
+		[SammCollectionContentUri("samm:property", SammVersion.V_2_1_0)]
 		public List<OptionalSammReference> Properties { get; set; } = new List<OptionalSammReference>();
 
 		/// <summary>
@@ -1212,8 +1252,10 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:events", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:events", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:events", SammVersion.V_2_1_0)]
 		[SammCollectionContentUri("bamm:event", SammVersion.V_1_0_0)]
 		[SammCollectionContentUri("samm:event", SammVersion.V_2_0_0)]
+		[SammCollectionContentUri("samm:event", SammVersion.V_2_1_0)]
 		public List<OptionalSammReference> Events { get; set; } = new List<OptionalSammReference>();
 
 		/// <summary>
@@ -1221,8 +1263,10 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:operations", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:operations", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:operations", SammVersion.V_2_1_0)]
 		[SammCollectionContentUri("bamm:operation", SammVersion.V_1_0_0)]
 		[SammCollectionContentUri("samm:operation", SammVersion.V_2_0_0)]
+		[SammCollectionContentUri("samm:operation", SammVersion.V_2_1_0)]
 		public List<OptionalSammReference> Operations { get; set; } = new List<OptionalSammReference>();
 	}
 
@@ -1238,6 +1282,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:commonCode", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:commonCode", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:commonCode", SammVersion.V_2_1_0)]
 		public string? CommonCode { get; set; } = null;
 
 		/// <summary>
@@ -1246,6 +1291,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:conversionFactor", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:conversionFactor", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:conversionFactor", SammVersion.V_2_1_0)]
 		public string? ConversionFactor { get; set; } = null;
 
 		/// <summary>
@@ -1254,6 +1300,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:numericConversionFactor", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:numericConversionFactor", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:numericConversionFactor", SammVersion.V_2_1_0)]
 		public string? NumericConversionFactor { get; set; } = null;
 
 		/// <summary>
@@ -1262,6 +1309,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:quantityKind", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:quantityKind", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:quantityKind", SammVersion.V_2_1_0)]
 		public string? QuantityKind { get; set; } = null;
 
 		/// <summary>
@@ -1269,6 +1317,7 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:referenceUnit", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:referenceUnit", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:referenceUnit", SammVersion.V_2_1_0)]
 		public SammReference? ReferenceUnit { get; set; } = null;
 
 		/// <summary>
@@ -1276,10 +1325,11 @@ namespace AasCore.Samm2_2_0
 		/// </summary>
 		[SammPropertyUri("bamm:symbol", SammVersion.V_1_0_0)]
 		[SammPropertyUri("samm:symbol", SammVersion.V_2_0_0)]
+		[SammPropertyUri("samm:symbol", SammVersion.V_2_1_0)]
 		public string? symbol { get; set; } = null;
 	}
 
-	public enum SammVersion { V_1_0_0, V_2_0_0 };
+	public enum SammVersion { V_1_0_0, V_2_0_0, V_2_1_0 };
 
 	/// <summary>
 	/// This class hold all prefixes/ namespaces, which are "switched" on a version
@@ -1344,6 +1394,14 @@ namespace AasCore.Samm2_2_0
 		/// In RDF collections of SAMM references, the optional flag
 		/// </summary>
 		public string RdfCollOptional = "urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional";
+
+		/// <summary>
+		/// Characteristics Instance for MultiLanguageText: 
+		/// Describes a Property which contains plain text in multiple languages.
+		/// This is intended exclusively for human readable strings, not for identifiers, measurement values, etc.
+		/// <see href="https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#list-characteristic"/>
+		/// </summary>
+		public string CharInstMultiLanguageText = "urn:bamm:io.openmanufacturing:characteristic:1.0.0#MultiLanguageText";
 
 		/// <summary>
 		/// The head to be used for auto generated instances
@@ -1423,6 +1481,7 @@ namespace AasCore.Samm2_2_0
 				Version = SammVersion.V_2_0_0;
 				RdfCollProperty = "urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#property";
 				RdfCollOptional = "urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#optional";
+				CharInstMultiLanguageText = "urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#MultiLanguageText";
 
 				// init namespaces, as being used by self / reflection information
 				SelfNamespaces = new NamespaceMap();
@@ -1436,6 +1495,35 @@ namespace AasCore.Samm2_2_0
 
 				Detector = new NamespaceMapItem(
 					"samm:", "urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#");
+
+				// ok
+				return this;
+			}
+
+			//
+			// 2.1.0
+			//
+
+			if (version == SammVersion.V_2_1_0)
+			{
+				// individual attributes
+				Version = SammVersion.V_2_1_0;
+				RdfCollProperty = "urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#property";
+				RdfCollOptional = "urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#optional";
+				CharInstMultiLanguageText = "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#MultiLanguageText";
+
+				// init namespaces, as being used by self / reflection information
+				SelfNamespaces = new NamespaceMap();
+				SelfNamespaces.AddOrIgnore("samm:", "urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#");
+				SelfNamespaces.AddOrIgnore("samm-c:", "urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#");
+				SelfNamespaces.AddOrIgnore("samm-e:", "urn:samm:org.eclipse.esmf.samm:entity:2.1.0#");
+				SelfNamespaces.AddOrIgnore("unit:", "urn:samm:org.eclipse.esmf.samm:unit:2.1.0#");
+				SelfNamespaces.AddOrIgnore("rdf:", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+				SelfNamespaces.AddOrIgnore("rdfs:", "http://www.w3.org/2000/01/rdf-schema#");
+				SelfNamespaces.AddOrIgnore("xsd:", "http://www.w3.org/2001/XMLSchema#");
+
+				Detector = new NamespaceMapItem(
+					"samm:", "urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#");
 
 				// ok
 				return this;
@@ -1489,6 +1577,7 @@ namespace AasCore.Samm2_2_0
 		{
 			AddSet(new SammIdSet().Init());
 			AddSet(new SammIdSet().SwitchToVersion(SammVersion.V_2_0_0)?.Init());
+			AddSet(new SammIdSet().SwitchToVersion(SammVersion.V_2_1_0)?.Init());
 		}
 
 		public static Tuple<SammIdSet, Type>? GetAnyIdSetTypeFromUrn(string? urn)
@@ -1538,6 +1627,14 @@ namespace AasCore.Samm2_2_0
 			}
 
 			return null;
+		}
+
+		public static bool IsCharInstMultiLanguage(string characteristicValue)
+		{
+			foreach (var idSet in IdSets.Values)
+				if (idSet?.CharInstMultiLanguageText == characteristicValue)
+					return true;
+			return false;
 		}
 	}
 
