@@ -124,7 +124,7 @@ namespace AasxIntegrationBaseGdi
             try
             {
                 System.IO.Stream thumbStream = null;
-                if (true == package?.IsLocalFile(path))
+                if (true /*= package?.IsLocalFile(path)*/)
                     thumbStream = package.GetLocalStreamFromPackage(path);
                 else
                 {
@@ -133,6 +133,7 @@ namespace AasxIntegrationBaseGdi
                     var wc = new WebClient();                    
                     thumbStream = wc.OpenRead(path);
 #else
+                    /*
                     // upgrade to HttpClient and follow re-directs
                     var hc = new HttpClient();
                     var response = hc.GetAsync(path).GetAwaiter().GetResult();
@@ -147,6 +148,7 @@ namespace AasxIntegrationBaseGdi
 
                     response.EnsureSuccessStatusCode();
                     thumbStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+                    */
 #endif
                 }
 

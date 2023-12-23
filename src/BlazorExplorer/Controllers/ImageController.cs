@@ -8,6 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using AnyUi;
@@ -50,12 +51,21 @@ namespace BlazorUI.Controllers
                     .GetExecutingAssembly()
                     .GetManifestResourceStream("BlazorUI.Resources.sample.png"))
             {
-                if (stream == null)
-                    return NotFound();
+                // if (stream == null)
+                //    return NotFound();
 
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    stream.CopyTo(ms);
+                    if (stream!= null)
+                    {
+                        stream.CopyTo(ms);
+                    }
+                    else
+                    {
+                        var b = new Bitmap(1, 1);
+                        b.SetPixel(0, 0, Color.White);
+                        b.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                    }
                     var bb = ms.ToArray();
                     return base.File(bb, "image/png");
                 }
