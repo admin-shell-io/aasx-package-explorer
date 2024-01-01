@@ -955,9 +955,9 @@ namespace AasxPackageLogic
                         // check here, if to hightlight
                         if (tbStr != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].Text.GetHashCode() &&
-                                //(this.highlightField.containingObject == langStr[currentI]))
+                                (this.highlightField.containingObject == (object) langStr[currentI]))
                                 //TODO (jtikekar, 0000-00-00): need to test
-                                CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
+                                // CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
                             this.HighligtStateElement(tbStr, true);
 
                         // button [-]

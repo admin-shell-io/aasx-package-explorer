@@ -458,10 +458,14 @@ namespace AdminShellNS
         /// <code doctest="true">Assert.AreEqual("someName", AdminShellUtil.FilterFriendlyName("someName"));</code>
         /// <code doctest="true">Assert.AreEqual("some__name", AdminShellUtil.FilterFriendlyName("some!;name"));</code>
         /// </example>
-        public static string FilterFriendlyName(string src)
+        public static string FilterFriendlyName(string src, bool pascalCase = false)
         {
             if (src == null)
                 return null;
+
+            if (pascalCase && src.Length > 0)
+                src = char.ToUpper(src[0]) + src.Substring(1);
+
             return Regex.Replace(src, @"[^a-zA-Z0-9\-_]", "_");
         }
 

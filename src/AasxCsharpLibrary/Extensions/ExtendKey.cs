@@ -16,7 +16,7 @@ namespace Extensions
 {
     public static class ExtendKey
     {
-        public static IKey CreateFrom(Reference r)
+		public static IKey CreateFrom(Reference r)
         {
             if (r == null || r.Count() != 1)
                 return null;

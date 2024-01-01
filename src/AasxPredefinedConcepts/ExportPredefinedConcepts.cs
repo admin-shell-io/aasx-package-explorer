@@ -7,19 +7,24 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasCore.Aas3_0;
+using AasxIntegrationBase;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
 {
+    /// <summary>
+    /// Export a text file with a lot of usefuls snippets, which can be used to create
+    /// source code files for predefined concepts based on a SMT.
+    /// </summary>
     public static class ExportPredefinedConcepts
     {
-        public static void Export(Aas.Environment env, Aas.ISubmodel sm, string fn)
+		public static void Export(Aas.Environment env, Aas.ISubmodel sm, string fn)
         {
             // access
             if (fn == null || env == null || sm == null || sm.IdShort == null || sm.SubmodelElements == null)
@@ -93,7 +98,7 @@ namespace AasxPredefinedConcepts
                     // challenge: SM without SMEs
                     var smClone = sm.Copy();
                     smClone.SubmodelElements = null;
-                    var jsonStr = Jsonization.Serialize.ToJsonObject(smClone)
+                    var jsonStr = Aas.Jsonization.Serialize.ToJsonObject(smClone)
                         .ToJsonString(new System.Text.Json.JsonSerializerOptions()
                         {
                             WriteIndented = true
@@ -121,7 +126,7 @@ namespace AasxPredefinedConcepts
                     settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                     var jsonStr = JsonConvert.SerializeObject(usedCds[k], Formatting.Indented, settings);
 #else
-                    var jsonStr = Jsonization.Serialize.ToJsonObject(usedCds[k])
+                    var jsonStr = Aas.Jsonization.Serialize.ToJsonObject(usedCds[k])
                         .ToJsonString(new System.Text.Json.JsonSerializerOptions()
                         {
                             WriteIndented = true
@@ -155,7 +160,16 @@ namespace AasxPredefinedConcepts
                     snippets.WriteLine($"this.{k} = bs.RetrieveReferable<ConceptDescription>(\"{k}\");");
 
                 snippets.WriteLine();
-            }
+
+				// Phase (5) generate look ups
+				message = "Phase (6) generates attributed C# structures:";
+				snippets.WriteLine(message);
+				snippets.WriteLine(new String('=', message.Length));
+
+                PredefinedConceptsClassMapper.ExportCSharpClassDefs(env, sm, snippets);
+                
+                snippets.WriteLine();
+			}
         }
     }
 }

@@ -82,6 +82,12 @@ namespace Extensions
             return res;
         }
 
+        public static Reference CreateFromString(string id, KeyTypes keyType = KeyTypes.GlobalReference)
+        {
+            var k = new Key(keyType, id);
+            return new Reference(ReferenceTypes.ExternalReference, new List<IKey>(new IKey[] { k }));
+        }
+
         // TODO (Jui, 2023-01-05): Check why the generic Copy<T> does not apply here?!
         public static Reference Copy(this Reference original)
         {

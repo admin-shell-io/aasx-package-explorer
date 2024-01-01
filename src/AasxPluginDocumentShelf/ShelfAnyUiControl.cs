@@ -44,6 +44,7 @@ namespace AasxPluginDocumentShelf
         private AnyUiContextPlusDialogs _displayContext = null;
         private PluginOperationContextBase _opContext = null;
         private AasxPluginBase _plugin = null;
+        private ShelfPreviewService _previewService = null;
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
 
@@ -152,7 +153,8 @@ namespace AasxPluginDocumentShelf
             AnyUiStackPanel panel,
             PluginOperationContextBase opContext,
             AnyUiContextPlusDialogs cdp,
-            AasxPluginBase plugin)
+            AasxPluginBase plugin,
+			ShelfPreviewService previewService)
         {
             _log = log;
             _package = thePackage;
@@ -164,6 +166,7 @@ namespace AasxPluginDocumentShelf
             _opContext = opContext;
             _displayContext = cdp;
             _plugin = plugin;
+            _previewService = previewService;
 
             // no form, yet
             _formDoc = null;
@@ -181,7 +184,8 @@ namespace AasxPluginDocumentShelf
             object opanel,
             PluginOperationContextBase opContext,
             AnyUiContextPlusDialogs cdp,
-            AasxPluginBase plugin)
+            AasxPluginBase plugin,
+            ShelfPreviewService previewService)
         {
             // access
             var package = opackage as AdminShellPackageEnv;
@@ -198,7 +202,7 @@ namespace AasxPluginDocumentShelf
 
             // factory this object
             var shelfCntl = new ShelfAnyUiControl();
-            shelfCntl.Start(log, package, sm, options, eventStack, session, panel, opContext, cdp, plugin);
+            shelfCntl.Start(log, package, sm, options, eventStack, session, panel, opContext, cdp, plugin, previewService);
 
             // return shelf
             return shelfCntl;
@@ -468,6 +472,20 @@ namespace AasxPluginDocumentShelf
                             LogInternally.That.SilentlyIgnoredError(ex);
                         }
                     }
+                    else
+                    if (ent?.DigitalFile?.Path?.HasContent() == true)
+                    {
+                        // some meaningful default?
+                        var ext = System.IO.Path.GetExtension(ent.DigitalFile.Path).Trim().ToLower();
+                        if (ext == ".zip")
+                        {
+							ent.LoadImageFromResource("AasxPluginDocumentShelf.Resources.zip-preview.png");
+						}
+                        else
+                        {
+							ent.LoadImageFromResource("AasxPluginDocumentShelf.Resources.bin-preview.png");
+						}
+					}
 
                     // delayed load logic
                     // can already put a generated image into the viewbox?
@@ -1440,119 +1458,134 @@ namespace AasxPluginDocumentShelf
             _inDispatcherTimer = true;
             var updateDisplay = false;
 
-            // each tick check for one image, if a preview shall be done
-            if (theDocEntitiesToPreview != null && theDocEntitiesToPreview.Count > 0 &&
-                numDocEntitiesInPreview < maxDocEntitiesInPreview)
+            // new approach: push into preview service
+            if (_previewService != null)
             {
-                // pop
-                DocumentEntity ent = null;
                 lock (theDocEntitiesToPreview)
                 {
-                    ent = theDocEntitiesToPreview[0];
-                    theDocEntitiesToPreview.RemoveAt(0);
+                    foreach (var de in theDocEntitiesToPreview)
+                        _previewService.Push(new ShelfPreviewService.RenderEntity(_package, de?.DigitalFile?.Path));
+                    theDocEntitiesToPreview.Clear();
                 }
-
-                try
+            }
+            else
+            {
+#if __old_approach
+                // each tick check for one image, if a preview shall be done
+                if (theDocEntitiesToPreview != null && theDocEntitiesToPreview.Count > 0 &&
+                    numDocEntitiesInPreview < maxDocEntitiesInPreview)
                 {
-                    // temp input
-                    var inputFn = ent?.DigitalFile?.Path;
-                    if (inputFn != null)
+                    // pop
+                    DocumentEntity ent = null;
+                    lock (theDocEntitiesToPreview)
                     {
-                        // try check if Magick.NET library is available
-                        var thumbBI = AnyUiGdiHelper.MakePreviewFromPackageOrUrl(_package, inputFn);
-                        if (thumbBI != null)
+                        ent = theDocEntitiesToPreview[0];
+                        theDocEntitiesToPreview.RemoveAt(0);
+                    }
+
+                    try
+                    {
+                        // temp input
+                        var inputFn = ent?.DigitalFile?.Path;
+                        if (inputFn != null)
                         {
-                            // directly add this
-                            if (referableHashToCachedBitmap != null
-                                && !referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
+                            // try check if Magick.NET library is available
+                            var thumbBI = AnyUiGdiHelper.MakePreviewFromPackageOrUrl(_package, inputFn);
+                            if (thumbBI != null)
                             {
-                                if (ent.ImgContainerAnyUi != null)
-                                    ent.ImgContainerAnyUi.BitmapInfo = thumbBI;
-                                referableHashToCachedBitmap[ent.ReferableHash] = thumbBI;
-                                updateDisplay = true;
+                                // directly add this
+                                if (referableHashToCachedBitmap != null
+                                    && !referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
+                                {
+                                    if (ent.ImgContainerAnyUi != null)
+                                        ent.ImgContainerAnyUi.BitmapInfo = thumbBI;
+                                    referableHashToCachedBitmap[ent.ReferableHash] = thumbBI;
+                                    updateDisplay = true;
+                                }
                             }
-                        }
-                        else
-                        {
-                            //
-                            // OLD way: use external program to convert
-                            //
-
-                            // makes only sense under Windows
-                            if (OperatingSystemHelper.IsWindows())
+                            else
                             {
-                                // from package?
-                                if (CheckIfPackageFile(inputFn))
-                                    inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.DigitalFile.Path);
+                                //
+                                // OLD way: use external program to convert
+                                //
 
-                                // temp output
-                                string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
-
-                                // remember these for later deletion
-                                ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
-
-                                // start process
-                                string arguments = string.Format(
-                                    "-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
-                                string exeFn = System.IO.Path.Combine(
-                                    System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                                    "convert.exe");
-
-                                var startInfo = new ProcessStartInfo(exeFn, arguments)
+                                // makes only sense under Windows
+                                if (OperatingSystemHelper.IsWindows())
                                 {
-                                    WindowStyle = ProcessWindowStyle.Hidden
-                                };
+                                    // from package?
+                                    if (CheckIfPackageFile(inputFn))
+                                        inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.DigitalFile.Path);
 
-                                var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+                                    // temp output
+                                    string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
 
-                                DocumentEntity lambdaEntity = ent;
-                                string outputFnBuffer = outputFn;
-                                process.Exited += (sender2, args) =>
-                                {
-                                    // release number of parallel processes
+                                    // remember these for later deletion
+                                    ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
+
+                                    // start process
+                                    string arguments = string.Format(
+                                        "-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
+                                    string exeFn = System.IO.Path.Combine(
+                                        System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                                        "convert.exe");
+
+                                    var startInfo = new ProcessStartInfo(exeFn, arguments)
+                                    {
+                                        WindowStyle = ProcessWindowStyle.Hidden
+                                    };
+
+                                    var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+
+                                    DocumentEntity lambdaEntity = ent;
+                                    string outputFnBuffer = outputFn;
+                                    process.Exited += (sender2, args) =>
+                                    {
+                                        // release number of parallel processes
+                                        lock (mutexDocEntitiesInPreview)
+                                        {
+                                            numDocEntitiesInPreview--;
+                                        }
+
+                                        // take over data?
+                                        if (lambdaEntity.ImgContainerAnyUi != null)
+                                        {
+                                            // trigger display image
+                                            lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
+                                        }
+                                    };
+
+                                    try
+                                    {
+                                        process.Start();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        AdminShellNS.LogInternally.That.Error(
+                                            ex, $"Failed to start the process: {startInfo.FileName} " +
+                                                $"with arguments {string.Join(" ", startInfo.Arguments)}");
+                                    }
+
+                                    // limit the number of parallel executions
                                     lock (mutexDocEntitiesInPreview)
                                     {
-                                        numDocEntitiesInPreview--;
+                                        numDocEntitiesInPreview++;
                                     }
-
-                                    // take over data?
-                                    if (lambdaEntity.ImgContainerAnyUi != null)
-                                    {
-                                        // trigger display image
-                                        lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
-                                    }
-                                };
-
-                                try
-                                {
-                                    process.Start();
-                                }
-                                catch (Exception ex)
-                                {
-                                    AdminShellNS.LogInternally.That.Error(
-                                        ex, $"Failed to start the process: {startInfo.FileName} " +
-                                            $"with arguments {string.Join(" ", startInfo.Arguments)}");
-                                }
-
-                                // limit the number of parallel executions
-                                lock (mutexDocEntitiesInPreview)
-                                {
-                                    numDocEntitiesInPreview++;
                                 }
                             }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
 
-                    if (_dispatcherNumException < 3)
-                        _log?.Error(ex, "AasxPluginDocumentShelf / converting previews");
-                    else if (_dispatcherNumException == 3)
-                        _log?.Info("AasxPluginDocumentShelf / stopping logging exceptions.");
-                    _dispatcherNumException++;
+                        if (_dispatcherNumException < 3)
+                            _log?.Error(ex, "AasxPluginDocumentShelf / converting previews");
+                        else if (_dispatcherNumException == 3)
+                            _log?.Info("AasxPluginDocumentShelf / stopping logging exceptions.");
+                        _dispatcherNumException++;
+                    }
                 }
+#endif
             }
 
             // over all items in order to check, if a prepared image shall be displayed
@@ -1561,6 +1594,19 @@ namespace AasxPluginDocumentShelf
                 if (de == null)
                     continue;
 
+                // new approach
+                var re = _previewService?.Get(_package?.Filename, de?.DigitalFile?.Path);
+                if (re?.Bitmap != null
+                    && referableHashToCachedBitmap != null
+                    && !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
+                {
+                    if (de.ImgContainerAnyUi != null)
+                        de.ImgContainerAnyUi.BitmapInfo = re.Bitmap;
+                    referableHashToCachedBitmap[de.ReferableHash] = re.Bitmap;
+                    updateDisplay = true;
+                }
+
+#if __old_approach
                 if (de.ImageReadyToBeLoaded != null)
                 {
                     // never again
@@ -1604,7 +1650,8 @@ namespace AasxPluginDocumentShelf
                         _dispatcherNumException++;
                     }
                 }
-            }
+#endif
+			}
 
             if (_eventStack != null && updateDisplay)
                 _eventStack.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
@@ -1618,9 +1665,9 @@ namespace AasxPluginDocumentShelf
             _inDispatcherTimer = false;
         }
 
-        #endregion
+#endregion
 
-        #region Utilities
+#region Utilities
         //===============
 
         private bool CheckIfPackageFile(string fn)
@@ -1628,6 +1675,6 @@ namespace AasxPluginDocumentShelf
             return fn.StartsWith(@"/");
         }
 
-        #endregion
+#endregion
     }
 }

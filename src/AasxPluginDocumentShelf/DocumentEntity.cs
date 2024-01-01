@@ -17,6 +17,7 @@ using AdminShellNS;
 using Extensions;
 using AnyUi;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace AasxPluginDocumentShelf
 {
@@ -143,7 +144,25 @@ namespace AasxPluginDocumentShelf
             }
             return null;
         }
-    }
+
+		/// <summary>
+		/// This function needs to be called as part of tick-Thread in STA / UI thread
+		/// </summary>
+		public AnyUiBitmapInfo LoadImageFromResource(string path)
+		{
+			// convert here, as the tick-Thread in STA / UI thread
+			try
+			{
+				ImgContainerAnyUi.BitmapInfo = AnyUiGdiHelper.CreateAnyUiBitmapFromResource(path,
+					assembly: Assembly.GetExecutingAssembly());
+			}
+			catch (Exception ex)
+			{
+				LogInternally.That.SilentlyIgnoredError(ex);
+			}
+			return null;
+		}
+	}
 
     public class ListOfDocumentEntity : List<DocumentEntity>
     {

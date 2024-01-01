@@ -254,18 +254,22 @@ namespace AasxPackageLogic
                     input = "";
                 }
 
-                if (p0 == '^')
+                if (pattern.Length >= 1 && pattern.StartsWith('>'))
                 {
-                    metaChar = true;
-                    res += input.ToUpper();
-                    input = "";
-                }
+                    // greed variants with ^*, §*
+                    if (p0 == '^')
+                    {
+                        metaChar = true;
+                        res += input.ToUpper();
+                        input = "";
+                    }
 
-                if (p0 == '§')
-                {
-                    metaChar = true;
-                    res += input.ToLower();
-                    input = "";
+                    if (p0 == '§')
+                    {
+                        metaChar = true;
+                        res += input.ToLower();
+                        input = "";
+                    }
                 }
 
                 // only with input
@@ -275,6 +279,20 @@ namespace AasxPackageLogic
                     {
                         metaChar = true;
                         res += input[0];
+                        input = input.Remove(0, 1);
+                    }
+
+                    // normal variant, not greedy
+                    if (p0 == '^')
+                    {
+                        metaChar = true;
+                        res += char.ToUpper(input[0]);
+                        input = input.Remove(0, 1);
+                    }
+                    if (p0 == '§')
+                    {
+                        metaChar = true;
+                        res += char.ToLower(input[0]);
                         input = input.Remove(0, 1);
                     }
 
@@ -669,7 +687,7 @@ namespace AasxPackageLogic
                         AddActionPanel(stack, "Actions:",
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
-                                .AddAction("aas-elem-cut", "Change attribute ..",
+                                .AddAction("change-attr", "Change attribute ..",
                                     "Changes common attributes of multiple selected elements.")
 								.AddAction("remove-extension", "Remove extensions ..",
 									"Removes a specific selected extension from elements."),

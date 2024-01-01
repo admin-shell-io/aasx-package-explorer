@@ -205,6 +205,18 @@ namespace Extensions
         }
 
         /// <summary>
+        /// Tells, if the IReferable can sub-structure more elements
+        /// </summary>
+        public static bool IsStructured(this IReferable rf)
+        {
+            return (rf is ISubmodel
+                || rf is ISubmodelElementCollection
+                || rf is ISubmodelElementList
+                || rf is IOperation
+                || rf is IEntity);
+        }
+
+        /// <summary>
         /// Tells, if the IReferable is used with an index instead of <c>idShort</c>.
         /// </summary>
         public static bool IsIndexed(this IReferable rf)

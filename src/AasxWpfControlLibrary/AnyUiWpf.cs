@@ -1586,8 +1586,8 @@ namespace AnyUi
 
             if (dialogueData is AnyUiDialogueDataChangeElementAttributes ddcea)
             {
-                var uc = new ChangeElementAttributesFlyout();
-                uc.DiaData = ddcea;
+				var uc = new ModalPanelFlyout(this);
+				uc.DiaData = ChangeElementAttributesFlyoutAnyUiFlyout.CreateModelDialogue(ddcea);
                 res = uc;
             }
 
@@ -1758,7 +1758,16 @@ namespace AnyUi
                         // start WITHOUT modal
                         FlyoutProvider?.StartFlyover(uc);
                     else
+                    {
+                        // perform modal
                         FlyoutProvider?.StartFlyoverModal(uc);
+
+                        // special fix
+                        if (uc is ModalPanelFlyout mpf && mpf.DiaData != dialogueData)
+                        {
+                            dialogueData.Result = mpf.DiaData.Result;
+                        }
+                    }
                 }
 
                 // now, in case

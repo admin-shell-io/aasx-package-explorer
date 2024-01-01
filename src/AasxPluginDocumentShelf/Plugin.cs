@@ -30,6 +30,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private DocumentShelfOptions _options =
             new DocumentShelfOptions();
 
+        private ShelfPreviewService _previewService = null;
+
         public class Session : PluginSessionBase
         {
             public AasxPluginDocumentShelf.ShelfAnyUiControl AnyUiControl = null;
@@ -60,6 +62,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             // index them!
             _options.IndexListOfRecords(_options.Records);
+
+            // start preview service
+            _previewService = new ShelfPreviewService();
+            _previewService.StartOperation(_log);
         }
 
         public new AasxPluginActionDescriptionBase[] ListActions()
@@ -157,7 +163,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var opContext = args[5] as PluginOperationContextBase;
                 session.AnyUiControl = AasxPluginDocumentShelf.ShelfAnyUiControl.FillWithAnyUiControls(
                     _log, args[0], args[1], _options, _eventStack, session, args[2], opContext,
-                    args[3] as AnyUiContextPlusDialogs, this);
+                    args[3] as AnyUiContextPlusDialogs, this, _previewService);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

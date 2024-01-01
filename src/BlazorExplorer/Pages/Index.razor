@@ -80,6 +80,15 @@
                             DialogueData="evs.DialogueData" />
                     }
 
+                    @if (evs.DialogueData is AnyUiDialogueDataChangeElementAttributes ddcea)
+                    {
+                        var outerDd = ChangeElementAttributesFlyoutAnyUiFlyout.CreateModelDialogue(ddcea);
+
+                        <AnyUiFlyoutModalPanel 
+                            EventSession="evs"
+                            DialogueData="outerDd" />
+                    }
+
                     @if (evs.DialogueData is AnyUiDialogueDataSelectFromList)
                     {
                         <AnyUiFlyoutSelectFromList 

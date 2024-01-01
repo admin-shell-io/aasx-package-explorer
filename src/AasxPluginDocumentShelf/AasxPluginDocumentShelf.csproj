@@ -8,10 +8,12 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Resources\**" />
-    <EmbeddedResource Remove="Resources\**" />
-    <None Remove="Resources\**" />
-    <Page Remove="Resources\**" />
+    <None Remove="Resources\bin-preview.png" />
+    <None Remove="Resources\zip-preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\bin-preview.png" />
+    <EmbeddedResource Include="Resources\zip-preview.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxIntegrationBaseGdi\AasxIntegrationBaseGdi.csproj" />

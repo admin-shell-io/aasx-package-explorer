@@ -9,7 +9,9 @@
 // Tool("sammaspectimport", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\BatteryPass-spiel.ttl");
 // Tool("sammaspectimport", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\Batch-MM-2_0_0.ttl");
 Tool("editkey");
-Tool("sammaspectimport", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\Aspect_Example_SML_MLP.ttl");
+Select("Submodel", "First");
+// Tool("sammaspectimport", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\Aspect_Example_SML_MLP.ttl");
+Tool("exportpredefineconcepts", "File", "C:\HOMI\Develop\Aasx\repo\aid\new.txt");
 // Tool("submodelinstancefromsmtconcepts");
 // Select("ConceptDescription", "First");
 // Select("ConceptDescription", "Next");

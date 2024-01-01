@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 using Aas = AasCore.Aas3_0;
 
 namespace AnyUi
@@ -400,7 +401,18 @@ namespace AnyUi
 
         public string Pattern = "*";
 
-        public AnyUiDialogueDataChangeElementAttributes(
+		public static string[] HelpLines = new[]
+		{
+            "* = all remaining characters of (original) attribute value (OV)",
+			"? = next single character of OV",
+            "^,§ = next single character of OV in upper case / lower case",
+            "^>,§> = all remaining characters of OV in upper case / lower case",
+			"~ = skip single character of OV",
+			"< = reverse sequence of remaining characters of OV",
+            "<any other> = use in new attribute value"
+		};
+
+		public AnyUiDialogueDataChangeElementAttributes(
             string caption = "",
             double? maxWidth = null)
             : base(caption, maxWidth)

@@ -160,7 +160,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginDigitalNameplate"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginContactInformation", "AasxPluginContactInformation\AasxPluginContactInformation.csproj", "{938BB137-DC45-4A84-B0C9-AC46DA321FDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxCore.Samm2_2_0", "AasxCore.Samm2_2_0\AasxCore.Samm2_2_0.csproj", "{DCFD6C2F-A7C5-4AA2-82F3-0D3856E7EA99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxCore.Samm2_2_0", "AasxCore.Samm2_2_0\AasxCore.Samm2_2_0.csproj", "{DCFD6C2F-A7C5-4AA2-82F3-0D3856E7EA99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
