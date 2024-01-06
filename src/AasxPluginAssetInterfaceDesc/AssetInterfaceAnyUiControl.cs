@@ -23,6 +23,7 @@ using System.Windows.Shapes;
 using AasxIntegrationBaseGdi;
 using FluentModbus;
 using System.Net;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace AasxPluginAssetInterfaceDescription
 {
@@ -242,10 +243,34 @@ namespace AasxPluginAssetInterfaceDescription
 
             var grid = view.Add(uitk.AddSmallGrid(rows: 3, cols: 2, colWidths: new[] { "110:", "*" }));
 
-            uitk.AddSmallLabelTo(grid, 0, 0, content: "Debug:");
+            //
+            // Technologies
+            //
+
+            uitk.AddSmallLabelTo(grid, 0, 0, content: "Technologies:");
+
+            var gridTech = uitk.AddSmallGridTo(grid, 0, 1, rows: 1, cols: 6, 
+                colWidths: new[] { "#", "#", "#", "#", "#", "#" });
+
+            foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
+            {
+                AnyUiUIElement.SetBoolFromControl(
+                    uitk.AddSmallCheckBoxTo(gridTech, 0, 0 + ((int) tech),
+                        margin: new AnyUiThickness(0, 0, 10, 0),
+                        content: "" + tech.ToString(),
+                        isChecked: _allInterfaceStatus.UseTech[(int)tech],
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                    (b) => { _allInterfaceStatus.UseTech[(int)tech] = b; });
+            }
+
+            //
+            // Commanding
+            //
+
+            uitk.AddSmallLabelTo(grid, 1, 0, content: "Startup:");
             
             AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(grid, 0, 1,
+                uitk.AddSmallButtonTo(grid, 1, 1,
                     margin: new AnyUiThickness(2), setHeight: 21,
                     padding: new AnyUiThickness(2, 0, 2, 0),
                     content: "Create status items"),
@@ -273,7 +298,7 @@ namespace AasxPluginAssetInterfaceDescription
                 });
 
             AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(grid, 1, 1,
+                uitk.AddSmallButtonTo(grid, 2, 1,
                     margin: new AnyUiThickness(2), setHeight: 21,
                     padding: new AnyUiThickness(2, 0, 2, 0),
                     content: "Single update .."),
@@ -405,7 +430,8 @@ namespace AasxPluginAssetInterfaceDescription
                 return;
 
             // ok
-            var grid = view.Add(uitk.AddSmallGrid(rows: interfaces.Count, cols: 5, colWidths: new[] { "40:", "1*", "1*", "1*", "100:" }));
+            var grid = view.Add(uitk.AddSmallGrid(rows: interfaces.Count, cols: 5, 
+                colWidths: new[] { "40:", "1*", "1*", "1*", "180:" }));
             int rowIndex = 0;
             foreach (var ifx in interfaces)
             {
