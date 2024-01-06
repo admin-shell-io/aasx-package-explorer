@@ -11,7 +11,7 @@
 Tool("editkey");
 Select("Submodel", "First");
 // Tool("sammaspectimport", "File", "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\Aspect_Example_SML_MLP.ttl");
-Tool("exportpredefineconcepts", "File", "C:\HOMI\Develop\Aasx\repo\aid\new.txt");
+// Tool("exportpredefineconcepts", "File", "C:\HOMI\Develop\Aasx\repo\aid\new.txt");
 // Tool("submodelinstancefromsmtconcepts");
 // Select("ConceptDescription", "First");
 // Select("ConceptDescription", "Next");

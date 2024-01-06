@@ -1,0 +1,46 @@
+﻿{
+  "Records": [
+    {
+      "RecordType": 0,
+      "AllowSubmodelSemanticId": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "http://www.admin-shell.io/mtp/v1/submodel",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    {
+      "RecordType": 1,
+      "AllowSubmodelSemanticId": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    }
+  ],
+  "SymbolMappings": [
+    {
+      "EClassVersions": null,
+      "EClassClasses": "37010201",
+      "EClassIRDIs": null,
+      "SymbolDefault": "PNID_Festo.manual_valve_active-u-nozzled",
+      "SymbolActive": null,
+      "SymbolIntermediate": null,
+      "Comment": "V003,45fd1be7-d9fe-426a-aec7-ca16a09cb64b"
+    }
+  ],
+  "VisuOptions": {
+    "Background": "#707070",
+    "StateColorActive": "#2020ff",
+    "StateColorNonActive": "#202020",
+    "StateColorForward": "#2020ff",
+    "StateColorReverse": "#20ff20"
+  }
+}

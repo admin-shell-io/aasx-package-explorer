@@ -7,15 +7,18 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Aas3_0;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AdminShellNS;
 using Extensions;
+using Namotion.Reflection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Intrinsics.X86;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxPredefinedConcepts
@@ -29,6 +32,8 @@ namespace AasxPredefinedConcepts
     public class AasConceptAttribute : Attribute
     {
         public string Cd { get; set; }
+        public string SupplSemId { get; set; }
+        
         public AasxPredefinedCardinality Card { get; set; }
 
         public AasConceptAttribute()
@@ -37,7 +42,25 @@ namespace AasxPredefinedConcepts
     }
 
     /// <summary>
-    /// This class provides methods to derive a set of C# class definitions from a SMZT definition and
+    /// This class is used in auto-generated files by <c>AasxPredefinedConcepts.PredefinedConceptsClassMapper</c>
+    /// </summary>
+    public class AasClassMapperRange<T>
+    {
+        public T Min;
+        public T Max;
+    }
+
+    /// <summary>
+    /// If this class is present in an mapped class, then (source) information will be added to the
+    /// data objects.
+    /// </summary>
+    public class AasClassMapperInfo
+    {
+        public Aas.IReferable Referable;
+    }
+
+    /// <summary>
+    /// This class provides methods to derive a set of C# class definitions from a SMT definition and
     /// to create runtime instances from it based on a concrete SM.
     /// </summary>
     public class PredefinedConceptsClassMapper
@@ -45,6 +68,61 @@ namespace AasxPredefinedConcepts
         //
         // Export C# classes
         //
+
+        private static string CSharpTypeFrom(Aas.DataTypeDefXsd valueType)
+        {
+            switch (valueType)
+            {
+                case Aas.DataTypeDefXsd.Boolean:
+                    return "bool";
+
+                case Aas.DataTypeDefXsd.Byte:
+                    return "byte";
+
+                case Aas.DataTypeDefXsd.Date:
+                case Aas.DataTypeDefXsd.DateTime:
+                case Aas.DataTypeDefXsd.Time:
+                    return "DateTime";
+
+                case Aas.DataTypeDefXsd.Float:
+                    return "float";
+
+                case Aas.DataTypeDefXsd.Double:
+                    return "double";
+
+                case Aas.DataTypeDefXsd.Int:
+                case Aas.DataTypeDefXsd.Integer:
+                    return "int";
+
+                case Aas.DataTypeDefXsd.Long:
+                    return "long";
+
+                case Aas.DataTypeDefXsd.NegativeInteger:
+                case Aas.DataTypeDefXsd.NonPositiveInteger:
+                    return "int";
+
+                case Aas.DataTypeDefXsd.NonNegativeInteger:
+                case Aas.DataTypeDefXsd.PositiveInteger:
+                    return "unsigned int";
+
+                case Aas.DataTypeDefXsd.Short:
+                    return "short";
+
+                case Aas.DataTypeDefXsd.UnsignedByte:
+                    return "unsigned byte";
+
+                case Aas.DataTypeDefXsd.UnsignedInt:
+                    return "unsigned int";
+
+                case Aas.DataTypeDefXsd.UnsignedLong:
+                    return "usingned long";
+
+                case Aas.DataTypeDefXsd.UnsignedShort:
+                    return "unsigned short";
+            }
+            
+            return "string";
+        }
 
 		private static void ExportCSharpMapperSingleItems(
             string indent, Aas.Environment env, Aas.IReferable rf, System.IO.StreamWriter snippets,
@@ -109,22 +187,22 @@ namespace AasxPredefinedConcepts
                     var nullOp = (dt == "string") ? "" : "?";
 
                     if (card == FormMultiplicity.ZeroToOne)
-                        snippets.WriteLine($"{indent}{dt}{nullOp} {instance};");
+                        snippets.WriteLine($"{indent}public {dt}{nullOp} {instance};");
                     else
                     if (card == FormMultiplicity.One)
-                        snippets.WriteLine($"{indent}{dt} {instance};");
+                        snippets.WriteLine($"{indent}public {dt} {instance};");
                     else
-                        snippets.WriteLine($"{indent}List<{dt}> {instance} = new List<{dt}>();");
+                        snippets.WriteLine($"{indent}public List<{dt}> {instance} = new List<{dt}>();");
                 }
                 else
                 {
                     if (card == FormMultiplicity.ZeroToOne)
-                        snippets.WriteLine($"{indent}{dt} {instance} = null;");
+                        snippets.WriteLine($"{indent}public {dt} {instance} = null;");
                     else
                     if (card == FormMultiplicity.One)
-                        snippets.WriteLine($"{indent}{dt} {instance} = new {dt}();");
+                        snippets.WriteLine($"{indent}public {dt} {instance} = new {dt}();");
                     else
-                        snippets.WriteLine($"{indent}List<{dt}> {instance} = new List<{dt}>();");
+                        snippets.WriteLine($"{indent}public List<{dt}> {instance} = new List<{dt}>();");
                 }
             };
 
@@ -134,73 +212,32 @@ namespace AasxPredefinedConcepts
 
             if (rf is Aas.Property prop)
             {
-                var dt = "string";
-                switch (prop.ValueType)
-                {
-                    case Aas.DataTypeDefXsd.Boolean:
-                        dt = "bool";
-                        break;
-
-                    case Aas.DataTypeDefXsd.Byte:
-                        dt = "byte";
-                        break;
-
-                    case Aas.DataTypeDefXsd.Date:
-                    case Aas.DataTypeDefXsd.DateTime:
-                    case Aas.DataTypeDefXsd.Time:
-                        dt = "DateTime";
-                        break;
-
-                    case Aas.DataTypeDefXsd.Float:
-                        dt = "float";
-                        break;
-
-                    case Aas.DataTypeDefXsd.Double:
-                        dt = "double";
-                        break;
-
-                    case Aas.DataTypeDefXsd.Int:
-                    case Aas.DataTypeDefXsd.Integer:
-                        dt = "int";
-                        break;
-
-                    case Aas.DataTypeDefXsd.Long:
-                        dt = "long";
-                        break;
-
-                    case Aas.DataTypeDefXsd.NegativeInteger:
-                    case Aas.DataTypeDefXsd.NonPositiveInteger:
-                        dt = "int";
-                        break;
-
-                    case Aas.DataTypeDefXsd.NonNegativeInteger:
-                    case Aas.DataTypeDefXsd.PositiveInteger:
-                        dt = "unsigned int";
-                        break;
-
-                    case Aas.DataTypeDefXsd.Short:
-                        dt = "short";
-                        break;
-
-                    case Aas.DataTypeDefXsd.UnsignedByte:
-                        dt = "unsigned byte";
-                        break;
-
-                    case Aas.DataTypeDefXsd.UnsignedInt:
-                        dt = "unsigned int";
-                        break;
-
-                    case Aas.DataTypeDefXsd.UnsignedLong:
-                        dt = "usingned long";
-                        break;
-
-                    case Aas.DataTypeDefXsd.UnsignedShort:
-                        dt = "unsigned short";
-                        break;
-                }
-
+                var dt = CSharpTypeFrom(prop.ValueType);
                 declareLambda(dt, true, idsff);
             }
+
+            //
+            // Range
+            //
+
+            if (rf is Aas.Range rng)
+            {
+                var dt = CSharpTypeFrom(rng.ValueType);
+                declareLambda($"AasClassMapperRange<{dt}>", false, idsff);
+            }
+
+            //
+            // MultiLanguageProperty
+            //
+
+            if (rf is MultiLanguageProperty mlp)
+            {
+                declareLambda("List<ILangStringTextType>", false, idsff);
+            }
+
+            //
+            // SMC, SML ..
+            //
 
             if ((  rf is Aas.Submodel
                 || rf is Aas.SubmodelElementCollection
@@ -283,16 +320,12 @@ namespace AasxPredefinedConcepts
 		}
 
 		private static void ExportCSharpMapperOnlyClasses(
-	        string indent, Aas.Environment env, Aas.ISubmodel sm, System.IO.StreamWriter snippets)
+	        string indent, Aas.Environment env, Aas.ISubmodel sm, System.IO.StreamWriter snippets,
+            bool addInfoObj = false)
 		{
-			// which is a structual element?
-			Func<Aas.IReferable, bool> isStructRf = (rf) =>
-				(rf is Aas.SubmodelElementCollection
-				|| rf is Aas.SubmodelElementList);
-
             // list of class definitions (not merged, yet)
             var elems = new List<ExportCSharpClassDef>();
-            foreach (var sme in sm.SubmodelElements?.FindDeep<Aas.ISubmodelElement>((sme) => isStructRf(sme)))
+            foreach (var sme in sm.SubmodelElements?.FindDeep<Aas.ISubmodelElement>((sme) => sme.IsStructured()))
 				elems.Add(new ExportCSharpClassDef(env, sme));
 
 			// list of merged class defs
@@ -346,8 +379,14 @@ namespace AasxPredefinedConcepts
                         }
                 }
 
+                if (addInfoObj)
+                {
+                    snippets.WriteLine($"");
+                    snippets.WriteLine($"{indent}    // auto-generated informations");
+                    snippets.WriteLine($"{indent}    public AasClassMapperInfo __Info__ = null;");
+                }
 
-				snippets.WriteLine($"{indent}}}");
+                snippets.WriteLine($"{indent}}}");
 			}
 		}
 
@@ -382,7 +421,8 @@ namespace AasxPredefinedConcepts
 
 			snippets.WriteLine($"namespace AasxPredefinedConcepts.{AdminShellUtil.FilterFriendlyName(sm?.IdShort)} {{");
 
-			ExportCSharpMapperOnlyClasses("    ", env, sm, snippets);
+			ExportCSharpMapperOnlyClasses("    ", env, sm, snippets,
+                addInfoObj: true);
 			
             // ExportCSharpMapperSingleItems("    ", env, sm, snippets);
 
@@ -395,18 +435,167 @@ namespace AasxPredefinedConcepts
 
         private class ElemAttrInfo
         {
+            public object Obj;
             public FieldInfo Fi;
             public AasConceptAttribute Attr;
         }
 
-        private void ParseAasElemFillData(ElemAttrInfo eai, Aas.ISubmodelElement sme)
+        private static object CreateRangeObjectSpecific(Type genericType0, Aas.ISubmodelElement sme)
         {
             // access
-            if (eai?.Fi == null || sme == null)
+            if (genericType0 == null || sme == null || !(sme is Aas.IRange rng))
+                return null;
+
+            // create generic instance
+            // see: https://stackoverflow.com/questions/4194033/adding-items-to-listt-using-reflection
+            var objTyp = genericType0;
+            var IListRef = typeof(AasClassMapperRange<>);
+            Type[] IListParam = { objTyp };
+            object rngObj = Activator.CreateInstance(IListRef.MakeGenericType(IListParam));
+
+            // set
+            var rngType = rngObj.GetType();
+            AdminShellUtil.SetFieldLazyValue(rngType.GetField("Min"), rngObj, "" + rng.Min);
+            AdminShellUtil.SetFieldLazyValue(rngType.GetField("Max"), rngObj, "" + rng.Max);
+
+            // ok
+            return rngObj;
+        }
+
+        // TODO (MIHO, 2024-01-04): Move to AdminShellUtil ..
+        private static void SetFieldLazyFromSme(FieldInfo f, object obj, Aas.ISubmodelElement sme)
+        {
+            // access
+            if (f == null || obj == null || sme == null)
                 return;
 
-            // straight?
+            // identify type
+            var t = AdminShellUtil.GetTypeOrUnderlyingType(f.FieldType);
 
+            if (t.IsGenericType
+                && t.GetGenericTypeDefinition() == typeof(AasClassMapperRange<>)
+                && t.GenericTypeArguments.Length >= 1
+                && sme is Aas.IRange rng)
+            {
+                // create generic instance
+                var rngObj = CreateRangeObjectSpecific(t.GenericTypeArguments[0], sme);
+
+                // set it
+                f.SetValue(obj, rngObj);
+            }
+            else
+            {
+                AdminShellUtil.SetFieldLazyValue(f, obj, sme.ValueAsText());
+            }
+        }
+
+        public static void AddToListLazySme(FieldInfo f, object obj, Aas.ISubmodelElement sme)
+        {
+            // access
+            if (f == null || obj == null || sme == null)
+                return;
+
+            // identify type
+            var t = AdminShellUtil.GetTypeOrUnderlyingType(f.FieldType);
+
+            if (t.IsGenericType
+                && t.GetGenericTypeDefinition() == typeof(AasClassMapperRange<>)
+                && sme is Aas.IRange rng)
+            {
+                // create generic instance
+                var rngObj = CreateRangeObjectSpecific(t.GenericTypeArguments[0], sme);
+
+                // add it
+                var listObj = f.GetValue(obj);
+                listObj.GetType().GetMethod("Add").Invoke(listObj, new[] { rngObj });
+            }
+            else
+            {
+                AdminShellUtil.AddToListLazyValue(obj, sme.ValueAsText());
+            }
+        }
+
+        private static void ParseAasElemFillData(ElemAttrInfo eai, Aas.ISubmodelElement sme)
+        {
+            // access
+            if (eai?.Fi == null || eai.Attr == null || sme == null)
+                return;
+
+            if (sme?.IdShort == "Voltage_L1_N")
+            { ; }
+           
+            // straight?
+            if (!sme.IsStructured())
+            {
+                if (eai.Attr.Card == AasxPredefinedCardinality.One)
+                {
+                    // scalar value
+                    SetFieldLazyFromSme(eai.Fi, eai.Obj, sme);
+                }
+                else
+                if (eai.Attr.Card == AasxPredefinedCardinality.ZeroToOne)
+                {
+                    // sure to have a nullable type
+                    SetFieldLazyFromSme(eai.Fi, eai.Obj, sme);
+                }
+                else
+                if ((eai.Attr.Card == AasxPredefinedCardinality.ZeroToMany
+                    || eai.Attr.Card == AasxPredefinedCardinality.OneToMany)
+                    && eai.Obj.GetType().IsGenericType
+                    && eai.Obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    // sure to have a (instantiated) List<scalar>
+                    AddToListLazySme(eai.Fi, eai.Obj, sme);
+                }
+            }
+            else
+            {
+                if (eai.Attr.Card == AasxPredefinedCardinality.One)
+                {
+                    // assume a already existing object
+                    var childObj = eai.Fi.GetValue(eai.Obj);
+
+                    // recurse to fill in
+                    ParseAasElemsToObject(sme, childObj);
+                }
+                else
+                if (eai.Attr.Card == AasxPredefinedCardinality.ZeroToOne)
+                {
+                    // get value first, shall not be present
+                    var childObj = eai.Fi.GetValue(eai.Obj);
+                    if (childObj != null)
+                        throw new Exception(
+                            $"ParseAasElemFillData: [0..1] instance for {eai.Fi.FieldType.Name}> already present!");
+
+                    // ok, make new, add
+                    childObj = Activator.CreateInstance(eai.Fi.FieldType);
+                    eai.Fi.SetValue(eai.Obj, childObj);
+
+                    // recurse to fill in
+                    ParseAasElemsToObject(sme, childObj);
+                }
+                else
+                if ((eai.Attr.Card == AasxPredefinedCardinality.ZeroToMany
+                    || eai.Attr.Card == AasxPredefinedCardinality.OneToMany)
+                    && eai.Fi.FieldType.IsGenericType
+                    && eai.Fi.FieldType.GetGenericTypeDefinition() == typeof(List<>)
+                    && eai.Fi.FieldType.GenericTypeArguments.Length > 0
+                    && eai.Fi.FieldType.GenericTypeArguments[0] != null)
+                {
+                    // create a new object instance
+                    var childObj = Activator.CreateInstance(eai.Fi.FieldType.GenericTypeArguments[0]);
+
+                    // add to list
+                    var listObj = eai.Fi.GetValue(eai.Obj);
+                    listObj.GetType().GetMethod("Add").Invoke(listObj, new [] { childObj });
+
+                    // recurse to fill in
+                    ParseAasElemsToObject(sme, childObj);
+                }
+
+                // recurse
+
+            }
         }
 
         /// <summary>
@@ -425,13 +614,22 @@ namespace AasxPredefinedConcepts
 
             // find fields for this object
             var t = obj.GetType();
-            var l = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            var l = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             foreach (var f in l)
             {
+                // special case
+                if (f.FieldType == typeof(AasClassMapperInfo))
+                {
+                    var info = new AasClassMapperInfo() { Referable = root };
+                    f.SetValue(obj, info);
+                    continue;
+                }
+
+                // store for a bit later processing
                 var a = f.GetCustomAttribute<AasConceptAttribute>();
                 if (a != null)
                 {
-                    eais.Add(new ElemAttrInfo() { Fi = f, Attr = a });
+                    eais.Add(new ElemAttrInfo() { Obj = obj, Fi = f, Attr = a });
                 }
             }
 
@@ -441,8 +639,20 @@ namespace AasxPredefinedConcepts
                 // try find sme in Rf
                 foreach (var x in root.DescendOnce())
                     if (x is Aas.ISubmodelElement sme)
-                        if (sme?.SemanticId?.MatchesExactlyOneKey(new Aas.Key(Aas.KeyTypes.GlobalReference, eai?.Attr?.Cd)) == true)
-                            ;
+                    {
+                        var hit = sme?.SemanticId?.MatchesExactlyOneKey(
+                            new Aas.Key(Aas.KeyTypes.GlobalReference, eai?.Attr?.Cd),
+                            matchMode: MatchMode.Relaxed) == true;
+
+                        if (hit && eai?.Attr?.SupplSemId?.HasContent() == true)
+                            hit = hit && sme?.SupplementalSemanticIds?.MatchesAnyWithExactlyOneKey(
+                                new Aas.Key(Aas.KeyTypes.GlobalReference, eai?.Attr?.SupplSemId),
+                            matchMode: MatchMode.Relaxed) == true;
+
+                        if (hit)
+                            ParseAasElemFillData(eai, sme);
+                    }
+
             }
         }
     }

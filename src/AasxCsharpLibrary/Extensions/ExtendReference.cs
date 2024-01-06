@@ -186,6 +186,9 @@ namespace Extensions
             return match;
         }
 
+        /// <summary>
+        /// Useful, if the searched reference will have only on key (e.g. ECLASS properties)
+        /// </summary>
         public static bool MatchesExactlyOneKey(this IReference reference, IKey key, MatchMode matchMode = MatchMode.Strict)
         {
             if (key == null || reference.Keys == null || reference.Keys.Count != 1)

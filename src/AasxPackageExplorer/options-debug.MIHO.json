@@ -33,7 +33,8 @@
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\SMT_and_SAMM_Showcase_v02.aasx",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\samm-test\\Aspect_Example_SML_MLP.ttl",
   // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\8001203_SPAU-P10R-T-R18M-L-PNLK-PNVBA-M8D_060ff64f-9fd2-422d-81ce-b17e49f007c5_work.aasx",
-  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\aid\\2023_AID1.0_Template_Rework_MIHO.aasx",
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\aid\\2023_AID1.0_Template_Rework_MIHO.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\aid\\aid-test-2.aasx",
   // "AasxRepositoryFn": "C:\\HOMI\\Develop\\Aasx\\repo_Festo_demo_case_V3\\Festo-DemoCase-repo-V3-local.json",
   "WindowLeft": 200,
   "WindowTop": -1,
@@ -120,6 +121,10 @@
       "Args": []
     },
     */
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginAssetInterfaceDesc\\bin\\Debug\\net6.0-windows\\AasxPluginAssetInterfaceDesc.dll",
+      "Args": []
+    },
     {
       "Path": "..\\..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
       "Args": []
