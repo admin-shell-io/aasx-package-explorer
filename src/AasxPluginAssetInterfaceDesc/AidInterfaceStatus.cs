@@ -169,7 +169,7 @@ namespace AasxPluginAssetInterfaceDescription
             if (item.FormData.Modbus_function.Trim().ToLower() == "readholdingregisters")
             {
                 // readHoldingRegisters
-                id = conn.Client.ReadHoldingRegisters<byte>(99, address, quantity).ToArray();
+                id = conn.Client.ReadHoldingRegisters<byte>(99, address, 2 * quantity).ToArray();
                 // time
                 conn.LastActive = DateTime.Now;
             }

@@ -37,6 +37,7 @@ namespace AasxPluginAssetInterfaceDescription
         private AssetInterfaceOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
+        private AasxPluginBase _plugin = null;
 
         private AidAllInterfaceStatus _allInterfaceStatus = null;
 
@@ -73,6 +74,7 @@ namespace AasxPluginAssetInterfaceDescription
             AssetInterfaceOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel,
+            AasxPluginBase plugin,
             AidAllInterfaceStatus ifxStatus)
         {
             // internal members
@@ -82,6 +84,7 @@ namespace AasxPluginAssetInterfaceDescription
             _options = theOptions;
             _eventStack = eventStack;
             _panel = panel;
+            _plugin = plugin;
             _allInterfaceStatus = ifxStatus;
 
             // some required logos
@@ -112,6 +115,7 @@ namespace AasxPluginAssetInterfaceDescription
             AssetInterfaceOptions options,
             PluginEventStack eventStack,
             object opanel,
+            AasxPluginBase plugin,
             AidAllInterfaceStatus ifxStatus)
         {
             // access
@@ -126,7 +130,7 @@ namespace AasxPluginAssetInterfaceDescription
 
             // factory this object
             var aidCntl = new AssetInterfaceAnyUiControl();
-            aidCntl.Start(log, package, sm, options, eventStack, panel, ifxStatus);
+            aidCntl.Start(log, package, sm, options, eventStack, panel, plugin, ifxStatus);
 
             // return shelf
             return aidCntl;
@@ -239,11 +243,40 @@ namespace AasxPluginAssetInterfaceDescription
             var grid = view.Add(uitk.AddSmallGrid(rows: 3, cols: 2, colWidths: new[] { "110:", "*" }));
 
             uitk.AddSmallLabelTo(grid, 0, 0, content: "Debug:");
+            
             AnyUiUIElement.RegisterControl(
                 uitk.AddSmallButtonTo(grid, 0, 1,
                     margin: new AnyUiThickness(2), setHeight: 21,
                     padding: new AnyUiThickness(2, 0, 2, 0),
-                    content: "Test .."),
+                    content: "Create status items"),
+                (o) =>
+                {
+                    try
+                    {
+                        // build up data structures
+                        _allInterfaceStatus.InterfaceStatus = PrepareAidInformation(sm);
+
+                        // trigger a complete redraw, as the regions might emit 
+                        // events or not, depending on this flag
+                        return new AnyUiLambdaActionPluginUpdateAnyUi()
+                        {
+                            PluginName = _plugin?.GetPluginName(),
+                            UpdateMode = AnyUiRenderMode.All,
+                            UseInnerGrid = true
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        ;
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
+
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(grid, 1, 1,
+                    margin: new AnyUiThickness(2), setHeight: 21,
+                    padding: new AnyUiThickness(2, 0, 2, 0),
+                    content: "Single update .."),
                 (o) =>
                 {
                     try
@@ -253,6 +286,15 @@ namespace AasxPluginAssetInterfaceDescription
                         //var byteData = client.ReadHoldingRegisters<byte>(99, 1, 8);
 
                         _allInterfaceStatus?.UpdateValuesSingleShot();
+
+                        // trigger a complete redraw, as the regions might emit 
+                        // events or not, depending on this flag
+                        return new AnyUiLambdaActionPluginUpdateAnyUi()
+                        {
+                            PluginName = _plugin?.GetPluginName(),
+                            UpdateMode = AnyUiRenderMode.All,
+                            UseInnerGrid = true
+                        };
                     }
                     catch (Exception ex)
                     {
@@ -261,8 +303,7 @@ namespace AasxPluginAssetInterfaceDescription
                     return new AnyUiLambdaActionNone();
                 });
 
-            // get SM data and 
-            _allInterfaceStatus.InterfaceStatus = PrepareAidInformation(sm);
+            // get SM data and             
             RenderTripleRowData(view, uitk, _allInterfaceStatus.InterfaceStatus);
         }
 
