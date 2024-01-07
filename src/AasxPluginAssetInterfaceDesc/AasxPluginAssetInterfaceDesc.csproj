@@ -16,10 +16,10 @@
     <None Remove="Resources\logo-mqtt.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="AasxPluginMtpViewer.options.json">
+    <None Update="AasxPluginAssetInterfaceDesc.options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="AasxPluginMtpViewer.plugin">
+    <None Update="AasxPluginAssetInterfaceDesc.plugin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentModbus" Version="5.0.3" />
+    <PackageReference Include="MQTTnet" Version="4.3.3.952" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>

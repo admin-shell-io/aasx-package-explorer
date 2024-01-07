@@ -94,6 +94,16 @@ namespace AasxPluginAssetInterfaceDescription
         public string EndpointBase = "";
 
         /// <summary>
+        /// Actual summary of the status of the interface.
+        /// </summary>
+        public string LogLine = "";
+
+        /// <summary>
+        /// Black = idle, Blue = active, Red = error.
+        /// </summary>
+        public StoredPrint.Color LogColor = StoredPrint.Color.Black;
+
+        /// <summary>
         /// Link to entity (interface).
         /// </summary>
         public object Tag = null;
@@ -127,6 +137,11 @@ namespace AasxPluginAssetInterfaceDescription
         virtual public void UpdateItemValue(AidIfxItemStatus item)
         {
         }
+
+        virtual public void PrepareContinousRun(IEnumerable<AidIfxItemStatus> items)
+        {
+
+        }
     }
 
     public class AidGenericConnections<T> : Dictionary<Uri, T> where T : AidBaseConnection, new()
@@ -151,7 +166,13 @@ namespace AasxPluginAssetInterfaceDescription
     /// </summary>
     public class AidAllInterfaceStatus
     {
-        public bool[] UseTech = { true, false, false };
+        public bool[] UseTech = { false, false, true };
+
+        /// <summary>
+        /// Will hold connections steady and continously update values, either by
+        /// timer pased polling or by subscriptions.
+        /// </summary>
+        public bool ContinousRun = false;
 
         public List<AidInterfaceStatus> InterfaceStatus = new List<AidInterfaceStatus>();
 
@@ -161,11 +182,40 @@ namespace AasxPluginAssetInterfaceDescription
         public AidGenericConnections<AidModbusConnection> ModbusConnections = 
             new AidGenericConnections<AidModbusConnection>();
 
+        public AidGenericConnections<AidMqttConnection> MqttConnections =
+            new AidGenericConnections<AidMqttConnection>();
+
+        protected AidBaseConnection GetOrCreate(AidInterfaceTechnology tech, string endpointBase)
+        {
+            // find connection by factory
+            AidBaseConnection conn = null;
+            switch (tech)
+            {
+                case AidInterfaceTechnology.HTTP:
+                    conn = HttpConnections.GetOrCreate(endpointBase);
+                    break;
+
+                case AidInterfaceTechnology.Modbus:
+                    conn = ModbusConnections.GetOrCreate(endpointBase);
+                    break;
+
+                case AidInterfaceTechnology.MQTT:
+                    conn = MqttConnections.GetOrCreate(endpointBase);
+                    break;
+            }
+            return conn;
+        }
+
         /// <summary>
         /// Will connect to each target once, get values and will disconnect again.
         /// </summary>
         public void UpdateValuesSingleShot()
         {
+            // access allowed
+            if (ContinousRun)
+                return;
+
+            // for all
             foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
             {
                 // use?
@@ -180,17 +230,7 @@ namespace AasxPluginAssetInterfaceDescription
                         continue;
 
                     // find connection by factory
-                    AidBaseConnection conn = null;
-                    switch (tech)
-                    {
-                        case AidInterfaceTechnology.HTTP:
-                            conn = HttpConnections.GetOrCreate(ifc.EndpointBase);
-                            break;
-
-                        case AidInterfaceTechnology.Modbus:
-                            conn = ModbusConnections.GetOrCreate(ifc.EndpointBase);
-                            break;
-                    }
+                    AidBaseConnection conn = GetOrCreate(tech, ifc.EndpointBase);
                     if (conn == null)
                         continue;
 
@@ -210,6 +250,42 @@ namespace AasxPluginAssetInterfaceDescription
             {
                 if (ifc.Connection?.IsConnected() == true)
                     ifc.Connection.Close();
+            }
+        }
+
+        /// <summary>
+        /// Will connect to each target, leave the connection open, will enable 
+        /// cyclic updates.
+        /// </summary>
+        public void StartContinousRun()
+        {
+            // for all
+            foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
+            {
+                // use?
+                if (!UseTech[(int)tech])
+                    continue;
+
+                // find all interfaces with that technology
+                foreach (var ifc in InterfaceStatus.Where((i) => i.Technology == tech))
+                {
+                    // get a connection
+                    if (ifc.EndpointBase?.HasContent() != true)
+                        continue;
+
+                    // find connection by factory
+                    AidBaseConnection conn = GetOrCreate(tech, ifc.EndpointBase);
+                    if (conn == null)
+                        continue;
+
+                    // open it
+                    if (!conn.Open())
+                        continue;
+                    ifc.Connection = conn;
+
+                    // start subscriptions ..
+                    conn.PrepareContinousRun(ifc.Items);
+                }
             }
         }
     }

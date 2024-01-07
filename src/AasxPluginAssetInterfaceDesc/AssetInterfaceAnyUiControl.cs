@@ -217,7 +217,7 @@ namespace AasxPluginAssetInterfaceDescription
             var inner = new AnyUiStackPanel()
             {
                 Orientation = AnyUiOrientation.Vertical,
-                Margin = new AnyUiThickness(2)
+                Margin = new AnyUiThickness(2, 2, 8, 2)
             };
             scroll.Content = inner;
 
@@ -231,6 +231,18 @@ namespace AasxPluginAssetInterfaceDescription
         #region Inner
         //=============
 
+        protected AnyUiLambdaActionBase TriggerUpdate(bool full = true)
+        {
+            // trigger a complete redraw, as the regions might emit 
+            // events or not, depending on this flag
+            return new AnyUiLambdaActionPluginUpdateAnyUi()
+            {
+                PluginName = _plugin?.GetPluginName(),
+                UpdateMode = AnyUiRenderMode.All,
+                UseInnerGrid = true
+            };
+        }
+
         protected void RenderPanelInner(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             AssetInterfaceOptionsRecord rec,
@@ -241,7 +253,7 @@ namespace AasxPluginAssetInterfaceDescription
             if (view == null || uitk == null || sm == null || rec == null)
                 return;
 
-            var grid = view.Add(uitk.AddSmallGrid(rows: 3, cols: 2, colWidths: new[] { "110:", "*" }));
+            var grid = view.Add(uitk.AddSmallGrid(rows: 5, cols: 2, colWidths: new[] { "110:", "*" }));
 
             //
             // Technologies
@@ -278,17 +290,19 @@ namespace AasxPluginAssetInterfaceDescription
                 {
                     try
                     {
+                        // locked?
+                        if (_allInterfaceStatus?.ContinousRun == true)
+                        {
+                            _log.Info(StoredPrint.Color.Blue, "Not possible. Interfaces are in continous mode.");
+                            return new AnyUiLambdaActionNone();
+                        }
+
                         // build up data structures
                         _allInterfaceStatus.InterfaceStatus = PrepareAidInformation(sm);
 
                         // trigger a complete redraw, as the regions might emit 
                         // events or not, depending on this flag
-                        return new AnyUiLambdaActionPluginUpdateAnyUi()
-                        {
-                            PluginName = _plugin?.GetPluginName(),
-                            UpdateMode = AnyUiRenderMode.All,
-                            UseInnerGrid = true
-                        };
+                        return TriggerUpdate(full: true);
                     }
                     catch (Exception ex)
                     {
@@ -306,20 +320,65 @@ namespace AasxPluginAssetInterfaceDescription
                 {
                     try
                     {
-                        //var client = new ModbusTcpClient();
-                        //client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5020));
-                        //var byteData = client.ReadHoldingRegisters<byte>(99, 1, 8);
+                        // locked?
+                        if (_allInterfaceStatus?.ContinousRun == true)
+                        {
+                            _log.Info(StoredPrint.Color.Blue, "Not possible. Interfaces are in continous mode.");
+                            return new AnyUiLambdaActionNone();
+                        }
 
+                        // single shot
                         _allInterfaceStatus?.UpdateValuesSingleShot();
 
                         // trigger a complete redraw, as the regions might emit 
                         // events or not, depending on this flag
-                        return new AnyUiLambdaActionPluginUpdateAnyUi()
+                        return TriggerUpdate(full: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        ;
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
+
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(grid, 3, 1,
+                    margin: new AnyUiThickness(2), setHeight: 21,
+                    padding: new AnyUiThickness(2, 0, 2, 0),
+                    content: "Start continous run .."),
+                (o) =>
+                {
+                    try
+                    {
+                        if (_allInterfaceStatus != null)
                         {
-                            PluginName = _plugin?.GetPluginName(),
-                            UpdateMode = AnyUiRenderMode.All,
-                            UseInnerGrid = true
-                        };
+                            _allInterfaceStatus.StartContinousRun();
+                        }
+
+                        // trigger a complete redraw, as the regions might emit 
+                        // events or not, depending on this flag
+                        return TriggerUpdate(full: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        ;
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
+
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(grid, 4, 1,
+                    margin: new AnyUiThickness(2), setHeight: 21,
+                    padding: new AnyUiThickness(2, 0, 2, 0),
+                    content: "Stop continous run .."),
+                (o) =>
+                {
+                    try
+                    {
+
+                        // trigger a complete redraw, as the regions might emit 
+                        // events or not, depending on this flag
+                        return TriggerUpdate(full: true);
                     }
                     catch (Exception ex)
                     {
@@ -435,7 +494,10 @@ namespace AasxPluginAssetInterfaceDescription
             int rowIndex = 0;
             foreach (var ifx in interfaces)
             {
+                //
                 // heading
+                //
+
                 grid.RowDefinitions.Add(new AnyUiRowDefinition());
 
                 var headGrid = uitk.Set(
@@ -446,7 +508,7 @@ namespace AasxPluginAssetInterfaceDescription
 
                 if (_dictTechnologyToBitmap.ContainsKey(ifx.Technology))
                     uitk.AddSmallImageTo(headGrid, 0, 0, 
-                        margin: new AnyUiThickness(0, 0, 10, 0),
+                        margin: new AnyUiThickness(0, 4, 10, 4),
                         bitmap: _dictTechnologyToBitmap[ifx.Technology]);
 
                 uitk.AddSmallBasicLabelTo(headGrid, 0, 1, fontSize: 1.2f, setBold: true,
@@ -460,7 +522,10 @@ namespace AasxPluginAssetInterfaceDescription
                     verticalContentAlignment: AnyUiVerticalAlignment.Center,
                     content: ifx.Info);
 
-                // items?
+                //
+                // items
+                //
+
                 if (ifx.Items != null)
                     foreach (var item in ifx.Items)
                     {
@@ -483,7 +548,25 @@ namespace AasxPluginAssetInterfaceDescription
                             };
                         }
                         rowIndex++;
-                    }                
+                    }
+
+                //
+                // LogLine
+                //
+
+                grid.RowDefinitions.Add(new AnyUiRowDefinition());
+
+                var clr = StoredPrint.LightThemeColor(ifx.LogColor);
+
+                var ll = uitk.Set(
+                    uitk.AddSmallBasicLabelTo(grid, rowIndex++, 0, fontSize: 0.8,
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                        background: new AnyUiBrush(clr.Item2),
+                        foreground: new AnyUiBrush(clr.Item1),
+                        margin: new AnyUiThickness(0, 4, 0, 8),
+                        content: "" + ifx.LogLine),
+                    colSpan: 5);
             }
         }
 

@@ -32,6 +32,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         // TODO: make this multi-session!!
         private AidAllInterfaceStatus _allInterfaceStatus = new AidAllInterfaceStatus();
+        private AidInterfaceService _interfaceService = null;
 
         public class Session : PluginSessionBase
         {
@@ -63,6 +64,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             // index them!
             _options.IndexListOfRecords(_options.Records);
+
+            // start interface service
+            _interfaceService = new AidInterfaceService();
+            _interfaceService.StartOperation(_log, _allInterfaceStatus);
         }
 
         public new object CheckForLogMessage()

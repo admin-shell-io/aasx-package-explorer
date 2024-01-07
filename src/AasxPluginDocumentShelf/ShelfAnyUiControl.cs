@@ -131,7 +131,6 @@ namespace AasxPluginDocumentShelf
 
             CurrInst = "" + InstCounter;
             InstCounter++;
-
         }
 
         public void Dispose()

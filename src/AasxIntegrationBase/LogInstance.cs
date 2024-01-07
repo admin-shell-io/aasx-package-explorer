@@ -108,6 +108,29 @@ namespace AasxIntegrationBase
         {
             return String.Format("{0}:{1} {2}", color, msg, linkTxt);
         }
+
+        /// <summary>
+        /// Item1 = Foreground, Item2 = Background.
+        /// </summary>
+        public static Tuple<UInt32, UInt32> LightThemeColor (Color color)
+        {
+            // https://coolors.co/palette/ffadad-ffd6a5-fdffb6-caffbf-9bf6ff-a0c4ff-bdb2ff-ffc6ff-fffffc
+            switch (color)
+            {
+                case Color.Blue:
+                    return new Tuple<uint, uint>(0xFF000000, 0xFFA0C4FF);
+
+                case Color.Yellow:
+                    return new Tuple<uint, uint>(0xFF000000, 0xFFFDFFB6);
+
+                case Color.Red:
+                    return new Tuple<uint, uint>(0xFF000000, 0xFFFFADAD);
+
+                case Color.Black:
+                default:
+                    return new Tuple<uint, uint>(0xFF000000, 0xFFFFFFFF);
+            }
+        }
     }
 
     public class StoredPrintsMinimalStore
