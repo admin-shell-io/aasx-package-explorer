@@ -65,10 +65,11 @@ namespace AasxPluginAssetInterfaceDescription
 			// block 
 			_inDispatcherTimer = true;
 
-			// call cyclic tasks
+            // call cyclic tasks
 			try
 			{
-				await _allInterfaceStatus.UpdateValuesContinousByTickAsyc();
+                // synchronous
+                await _allInterfaceStatus.UpdateValuesContinousByTickAsyc();
 			} catch (Exception ex)
 			{
 				;

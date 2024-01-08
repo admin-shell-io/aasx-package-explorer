@@ -118,7 +118,7 @@ namespace AasxPluginAssetInterfaceDescription
                         assembly: Assembly.GetExecutingAssembly()));
                 _dictTechnologyToBitmap.Add(AidInterfaceTechnology.MQTT,
                     AnyUiGdiHelper.CreateAnyUiBitmapFromResource(
-                        "AasxPluginAssetInterfaceDesc.Resources.logo-mqqt.png",
+                        "AasxPluginAssetInterfaceDesc.Resources.logo-mqtt.png",
                         assembly: Assembly.GetExecutingAssembly()));
             }
 

@@ -137,6 +137,12 @@ namespace AasxPluginAssetInterfaceDescription
             return key;
         }
 
+        public void SetLogLine (StoredPrint.Color color, string line)
+        {
+            LogColor = color;
+            LogLine = line;
+        }
+
         /// <summary>
         /// Computes a technology specific key and adds item.
         /// </summary>
@@ -299,6 +305,7 @@ namespace AasxPluginAssetInterfaceDescription
             // access allowed
             if (ContinousRun)
                 return;
+            SetAllLogIdle();
 
             // for all
             foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
@@ -324,9 +331,23 @@ namespace AasxPluginAssetInterfaceDescription
                         continue;
                     ifc.Connection = conn;
 
-                    // go thru all items
+                    // go thru all items (sync)
                     foreach (var item in ifc.Items.Values)
                         conn.UpdateItemValue(item);
+
+                    // go thru all items (async)
+                    var task = Task.Run(async () => 
+                    {
+                        // see: https://www.hanselman.com/blog/parallelforeachasync-in-net-6
+                        await Parallel.ForEachAsync(
+                            ifc.Items.Values,
+                            new ParallelOptions() { MaxDegreeOfParallelism = 10 },
+                            async (item, token) =>
+                            {
+                                ifc.ValueChanges += (UInt64)(await ifc.Connection.UpdateItemValueAsync(item));
+                            });
+                    });
+                    task.Wait();
                 }
             }
 
@@ -338,6 +359,12 @@ namespace AasxPluginAssetInterfaceDescription
             }
         }
 
+        protected void SetAllLogIdle()
+        {
+            foreach (var ifc in InterfaceStatus)
+                ifc.SetLogLine(StoredPrint.Color.Black, "Idle.");
+        }
+
         /// <summary>
         /// Will connect to each target, leave the connection open, will enable 
         /// cyclic updates.
@@ -346,6 +373,7 @@ namespace AasxPluginAssetInterfaceDescription
         {
             // off
             ContinousRun = false;
+            SetAllLogIdle();
 
             // for all
             foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
@@ -359,7 +387,10 @@ namespace AasxPluginAssetInterfaceDescription
                 {
                     // get a connection
                     if (ifc.EndpointBase?.HasContent() != true)
+                    {
+                        ifc.SetLogLine(StoredPrint.Color.Red, "Endpoint is not specified.");
                         continue;
+                    }
 
                     // find connection by factory
                     AidBaseConnection conn = GetOrCreate(tech, ifc.EndpointBase);
@@ -368,8 +399,12 @@ namespace AasxPluginAssetInterfaceDescription
 
                     // open it
                     if (!conn.Open())
+                    {
+                        ifc.SetLogLine(StoredPrint.Color.Red, $"Endpoint connot be opened: {ifc.EndpointBase}.");
                         continue;
+                    }
                     ifc.Connection = conn;
+                    ifc.SetLogLine(StoredPrint.Color.Blue, "Connection established.");
 
                     // start subscriptions ..
                     conn.MessageReceived = (topic, msg) =>
@@ -389,6 +424,7 @@ namespace AasxPluginAssetInterfaceDescription
                             }
                     };
                     conn.PrepareContinousRun(ifc.Items.Values);
+                    ifc.SetLogLine(StoredPrint.Color.Blue, "Connection established and prepared.");
                 }
             }
 
@@ -403,6 +439,7 @@ namespace AasxPluginAssetInterfaceDescription
         {
             // off
             ContinousRun = false;
+            SetAllLogIdle();
 
             // close all connections
             foreach (var ifc in InterfaceStatus)

@@ -63,6 +63,7 @@ namespace AasxPluginAssetInterfaceDescription
             }
         }
 
+        // Note: the async version of ReadHoldingRegisters seems not to work properly?
         override public int UpdateItemValue(AidIfxItemStatus item)
         {
             // access
@@ -88,7 +89,7 @@ namespace AasxPluginAssetInterfaceDescription
             if (item.FormData.Modbus_function.Trim().ToLower() == "readholdingregisters")
             {
                 // readHoldingRegisters
-                id = Client.ReadHoldingRegisters<byte>(99, address, 2 * quantity).ToArray();
+                id = (Client.ReadHoldingRegisters<byte>(99, address, 2 * quantity)).ToArray();
                 // time
                 LastActive = DateTime.Now;
             }
