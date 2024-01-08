@@ -49,7 +49,7 @@ namespace AasxPluginAssetInterfaceDescription
             // nothing to do, this simple http connection is stateless
         }
 
-        override public int UpdateItemValue(AidIfxItemStatus item)
+        override public async Task<int> UpdateItemValueAsync(AidIfxItemStatus item)
         {
             // access
             if (item?.FormData?.Href?.HasContent() != true
@@ -67,16 +67,12 @@ namespace AasxPluginAssetInterfaceDescription
                     var url = new Uri(TargetUri, item.FormData.Href);
 
                     // get response (synchronously)
-                    var task = Task.Run(() => Client.GetAsync(url));
-                    task.Wait();
-                    var response = task.Result;
+                    var response = await Client.GetAsync(url);
 
                     // ok?
                     if (response.IsSuccessStatusCode)
                     {
-                        var task2 = Task.Run(() => response.Content.ReadAsStringAsync());
-                        task2.Wait();
-                        var strval = task2.Result;
+                        var strval = await response.Content.ReadAsStringAsync();
                         item.Value = strval;
                         res = 1;
                     }

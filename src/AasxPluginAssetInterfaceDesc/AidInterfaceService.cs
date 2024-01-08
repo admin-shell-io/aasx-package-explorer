@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AasxPluginAssetInterfaceDescription
 {
@@ -44,7 +45,7 @@ namespace AasxPluginAssetInterfaceDescription
 			_allInterfaceStatus = allInterfaceStatus;
 
 			_dispatcherTimer = new System.Timers.Timer(_timerTickMs);
-			_dispatcherTimer.Elapsed += DispatcherTimer_Tick;
+			_dispatcherTimer.Elapsed += DispatcherTimer_TickAsync;
 			_dispatcherTimer.Enabled = true;
 			_dispatcherTimer.Start();
 		}
@@ -55,7 +56,7 @@ namespace AasxPluginAssetInterfaceDescription
 
 		private bool _inDispatcherTimer = false;
 
-		private void DispatcherTimer_Tick(object sender, EventArgs e)
+		private async void DispatcherTimer_TickAsync(object sender, EventArgs e)
 		{
 			// access
 			if (_allInterfaceStatus == null || _inDispatcherTimer)
@@ -67,7 +68,7 @@ namespace AasxPluginAssetInterfaceDescription
 			// call cyclic tasks
 			try
 			{
-				_allInterfaceStatus.UpdateValuesContinousByTick();
+				await _allInterfaceStatus.UpdateValuesContinousByTickAsyc();
 			} catch (Exception ex)
 			{
 				;
@@ -75,7 +76,6 @@ namespace AasxPluginAssetInterfaceDescription
 
 			// release mutex
 			_inDispatcherTimer = false;
-
 		}
 	}
 }

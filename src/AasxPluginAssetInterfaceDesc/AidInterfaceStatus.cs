@@ -190,7 +190,7 @@ namespace AasxPluginAssetInterfaceDescription
         }
 
         /// <summary>
-        /// Tris to update the value (by polling).
+        /// Tries to update the value (by polling).
         /// </summary>
         /// <returns>Number of values changed</returns>
         virtual public int UpdateItemValue(AidIfxItemStatus item)
@@ -198,6 +198,20 @@ namespace AasxPluginAssetInterfaceDescription
             return 0;
         }
 
+        /// <summary>
+        /// Tries to update the value (by polling).
+        /// </summary>
+        /// <returns>Number of values changed</returns>
+        virtual public async Task<int> UpdateItemValueAsync(AidIfxItemStatus item)
+        {
+            await Task.Yield();
+            return 0;
+        }
+
+        // <summary>
+        /// Tries to update the value (by polling). Async opion is preferred.
+        /// </summary>
+        /// <returns>Number of values changed</returns>
         virtual public void PrepareContinousRun(IEnumerable<AidIfxItemStatus> items)
         {
 
@@ -401,7 +415,7 @@ namespace AasxPluginAssetInterfaceDescription
         /// <summary>
         /// In continous run, will fetch values for polling based technologies (HTTP, Modbus, ..).
         /// </summary>
-        public void UpdateValuesContinousByTick()
+        public async Task UpdateValuesContinousByTickAsyc()
         {
             // access allowed
             if (!ContinousRun)
@@ -421,9 +435,19 @@ namespace AasxPluginAssetInterfaceDescription
                     if (ifc?.Connection?.IsConnected() != true)
                         continue;
 
-                    // go thru all items
+                    // go thru all items (sync)
                     foreach (var item in ifc.Items.Values)
                         ifc.ValueChanges += (UInt64) ifc.Connection.UpdateItemValue(item);
+
+                    // go thru all items (async)
+                    // see: https://www.hanselman.com/blog/parallelforeachasync-in-net-6
+                    await Parallel.ForEachAsync(
+                        ifc.Items.Values, 
+                        new ParallelOptions() { MaxDegreeOfParallelism = 10 }, 
+                        async (item, token) =>
+                    {
+                        ifc.ValueChanges += (UInt64) (await ifc.Connection.UpdateItemValueAsync(item));
+                    });
                 }
             }
         }
