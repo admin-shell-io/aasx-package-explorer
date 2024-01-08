@@ -63,21 +63,22 @@ namespace AasxPluginAssetInterfaceDescription
             }
         }
 
-        override public void UpdateItemValue(AidIfxItemStatus item)
+        override public int UpdateItemValue(AidIfxItemStatus item)
         {
             // access
             if (item?.FormData?.Href?.HasContent() != true
                 || item.FormData.Modbus_function?.HasContent() != true)
-                return;
+                return 0;
+            int res = 0;
 
             // decode address + quantity
             // (assumption: 1 quantity = 2 bytes)
             var match = Regex.Match(item.FormData.Href, @"^(\d{1,5})(\?quantity=(\d+))?$");
             if (!match.Success)
-                return;
+                return 0;
 
             if (!int.TryParse(match.Groups[1].ToString(), out var address))
-                return;
+                return 0;
             if (!int.TryParse(match.Groups[3].ToString(), out var quantity))
                 quantity = 1;
             quantity = Math.Max(0, Math.Min(0xffff, quantity));
@@ -94,7 +95,7 @@ namespace AasxPluginAssetInterfaceDescription
 
             // success with reading?
             if (id == null || id.Length < 1)
-                return;
+                return 0;
 
             // swapping (od = out data)
             // https://doc.iobroker.net/#de/adapters/adapterref/iobroker.modbus/README.md?wp
@@ -188,6 +189,9 @@ namespace AasxPluginAssetInterfaceDescription
 
             // save in item
             item.Value = strval;
+
+            // ok
+            return 1;
         }
     }
 }

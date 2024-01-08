@@ -49,7 +49,7 @@ namespace AdminShellNS
 
         public List<V> this[K key] => dict[key];
 
-        public IEnumerable<List<V>> Values
+        public IEnumerable<List<V>> ValueLists
         {
             get
             {
@@ -57,7 +57,17 @@ namespace AdminShellNS
             }
         }
 
-		public IEnumerable<K> Keys
+        public IEnumerable<V> Values
+        {
+            get
+            {
+                foreach (var vl in dict.Values)
+                    foreach (var v in vl)
+                        yield return v;
+            }
+        }
+
+        public IEnumerable<K> Keys
 		{
 			get
 			{

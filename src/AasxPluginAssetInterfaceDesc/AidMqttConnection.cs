@@ -86,12 +86,13 @@ namespace AasxPluginAssetInterfaceDescription
                 return;
 
             // payload?
-            var payload = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment);
+            // var payload = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment);
+            var payload = arg.ApplicationMessage.ConvertPayloadToString();
             if (payload?.HasContent() != true)
                 return;
 
             // refer further..
-            ;
+            MessageReceived?.Invoke(topic, payload);
 
             // ok
             await Task.Yield();
@@ -113,10 +114,11 @@ namespace AasxPluginAssetInterfaceDescription
             }
         }
 
-        override public void UpdateItemValue(AidIfxItemStatus item)
+        override public int UpdateItemValue(AidIfxItemStatus item)
         {
             // Cannot do anything. MQTT is pure publish/ subscribe.
             // Unable to ask for a status value.
+            return 0;
         }
 
         override public void PrepareContinousRun(IEnumerable<AidIfxItemStatus> items)

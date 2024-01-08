@@ -49,13 +49,14 @@ namespace AasxPluginAssetInterfaceDescription
             // nothing to do, this simple http connection is stateless
         }
 
-        override public void UpdateItemValue(AidIfxItemStatus item)
+        override public int UpdateItemValue(AidIfxItemStatus item)
         {
             // access
             if (item?.FormData?.Href?.HasContent() != true
                 || item.FormData.Htv_methodName?.HasContent() != true
                 || !IsConnected())
-                return;
+                return 0;
+            int res = 0;
 
             // GET?
             if (item.FormData.Htv_methodName.Trim().ToLower() == "get")
@@ -77,12 +78,15 @@ namespace AasxPluginAssetInterfaceDescription
                         task2.Wait();
                         var strval = task2.Result;
                         item.Value = strval;
+                        res = 1;
                     }
                 } catch (Exception ex)
                 {
                     ;
                 }
             }
+
+            return res;
         }
     }
 }

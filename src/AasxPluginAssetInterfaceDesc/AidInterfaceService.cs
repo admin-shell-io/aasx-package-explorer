@@ -64,7 +64,14 @@ namespace AasxPluginAssetInterfaceDescription
 			// block 
 			_inDispatcherTimer = true;
 
-			// ..
+			// call cyclic tasks
+			try
+			{
+				_allInterfaceStatus.UpdateValuesContinousByTick();
+			} catch (Exception ex)
+			{
+				;
+			}
 
 			// release mutex
 			_inDispatcherTimer = false;

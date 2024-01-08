@@ -37,6 +37,7 @@ namespace AasxPluginAssetInterfaceDescription
         private Aas.Submodel _submodel = null;
         private AssetInterfaceOptions _options = null;
         private PluginEventStack _eventStack = null;
+        private PluginSessionBase _session = null;
         private AnyUiStackPanel _panel = null;
         private AasxPluginBase _plugin = null;
 
@@ -46,6 +47,8 @@ namespace AasxPluginAssetInterfaceDescription
 
         protected Dictionary<AidInterfaceTechnology, AnyUiBitmapInfo> _dictTechnologyToBitmap = 
             new Dictionary<AidInterfaceTechnology, AnyUiBitmapInfo>();
+
+        private System.Timers.Timer _dispatcherTimer = null;
 
         #endregion
 
@@ -62,11 +65,22 @@ namespace AasxPluginAssetInterfaceDescription
         #region Constructors
         //=============
 
-        // ReSharper disable EmptyConstructor
         public AssetInterfaceAnyUiControl()
         {
+            _dispatcherTimer = new System.Timers.Timer(500);
+            _dispatcherTimer.Elapsed += DispatcherTimer_Tick;
+            _dispatcherTimer.Enabled = true;
+            _dispatcherTimer.Start();
         }
-        // ReSharper enable EmptyConstructor
+
+        public void Dispose()
+        {
+            if (_dispatcherTimer != null)
+            {
+                _dispatcherTimer.Stop();
+                _dispatcherTimer.Dispose();
+            }
+        }
 
         public void Start(
             LogInstance log,
@@ -74,6 +88,7 @@ namespace AasxPluginAssetInterfaceDescription
             Aas.Submodel theSubmodel,
             AssetInterfaceOptions theOptions,
             PluginEventStack eventStack,
+            PluginSessionBase session,
             AnyUiStackPanel panel,
             AasxPluginBase plugin,
             AidAllInterfaceStatus ifxStatus)
@@ -84,6 +99,7 @@ namespace AasxPluginAssetInterfaceDescription
             _submodel = theSubmodel;
             _options = theOptions;
             _eventStack = eventStack;
+            _session = session;
             _panel = panel;
             _plugin = plugin;
             _allInterfaceStatus = ifxStatus;
@@ -115,6 +131,7 @@ namespace AasxPluginAssetInterfaceDescription
             object opackage, object osm,
             AssetInterfaceOptions options,
             PluginEventStack eventStack,
+            PluginSessionBase session,
             object opanel,
             AasxPluginBase plugin,
             AidAllInterfaceStatus ifxStatus)
@@ -131,7 +148,7 @@ namespace AasxPluginAssetInterfaceDescription
 
             // factory this object
             var aidCntl = new AssetInterfaceAnyUiControl();
-            aidCntl.Start(log, package, sm, options, eventStack, panel, plugin, ifxStatus);
+            aidCntl.Start(log, package, sm, options, eventStack, session, panel, plugin, ifxStatus);
 
             // return shelf
             return aidCntl;
@@ -350,13 +367,13 @@ namespace AasxPluginAssetInterfaceDescription
                 {
                     try
                     {
+                        // command
                         if (_allInterfaceStatus != null)
                         {
                             _allInterfaceStatus.StartContinousRun();
                         }
 
-                        // trigger a complete redraw, as the regions might emit 
-                        // events or not, depending on this flag
+                        // trigger a complete redraw
                         return TriggerUpdate(full: true);
                     }
                     catch (Exception ex)
@@ -375,9 +392,13 @@ namespace AasxPluginAssetInterfaceDescription
                 {
                     try
                     {
+                        // command
+                        if (_allInterfaceStatus != null)
+                        {
+                            _allInterfaceStatus.StopContinousRun();
+                        }
 
-                        // trigger a complete redraw, as the regions might emit 
-                        // events or not, depending on this flag
+                        // trigger a complete redraw
                         return TriggerUpdate(full: true);
                     }
                     catch (Exception ex)
@@ -462,7 +483,7 @@ namespace AasxPluginAssetInterfaceDescription
                             FormData = propName.Forms,
                             Value = "???"
                         };
-                        aidIfx.Items.Add(ifcItem);
+                        aidIfx.AddItem(ifcItem);
 
                         // directly recurse?
                         if (propName?.Properties?.Property != null)
@@ -527,7 +548,7 @@ namespace AasxPluginAssetInterfaceDescription
                 //
 
                 if (ifx.Items != null)
-                    foreach (var item in ifx.Items)
+                    foreach (var item in ifx.Items.Values)
                     {
                         // normal row, 3 bordered cells
                         grid.RowDefinitions.Add(new AnyUiRowDefinition());
@@ -546,6 +567,12 @@ namespace AasxPluginAssetInterfaceDescription
                                 FontSize = 1.0f,
                                 FontWeight = AnyUiFontWeight.Normal
                             };
+
+                            if (ci == 4)
+                            {
+                                // remember value widget!!
+                                item.RenderedUiElement = brd.Child;
+                            }
                         }
                         rowIndex++;
                     }
@@ -568,6 +595,53 @@ namespace AasxPluginAssetInterfaceDescription
                         content: "" + ifx.LogLine),
                     colSpan: 5);
             }
+        }
+
+        #endregion
+
+        #region Timer
+        //===========
+
+        private bool _inDispatcherTimer = false;
+        private UInt64 _lastValueChanges = 0;
+
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            // better debugging
+            _inDispatcherTimer = true;
+            var updateDisplay = false;
+
+            // trigger update of values?
+            if (_allInterfaceStatus?.ContinousRun == true
+                && _allInterfaceStatus.SumValueChanges() != _lastValueChanges)
+            {
+                // rember new
+                _lastValueChanges = _allInterfaceStatus.SumValueChanges();
+
+                // re-render values only
+                foreach (var ifc in _allInterfaceStatus.InterfaceStatus)
+                    foreach (var item in ifc.Items.Values)
+                        if (item.RenderedUiElement is AnyUiSelectableTextBlock tb)
+                        {
+                            tb.Text = item.Value;
+                        }
+
+                // set
+                updateDisplay = true;
+            }
+
+            // trigger update value?
+            if (_eventStack != null && updateDisplay)
+                _eventStack.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
+                {
+                    Session = _session,
+                    PluginName = null, // do NOT call the plugin before rendering
+                    Mode = AnyUiRenderMode.StatusToUi,
+                    UseInnerGrid = true
+                });
+
+            // end debugging
+            _inDispatcherTimer = false;
         }
 
         #endregion

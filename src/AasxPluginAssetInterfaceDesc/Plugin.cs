@@ -81,6 +81,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 enableCheckVisualExt: true,
                 enableOptions: true,
                 enableLicenses: true,
+                enableEventsGet: true,
+                enableEventReturn: true,
                 enablePanelAnyUi: true);
             return res.ToArray();
         }
@@ -128,7 +130,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // create session and call
                 var session = _sessions.CreateNewSession<Session>(args[4]);
                 session.AnyUiControl = AasxPluginAssetInterfaceDescription.AssetInterfaceAnyUiControl.FillWithAnyUiControls(
-                    _log, args[0], args[1], _options, _eventStack, args[2], this, _allInterfaceStatus);
+                    _log, args[0], args[1], _options, _eventStack, session, args[2], this, _allInterfaceStatus);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

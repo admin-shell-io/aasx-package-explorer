@@ -23,6 +23,7 @@ using FluentModbus;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using AnyUi;
 
 namespace AasxPluginAssetInterfaceDescription
 {
@@ -61,6 +62,11 @@ namespace AasxPluginAssetInterfaceDescription
         /// Link to entity (property, action, event).
         /// </summary>
         public object Tag = null;
+
+        /// <summary>
+        /// Holds reference to the AnyUI element showing the value.
+        /// </summary>
+        public AnyUiUIElement RenderedUiElement = null;
     }
 
     public enum AidInterfaceTechnology { HTTP, Modbus, MQTT }
@@ -86,7 +92,8 @@ namespace AasxPluginAssetInterfaceDescription
         /// <summary>
         /// The information items (properties, actions, events)
         /// </summary>
-        public List<AidIfxItemStatus> Items = new List<AidIfxItemStatus>();
+        public MultiValueDictionary<string, AidIfxItemStatus> Items = 
+            new MultiValueDictionary<string, AidIfxItemStatus>();
 
         /// <summary>
         /// Base connect information.
@@ -96,7 +103,7 @@ namespace AasxPluginAssetInterfaceDescription
         /// <summary>
         /// Actual summary of the status of the interface.
         /// </summary>
-        public string LogLine = "";
+        public string LogLine = "Idle.";
 
         /// <summary>
         /// Black = idle, Blue = active, Red = error.
@@ -112,6 +119,52 @@ namespace AasxPluginAssetInterfaceDescription
         /// Holds the technology connection currently used.
         /// </summary>
         public AidBaseConnection Connection = null;
+
+        /// <summary>
+        /// Will get increment, when a value changed.
+        /// </summary>
+        public UInt64 ValueChanges = 0;
+
+        protected string ComputeKey(string key)
+        {
+            if (key != null)
+            {
+                if (Technology == AidInterfaceTechnology.MQTT)
+                {
+                    key = key.Trim().Trim('/').ToLower();
+                }
+            }
+            return key;
+        }
+
+        /// <summary>
+        /// Computes a technology specific key and adds item.
+        /// </summary>
+        /// <param name="item"></param>
+        public void AddItem(AidIfxItemStatus item)
+        {
+            // acceess
+            if (item == null)
+                return;
+
+            // compute key
+            var key = ComputeKey(item?.FormData?.Href);
+            
+            // now add
+            Items.Add(key, item);
+        }
+
+        /// <summary>
+        /// Computes key based on technology, checks if items can be found
+        /// and enumerates these.
+        /// </summary>
+        public IEnumerable<AidIfxItemStatus> GetItemsFor(string key)
+        {
+            key = ComputeKey(key);
+            if (Items.ContainsKey(key))
+                foreach (var item in Items[key])
+                    yield return item;
+        }
     }
 
     public class AidBaseConnection
@@ -119,6 +172,8 @@ namespace AasxPluginAssetInterfaceDescription
         public Uri TargetUri;
 
         public DateTime LastActive = default(DateTime);
+
+        public Action<string, string> MessageReceived = null;
 
         virtual public bool Open()
         {
@@ -134,8 +189,13 @@ namespace AasxPluginAssetInterfaceDescription
         {
         }
 
-        virtual public void UpdateItemValue(AidIfxItemStatus item)
+        /// <summary>
+        /// Tris to update the value (by polling).
+        /// </summary>
+        /// <returns>Number of values changed</returns>
+        virtual public int UpdateItemValue(AidIfxItemStatus item)
         {
+            return 0;
         }
 
         virtual public void PrepareContinousRun(IEnumerable<AidIfxItemStatus> items)
@@ -166,7 +226,7 @@ namespace AasxPluginAssetInterfaceDescription
     /// </summary>
     public class AidAllInterfaceStatus
     {
-        public bool[] UseTech = { false, false, true };
+        public bool[] UseTech = { true, false, false };
 
         /// <summary>
         /// Will hold connections steady and continously update values, either by
@@ -207,6 +267,17 @@ namespace AasxPluginAssetInterfaceDescription
         }
 
         /// <summary>
+        /// Will get increment, when a value changed.
+        /// </summary>
+        public UInt64 SumValueChanges()
+        {
+            UInt64 sum = 0;
+            foreach (var ifc in InterfaceStatus)
+                sum += ifc.ValueChanges;
+            return sum;
+        }
+
+        /// <summary>
         /// Will connect to each target once, get values and will disconnect again.
         /// </summary>
         public void UpdateValuesSingleShot()
@@ -240,7 +311,7 @@ namespace AasxPluginAssetInterfaceDescription
                     ifc.Connection = conn;
 
                     // go thru all items
-                    foreach (var item in ifc.Items)
+                    foreach (var item in ifc.Items.Values)
                         conn.UpdateItemValue(item);
                 }
             }
@@ -259,6 +330,9 @@ namespace AasxPluginAssetInterfaceDescription
         /// </summary>
         public void StartContinousRun()
         {
+            // off
+            ContinousRun = false;
+
             // for all
             foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
             {
@@ -284,7 +358,72 @@ namespace AasxPluginAssetInterfaceDescription
                     ifc.Connection = conn;
 
                     // start subscriptions ..
-                    conn.PrepareContinousRun(ifc.Items);
+                    conn.MessageReceived = (topic, msg) =>
+                    {
+                        foreach (var ifc2 in InterfaceStatus)
+                            foreach (var item in ifc2.GetItemsFor(topic))
+                            {
+                                // note value
+                                item.Value = msg;
+
+                                // note value change
+                                ifc2.ValueChanges++;
+
+                                // remember last use
+                                if (ifc2.Connection != null)
+                                    ifc2.Connection.LastActive = DateTime.Now;
+                            }
+                    };
+                    conn.PrepareContinousRun(ifc.Items.Values);
+                }
+            }
+
+            // now switch ON!
+            ContinousRun = true;
+        }
+
+        /// <summary>
+        /// Will stop continous run and close all connections.
+        /// </summary>
+        public void StopContinousRun()
+        {
+            // off
+            ContinousRun = false;
+
+            // close all connections
+            foreach (var ifc in InterfaceStatus)
+            {
+                if (ifc.Connection?.IsConnected() == true)
+                    ifc.Connection.Close();
+            }
+        }
+
+        /// <summary>
+        /// In continous run, will fetch values for polling based technologies (HTTP, Modbus, ..).
+        /// </summary>
+        public void UpdateValuesContinousByTick()
+        {
+            // access allowed
+            if (!ContinousRun)
+                return;
+
+            // for all
+            foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
+            {
+                // use?
+                if (!UseTech[(int)tech])
+                    continue;
+
+                // find all interfaces with that technology
+                foreach (var ifc in InterfaceStatus.Where((i) => i.Technology == tech))
+                {
+                    // get a connection
+                    if (ifc?.Connection?.IsConnected() != true)
+                        continue;
+
+                    // go thru all items
+                    foreach (var item in ifc.Items.Values)
+                        ifc.ValueChanges += (UInt64) ifc.Connection.UpdateItemValue(item);
                 }
             }
         }
