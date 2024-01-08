@@ -592,6 +592,7 @@ namespace AasxPluginAssetInterfaceDescription
                         background: new AnyUiBrush(clr.Item2),
                         foreground: new AnyUiBrush(clr.Item1),
                         margin: new AnyUiThickness(0, 4, 0, 8),
+                        padding: new AnyUiThickness(2, 1, 2, 1),
                         content: "" + ifx.LogLine),
                     colSpan: 5);
             }
