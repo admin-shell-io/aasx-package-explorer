@@ -69,7 +69,7 @@ namespace AasxPluginAssetInterfaceDescription
         public AnyUiUIElement RenderedUiElement = null;
     }
 
-    public enum AidInterfaceTechnology { HTTP, Modbus, MQTT }
+    public enum AidInterfaceTechnology { HTTP, Modbus, MQTT, OPCUA }
 
     public class AidInterfaceStatus
     {
@@ -177,6 +177,16 @@ namespace AasxPluginAssetInterfaceDescription
     {
         public Uri TargetUri;
 
+        /// <summary>
+        /// For initiating the connection. Right now, not foreseen/ encouraged by the SMT.
+        /// </summary>
+        public string User = null;
+
+        /// <summary>
+        /// For initiating the connection. Right now, not foreseen/ encouraged by the SMT.
+        /// </summary>
+        public string Password = null;
+
         public DateTime LastActive = default(DateTime);
 
         public Action<string, string> MessageReceived = null;
@@ -246,7 +256,7 @@ namespace AasxPluginAssetInterfaceDescription
     /// </summary>
     public class AidAllInterfaceStatus
     {
-        public bool[] UseTech = { true, false, false };
+        public bool[] UseTech = { false, false, false, true };
 
         /// <summary>
         /// Will hold connections steady and continously update values, either by
@@ -265,6 +275,9 @@ namespace AasxPluginAssetInterfaceDescription
         public AidGenericConnections<AidMqttConnection> MqttConnections =
             new AidGenericConnections<AidMqttConnection>();
 
+        public AidGenericConnections<AidOpcUaConnection> OpcUaConnections =
+            new AidGenericConnections<AidOpcUaConnection>();
+
         protected AidBaseConnection GetOrCreate(AidInterfaceTechnology tech, string endpointBase)
         {
             // find connection by factory
@@ -281,6 +294,10 @@ namespace AasxPluginAssetInterfaceDescription
 
                 case AidInterfaceTechnology.MQTT:
                     conn = MqttConnections.GetOrCreate(endpointBase);
+                    break;
+
+                case AidInterfaceTechnology.OPCUA:
+                    conn = OpcUaConnections.GetOrCreate(endpointBase);
                     break;
             }
             return conn;

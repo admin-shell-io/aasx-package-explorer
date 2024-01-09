@@ -120,6 +120,10 @@ namespace AasxPluginAssetInterfaceDescription
                     AnyUiGdiHelper.CreateAnyUiBitmapFromResource(
                         "AasxPluginAssetInterfaceDesc.Resources.logo-mqtt.png",
                         assembly: Assembly.GetExecutingAssembly()));
+                _dictTechnologyToBitmap.Add(AidInterfaceTechnology.OPCUA,
+                    AnyUiGdiHelper.CreateAnyUiBitmapFromResource(
+                        "AasxPluginAssetInterfaceDesc.Resources.logo-opc-ua.png",
+                        assembly: Assembly.GetExecutingAssembly()));
             }
 
             // fill given panel
@@ -454,6 +458,7 @@ namespace AasxPluginAssetInterfaceDescription
                 var ifxs = data?.InterfaceHTTP;
                 if (tech == AidInterfaceTechnology.Modbus) ifxs = data?.InterfaceMODBUS;
                 if (tech == AidInterfaceTechnology.MQTT) ifxs = data?.InterfaceMQTT;
+                if (tech == AidInterfaceTechnology.OPCUA) ifxs = data?.InterfaceOPCUA;
                 if (ifxs == null || ifxs.Count < 1)
                     continue;
                 foreach (var ifx in ifxs)
