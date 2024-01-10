@@ -2093,9 +2093,20 @@ namespace AasxPackageExplorer
                     {
                         var client = new AasxRestServerLibrary.AasxRestClient(url);
                         theOnlineConnection = client;
-                        var pe = client.OpenPackageByAasEnv();
-                        if (pe != null)
-                            UiLoadPackageWithNew(_packageCentral.MainItem, pe, info: uc.Text, onlyAuxiliary: false);
+                        string standardUrl = "http://localhost:1111";
+                        if (url.EndsWith(standardUrl))
+                        {
+                            var pe = client.OpenPackageByAasEnv();
+                            if (pe != null)
+                                UiLoadPackageWithNew(_packageCentral.MainItem, pe, info: uc.Text, onlyAuxiliary: false);
+                        }
+                        else
+                        {
+                            var subUrl = url.Replace(standardUrl, "");
+                            var pe = client.OpenPackageByAasEnv(subUrl);
+                            if (pe != null)
+                                UiLoadPackageWithNew(_packageCentral.MainItem, pe, info: uc.Text, onlyAuxiliary: false);
+                        }
                     }
                     catch (Exception ex)
                     {

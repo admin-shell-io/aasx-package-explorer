@@ -198,5 +198,20 @@ namespace AasxRestServerLibrary
             var value = parsed.SelectToken("value").Value<string>();
             return value;
         }
+
+
+        public AdminShellPackageEnv OpenPackageByAasEnv(string url)
+        {
+            var request = new RestRequest(url);
+            if (this.proxy != null)
+                request.Proxy = this.proxy;
+            var respose = client.Execute(request);
+            if (respose.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
+                throw new Exception(
+                    $"REST {respose.ResponseUri} response {respose.StatusCode} with {respose.StatusDescription}");
+            var res = new AdminShellPackageEnv();
+            res.LoadFromAasEnvString(respose.GetContent());
+            return res;
+        }
     }
 }
