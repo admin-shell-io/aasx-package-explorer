@@ -430,6 +430,12 @@ namespace AasxPredefinedConcepts.AssetInterfacesDescription
         [AasConcept(Cd = "https://www.w3.org/2011/http#headers", Card = AasxPredefinedCardinality.ZeroToOne)]
         public CD_Htv_headers Htv_headers = null;
 
+        [AasConcept(Cd = "https://www.w3.org/2019/wot/http#pollingTime", Card = AasxPredefinedCardinality.ZeroToOne)]
+        public string Htv_pollingTime;
+
+        [AasConcept(Cd = "https://www.w3.org/2019/wot/http#timeout", Card = AasxPredefinedCardinality.ZeroToOne)]
+        public string Htv_timeout;
+
         [AasConcept(Cd = "https://www.w3.org/2019/wot/modbus#Function", Card = AasxPredefinedCardinality.ZeroToOne)]
         public string Modbus_function;
 

@@ -297,7 +297,7 @@ namespace AasxPackageExplorer
                     .AddWpfBlazor(name: "LocationPush", header: "Push location", inputGesture: "Ctrl+Shift+P")
                     .AddWpfBlazor(name: "LocationPop", header: "Pop location", inputGesture: "Ctrl+Shift+O"))
                 .AddSeparator()
-                .AddMenu(header: "Create …", attachPoint: "Plugins", childs: (new AasxMenu())
+                .AddMenu(header: "Create …", attachPoint: "Create", childs: (new AasxMenu())
                     .AddWpfBlazor(name: "NewSubmodelFromPlugin", header: "New Submodel from plugin", inputGesture: "Ctrl+Shift+M",
                             help: "Creates a new Submodel based on defintions provided by plugin.",
                             args: new AasxMenuListOfArgDefs()
@@ -325,6 +325,7 @@ namespace AasxPackageExplorer
                         help: "Creates a new Submodel instance from an selected root given by accessible ConceptDescriptions.")
                     )
                 .AddMenu(header: "Visualize …", attachPoint: "Visualize")
+                .AddMenu(header: "Plugins …", attachPoint: "Plugins")
                 .AddSeparator()
                 .AddWpfBlazor(name: "ConvertElement", header: "Convert via plugin …",
                         help: "Asks plugins if these could make offers to convert the current elements and " +

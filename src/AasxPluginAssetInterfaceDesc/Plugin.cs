@@ -20,6 +20,8 @@ using Extensions;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using AasxPluginAssetInterfaceDescription;
+using AnyUi;
+using System.Windows.Controls;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -42,7 +44,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public new void InitPlugin(string[] args)
         {
             // start ..
-            PluginName = "AasxPluginAssetInterfaceDescription";
+            PluginName = "AasxPluginAssetInterfaceDesc";
 
             // .. with built-in options
             _options = AasxPluginAssetInterfaceDescription.AssetInterfaceOptions.CreateDefault();
@@ -84,6 +86,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 enableLicenses: true,
                 enableEventsGet: true,
                 enableEventReturn: true,
+                enableMenuItems: true,
                 enablePanelAnyUi: true);
             return res.ToArray();
         }
@@ -106,6 +109,15 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 bool found = _options?.ContainsIndexKey(sm?.SemanticId?.GetAsExactlyOneKey()) ?? false;
                 if (!found)
                     return null;
+
+                // specifically find the record
+                var foundOptRec = _options.LookupAllIndexKey<AssetInterfaceOptionsRecord>(
+                    sm.SemanticId.GetAsExactlyOneKey()).FirstOrDefault();
+                if (foundOptRec == null)
+                    return null;
+
+                // remember for later / background
+                _allInterfaceStatus.RememberSubmodel(sm, foundOptRec, adoptUseFlags: true);
 
                 // success prepare record
                 var cve = new AasxPluginResultVisualExtension("AID", "Asset Interfaces Description");
@@ -175,6 +187,152 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     _sessions.Remove(args[0]);
                 }
                 // ReSharper enable UnusedVariable
+            }
+
+            if (action == "get-menu-items")
+            {
+                // result list 
+                var res = new List<AasxPluginResultSingleMenuItem>();
+
+                // attach
+                // note: need to be single items, no childs allowed!
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Plugins",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "AssetInterfaceOperationStart",
+                        Header = "Asset Interfaces (AID): Start operations …",
+                        HelpText = "Looks for a suitable Submodel with SMT Asset Interfaces Descriptions " +
+                                    "(AID) and mapping and starts operations in the background."
+                    }
+                });
+                res.Add(new AasxPluginResultSingleMenuItem()
+                {
+                    AttachPoint = "Plugins",
+                    MenuItem = new AasxMenuItem()
+                    {
+                        Name = "AssetInterfaceOperationStop",
+                        Header = "Asset Interfaces (AID): Stop operations …",
+                        HelpText = "Stops all AID operations."
+                    }
+                });
+
+                // return
+                return new AasxPluginResultProvideMenuItems()
+                {
+                    MenuItems = res
+                };
+            }
+
+            // default
+            return null;
+        }
+
+        /// <summary>
+        /// Async variant of <c>ActivateAction</c>.
+        /// Note: for some reason of type conversion, it has to return <c>Task<object></c>.
+        /// </summary>
+        public new async Task<object> ActivateActionAsync(string action, params object[] args)
+        {
+            if (action == "call-menu-item")
+            {
+                if (args != null && args.Length >= 3
+                    && args[0] is string cmd
+                    && args[1] is AasxMenuActionTicket ticket
+                    && args[2] is AnyUiContextPlusDialogs displayContext
+                    && args[3] is DockPanel masterPanel)
+                {
+                    try
+                    {
+                        if (cmd == "assetinterfaceoperationstart")
+                        {
+                            await Task.Yield();
+
+                            // be safe
+                            if (_allInterfaceStatus == null)
+                            {
+                                _log?.Error("Error accessing background all interface status! Aborting.");
+                                return null;
+                            }
+
+                            try
+                            {
+                                // in (used!)Submodels of the respecitve AAS, find memories
+                                _allInterfaceStatus.RememberNothing();
+                                if (ticket.Env != null)
+                                    foreach (var sm in ticket.Env.FindAllSubmodelGroupedByAAS())
+                                    {
+                                        var foundOptRec = _options.LookupAllIndexKey<AssetInterfaceOptionsRecord>(
+                                            sm.SemanticId.GetAsExactlyOneKey()).FirstOrDefault();
+                                        if (foundOptRec == null)
+                                            continue;
+                                        _allInterfaceStatus.RememberSubmodel(sm, foundOptRec,
+                                            adoptUseFlags: true);
+                                    }
+
+                                // start?
+                                if (_allInterfaceStatus.EnoughMemories())
+                                {
+                                    // switch off current?
+                                    if (_allInterfaceStatus.ContinousRun)
+                                    {
+                                        _log?.Info("Asset Interfaces: stopping current operation ..");
+                                        _allInterfaceStatus.StopContinousRun();
+                                    }
+
+                                    // (re-) init
+                                    _log?.Info("Asset Interfaces: starting new operation ..");
+                                    _allInterfaceStatus.PrepareAidInformation(_allInterfaceStatus.SmAidDescription);
+                                    _allInterfaceStatus.SetAidInformationForUpdateAndTimeout();
+                                    _allInterfaceStatus.StartContinousRun();
+                                }
+
+                            } catch (Exception ex)
+                            {
+                                _log?.Error(ex, "when starting Asset Interface operations");
+                            }
+
+                            // give object back
+                            var res = new AasxPluginResultCallMenuItem();
+                            return res;
+                        }
+
+                        if (cmd == "assetinterfaceoperationstop")
+                        {
+                            await Task.Yield();
+
+                            // be safe
+                            if (_allInterfaceStatus == null)
+                            {
+                                _log?.Error("Error accessing background all interface status! Aborting.");
+                                return null;
+                            }
+
+                            try
+                            {
+                                // switch off current?
+                                if (_allInterfaceStatus.ContinousRun)
+                                {
+                                    _log?.Info("Asset Interfaces: stopping current operation ..");
+                                    _allInterfaceStatus.StopContinousRun();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _log?.Error(ex, "when starting Asset Interface operations");
+                            }
+
+                            // give object back
+                            var res = new AasxPluginResultCallMenuItem();
+                            return res;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _log?.Error(ex, "when executing plugin menu item " + cmd);
+                    }
+                }
             }
 
             // default

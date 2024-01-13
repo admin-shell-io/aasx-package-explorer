@@ -34,6 +34,10 @@ namespace AasxPluginAssetInterfaceDescription
         {
             // pretty simple
             Client = new HttpClient();
+
+            if (TimeOutMs >= 10)
+                Client.Timeout = new TimeSpan(0, 0, 0, 0, milliseconds: (int)TimeOutMs);
+
             return true;
         }
 

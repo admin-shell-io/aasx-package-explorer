@@ -22,6 +22,12 @@ namespace AasxPluginAssetInterfaceDescription
 {
     public class AssetInterfaceOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
+        public bool IsDescription = true;
+
+        public bool UseHttp = true;
+        public bool UseModbus = true;
+        public bool UseMqtt = true;
+        public bool UseOpcUa = true;
     }
 
     public class AssetInterfaceOptions : AasxPluginLookupOptionsBase

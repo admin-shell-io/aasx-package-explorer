@@ -303,6 +303,13 @@ namespace AasxPluginAssetInterfaceDescription
         /// </summary>
         protected LogInstance _log = null;
 
+        /// <summary>
+        /// Holds a "pointer" to the "last current" Submodel defining the AID description.
+        /// Note: unlike most other plugins, this plugin is mostly intended to run in
+        /// the background.
+        /// </summary>
+        public Aas.ISubmodel SmAidDescription = null;
+
         public bool[] UseTech = { false, false, false, true };
 
         /// <summary>
@@ -328,6 +335,34 @@ namespace AasxPluginAssetInterfaceDescription
         public AidAllInterfaceStatus(LogInstance log = null)
         {
             _log = log;
+        }
+
+        public void RememberNothing()
+        {
+            SmAidDescription = null;
+        }
+
+        public bool EnoughMemories()
+        {
+            return SmAidDescription != null;
+        }
+
+        public void RememberSubmodel(Aas.ISubmodel sm, AssetInterfaceOptionsRecord optRec,
+            bool adoptUseFlags)
+        {
+            if (sm == null || optRec == null)
+                return;
+
+            if (optRec.IsDescription)
+                SmAidDescription = sm;
+
+            if (adoptUseFlags)
+            {
+                UseTech[(int)AidInterfaceTechnology.HTTP] = optRec.UseHttp;
+                UseTech[(int)AidInterfaceTechnology.Modbus] = optRec.UseModbus;
+                UseTech[(int)AidInterfaceTechnology.MQTT] = optRec.UseMqtt;
+                UseTech[(int)AidInterfaceTechnology.OPCUA] = optRec.UseOpcUa;
+            }
         }
 
         protected AidBaseConnection GetOrCreate(
@@ -580,7 +615,7 @@ namespace AasxPluginAssetInterfaceDescription
         // Building, intake from Submodel
         //
 
-        public void PrepareAidInformation(Aas.Submodel sm)
+        public void PrepareAidInformation(Aas.ISubmodel sm)
         {
             // access
             InterfaceStatus.Clear();
@@ -678,6 +713,20 @@ namespace AasxPluginAssetInterfaceDescription
             double defaultUpdateFreqMs = 0,
             double defaultTimeOutMs = 0)
         {
+            // for Http, analyze update frequency and timeout
+            foreach (var ifc in InterfaceStatus.Where((i) => i.Technology == AidInterfaceTechnology.HTTP))
+            {
+                // polltimes
+                SetDoubleOnDefaultOrAvgOfIntList(
+                    ref ifc.UpdateFreqMs, 10.0, defaultUpdateFreqMs,
+                    SelectValuesToIntList(ifc?.Items?.Values, (it) => it.FormData?.Htv_pollingTime));
+
+                // time out
+                SetDoubleOnDefaultOrAvgOfIntList(
+                    ref ifc.TimeOutMs, 10.0, defaultTimeOutMs,
+                    SelectValuesToIntList(ifc?.Items?.Values, (it) => it.FormData?.Htv_timeout));
+            }
+
             // for Modbus, analyze update frequency and timeout
             foreach (var ifc in InterfaceStatus.Where((i) => i.Technology == AidInterfaceTechnology.Modbus))
             {
