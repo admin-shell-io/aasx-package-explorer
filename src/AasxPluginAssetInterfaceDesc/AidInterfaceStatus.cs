@@ -144,7 +144,7 @@ namespace AasxPluginAssetInterfaceDescription
         public bool CheckIfTimeForCyclicUpdate(DateTime now)
         {
             if (UpdateFreqMs >= 10.0
-                && (_lastCyclicUpdate - now).TotalMilliseconds < UpdateFreqMs)
+                && (now - _lastCyclicUpdate).TotalMilliseconds < UpdateFreqMs)
                 return false;
             _lastCyclicUpdate = now;
             return true;

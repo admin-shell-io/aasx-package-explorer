@@ -362,7 +362,7 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine($"{indent}public class CD_{cdff}");
                 snippets.WriteLine($"{indent}{{");
 
-                if (cdff == "Htv_headers")
+                if (cdff == "MappingSourceSinkRelations")
                 {
                     ;
                 }
