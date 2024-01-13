@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using Opc.Ua;
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
@@ -24,6 +26,7 @@ namespace AasxPluginAssetInterfaceDescription
 {
     public enum AasOpcUaClientStatus
     {
+        Starting = 0,
         ErrorCreateApplication = 0x11,
         ErrorDiscoverEndpoints = 0x12,
         ErrorCreateSession = 0x13,
@@ -43,21 +46,30 @@ namespace AasxPluginAssetInterfaceDescription
     public class AasOpcUaClient
     {
         const int ReconnectPeriod = 10;
-        Session session;
-        SessionReconnectHandler reconnectHandler;
-        string endpointURL;
-        static bool autoAccept = true;
-        static AasOpcUaClientStatus ClientStatus;
-        string userName;
-        string password;
+        
+        /// <summary>
+        /// Good condition: starting or running
+        /// </summary>
+        public AasOpcUaClientStatus ClientStatus;
+                
+        protected LogInstance _log = null;
 
-        public AasOpcUaClient(string _endpointURL, bool _autoAccept, 
-            string _userName, string _password)
+        protected string _endpointURL;
+        protected static bool _autoAccept = true;
+        protected string _userName;
+        protected string _password;
+
+        protected ISession _session;
+        protected SessionReconnectHandler _reconnectHandler;
+        
+        public AasOpcUaClient(string endpointURL, bool autoAccept, 
+            string userName, string password, LogInstance log = null)
         {
-            endpointURL = _endpointURL;
-            autoAccept = _autoAccept;
-            userName = _userName;
-            password = _password;
+            _endpointURL = endpointURL;
+            _autoAccept = autoAccept;
+            _userName = userName;
+            _password = password;
+            _log = log;
         }
 
         private BackgroundWorker worker = null;
@@ -97,6 +109,11 @@ namespace AasxPluginAssetInterfaceDescription
             worker.RunWorkerAsync();
         }
 
+        public async Task DirectConnect()
+        {
+            await StartClientAsync();
+        }
+
         public void Cancel()
         {
             if (worker != null && worker.IsBusy)
@@ -113,17 +130,17 @@ namespace AasxPluginAssetInterfaceDescription
 
         public void Close()
         {
-            if (session == null)
+            if (_session == null)
                 return;
-            session.Close(1);
-            session = null;
+            _session.Close(1);
+            _session = null;
         }
 
         public AasOpcUaClientStatus StatusCode { get => ClientStatus; }
 
         public async Task StartClientAsync()
         {
-            Console.WriteLine("1 - Create an Application Configuration.");
+            _log?.Info("1 - Create an Application Configuration.");
             ClientStatus = AasOpcUaClientStatus.ErrorCreateApplication;
 
             ApplicationInstance application = new ApplicationInstance
@@ -141,7 +158,7 @@ namespace AasxPluginAssetInterfaceDescription
             }
             catch (Exception ex)
             {
-                AdminShellNS.LogInternally.That.Error(ex, "Error reading the config file");
+                _log?.Error(ex, "Error reading the config file");
                 ClientStatus = AasOpcUaClientStatus.ErrorReadConfigFile;
                 return;
             }
@@ -162,7 +179,7 @@ namespace AasxPluginAssetInterfaceDescription
 
                 if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
                 {
-                    autoAccept = true;
+                    _autoAccept = true;
                 }
                 // ReSharper disable once RedundantDelegateCreation
                 config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(
@@ -170,43 +187,50 @@ namespace AasxPluginAssetInterfaceDescription
             }
             else
             {
-                Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
+                _log?.Info(
+                    "WARN: missing application certificate, using unsecure connection.");
             }
             // ReSharper enable HeuristicUnreachableCode
 
-            Console.WriteLine("2 - Discover endpoints of {0}.", endpointURL);
+            _log?.Info("2 - Discover endpoints of {0}.", _endpointURL);
             ClientStatus = AasOpcUaClientStatus.ErrorDiscoverEndpoints;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointURL, haveAppCertificate, 15000);
-            Console.WriteLine("    Selected endpoint uses: {0}",
+            var selectedEndpoint = CoreClientUtils.SelectEndpoint(_endpointURL, haveAppCertificate, 500);
+            _log?.Info("    Selected endpoint uses: {0}",
                 selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
-            Console.WriteLine("3 - Create a session with OPC UA server.");
+            _log?.Info("3 - Create a session with OPC UA server.");
             ClientStatus = AasOpcUaClientStatus.ErrorCreateSession;
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
-            session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000,
-                new UserIdentity(userName, password), null);
+            _session = await Session.Create(
+                config, endpoint, false, "AasxPluginAssetInterfaceDesc", 2000,
+                new UserIdentity(_userName, _password), null);
 
             // register keep alive handler
-            session.KeepAlive += Client_KeepAlive;
+            _session.KeepAlive += Client_KeepAlive;
 
             // ok
             ClientStatus = AasOpcUaClientStatus.Running;
+
+            // final
+            _log?.Info("9 - Connection established.");
         }
 
-        private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
+        // very helpful when debugging and breaking
+
+        private void Client_KeepAlive(Opc.Ua.Client.ISession sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
-                Console.WriteLine("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
+                _log?.Info("Keep alive {0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
 
-                if (reconnectHandler == null)
+                if (_reconnectHandler == null)
                 {
-                    Console.WriteLine("--- RECONNECTING ---");
-                    reconnectHandler = new SessionReconnectHandler();
-                    reconnectHandler.BeginReconnect(sender, ReconnectPeriod * 1000, Client_ReconnectComplete);
+                    _log?.Info("--- RECONNECTING ---");
+                    _reconnectHandler = new SessionReconnectHandler();
+                    _reconnectHandler.BeginReconnect(sender, ReconnectPeriod * 1000, Client_ReconnectComplete);
                 }
             }
         }
@@ -214,47 +238,42 @@ namespace AasxPluginAssetInterfaceDescription
         private void Client_ReconnectComplete(object sender, EventArgs e)
         {
             // ignore callbacks from discarded objects.
-            if (!Object.ReferenceEquals(sender, reconnectHandler))
+            if (!Object.ReferenceEquals(sender, _reconnectHandler))
             {
                 return;
             }
 
-            if (reconnectHandler != null)
+            if (_reconnectHandler != null)
             {
-                session = reconnectHandler.Session;
-                reconnectHandler.Dispose();
+                _session = _reconnectHandler.Session;
+                _reconnectHandler.Dispose();
             }
 
-            reconnectHandler = null;
+            _reconnectHandler = null;
 
-            Console.WriteLine("--- RECONNECTED ---");
+            _log?.Info("--- RECONNECTED ---");
         }
 
-        private static void OnNotification(MonitoredItem item, MonitoredItemNotificationEventArgs e)
-        {
-            // ReSharper disable once UnusedVariable
-            foreach (var value in item.DequeueValues())
-            {
-                //// Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, 
-                //// value.SourceTimestamp, value.StatusCode);
-            }
-        }
-
-        private static void CertificateValidator_CertificateValidation(
+        private void CertificateValidator_CertificateValidation(
             CertificateValidator validator, CertificateValidationEventArgs e)
         {
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
             {
-                e.Accept = autoAccept;
-                if (autoAccept)
+                e.Accept = _autoAccept;
+                if (_autoAccept)
                 {
-                    Console.WriteLine("Accepted Certificate: {0}", e.Certificate.Subject);
+                    _log?.Info("Accepted Certificate: {0}", e.Certificate.Subject);
                 }
                 else
                 {
-                    Console.WriteLine("Rejected Certificate: {0}", e.Certificate.Subject);
+                    _log?.Info("Rejected Certificate: {0}", e.Certificate.Subject);
                 }
             }
+        }
+
+        public NodeId CreateNodeId(uint value, int nsIndex)
+        {
+            return new NodeId(value, (ushort)nsIndex);
         }
 
         public NodeId CreateNodeId(string nodeName, int index)
@@ -266,15 +285,15 @@ namespace AasxPluginAssetInterfaceDescription
 
         public NodeId CreateNodeId(string nodeName, string ns)
         {
-            if (session == null || session.NamespaceUris == null)
+            if (_session == null || _session.NamespaceUris == null)
                 return null;
 
             // build up?
             if (nsDict == null)
             {
                 nsDict = new Dictionary<string, ushort>();
-                for (ushort i = 0; i < session.NamespaceUris.Count; i++)
-                    nsDict.Add(session.NamespaceUris.GetString(i), i);
+                for (ushort i = 0; i < _session.NamespaceUris.Count; i++)
+                    nsDict.Add(_session.NamespaceUris.GetString(i), i);
             }
 
             // find?
@@ -284,29 +303,65 @@ namespace AasxPluginAssetInterfaceDescription
             return new NodeId(nodeName, nsDict[ns]);
         }
 
+        public NodeId ParseAndCreateNodeId(string input)
+        {
+            if (input?.HasContent() != true)
+                return null;
+
+            {
+                var match = Regex.Match(input, @"^\s*ns\s*=\s*(\d+)\s*;\s*i\s*=\s*(\d+)\s*$");
+                if (match.Success
+                    && ushort.TryParse(match.Groups[1].ToString(), out var ns)
+                    && uint.TryParse(match.Groups[2].ToString(), out var i))
+                    return new NodeId(i, ns);
+            }
+            {
+                var match = Regex.Match(input, @"^\s*NS\s*(\d+)\s*\|\s*Numeric\s*\|\s*(\d+)\s*$");
+                if (match.Success
+                    && ushort.TryParse(match.Groups[1].ToString(), out var ns)
+                    && uint.TryParse(match.Groups[2].ToString(), out var i))
+                    return new NodeId(i, ns);
+            }
+            {
+                var match = Regex.Match(input, @"^\s*ns\s*=\s*(\d+)\s*;\s*s\s*=\s*(.*)$");
+                if (match.Success
+                    && ushort.TryParse(match.Groups[1].ToString(), out var ns))
+                    return new NodeId("" + match.Groups[2].ToString(), ns);
+            }
+            {
+                var match = Regex.Match(input, @"^\s*NS\s*(\d+)\s*\|\s*Alphanumeric\s*\|\s*(.+)$");
+                if (match.Success
+                    && ushort.TryParse(match.Groups[1].ToString(), out var ns))
+                    return new NodeId("" + match.Groups[2].ToString(), ns);
+            }
+
+            // no 
+            return null;
+        }
+
         public string ReadSubmodelElementValueAsString(string nodeName, int index)
         {
-            if (session == null)
+            if (_session == null)
                 return "";
 
             NodeId node = new NodeId(nodeName, (ushort)index);
-            return (session.ReadValue(node).ToString());
+            return (_session.ReadValue(node).ToString());
         }
 
         public DataValue ReadNodeId(NodeId nid)
         {
-            if (session == null || nid == null || !session.Connected)
+            if (_session == null || nid == null || !_session.Connected)
                 return null;
-            return (session.ReadValue(nid));
+            return (_session.ReadValue(nid));
         }
 
-        public void SubscribeNodeIds(NodeId[] nids, MonitoredItemNotificationEventHandler handler,
+        public Opc.Ua.Client.Subscription SubscribeNodeIds(NodeId[] nids, MonitoredItemNotificationEventHandler handler,
             int publishingInteral = 1000)
         {
-            if (session == null || nids == null || !session.Connected || handler == null)
-                return;
+            if (_session == null || nids == null || !_session.Connected || handler == null)
+                return null;
 
-            var subscription = new Subscription(session.DefaultSubscription)
+            var subscription = new Subscription(_session.DefaultSubscription)
             { PublishingInterval = publishingInteral };
 
             foreach (var nid in nids)
@@ -317,8 +372,9 @@ namespace AasxPluginAssetInterfaceDescription
                 subscription.AddItem(mi);
             }
 
-            session.AddSubscription(subscription);
+            _session.AddSubscription(subscription);
             subscription.Create();
-        }
+            return subscription;
+        }        
     }
 }

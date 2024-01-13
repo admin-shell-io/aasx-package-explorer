@@ -39,7 +39,6 @@
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
-    <ProjectReference Include="..\WpfMtpControl\WpfMtpControl.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Opc.Ua.SampleClient.Config.xml">
@@ -50,6 +49,6 @@
     <PackageReference Include="FluentModbus" Version="5.0.3" />
     <PackageReference Include="MQTTnet" Version="4.1.1.318" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.370.12" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.371.96" />
   </ItemGroup>
 </Project>

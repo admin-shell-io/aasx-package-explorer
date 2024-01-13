@@ -42,7 +42,7 @@ namespace WpfMtpControl
     public class AasOpcUaClient
     {
         const int ReconnectPeriod = 10;
-        Session session;
+        ISession session;
         SessionReconnectHandler reconnectHandler;
         string endpointURL;
         int clientRunTime = Timeout.Infinite;
@@ -197,7 +197,7 @@ namespace WpfMtpControl
             exitCode = AasOpcUaClientStatus.Running;
         }
 
-        private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
+        private void Client_KeepAlive(Opc.Ua.Client.ISession sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {

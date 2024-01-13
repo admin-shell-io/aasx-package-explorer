@@ -16,7 +16,6 @@ using AasxPredefinedConcepts;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
-using WpfMtpControl;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts.AssetInterfacesDescription;
 using FluentModbus;
@@ -125,6 +124,25 @@ namespace AasxPluginAssetInterfaceDescription
         /// </summary>
         public UInt64 ValueChanges = 0;
 
+        /// <summary>
+        /// If greater 10, specifies the time rate for polling resp. subscriptions
+        /// </summary>
+        public double UpdateFreqMs = 0;
+
+        /// <summary>
+        /// To be used with <c>UpdateFreqMs</c>.
+        /// </summary>
+        protected DateTime _lastCyclicUpdate = DateTime.Now;
+
+        public bool CheckIfTimeForCyclicUpdate(DateTime now)
+        {
+            if (UpdateFreqMs >= 10.0
+                && (_lastCyclicUpdate - now).TotalMilliseconds < UpdateFreqMs)
+                return false;
+            _lastCyclicUpdate = now;
+            return true;
+        }
+
         protected string ComputeKey(string key)
         {
             if (key != null)
@@ -175,6 +193,12 @@ namespace AasxPluginAssetInterfaceDescription
 
     public class AidBaseConnection
     {
+        /// <summary>
+        /// As a connection is a very "brittle" technology depending on a lot of external
+        /// events, a log might be helpful.
+        /// </summary>
+        public LogInstance Log = null;
+
         public Uri TargetUri;
 
         /// <summary>
@@ -236,14 +260,14 @@ namespace AasxPluginAssetInterfaceDescription
 
     public class AidGenericConnections<T> : Dictionary<Uri, T> where T : AidBaseConnection, new()
     {
-        public T GetOrCreate(string target)
+        public T GetOrCreate(string target, LogInstance log = null)
         {
             if (!Uri.TryCreate(target, UriKind.Absolute, out var uri))
                 return null;
             if (this.ContainsKey(uri))
                 return this[uri];
 
-            var conn = new T() { TargetUri = uri };
+            var conn = new T() { Log = log, TargetUri = uri };
             return conn;
         }
     }
@@ -256,6 +280,11 @@ namespace AasxPluginAssetInterfaceDescription
     /// </summary>
     public class AidAllInterfaceStatus
     {
+        /// <summary>
+        /// Set to logger, if logging is desired.
+        /// </summary>
+        protected LogInstance _log = null;
+
         public bool[] UseTech = { false, false, false, true };
 
         /// <summary>
@@ -278,26 +307,33 @@ namespace AasxPluginAssetInterfaceDescription
         public AidGenericConnections<AidOpcUaConnection> OpcUaConnections =
             new AidGenericConnections<AidOpcUaConnection>();
 
-        protected AidBaseConnection GetOrCreate(AidInterfaceTechnology tech, string endpointBase)
+        public AidAllInterfaceStatus(LogInstance log = null)
+        {
+            _log = log;
+        }
+
+        protected AidBaseConnection GetOrCreate(
+            AidInterfaceTechnology tech, string endpointBase,
+            LogInstance log = null)
         {
             // find connection by factory
             AidBaseConnection conn = null;
             switch (tech)
             {
                 case AidInterfaceTechnology.HTTP:
-                    conn = HttpConnections.GetOrCreate(endpointBase);
+                    conn = HttpConnections.GetOrCreate(endpointBase, log);
                     break;
 
                 case AidInterfaceTechnology.Modbus:
-                    conn = ModbusConnections.GetOrCreate(endpointBase);
+                    conn = ModbusConnections.GetOrCreate(endpointBase, log);
                     break;
 
                 case AidInterfaceTechnology.MQTT:
-                    conn = MqttConnections.GetOrCreate(endpointBase);
+                    conn = MqttConnections.GetOrCreate(endpointBase, log);
                     break;
 
                 case AidInterfaceTechnology.OPCUA:
-                    conn = OpcUaConnections.GetOrCreate(endpointBase);
+                    conn = OpcUaConnections.GetOrCreate(endpointBase, log);
                     break;
             }
             return conn;
@@ -339,7 +375,8 @@ namespace AasxPluginAssetInterfaceDescription
                         continue;
 
                     // find connection by factory
-                    AidBaseConnection conn = GetOrCreate(tech, ifc.EndpointBase);
+                    // single means: log the events
+                    AidBaseConnection conn = GetOrCreate(tech, ifc.EndpointBase, _log);
                     if (conn == null)
                         continue;
 
@@ -475,6 +512,8 @@ namespace AasxPluginAssetInterfaceDescription
             if (!ContinousRun)
                 return;
 
+            var now = DateTime.Now;
+
             // for all
             foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
             {
@@ -487,6 +526,10 @@ namespace AasxPluginAssetInterfaceDescription
                 {
                     // get a connection
                     if (ifc?.Connection?.IsConnected() != true)
+                        continue;
+
+                    // recently enough
+                    if (!ifc.CheckIfTimeForCyclicUpdate(now))
                         continue;
 
                     // go thru all items (sync)

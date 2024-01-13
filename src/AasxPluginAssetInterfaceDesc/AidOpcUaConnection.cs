@@ -16,7 +16,6 @@ using AasxPredefinedConcepts;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
-using WpfMtpControl;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts.AssetInterfacesDescription;
 using FluentModbus;
@@ -32,10 +31,18 @@ using Opc.Ua;
 namespace AasxPluginAssetInterfaceDescription
 {
     public class AidOpcUaConnection : AidBaseConnection
-    {
+    {       
         public AasOpcUaClient Client;
 
-        // protected Dictionary<string, string> _subscribedTopics = new Dictionary<string, string>();
+        public class SubscribedItem
+        {
+            public string NodePath;
+            public Opc.Ua.Client.Subscription Subscription;
+            public AidIfxItemStatus Item;
+        }
+
+        protected Dictionary<Opc.Ua.NodeId, SubscribedItem> _subscriptions
+            = new Dictionary<NodeId, SubscribedItem>();
 
         override public bool Open()
         {
@@ -45,10 +52,14 @@ namespace AasxPluginAssetInterfaceDescription
                 // use the full target uri as endpoint (first)
                 Client = new AasOpcUaClient(
                     TargetUri.ToString(), 
-                    _autoAccept: true, 
-                    _userName: this.User,
-                    _password: this.Password);
-                Client.Run();
+                    autoAccept: true, 
+                    userName: this.User,
+                    password: this.Password,
+                    log: Log);
+                // Client.Run();
+
+                var task = Task.Run(async () => await Client.DirectConnect());
+                task.Wait();
 
                 // ok
                 return IsConnected();
@@ -73,7 +84,7 @@ namespace AasxPluginAssetInterfaceDescription
             {
                 try
                 {
-                    Client.Cancel();
+                    // Client.Cancel();
                     Client.Close();
                 } catch (Exception ex)
                 {
@@ -81,43 +92,7 @@ namespace AasxPluginAssetInterfaceDescription
                 }
                 // _subscribedTopics.Clear();
             }
-        }
-
-        protected NodeId ParseAndCreateNodeId (string input)
-        {
-            if (input?.HasContent() != true)
-                return null;
-
-            {
-                var match = Regex.Match(input, @"^\s*ns\s*=\s*(\d+)\s*;\s*i\s*=\s*(\d+)\s*$");
-                if (match.Success
-                    && ushort.TryParse(match.Groups[1].ToString(), out var ns)
-                    && uint.TryParse(match.Groups[2].ToString(), out var i))
-                    return new NodeId(i, ns);
-            }
-            {
-                var match = Regex.Match(input, @"^\s*NS\s*(\d+)\s*\|\s*Numeric\s*\|\s*(\d+)\s*$");
-                if (match.Success
-                    && ushort.TryParse(match.Groups[1].ToString(), out var ns)
-                    && uint.TryParse(match.Groups[2].ToString(), out var i))
-                    return new NodeId(i, ns);
-            }
-            {
-                var match = Regex.Match(input, @"^\s*ns\s*=\s*(\d+)\s*;\s*s\s*=\s*(.*)$");
-                if (match.Success
-                    && ushort.TryParse(match.Groups[1].ToString(), out var ns))
-                    return new NodeId("" + match.Groups[2].ToString(), ns);
-            }
-            {
-                var match = Regex.Match(input, @"^\s*NS\s*(\d+)\s*\|\s*Alphanumeric\s*\|\s*(.+)$");
-                if (match.Success
-                    && ushort.TryParse(match.Groups[1].ToString(), out var ns))
-                    return new NodeId("" + match.Groups[2].ToString(), ns);
-            }
-
-            // no 
-            return null;
-        }
+        }        
 
         override public int UpdateItemValue(AidIfxItemStatus item)
         {
@@ -129,11 +104,11 @@ namespace AasxPluginAssetInterfaceDescription
             try
             {
                 // get an node id?
-                var nid = ParseAndCreateNodeId(item?.FormData?.Href);
+                var nid = Client.ParseAndCreateNodeId(item?.FormData?.Href);
 
                 // direct read possible?
                 var dv = Client.ReadNodeId(nid);
-                item.Value = "" + dv?.Value;
+                item.Value = AdminShellUtil.ToStringInvariant(dv?.Value);
                 LastActive = DateTime.Now;
             }
             catch (Exception ex)
@@ -141,41 +116,65 @@ namespace AasxPluginAssetInterfaceDescription
                 ;
             }
 
-
             return 0;
         }
 
-        //override public void PrepareContinousRun(IEnumerable<AidIfxItemStatus> items)
-        //{
-        //    // access
-        //    if (!IsConnected() || items == null)
-        //        return;
+        override public void PrepareContinousRun(IEnumerable<AidIfxItemStatus> items)
+        {
+            // access
+            if (!IsConnected() || items == null)
+                return;
 
-        //    foreach (var item in items)
-        //    {
-        //        // valid topic?
-        //        var topic = "" + item.FormData?.Href;
-        //        if (topic.StartsWith("/"))
-        //            topic = topic.Remove(0, 1);
-        //        if (!topic.HasContent())
-        //            continue;
+            // over the items
+            // go the easy way: put each item into one subscription
+            foreach (var item in items)
+            {
+                // valid href?
+                var nodePath = "" + item.FormData?.Href;
+                nodePath = nodePath.Trim();
+                if (!nodePath.HasContent())
+                    continue;
 
-        //        // need only "subscribe"
-        //        if (item.FormData?.Mqv_controlPacket?.HasContent() != true)
-        //            continue;
-        //        if (item.FormData.Mqv_controlPacket.Trim().ToLower() != "subscribe")
-        //            continue;
+                // get an node id?
+                var nid = Client.ParseAndCreateNodeId(nodePath);
+                if (nid == null)
+                    continue;
 
-        //        // is topic already subscribed?
-        //        if (_subscribedTopics.ContainsKey(topic))
-        //            continue;
+                // is topic already subscribed?
+                if (_subscriptions.ContainsKey(nodePath))
+                    continue;
 
-        //        // ok, subscribe
-        //        var task = Task.Run(() => Client.SubscribeAsync(topic));
-        //        task.Wait();
-        //        _subscribedTopics.Add(topic, topic);
-        //    }
-        //}
+                // ok, make subscription
+                var sub = Client.SubscribeNodeIds(
+                    new[] { nid },
+                    handler: SubscriptionHandler,
+                    publishingInteral: 500);
+                _subscriptions.Add(nodePath,
+                    new SubscribedItem() {
+                        NodePath = nodePath,
+                        Subscription = sub,
+                        Item = item,
+                    });
+            }
+        }
 
+        protected void SubscriptionHandler(
+            Opc.Ua.Client.MonitoredItem monitoredItem,
+            Opc.Ua.Client.MonitoredItemNotificationEventArgs e)
+        {
+            // key is the "start node"
+            if (_subscriptions == null || monitoredItem?.StartNodeId == null
+                || !_subscriptions.ContainsKey(monitoredItem.StartNodeId))
+                return;
+
+            // okay
+            var subi = _subscriptions[monitoredItem.StartNodeId];
+            if (subi?.Item != null && subi.NodePath?.HasContent() == true)
+            {
+                // take over most actual value
+                var valueObj = monitoredItem.DequeueValues().LastOrDefault();
+                MessageReceived?.Invoke(subi.NodePath, AdminShellUtil.ToStringInvariant(valueObj));
+            }
+        }
     }
 }

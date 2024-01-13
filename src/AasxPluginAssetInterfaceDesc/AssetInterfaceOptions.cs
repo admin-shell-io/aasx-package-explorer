@@ -16,7 +16,6 @@ using AasxPredefinedConcepts;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
-using WpfMtpControl;
 using AasxIntegrationBase;
 
 namespace AasxPluginAssetInterfaceDescription

@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AasxPluginAssetInterfaceDescription
@@ -56,19 +57,48 @@ namespace AasxPluginAssetInterfaceDescription
 
 		private bool _inDispatcherTimer = false;
 
+		private int _counter = 0;
+
 		private async void DispatcherTimer_TickAsync(object sender, EventArgs e)
 		{
 			// access
 			if (_allInterfaceStatus == null || _inDispatcherTimer)
 				return;
 
-			// block 
-			_inDispatcherTimer = true;
+            // block 
+            _inDispatcherTimer = true;
 
-            // call cyclic tasks
+#if hardcore_debug
+			_counter++;
+			if (_counter > 100)
+			{
+                _counter = 0;
+
+				try
+				{
+					Console.WriteLine("Hello, World!");
+					var client = new AasOpcUaClient("opc.tcp://MMT-HOMI2-N1:4840", true, "", "");
+					await client.DirectConnect();
+					Console.WriteLine("Running..");
+					while (client.StatusCode == AasOpcUaClientStatus.Starting
+						|| client.StatusCode == AasOpcUaClientStatus.Running)
+					{
+						Thread.Sleep(500);
+						Console.Write(".");
+						var nid = client.CreateNodeId(5, 2);
+						var x = client.ReadNodeId(nid);
+						Console.WriteLine("" + x);
+					}
+				} catch (Exception ex)
+				{
+					;
+				}
+			}
+#endif
+
+			// call cyclic tasks
 			try
 			{
-                // synchronous
                 await _allInterfaceStatus.UpdateValuesContinousByTickAsyc();
 			} catch (Exception ex)
 			{

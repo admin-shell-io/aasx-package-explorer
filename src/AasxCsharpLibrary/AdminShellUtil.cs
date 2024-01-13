@@ -1005,6 +1005,25 @@ namespace AdminShellNS
             }
         }
 
+        public static string ToStringInvariant(object o)
+        {
+            // trivial
+            if (o == null)
+                return "";
+
+            // special cases
+            if (o is double od)
+                return od.ToString(CultureInfo.InvariantCulture);
+            if (o is float of)
+                return of.ToString(CultureInfo.InvariantCulture);
+            if (o is DateTime odt)
+                return odt.ToUniversalTime()
+                          .ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+
+            // use automatic conversion
+            return "" + o;
+        }
+
         //
         // temp file utilities
         //

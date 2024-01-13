@@ -17,6 +17,7 @@ using AasxIntegrationBase;
 using AasxPackageLogic;
 using AdminShellNS;
 using AnyUi;
+using VDS.RDF.Parsing.Handlers;
 
 
 namespace AasxPackageExplorer
