@@ -55,6 +55,7 @@ namespace AasxPluginAssetInterfaceDescription
                     autoAccept: true, 
                     userName: this.User,
                     password: this.Password,
+                    timeOutMs: (TimeOutMs >= 10) ? (uint) TimeOutMs : 2000,
                     log: Log);
                 // Client.Run();
 
@@ -148,7 +149,7 @@ namespace AasxPluginAssetInterfaceDescription
                 var sub = Client.SubscribeNodeIds(
                     new[] { nid },
                     handler: SubscriptionHandler,
-                    publishingInteral: 500);
+                    publishingInterval: (UpdateFreqMs >= 10) ? (int) UpdateFreqMs : 500);
                 _subscriptions.Add(nodePath,
                     new SubscribedItem() {
                         NodePath = nodePath,

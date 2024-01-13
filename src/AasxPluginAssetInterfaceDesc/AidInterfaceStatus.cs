@@ -23,6 +23,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using AnyUi;
+using System.Windows.Media.Animation;
 
 namespace AasxPluginAssetInterfaceDescription
 {
@@ -125,9 +126,15 @@ namespace AasxPluginAssetInterfaceDescription
         public UInt64 ValueChanges = 0;
 
         /// <summary>
-        /// If greater 10, specifies the time rate for polling resp. subscriptions
+        /// If greater 10, specifies the time rate in milli seconds for polling the 
+        /// respective subscriptions.
         /// </summary>
         public double UpdateFreqMs = 0;
+
+        /// <summary>
+        /// If greater 10, specifies the desired timeout in milli seconds.
+        /// </summary>
+        public double TimeOutMs = 0;
 
         /// <summary>
         /// To be used with <c>UpdateFreqMs</c>.
@@ -210,6 +217,17 @@ namespace AasxPluginAssetInterfaceDescription
         /// For initiating the connection. Right now, not foreseen/ encouraged by the SMT.
         /// </summary>
         public string Password = null;
+
+        /// <summary>
+        /// If greater 10, specifies the time rate in milli seconds for polling the 
+        /// respective subscriptions.
+        /// </summary>
+        public double UpdateFreqMs = 0;
+
+        /// <summary>
+        /// If greater 10, specifies the desired timeout in milli seconds.
+        /// </summary>
+        public double TimeOutMs = 0;
 
         public DateTime LastActive = default(DateTime);
 
@@ -313,12 +331,17 @@ namespace AasxPluginAssetInterfaceDescription
         }
 
         protected AidBaseConnection GetOrCreate(
-            AidInterfaceTechnology tech, string endpointBase,
+            AidInterfaceStatus ifcStatus,
+            string endpointBase,
             LogInstance log = null)
         {
+            // access
+            if (ifcStatus == null)
+                return null;
+
             // find connection by factory
             AidBaseConnection conn = null;
-            switch (tech)
+            switch (ifcStatus.Technology)
             {
                 case AidInterfaceTechnology.HTTP:
                     conn = HttpConnections.GetOrCreate(endpointBase, log);
@@ -336,6 +359,10 @@ namespace AasxPluginAssetInterfaceDescription
                     conn = OpcUaConnections.GetOrCreate(endpointBase, log);
                     break;
             }
+
+            conn.UpdateFreqMs = ifcStatus.UpdateFreqMs;
+            conn.TimeOutMs = ifcStatus.TimeOutMs;
+
             return conn;
         }
 
@@ -376,7 +403,7 @@ namespace AasxPluginAssetInterfaceDescription
 
                     // find connection by factory
                     // single means: log the events
-                    AidBaseConnection conn = GetOrCreate(tech, ifc.EndpointBase, _log);
+                    AidBaseConnection conn = GetOrCreate(ifc, ifc.EndpointBase, _log);
                     if (conn == null)
                         continue;
 
@@ -447,7 +474,7 @@ namespace AasxPluginAssetInterfaceDescription
                     }
 
                     // find connection by factory
-                    AidBaseConnection conn = GetOrCreate(tech, ifc.EndpointBase);
+                    AidBaseConnection conn = GetOrCreate(ifc, ifc.EndpointBase);
                     if (conn == null)
                         continue;
 
@@ -546,6 +573,137 @@ namespace AasxPluginAssetInterfaceDescription
                         ifc.ValueChanges += (UInt64) (await ifc.Connection.UpdateItemValueAsync(item));
                     });
                 }
+            }
+        }
+
+        //
+        // Building, intake from Submodel
+        //
+
+        public void PrepareAidInformation(Aas.Submodel sm)
+        {
+            // access
+            InterfaceStatus.Clear();
+            if (sm == null)
+                return;
+
+            // get data
+            var data = new AasxPredefinedConcepts.AssetInterfacesDescription.CD_AssetInterfacesDescription();
+            PredefinedConceptsClassMapper.ParseAasElemsToObject(sm, data);
+
+            // prepare
+            foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
+            {
+                var ifxs = data?.InterfaceHTTP;
+                if (tech == AidInterfaceTechnology.Modbus) ifxs = data?.InterfaceMODBUS;
+                if (tech == AidInterfaceTechnology.MQTT) ifxs = data?.InterfaceMQTT;
+                if (tech == AidInterfaceTechnology.OPCUA) ifxs = data?.InterfaceOPCUA;
+                if (ifxs == null || ifxs.Count < 1)
+                    continue;
+                foreach (var ifx in ifxs)
+                {
+                    // new interface
+                    var dn = AdminShellUtil.TakeFirstContent(ifx.Title, ifx.__Info__?.Referable?.IdShort);
+                    var aidIfx = new AidInterfaceStatus()
+                    {
+                        Technology = tech,
+                        DisplayName = $"{dn}",
+                        Info = $"{ifx.EndpointMetadata?.Base}",
+                        EndpointBase = "" + ifx.EndpointMetadata?.Base,
+                        Tag = ifx
+                    };
+                    InterfaceStatus.Add(aidIfx);
+
+                    // Properties .. lambda recursion
+                    Action<string, CD_PropertyName> recurseProp = null;
+                    recurseProp = (location, propName) =>
+                    {
+                        // add item
+                        var ifcItem = new AidIfxItemStatus()
+                        {
+                            Kind = AidIfxItemKind.Property,
+                            Location = location,
+                            DisplayName = AdminShellUtil.TakeFirstContent(
+                                propName.Title, propName.Key, propName.__Info__?.Referable?.IdShort),
+                            FormData = propName.Forms,
+                            Value = "???"
+                        };
+                        aidIfx.AddItem(ifcItem);
+
+                        // directly recurse?
+                        if (propName?.Properties?.Property != null)
+                            foreach (var child in propName.Properties.Property)
+                                recurseProp(location + " . " + ifcItem.DisplayName, child);
+                    };
+
+                    if (ifx.InterfaceMetadata?.Properties?.Property == null)
+                        continue;
+                    foreach (var propName in ifx.InterfaceMetadata?.Properties?.Property)
+                        recurseProp("\u2302", propName);
+                }
+            }
+        }
+
+        protected List<int> SelectValuesToIntList<ITEM>(
+            IEnumerable<ITEM> items,
+            Func<ITEM, string> selectStringValue) where ITEM : class
+        {
+            return items
+                // select polling time present
+                .Select(selectStringValue)
+                .Where((pt) => pt != null)
+                // convert to int
+                .Select(s => Int32.TryParse(s, out int n) ? n : (int?)null)
+                .Where(n => n.HasValue)
+                .Select(n => n.Value)
+                .ToList();
+        }
+
+        protected void SetDoubleOnDefaultOrAvgOfIntList(
+            ref double theValue,
+            double minimumVal,
+            double defaultVal,
+            List<int> list)
+        {
+            if (defaultVal >= minimumVal)
+                theValue = defaultVal;
+            if (list.Count > 0)
+                theValue = Math.Max(minimumVal, list.Average());
+        }
+
+        /// <summary>
+        /// to be called after <c>PrepareAidInformation</c>
+        /// </summary>
+        public void SetAidInformationForUpdateAndTimeout(
+            double defaultUpdateFreqMs = 0,
+            double defaultTimeOutMs = 0)
+        {
+            // for Modbus, analyze update frequency and timeout
+            foreach (var ifc in InterfaceStatus.Where((i) => i.Technology == AidInterfaceTechnology.Modbus))
+            {
+                // polltimes
+                SetDoubleOnDefaultOrAvgOfIntList(
+                    ref ifc.UpdateFreqMs, 10.0, defaultUpdateFreqMs,
+                    SelectValuesToIntList(ifc?.Items?.Values, (it) => it.FormData?.Modbus_pollingTime));
+
+                // time out
+                SetDoubleOnDefaultOrAvgOfIntList(
+                    ref ifc.TimeOutMs, 10.0, defaultTimeOutMs,
+                    SelectValuesToIntList(ifc?.Items?.Values, (it) => it.FormData?.Modbus_timeout));
+            }
+
+            // for OPC UA, analyze update frequency and timeout
+            foreach (var ifc in InterfaceStatus.Where((i) => i.Technology == AidInterfaceTechnology.OPCUA))
+            {
+                // polltimes
+                SetDoubleOnDefaultOrAvgOfIntList(
+                    ref ifc.UpdateFreqMs, 10.0, defaultUpdateFreqMs,
+                    SelectValuesToIntList(ifc?.Items?.Values, (it) => it.FormData?.OpcUa_pollingTime));
+
+                // time out
+                SetDoubleOnDefaultOrAvgOfIntList(
+                    ref ifc.TimeOutMs, 10.0, defaultTimeOutMs,
+                    SelectValuesToIntList(ifc?.Items?.Values, (it) => it.FormData?.OpcUa_timeout));
             }
         }
     }

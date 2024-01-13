@@ -442,7 +442,7 @@ namespace AasxPredefinedConcepts.AssetInterfacesDescription
         [AasConcept(Cd = "https://www.w3.org/2019/wot/modbus#pollingTime", Card = AasxPredefinedCardinality.ZeroToOne)]
         public string Modbus_pollingTime;
 
-        [AasConcept(Cd = "https://www.w3.org/2019/wot/mqtt#hasQoSFlag", Card = AasxPredefinedCardinality.ZeroToOne)]
+        [AasConcept(Cd = "https://www.w3.org/2019/wot/modbus#timeout", Card = AasxPredefinedCardinality.ZeroToOne)]
         public string Modbus_timeout;
 
         [AasConcept(Cd = "https://www.w3.org/2019/wot/modbus#type", Card = AasxPredefinedCardinality.ZeroToOne)]
@@ -456,6 +456,12 @@ namespace AasxPredefinedConcepts.AssetInterfacesDescription
 
         [AasConcept(Cd = "https://www.w3.org/2019/wot/mqtt#hasQoSFlag", Card = AasxPredefinedCardinality.ZeroToOne)]
         public string Mqv_qos;
+
+        [AasConcept(Cd = "https://www.w3.org/2019/wot/opc-ua#pollingTime", Card = AasxPredefinedCardinality.ZeroToOne)]
+        public string OpcUa_pollingTime;
+
+        [AasConcept(Cd = "https://www.w3.org/2019/wot/opc-ua#timeout", Card = AasxPredefinedCardinality.ZeroToOne)]
+        public string OpcUa_timeout;
 
         // auto-generated informations
         public AasClassMapperInfo __Info__ = null;

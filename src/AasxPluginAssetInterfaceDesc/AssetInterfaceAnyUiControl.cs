@@ -319,7 +319,8 @@ namespace AasxPluginAssetInterfaceDescription
                         }
 
                         // build up data structures
-                        _allInterfaceStatus.InterfaceStatus = PrepareAidInformation(sm);
+                        _allInterfaceStatus.PrepareAidInformation(sm);
+                        _allInterfaceStatus.SetAidInformationForUpdateAndTimeout();
 
                         // trigger a complete redraw, as the regions might emit 
                         // events or not, depending on this flag
@@ -440,72 +441,7 @@ namespace AasxPluginAssetInterfaceDescription
 
         #region Interface items
         //=====================
-
-        protected List<AidInterfaceStatus> PrepareAidInformation(Aas.Submodel sm)
-        {
-            // access
-            var res = new List<AidInterfaceStatus>();
-            if (sm == null)
-                return res;
-
-            // get data
-            var data = new AasxPredefinedConcepts.AssetInterfacesDescription.CD_AssetInterfacesDescription();
-            PredefinedConceptsClassMapper.ParseAasElemsToObject(_submodel, data);
-
-            // prepare
-            foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
-            {
-                var ifxs = data?.InterfaceHTTP;
-                if (tech == AidInterfaceTechnology.Modbus) ifxs = data?.InterfaceMODBUS;
-                if (tech == AidInterfaceTechnology.MQTT) ifxs = data?.InterfaceMQTT;
-                if (tech == AidInterfaceTechnology.OPCUA) ifxs = data?.InterfaceOPCUA;
-                if (ifxs == null || ifxs.Count < 1)
-                    continue;
-                foreach (var ifx in ifxs)
-                {
-                    // new interface
-                    var dn = AdminShellUtil.TakeFirstContent(ifx.Title, ifx.__Info__?.Referable?.IdShort);
-                    var aidIfx = new AidInterfaceStatus()
-                    {
-                        Technology = tech,
-                        DisplayName = $"{dn}",
-                        Info = $"{ifx.EndpointMetadata?.Base}",
-                        EndpointBase = "" + ifx.EndpointMetadata?.Base,
-                        Tag = ifx
-                    };
-                    res.Add(aidIfx);
-
-                    // Properties .. lambda recursion
-                    Action<string, CD_PropertyName> recurseProp = null;
-                    recurseProp = (location, propName) =>
-                    {
-                        // add item
-                        var ifcItem = new AidIfxItemStatus() {
-                            Kind = AidIfxItemKind.Property,
-                            Location = location,
-                            DisplayName = AdminShellUtil.TakeFirstContent(
-                                propName.Title, propName.Key, propName.__Info__?.Referable?.IdShort),
-                            FormData = propName.Forms,
-                            Value = "???"
-                        };
-                        aidIfx.AddItem(ifcItem);
-
-                        // directly recurse?
-                        if (propName?.Properties?.Property != null)
-                            foreach (var child in propName.Properties.Property)
-                                recurseProp(location + " . " + ifcItem.DisplayName, child);
-                    };
-
-                    if (ifx.InterfaceMetadata?.Properties?.Property == null)
-                        continue;
-                    foreach (var propName in ifx.InterfaceMetadata?.Properties?.Property)
-                        recurseProp("\u2302", propName);
-                }
-            }
-
-            return res;
-        }
-
+        
         protected void RenderTripleRowData(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             List<AidInterfaceStatus> interfaces)

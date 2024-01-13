@@ -34,6 +34,8 @@ namespace AasxPluginAssetInterfaceDescription
             try
             {
                 Client = new ModbusTcpClient();
+                if (TimeOutMs >= 10)
+                    Client.ConnectTimeout = (int)TimeOutMs;
                 Client.Connect(new IPEndPoint(IPAddress.Parse(TargetUri.Host), TargetUri.Port));
                 LastActive = DateTime.Now;
                 return true;

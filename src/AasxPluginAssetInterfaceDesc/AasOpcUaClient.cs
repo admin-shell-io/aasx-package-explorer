@@ -58,74 +58,27 @@ namespace AasxPluginAssetInterfaceDescription
         protected static bool _autoAccept = true;
         protected string _userName;
         protected string _password;
+        protected uint _timeOutMs = 2000;
 
         protected ISession _session;
         protected SessionReconnectHandler _reconnectHandler;
         
         public AasOpcUaClient(string endpointURL, bool autoAccept, 
-            string userName, string password, LogInstance log = null)
+            string userName, string password,
+            uint timeOutMs = 2000,
+            LogInstance log = null)
         {
             _endpointURL = endpointURL;
             _autoAccept = autoAccept;
             _userName = userName;
             _password = password;
+            _timeOutMs = timeOutMs;
             _log = log;
-        }
-
-        private BackgroundWorker worker = null;
-
-        public void Run()
-        {
-            // start server as a worker (will start in the background)
-            // ReSharper disable once LocalVariableHidesMember
-            var worker = new BackgroundWorker();
-            worker.WorkerSupportsCancellation = true;
-            worker.DoWork += (s1, e1) =>
-            {
-                try
-                {
-                    while (true)
-                    {
-                        StartClientAsync().Wait();
-
-                        // keep running
-                        if (ClientStatus == AasOpcUaClientStatus.Running)
-                            while (true)
-                                Thread.Sleep(200);
-
-                        // restart
-                        Thread.Sleep(200);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
-            };
-            worker.RunWorkerCompleted += (s1, e1) =>
-            {
-                ;
-            };
-            worker.RunWorkerAsync();
         }
 
         public async Task DirectConnect()
         {
             await StartClientAsync();
-        }
-
-        public void Cancel()
-        {
-            if (worker != null && worker.IsBusy)
-                try
-                {
-                    worker.CancelAsync();
-                    worker.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
         }
 
         public void Close()
@@ -195,7 +148,8 @@ namespace AasxPluginAssetInterfaceDescription
             _log?.Info("2 - Discover endpoints of {0}.", _endpointURL);
             ClientStatus = AasOpcUaClientStatus.ErrorDiscoverEndpoints;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            var selectedEndpoint = CoreClientUtils.SelectEndpoint(_endpointURL, haveAppCertificate, 500);
+            var selectedEndpoint = CoreClientUtils.SelectEndpoint(_endpointURL, haveAppCertificate, 
+                (int) _timeOutMs);
             _log?.Info("    Selected endpoint uses: {0}",
                 selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
@@ -205,7 +159,7 @@ namespace AasxPluginAssetInterfaceDescription
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
             _session = await Session.Create(
-                config, endpoint, false, "AasxPluginAssetInterfaceDesc", 2000,
+                config, endpoint, false, "AasxPluginAssetInterfaceDesc", _timeOutMs,
                 new UserIdentity(_userName, _password), null);
 
             // register keep alive handler
@@ -224,13 +178,15 @@ namespace AasxPluginAssetInterfaceDescription
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
-                _log?.Info("Keep alive {0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
+                _log?.Info("Keep alive {0} {1}/{2}", e.Status, sender.OutstandingRequestCount, 
+                    sender.DefunctRequestCount);
 
                 if (_reconnectHandler == null)
                 {
                     _log?.Info("--- RECONNECTING ---");
                     _reconnectHandler = new SessionReconnectHandler();
-                    _reconnectHandler.BeginReconnect(sender, ReconnectPeriod * 1000, Client_ReconnectComplete);
+                    _reconnectHandler.BeginReconnect(
+                        sender, ReconnectPeriod * (int) _timeOutMs, Client_ReconnectComplete);
                 }
             }
         }
@@ -356,13 +312,13 @@ namespace AasxPluginAssetInterfaceDescription
         }
 
         public Opc.Ua.Client.Subscription SubscribeNodeIds(NodeId[] nids, MonitoredItemNotificationEventHandler handler,
-            int publishingInteral = 1000)
+            int publishingInterval = 1000)
         {
             if (_session == null || nids == null || !_session.Connected || handler == null)
                 return null;
 
             var subscription = new Subscription(_session.DefaultSubscription)
-            { PublishingInterval = publishingInteral };
+            { PublishingInterval = publishingInterval };
 
             foreach (var nid in nids)
             {
