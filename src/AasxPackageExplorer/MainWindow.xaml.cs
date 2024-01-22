@@ -1979,7 +1979,40 @@ namespace AasxPackageExplorer
                     UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }
 
-#endregion
+                // Push AAS events coming from the plugins into the package central
+                //=================================================================
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventPushSomeEvents someEvt)
+                {
+                    if (someEvt.AasEvents != null)
+                        foreach (var aevt in someEvt.AasEvents)
+                        {
+                            PackageCentral?.PushEvent(aevt);
+                        }
+
+                    var animated = false;
+                    if (someEvt.AnimateSingleEvents != null)
+                        foreach (var ase in someEvt.AnimateSingleEvents)
+                        {
+                            DisplayElements.PushEvent(new AnyUiLambdaActionPackCntChange()
+                            {
+                                Change = new PackCntChangeEventData()
+                                {
+                                    Container = PackageCentral.MainItem.Container,
+                                    Reason = PackCntChangeEventReason.ValueUpdateSingle,
+                                    ThisElem = ase,
+                                    ParentElem = ase?.Parent,
+                                    Info = "Plugin value update"
+                                }
+                            });
+                            animated = true;
+                        }
+
+                    if (animated)
+                        CheckIfToFlushEvents();
+                }
+
+                #endregion
             }
             catch (Exception ex)
             {

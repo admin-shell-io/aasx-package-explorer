@@ -386,7 +386,7 @@ namespace AasxPackageLogic.PackageCentral
 		}
 
         /// <summary>
-        /// Will go to all accessible containers to find identifiables of s certain typ3
+        /// Will go to all accessible containers to find identifiables of a certain type
         /// </summary>
 		public IEnumerable<T> FindAllReferables<T>() where T : class, Aas.IReferable
         {

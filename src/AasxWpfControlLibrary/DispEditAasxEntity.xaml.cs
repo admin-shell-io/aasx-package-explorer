@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AdminShellNS;
 using AnyUi;
 using System;
 using System.Collections.Generic;
@@ -212,6 +213,57 @@ namespace AasxPackageExplorer
         }
 #endif
 
+        //
+        // Management of loaded plugin
+        //
+
+        protected VisualElementGeneric LoadedPluginNode = null;
+        protected Plugins.PluginInstance LoadedPluginInstance = null;
+        protected object LoadedPluginSessionId = null;
+        protected int LoadedPluginApproach = 0;
+
+        /// <summary>
+        /// Sends a dispose signal to the loaded plugin in order to properly
+        /// release its resources before session might be disposed or plugin might
+        /// be changed.
+        /// </summary>
+        public void DisposeLoadedPlugin()
+        {
+            // access
+            if (LoadedPluginInstance == null || LoadedPluginSessionId == null || LoadedPluginApproach < 1)
+            {
+                LoadedPluginNode = null;
+                LoadedPluginInstance = null;
+                LoadedPluginSessionId = null;
+                return;
+            }
+
+            // try release
+            try
+            {
+                if (LoadedPluginApproach == 1)
+                    LoadedPluginInstance.InvokeAction("clear-panel-visual-extension",
+                        LoadedPluginSessionId);
+
+                if (LoadedPluginApproach == 2)
+                    LoadedPluginInstance.InvokeAction("dispose-anyui-visual-extension",
+                        LoadedPluginSessionId);
+
+                LoadedPluginNode = null;
+                LoadedPluginApproach = 0;
+                LoadedPluginInstance = null;
+                LoadedPluginSessionId = null;
+            }
+            catch (Exception ex)
+            {
+                LogInternally.That.CompletelyIgnoredError(ex);
+            }
+        }
+
+        //
+        // Main function
+        //
+
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
             AnyUiDisplayContextWpf displayContext,
@@ -325,7 +377,12 @@ namespace AasxPackageExplorer
                 var common = _helper.DisplayOrEditCommonEntity(
                     packages, stack, superMenu, editMode, hintMode, checkSmt, cdSortOrder, entity);
 
-                if (!common)
+                if (common)
+                {
+                    // can reset plugin
+                    DisposeLoadedPlugin();
+                }
+                else
                 {
                     // some special cases
                     if (entity is VisualElementPluginExtension vepe)
@@ -347,6 +404,17 @@ namespace AasxPackageExplorer
                         if (approach == 0 && hasWpf)
                             approach = 1;
 
+                        // may dispose old (other plugin)
+                        var pluginOnlyUpdate = true;
+                        if (LoadedPluginInstance == null
+                            || LoadedPluginNode != entity
+                            || LoadedPluginInstance != vepe.thePlugin)
+                        {
+                            // invalidate, fill new
+                            DisposeLoadedPlugin();
+                            pluginOnlyUpdate = false;
+                        }
+
                         // NEW: Differentiate behaviour ..
                         if (approach == 2)
                         {
@@ -367,6 +435,12 @@ namespace AasxPackageExplorer
                                     "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
                                     stack, _helper.context, AnyUiDisplayContextWpf.SessionSingletonWpf,
                                     opContext);
+
+                                // remember
+                                LoadedPluginNode = entity;
+                                LoadedPluginApproach = 2;
+                                LoadedPluginInstance = vepe.thePlugin;
+                                LoadedPluginSessionId = AnyUiDisplayContextWpf.SessionSingletonWpf;
                             }
                             catch (Exception ex)
                             {
@@ -397,6 +471,12 @@ namespace AasxPackageExplorer
                                         result = vepe.thePlugin.InvokeAction(
                                             "fill-panel-visual-extension",
                                             vepe.thePackage, vepe.theReferable, theMasterPanel);
+
+                                    // remember
+                                    LoadedPluginNode = entity;
+                                    LoadedPluginApproach = 1;
+                                    LoadedPluginInstance = vepe.thePlugin;
+                                    LoadedPluginSessionId = AnyUiDisplayContextWpf.SessionSingletonWpf;
                                 }
                                 catch (Exception ex)
                                 {
@@ -551,6 +631,9 @@ namespace AasxPackageExplorer
             _lastRenderedRootElement = root;
             if (!(_helper?.context is AnyUiDisplayContextWpf dcwpf))
                 return;
+
+            // no plugin
+            // DisposeLoadedPlugin();
 
             // redisplay
             theMasterPanel.Children.Clear();

@@ -192,6 +192,9 @@ namespace AasxPluginAssetInterfaceDescription
             // save in item
             item.Value = strval;
 
+            // notify
+            NotifyOutputItems(item, strval);
+
             // ok
             return 1;
         }

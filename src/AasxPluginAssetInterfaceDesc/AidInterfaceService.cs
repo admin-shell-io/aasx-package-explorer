@@ -20,6 +20,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0;
 
 namespace AasxPluginAssetInterfaceDescription
 {
@@ -33,16 +34,21 @@ namespace AasxPluginAssetInterfaceDescription
 		// Start of service
 		//
 
-		private LogInstance _log = new LogInstance();
+		private LogInstance _log = null;
+		protected PluginEventStack _eventStack = null;
 
-		private const int _timerTickMs = 200;
+        private const int _timerTickMs = 200;
 		private System.Timers.Timer _dispatcherTimer = null;
 
 		private AidAllInterfaceStatus _allInterfaceStatus = null;
 
-        public void StartOperation(LogInstance log, AidAllInterfaceStatus allInterfaceStatus)
+        public void StartOperation(
+			LogInstance log, 
+			PluginEventStack eventStack, 
+			AidAllInterfaceStatus allInterfaceStatus)
 		{
 			_log = log;
+			_eventStack = eventStack;
 			_allInterfaceStatus = allInterfaceStatus;
 
 			_dispatcherTimer = new System.Timers.Timer(_timerTickMs);
@@ -105,8 +111,25 @@ namespace AasxPluginAssetInterfaceDescription
 				;
 			}
 
-			// release mutex
-			_inDispatcherTimer = false;
+			// check if to send an event
+			var potEvt = new AasxPluginResultEventPushSomeEvents();
+			lock (_allInterfaceStatus.AnimatedSingleValueChange)
+			{
+				if (_allInterfaceStatus.AnimatedSingleValueChange != null
+					&& _allInterfaceStatus.AnimatedSingleValueChange.Count >= 0)
+				{
+					potEvt.AnimateSingleEvents = new List<Aas.ISubmodelElement>();
+					potEvt.AnimateSingleEvents.AddRange(_allInterfaceStatus.AnimatedSingleValueChange);
+					_allInterfaceStatus.AnimatedSingleValueChange.Clear();
+                }
+			}
+			if (potEvt.AnimateSingleEvents != null)
+			{
+				_eventStack?.PushEvent(potEvt);
+			}
+
+            // release mutex
+            _inDispatcherTimer = false;
 		}
 	}
 }

@@ -529,9 +529,9 @@ namespace BlazorUI.Data
                         // the default behaviour is to update a plugin content,
                         // only if no / invalid content is available fill new
 
-                        var pluginOnlyUpdate = true;
 
                         // may dispose old (other plugin)
+                        var pluginOnlyUpdate = true;
                         if (LoadedPluginInstance == null
                             || LoadedPluginNode != DisplayElements.SelectedItem
                             || LoadedPluginInstance != vepe.thePlugin)

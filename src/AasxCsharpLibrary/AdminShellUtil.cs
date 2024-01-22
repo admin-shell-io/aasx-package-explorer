@@ -802,13 +802,21 @@ namespace AdminShellNS
         //
 
         /// <summary>
-        /// Returns type or the underlying type, if is a Nullable
+        /// Returns type or the underlying type, if is a Nullable of if it is a 
+        /// generic type, e.g. a List<>
         /// </summary>
-        public static Type GetTypeOrUnderlyingType(Type type)
+        public static Type GetTypeOrUnderlyingType(Type type, bool resolveGeneric = false)
         {
             var nut = Nullable.GetUnderlyingType(type);
             if (nut != null)
+            {
                 type = nut;
+            }
+            else
+            if (resolveGeneric && type.IsGenericType && type.GetGenericArguments().Count() > 0)
+            {
+                type = type.GetGenericArguments()[0];
+            }
             return type;
         }
 

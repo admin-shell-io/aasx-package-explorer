@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using AasxPredefinedConcepts;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using AdminShellNS.DiaryData;
 using Extensions;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts.AssetInterfacesDescription;
@@ -24,9 +25,23 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using AnyUi;
 using System.Windows.Media.Animation;
+using AasxIntegrationBase.AdminShellEvents;
+using System.IO;
 
 namespace AasxPluginAssetInterfaceDescription
 {
+    /// <summary>
+    /// These instances are attached to an <c>AidIfxItemStatus</c> in order to
+    /// identify, which AAS elements need to be updated.
+    /// </summary>
+    public class AidMappingOutputItem
+    {
+        /// <summary>
+        /// The RelationElements of the AID MC, which caused this item.
+        /// </summary>
+        public AasClassMapperHintedRelation MapRelation;
+    }
+
     public enum AidIfxItemKind { Unknown, Property, Action, Event };
 
     public class AidIfxItemStatus
@@ -62,6 +77,12 @@ namespace AasxPluginAssetInterfaceDescription
         /// Link to entity (property, action, event).
         /// </summary>
         public object Tag = null;
+
+        /// <summary>
+        /// Initally <c>null</c>, set to the items which shall be updated, whenever
+        /// this item status is updated.
+        /// </summary>
+        public List<AidMappingOutputItem> MapOutputItems = null;
 
         /// <summary>
         /// Holds reference to the AnyUI element showing the value.
@@ -233,6 +254,8 @@ namespace AasxPluginAssetInterfaceDescription
 
         public Action<string, string> MessageReceived = null;
 
+        public Action<Aas.ISubmodelElement> AnimateSingleValueChange = null;
+
         virtual public bool Open()
         {
             return false;
@@ -274,6 +297,41 @@ namespace AasxPluginAssetInterfaceDescription
         {
 
         }
+
+        public void NotifyOutputItems(AidIfxItemStatus item, string strval)
+        {
+            // access
+            if (item == null)
+                return;
+
+            // map output items
+            if (item.MapOutputItems != null)
+                foreach (var moi in item.MapOutputItems)
+                {
+                    // valid?
+                    if (moi?.MapRelation?.Second == null
+                        || !(moi.MapRelation.SecondHint is Aas.Property prop))
+                        continue;
+
+                    // set here
+                    prop.Value = strval;
+
+                    // create
+                    var evi = new AasPayloadUpdateValueItem(
+                        path: (prop)?.GetModelReference()?.Keys,
+                        value: prop.ValueAsText());
+
+                    evi.ValueId = prop.ValueId;
+
+                    evi.FoundReferable = prop;
+
+                    // add to the aas element itself
+                    DiaryDataDef.AddAndSetTimestamps(prop, evi, isCreate: false);
+
+                    // give upwards for animation
+                    AnimateSingleValueChange?.Invoke(prop);
+                }
+        }
     }
 
     public class AidGenericConnections<T> : Dictionary<Uri, T> where T : AidBaseConnection, new()
@@ -310,6 +368,17 @@ namespace AasxPluginAssetInterfaceDescription
         /// </summary>
         public Aas.ISubmodel SmAidDescription = null;
 
+        /// <summary>
+        /// Holds a "pointer" to the "last current" Submodel defining the 
+        /// AID mapping configuration.
+        /// Note: unlike most other plugins, this plugin is mostly intended to run in
+        /// the background.
+        /// </summary>
+        public Aas.ISubmodel SmAidMapping = null;
+
+        /// <summary>
+        /// Current setting, which technologies shall be used.
+        /// </summary>
         public bool[] UseTech = { false, false, false, true };
 
         /// <summary>
@@ -347,7 +416,7 @@ namespace AasxPluginAssetInterfaceDescription
             return SmAidDescription != null;
         }
 
-        public void RememberSubmodel(Aas.ISubmodel sm, AssetInterfaceOptionsRecord optRec,
+        public void RememberAidSubmodel(Aas.ISubmodel sm, AssetInterfaceOptionsRecord optRec,
             bool adoptUseFlags)
         {
             if (sm == null || optRec == null)
@@ -363,6 +432,11 @@ namespace AasxPluginAssetInterfaceDescription
                 UseTech[(int)AidInterfaceTechnology.MQTT] = optRec.UseMqtt;
                 UseTech[(int)AidInterfaceTechnology.OPCUA] = optRec.UseOpcUa;
             }
+        }
+
+        public void RememberMappingSubmodel(Aas.ISubmodel sm)
+        {
+            SmAidMapping = sm;
         }
 
         protected AidBaseConnection GetOrCreate(
@@ -449,7 +523,7 @@ namespace AasxPluginAssetInterfaceDescription
 
                     // go thru all items (sync)
                     foreach (var item in ifc.Items.Values)
-                        conn.UpdateItemValue(item);
+                        ifc.ValueChanges += (UInt64)conn.UpdateItemValue(item);
 
                     // go thru all items (async)
                     var task = Task.Run(async () => 
@@ -531,6 +605,9 @@ namespace AasxPluginAssetInterfaceDescription
                                 // note value
                                 item.Value = msg;
 
+                                // notify
+                                conn.NotifyOutputItems(item, msg);
+
                                 // note value change
                                 ifc2.ValueChanges++;
 
@@ -539,6 +616,7 @@ namespace AasxPluginAssetInterfaceDescription
                                     ifc2.Connection.LastActive = DateTime.Now;
                             }
                     };
+                    conn.AnimateSingleValueChange = OnAnimateSingleValueChange;
                     conn.PrepareContinousRun(ifc.Items.Values);
                     ifc.SetLogLine(StoredPrint.Color.Blue, "Connection established and prepared.");
                 }
@@ -612,27 +690,49 @@ namespace AasxPluginAssetInterfaceDescription
         }
 
         //
+        // further Event collection
+        //
+
+        public List<Aas.ISubmodelElement> AnimatedSingleValueChange = new List<Aas.ISubmodelElement>();
+
+        protected void OnAnimateSingleValueChange(Aas.ISubmodelElement sme)
+        {
+            if (sme == null)
+                return;
+
+            lock (AnimatedSingleValueChange)
+                AnimatedSingleValueChange.Add(sme);
+        }
+
+        //
         // Building, intake from Submodel
         //
 
-        public void PrepareAidInformation(Aas.ISubmodel sm)
+        public void PrepareAidInformation(Aas.ISubmodel smAid, Aas.ISubmodel smMapping = null,
+            Func<Aas.IReference, Aas.IReferable> lambdaLookupReference = null)
         {
             // access
             InterfaceStatus.Clear();
-            if (sm == null)
+            if (smAid == null)
                 return;
 
-            // get data
-            var data = new AasxPredefinedConcepts.AssetInterfacesDescription.CD_AssetInterfacesDescription();
-            PredefinedConceptsClassMapper.ParseAasElemsToObject(sm, data);
+            // get data AID
+            var dataAid = new AasxPredefinedConcepts.AssetInterfacesDescription.CD_AssetInterfacesDescription();
+            PredefinedConceptsClassMapper.ParseAasElemsToObject(smAid, dataAid, lambdaLookupReference);
+
+            // get data MC
+            var dataMc = (smMapping != null) ?
+                new AasxPredefinedConcepts.AssetInterfacesMappingConfiguration.
+                    CD_AssetInterfacesMappingConfiguration() : null;
+            PredefinedConceptsClassMapper.ParseAasElemsToObject(smMapping, dataMc, lambdaLookupReference);
 
             // prepare
             foreach (var tech in AdminShellUtil.GetEnumValues<AidInterfaceTechnology>())
             {
-                var ifxs = data?.InterfaceHTTP;
-                if (tech == AidInterfaceTechnology.Modbus) ifxs = data?.InterfaceMODBUS;
-                if (tech == AidInterfaceTechnology.MQTT) ifxs = data?.InterfaceMQTT;
-                if (tech == AidInterfaceTechnology.OPCUA) ifxs = data?.InterfaceOPCUA;
+                var ifxs = dataAid?.InterfaceHTTP;
+                if (tech == AidInterfaceTechnology.Modbus) ifxs = dataAid?.InterfaceMODBUS;
+                if (tech == AidInterfaceTechnology.MQTT) ifxs = dataAid?.InterfaceMQTT;
+                if (tech == AidInterfaceTechnology.OPCUA) ifxs = dataAid?.InterfaceOPCUA;
                 if (ifxs == null || ifxs.Count < 1)
                     continue;
                 foreach (var ifx in ifxs)
@@ -664,6 +764,23 @@ namespace AasxPluginAssetInterfaceDescription
                             Value = "???"
                         };
                         aidIfx.AddItem(ifcItem);
+
+                        // does (some) mapping have a source with this property name?
+                        var lst = new List<AidMappingOutputItem>();
+                        if (dataMc?.MappingConfigurations?.MappingConfigs != null)
+                            foreach (var mc in dataMc.MappingConfigurations.MappingConfigs)
+                                if (mc.InterfaceReference?.ValueHint != null
+                                    && mc.InterfaceReference?.ValueHint == ifx?.__Info__?.Referable
+                                    && mc.MappingSourceSinkRelations?.MapRels != null)
+                                    foreach (var mr in mc.MappingSourceSinkRelations.MapRels)
+                                        if (mr?.FirstHint != null
+                                            && mr.FirstHint == propName?.__Info__?.Referable)
+                                            lst.Add(new AidMappingOutputItem()
+                                            {
+                                                MapRelation = mr
+                                            });
+                        if (lst.Count > 0)
+                            ifcItem.MapOutputItems = lst;
 
                         // directly recurse?
                         if (propName?.Properties?.Property != null)

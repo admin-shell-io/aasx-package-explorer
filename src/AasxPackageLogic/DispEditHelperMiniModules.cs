@@ -853,7 +853,13 @@ namespace AasxPackageLogic
                             {
                                 // read file contents
                                 var init = System.IO.File.ReadAllText(pfn);
-                                var presets = JsonConvert.DeserializeObject<List<ExtensionPreset>>(init);
+                                
+                                // TODO (MIHO, 2024-01-024): refactor this                                
+                                JsonTextReader reader = new JsonTextReader(new StringReader(init));
+                                JsonSerializer serializer = new JsonSerializer();
+                                serializer.Converters.Add(new AdminShellConverters.AdaptiveAasIClassConverter(
+                                    AdminShellConverters.AdaptiveAasIClassConverter.ConversionMode.AasCore));
+                                var presets = serializer.Deserialize<List<ExtensionPreset>>(reader);
 
                                 // define dialogue and map presets into dialogue items
                                 var uc = new AnyUiDialogueDataSelectFromList();

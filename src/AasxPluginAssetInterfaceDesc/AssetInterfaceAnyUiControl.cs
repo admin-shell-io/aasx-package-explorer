@@ -319,7 +319,10 @@ namespace AasxPluginAssetInterfaceDescription
                         }
 
                         // build up data structures
-                        _allInterfaceStatus.PrepareAidInformation(sm);
+                        _allInterfaceStatus.PrepareAidInformation(
+                            _allInterfaceStatus.SmAidDescription,
+                            _allInterfaceStatus.SmAidMapping,
+                            lambdaLookupReference: (rf) => package?.AasEnv?.FindReferableByReference(rf) );
                         _allInterfaceStatus.SetAidInformationForUpdateAndTimeout();
 
                         // trigger a complete redraw, as the regions might emit 
@@ -491,7 +494,7 @@ namespace AasxPluginAssetInterfaceDescription
                 if (ifx.Items != null)
                     foreach (var item in ifx.Items.Values)
                     {
-                        // normal row, 3 bordered cells
+                        // normal row, 5 bordered cells
                         grid.RowDefinitions.Add(new AnyUiRowDefinition());
                         var cols = new[] { 
                             "Prop.", item.Location, item.DisplayName, "" + item.FormData?.Href, item.Value };
@@ -516,6 +519,52 @@ namespace AasxPluginAssetInterfaceDescription
                             }
                         }
                         rowIndex++;
+
+                        // map output item rows?
+                        if (item.MapOutputItems != null && item.MapOutputItems.Count > 0)
+                        {
+                            grid.RowDefinitions.Add(new AnyUiRowDefinition());
+
+                            var innerGrid = uitk.Set(
+                                uitk.AddSmallGridTo(grid, rowIndex++, 1,
+                                    rows: item.MapOutputItems.Count, 
+                                    cols: 3, colWidths: new[] { "#", "*", "#" },
+                                    margin: new AnyUiThickness(2, 0, 0, 6)),
+                                colSpan: 4);
+
+                            foreach (var moi in item.MapOutputItems)
+                            {
+                                // any content?
+                                if (moi?.MapRelation?.Second == null)
+                                    continue;
+
+                                uitk.AddSmallBasicLabelTo(innerGrid, 0, 0, fontSize: 1.4f,
+                                    verticalAlignment: AnyUiVerticalAlignment.Center,
+                                    verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                                    margin: new AnyUiThickness(1, -2, 6, -4),
+                                    content: "\u2ba1");
+
+                                var secStr = "" + moi.MapRelation.Second.ToStringExtended(2, delimiter: ".");
+                                uitk.AddSmallBasicLabelTo(innerGrid, 0, 1, fontSize: 0.9f,
+                                    verticalAlignment: AnyUiVerticalAlignment.Center,
+                                    verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                                    content: secStr);
+
+                                AnyUiUIElement.RegisterControl(
+                                    uitk.AddSmallButtonTo(innerGrid, 0, 2,
+                                        content: "\U0001f872",
+                                        padding: new AnyUiThickness(0, -2, 0, -2),
+                                        margin: new AnyUiThickness(4, 2, 0, 2)),
+                                    (o) =>
+                                    {
+                                        _eventStack?.PushEvent(new AasxPluginResultEventNavigateToReference()
+                                        {
+                                            targetReference = moi.MapRelation.Second
+                                        });
+                                        return new AnyUiLambdaActionNone();
+                                    });
+                            }
+                        }
                     }
 
                 //

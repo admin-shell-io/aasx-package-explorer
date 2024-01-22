@@ -51,12 +51,69 @@ namespace AasxPredefinedConcepts
     }
 
     /// <summary>
+    /// This class is used in auto-generated files by <c>AasxPredefinedConcepts.PredefinedConceptsClassMapper</c>
+    /// </summary>
+    public class AasClassMapperHintedReference
+    {
+        /// <summary>
+        /// The original reference.
+        /// </summary>
+        public Aas.IReference Value;
+
+        /// <summary>
+        /// If possible, links directly to the target of the reference.
+        /// </summary>
+        public Aas.IReferable ValueHint;
+
+        /// <summary>
+        /// This allows accessing the full AAS element.
+        /// </summary>
+        public AasClassMapperInfo __Info__ = null;
+    }
+
+    /// <summary>
+    /// This class is used in auto-generated files by <c>AasxPredefinedConcepts.PredefinedConceptsClassMapper</c>
+    /// </summary>
+    public class AasClassMapperHintedRelation
+    {
+        /// <summary>
+        /// The original reference of the first reference.
+        /// </summary>
+        public Aas.IReference First;
+
+        /// <summary>
+        /// If possible, links directly to the target of the first reference.
+        /// </summary>
+        public Aas.IReferable FirstHint;
+
+        /// <summary>
+        /// The original reference of the first reference.
+        /// </summary>
+        public Aas.IReference Second;
+
+        /// <summary>
+        /// If possible, links directly to the target of the second reference.
+        /// </summary>
+        public Aas.IReferable SecondHint;
+
+        /// <summary>
+        /// This allows accessing the full AAS element.
+        /// </summary>
+        public AasClassMapperInfo __Info__ = null;
+    }
+
+    /// <summary>
     /// If this class is present in an mapped class, then (source) information will be added to the
     /// data objects.
     /// </summary>
     public class AasClassMapperInfo
     {
         public Aas.IReferable Referable;
+
+        public AasClassMapperInfo (Aas.IReferable rf = null)
+        {
+            Referable = rf;
+        }
     }
 
     /// <summary>
@@ -233,6 +290,24 @@ namespace AasxPredefinedConcepts
             if (rf is MultiLanguageProperty mlp)
             {
                 declareLambda("List<ILangStringTextType>", false, idsff);
+            }
+
+            //
+            // Reference
+            //
+
+            if (rf is ReferenceElement rfe)
+            {
+                declareLambda("AasClassMapperHintedReference", false, idsff);
+            }
+
+            //
+            // Relation
+            //
+
+            if (rf is RelationshipElement rle)
+            {
+                declareLambda("AasClassMapperHintedRelation", false, idsff);
             }
 
             //
@@ -463,7 +538,8 @@ namespace AasxPredefinedConcepts
         }
 
         // TODO (MIHO, 2024-01-04): Move to AdminShellUtil ..
-        private static void SetFieldLazyFromSme(FieldInfo f, object obj, Aas.ISubmodelElement sme)
+        private static void SetFieldLazyFromSme(FieldInfo f, object obj, Aas.ISubmodelElement sme,
+            Func<Aas.IReference, Aas.IReferable> lambdaLookupReference = null)
         {
             // access
             if (f == null || obj == null || sme == null)
@@ -471,6 +547,10 @@ namespace AasxPredefinedConcepts
 
             // identify type
             var t = AdminShellUtil.GetTypeOrUnderlyingType(f.FieldType);
+
+            //
+            // Range
+            //
 
             if (t.IsGenericType
                 && t.GetGenericTypeDefinition() == typeof(AasClassMapperRange<>)
@@ -482,14 +562,68 @@ namespace AasxPredefinedConcepts
 
                 // set it
                 f.SetValue(obj, rngObj);
+
+                // done
+                return;
             }
-            else
+
+            //
+            // Reference
+            //
+
+            if (t == typeof(AasClassMapperHintedReference)
+                && sme is Aas.ReferenceElement rfe)
+            {
+                // create instance
+                var rfeObj = new AasClassMapperHintedReference()
+                {
+                    Value = rfe.Value,
+                    ValueHint = lambdaLookupReference?.Invoke(rfe.Value),
+                    __Info__ = new AasClassMapperInfo(sme)
+                };
+
+                // set it
+                f.SetValue(obj, rfeObj);
+
+                // done
+                return;
+            }
+
+            //
+            // Relation
+            //
+
+            if (t == typeof(AasClassMapperHintedRelation)
+                && sme is Aas.RelationshipElement rle)
+            {
+                // create instance
+                var rleObj = new AasClassMapperHintedRelation()
+                {
+                    First = rle.First,
+                    FirstHint = lambdaLookupReference?.Invoke(rle.First),
+                    Second = rle.Second,
+                    SecondHint = lambdaLookupReference?.Invoke(rle.Second),
+                    __Info__ = new AasClassMapperInfo(sme)
+                };
+
+                // set it
+                f.SetValue(obj, rleObj);
+
+                // done
+                return;
+            }
+
+            //
+            // Default
+            //
+
             {
                 AdminShellUtil.SetFieldLazyValue(f, obj, sme.ValueAsText());
             }
         }
 
-        public static void AddToListLazySme(FieldInfo f, object obj, Aas.ISubmodelElement sme)
+        public static void AddToListLazySme(FieldInfo f, object obj, Aas.ISubmodelElement sme,
+            Func<Aas.IReference, Aas.IReferable> lambdaLookupReference = null)
         {
             // access
             if (f == null || obj == null || sme == null)
@@ -497,6 +631,11 @@ namespace AasxPredefinedConcepts
 
             // identify type
             var t = AdminShellUtil.GetTypeOrUnderlyingType(f.FieldType);
+            var tGen = AdminShellUtil.GetTypeOrUnderlyingType(f.FieldType, resolveGeneric: true);
+
+            //
+            // Range
+            //
 
             if (t.IsGenericType
                 && t.GetGenericTypeDefinition() == typeof(AasClassMapperRange<>)
@@ -508,20 +647,76 @@ namespace AasxPredefinedConcepts
                 // add it
                 var listObj = f.GetValue(obj);
                 listObj.GetType().GetMethod("Add").Invoke(listObj, new[] { rngObj });
+
+                // ok
+                return;
             }
-            else
+
+            //
+            // Reference
+            //
+
+            if (tGen == typeof(AasClassMapperHintedReference)
+                && sme is Aas.ReferenceElement rfe)
+            {
+                // create instance
+                var rfeObj = new AasClassMapperHintedReference()
+                {
+                    Value = rfe.Value,
+                    ValueHint = lambdaLookupReference?.Invoke(rfe.Value),
+                    __Info__ = new AasClassMapperInfo(sme)
+                };
+
+                // add it
+                var listObj = f.GetValue(obj);
+                listObj.GetType().GetMethod("Add").Invoke(listObj, new[] { rfeObj });
+
+                // done
+                return;
+            }
+
+            //
+            // Relation
+            //
+
+            if (tGen == typeof(AasClassMapperHintedRelation)
+                && sme is Aas.RelationshipElement rle)
+            {
+                // create instance
+                var rleObj = new AasClassMapperHintedRelation()
+                {
+                    First = rle.First,
+                    FirstHint = lambdaLookupReference?.Invoke(rle.First),
+                    Second = rle.Second,
+                    SecondHint = lambdaLookupReference?.Invoke(rle.Second),
+                    __Info__ = new AasClassMapperInfo(sme)
+                };
+
+                // add it
+                var listObj = f.GetValue(obj);
+                listObj.GetType().GetMethod("Add").Invoke(listObj, new[] { rleObj });
+
+                // done
+                return;
+            }
+
+            //
+            // Default
+            //
+
             {
                 AdminShellUtil.AddToListLazyValue(obj, sme.ValueAsText());
             }
         }
 
-        private static void ParseAasElemFillData(ElemAttrInfo eai, Aas.ISubmodelElement sme)
+        private static void ParseAasElemFillData(ElemAttrInfo eai, Aas.ISubmodelElement sme,
+            Func<Aas.IReference, Aas.IReferable> lambdaLookupReference = null)
         {
             // access
             if (eai?.Fi == null || eai.Attr == null || sme == null)
                 return;
 
-            if (sme?.IdShort == "Voltage_L1_N")
+            if (sme?.IdShort == "MapRel01")
             { ; }
            
             // straight?
@@ -530,22 +725,24 @@ namespace AasxPredefinedConcepts
                 if (eai.Attr.Card == AasxPredefinedCardinality.One)
                 {
                     // scalar value
-                    SetFieldLazyFromSme(eai.Fi, eai.Obj, sme);
+                    SetFieldLazyFromSme(eai.Fi, eai.Obj, sme, lambdaLookupReference);
                 }
                 else
                 if (eai.Attr.Card == AasxPredefinedCardinality.ZeroToOne)
                 {
                     // sure to have a nullable type
-                    SetFieldLazyFromSme(eai.Fi, eai.Obj, sme);
+                    SetFieldLazyFromSme(eai.Fi, eai.Obj, sme, lambdaLookupReference);
                 }
                 else
                 if ((eai.Attr.Card == AasxPredefinedCardinality.ZeroToMany
                     || eai.Attr.Card == AasxPredefinedCardinality.OneToMany)
-                    && eai.Obj.GetType().IsGenericType
-                    && eai.Obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
+                    // && eai.Obj.GetType().IsGenericType
+                    // && eai.Obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
+                    && eai.Fi.FieldType.IsGenericType
+                    && eai.Fi.FieldType.GetGenericTypeDefinition() == typeof(List<>))
                 {
                     // sure to have a (instantiated) List<scalar>
-                    AddToListLazySme(eai.Fi, eai.Obj, sme);
+                    AddToListLazySme(eai.Fi, eai.Obj, sme, lambdaLookupReference);
                 }
             }
             else
@@ -556,7 +753,7 @@ namespace AasxPredefinedConcepts
                     var childObj = eai.Fi.GetValue(eai.Obj);
 
                     // recurse to fill in
-                    ParseAasElemsToObject(sme, childObj);
+                    ParseAasElemsToObject(sme, childObj, lambdaLookupReference);
                 }
                 else
                 if (eai.Attr.Card == AasxPredefinedCardinality.ZeroToOne)
@@ -572,7 +769,7 @@ namespace AasxPredefinedConcepts
                     eai.Fi.SetValue(eai.Obj, childObj);
 
                     // recurse to fill in
-                    ParseAasElemsToObject(sme, childObj);
+                    ParseAasElemsToObject(sme, childObj, lambdaLookupReference);
                 }
                 else
                 if ((eai.Attr.Card == AasxPredefinedCardinality.ZeroToMany
@@ -590,7 +787,7 @@ namespace AasxPredefinedConcepts
                     listObj.GetType().GetMethod("Add").Invoke(listObj, new [] { childObj });
 
                     // recurse to fill in
-                    ParseAasElemsToObject(sme, childObj);
+                    ParseAasElemsToObject(sme, childObj, lambdaLookupReference);
                 }
 
                 // recurse
@@ -603,7 +800,8 @@ namespace AasxPredefinedConcepts
         /// attributed class referenced by <c>obj</c>. Reflection dictates the
         /// recursion into sub-classes.
         /// </summary>
-        public static void ParseAasElemsToObject(Aas.IReferable root, object obj)
+        public static void ParseAasElemsToObject(Aas.IReferable root, object obj,
+            Func<Aas.IReference, Aas.IReferable> lambdaLookupReference = null)
         {
             // access
             if (root == null || obj == null)
@@ -650,7 +848,7 @@ namespace AasxPredefinedConcepts
                             matchMode: MatchMode.Relaxed) == true;
 
                         if (hit)
-                            ParseAasElemFillData(eai, sme);
+                            ParseAasElemFillData(eai, sme, lambdaLookupReference);
                     }
 
             }

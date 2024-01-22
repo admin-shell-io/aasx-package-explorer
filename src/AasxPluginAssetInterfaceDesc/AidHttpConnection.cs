@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using AasxPredefinedConcepts;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
+using AdminShellNS.DiaryData;
 using Extensions;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts.AssetInterfacesDescription;
@@ -23,6 +24,8 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Net.Http;
+using AasxIntegrationBase.AdminShellEvents;
+using System.Drawing;
 
 namespace AasxPluginAssetInterfaceDescription
 {
@@ -50,7 +53,7 @@ namespace AasxPluginAssetInterfaceDescription
         override public void Close()
         {
             // nothing to do, this simple http connection is stateless
-        }
+        }        
 
         override public async Task<int> UpdateItemValueAsync(AidIfxItemStatus item)
         {
@@ -75,9 +78,13 @@ namespace AasxPluginAssetInterfaceDescription
                     // ok?
                     if (response.IsSuccessStatusCode)
                     {
+                        // set internal value
                         var strval = await response.Content.ReadAsStringAsync();
                         item.Value = strval;
                         res = 1;
+
+                        // notify
+                        NotifyOutputItems(item, strval);
                     }
                 } catch (Exception ex)
                 {

@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using AasxPluginAssetInterfaceDescription;
 using AnyUi;
 using System.Windows.Controls;
+using System.IO.Packaging;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -70,7 +71,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // start interface service
             _allInterfaceStatus = new AidAllInterfaceStatus(_log);
             _interfaceService = new AidInterfaceService();
-            _interfaceService.StartOperation(_log, _allInterfaceStatus);
+            _interfaceService.StartOperation(_log, _eventStack, _allInterfaceStatus);
         }
 
         public new object CheckForLogMessage()
@@ -117,7 +118,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // remember for later / background
-                _allInterfaceStatus.RememberSubmodel(sm, foundOptRec, adoptUseFlags: true);
+                if (foundOptRec.IsDescription)
+                    _allInterfaceStatus.RememberAidSubmodel(sm, foundOptRec,
+                        adoptUseFlags: true);
+                if (foundOptRec.IsMapping)
+                    _allInterfaceStatus.RememberMappingSubmodel(sm);
 
                 // success prepare record
                 var cve = new AasxPluginResultVisualExtension("AID", "Asset Interfaces Description");
@@ -181,7 +186,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (_sessions.AccessSession(args[0], out Session session))
                 {
                     // dispose all ressources
-                    ;
+                    session.AnyUiControl.Dispose();
 
                     // remove
                     _sessions.Remove(args[0]);
@@ -267,8 +272,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                                             sm.SemanticId.GetAsExactlyOneKey()).FirstOrDefault();
                                         if (foundOptRec == null)
                                             continue;
-                                        _allInterfaceStatus.RememberSubmodel(sm, foundOptRec,
-                                            adoptUseFlags: true);
+
+                                        if (foundOptRec.IsDescription)
+                                            _allInterfaceStatus.RememberAidSubmodel(sm, foundOptRec,
+                                                adoptUseFlags: true);
+                                        if (foundOptRec.IsMapping)
+                                            _allInterfaceStatus.RememberMappingSubmodel(sm);
                                     }
 
                                 // start?
@@ -283,7 +292,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                                     // (re-) init
                                     _log?.Info("Asset Interfaces: starting new operation ..");
-                                    _allInterfaceStatus.PrepareAidInformation(_allInterfaceStatus.SmAidDescription);
+                                    _allInterfaceStatus.PrepareAidInformation(
+                                        _allInterfaceStatus.SmAidDescription,
+                                        _allInterfaceStatus.SmAidMapping,
+                                        lambdaLookupReference: (rf) => ticket?.Env.FindReferableByReference(rf));
                                     _allInterfaceStatus.SetAidInformationForUpdateAndTimeout();
                                     _allInterfaceStatus.StartContinousRun();
                                 }

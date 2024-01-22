@@ -22,7 +22,8 @@ namespace AasxPluginAssetInterfaceDescription
 {
     public class AssetInterfaceOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
-        public bool IsDescription = true;
+        public bool IsDescription = false;
+        public bool IsMapping = false;
 
         public bool UseHttp = true;
         public bool UseModbus = true;
@@ -42,9 +43,16 @@ namespace AasxPluginAssetInterfaceDescription
             var defs = new DefinitionsMTP.ModuleTypePackage();
 
             var rec1 = new AssetInterfaceOptionsRecord();
+            rec1.IsDescription = true;
             rec1.AllowSubmodelSemanticId = new[] { 
                 new Aas.Key(Aas.KeyTypes.Submodel, 
                 "https://admin-shell.io/idta/AssetInterfacesDescription/1/0/Submodel") }.ToList();
+
+            var rec2 = new AssetInterfaceOptionsRecord();
+            rec2.IsMapping = true;
+            rec1.AllowSubmodelSemanticId = new[] {
+                new Aas.Key(Aas.KeyTypes.Submodel,
+                "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/1/0/Submodel") }.ToList();
 
             var opt = new AssetInterfaceOptions();
             opt.Records.Add(rec1);

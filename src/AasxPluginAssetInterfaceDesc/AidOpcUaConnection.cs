@@ -174,7 +174,8 @@ namespace AasxPluginAssetInterfaceDescription
             {
                 // take over most actual value
                 var valueObj = monitoredItem.DequeueValues().LastOrDefault();
-                MessageReceived?.Invoke(subi.NodePath, AdminShellUtil.ToStringInvariant(valueObj));
+                if (valueObj != null)
+                    MessageReceived?.Invoke(subi.NodePath, AdminShellUtil.ToStringInvariant(valueObj.Value));
             }
         }
     }
