@@ -59,8 +59,8 @@
   ],
   "PluginPrefer": "ANYUI",
   "PluginDll": [
-    
-    {      
+
+    {
       "Path": "..\\..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net6.0-windows\\AasxPluginUaNetServer.dll",
       "Args": [
         "-single-nodeids",
@@ -87,6 +87,10 @@
     },
     {
       "Path": "..\\..\\..\\..\\..\\..\\AasxPluginDigitalNameplate\\bin\\Debug\\net6.0-windows\\AasxPluginDigitalNameplate.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginAID\\bin\\Debug\\net6.0-windows\\AasxPluginAID.dll",
       "Args": []
     },
     {

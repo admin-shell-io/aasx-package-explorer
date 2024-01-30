@@ -86,7 +86,7 @@ namespace AasxIntegrationBase.AasForms
         /// Preset for Referable.description
         /// </summary>
         [JsonProperty(Order = 7)]
-        public List<Aas.ILangStringTextType> PresetDescription = null;
+        public List<Aas.ILangStringTextType> PresetDescription = new List<ILangStringTextType>();
 
         /// <summary>
         /// SemanticId of the SubmodelElement. Always required.
@@ -582,6 +582,94 @@ namespace AasxIntegrationBase.AasForms
             this.InitSme(res);
             if (this.presetValue != null)
                 res.Value = this.presetValue;
+            if (this.allowedValueTypes.Length == 1)
+            {
+                res.ValueType = Aas.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0])
+                    ?? Aas.DataTypeDefXsd.String;
+            }
+            return res;
+        }
+    }
+
+
+    [DisplayName("FormRange")]
+    public class FormDescRange : FormDescSubmodelElement
+    {
+        [JsonProperty(Order = 20)]
+        public string[] allowedValueTypes = new string[] { "string" };
+
+        /// <summary>
+        /// Pre-set the editable Property value with this value.
+        /// </summary>
+        [JsonProperty(Order = 21)]
+        public string presetMin = "";
+
+        [JsonProperty(Order = 22)]
+        public string presetMax = "";
+
+        // Constructors
+        //=============
+
+        public FormDescRange() { }
+
+        public FormDescRange(
+            string formText, FormMultiplicity multiplicity, Aas.Key smeSemanticId,
+            string presetIdShort, string formInfo = null, bool isReadOnly = false, string valueType = null,
+            string presetMin = null, string presetMax = null)
+            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
+        {
+            // init
+            if (valueType != null)
+                this.allowedValueTypes = new[] { valueType };
+            if (presetMin != null)
+                this.presetMin = presetMin;
+            if (presetMax != null)
+                this.presetMax = presetMax;
+
+        }
+
+        public FormDescRange(FormDescRange other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.allowedValueTypes = other.allowedValueTypes;
+            this.presetMin = other.presetMin;
+            this.presetMax = other.presetMax;
+        }
+
+#if !DoNotUseAasxCompatibilityModels
+        public FormDescRange(AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescRangeV20 other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.allowedValueTypes = other.allowedValueTypes;
+            this.presetMin = other.presetMin;
+            this.presetMax = other.presetMax;
+        }
+#endif
+
+        public override FormDescSubmodelElement Clone()
+        {
+            return new FormDescRange(this);
+        }
+
+        /// <summary>
+        /// Build a new instance, based on the description data
+        /// </summary>
+        public override FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
+        {
+            return new FormInstanceRange(parentInstance, this, source);
+        }
+
+        public Aas.Range GenerateDefault()
+        {
+            var res = new Aas.Range(Aas.DataTypeDefXsd.String);
+            this.InitSme(res);
+            if (this.presetMin != null)
+                res.Min = this.presetMin;
+            if (this.presetMax != null)
+                res.Max = this.presetMax;
             if (this.allowedValueTypes.Length == 1)
             {
                 res.ValueType = Aas.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0])

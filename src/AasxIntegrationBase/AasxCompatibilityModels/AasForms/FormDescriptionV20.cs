@@ -198,6 +198,28 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 
     }
 
+    [DisplayName("FormRange_V20")]
+    public class FormDescRangeV20 : FormDescSubmodelElementV20
+    {
+        /// <summary>
+        /// Pre-set the Property with this valueType. Right now, only one item (and this shall be "string") is allowed!
+        /// </summary>
+        [JsonProperty(Order = 20)]
+        public string[] allowedValueTypes = new string[] { "string" };
+
+        /// <summary>
+        /// Pre-set the editable Range Min with this value.
+        /// </summary>
+        [JsonProperty(Order = 21)]
+        public string presetMin = "";
+
+        /// <summary>
+        /// Pre-set the editable Range Max with this value.
+        /// </summary>
+        [JsonProperty(Order = 22)]
+        public string presetMax = "";
+    }
+
     [DisplayName("FormMultiLangProp_V20")]
     public class FormDescMultiLangPropV20 : FormDescSubmodelElementV20
     {

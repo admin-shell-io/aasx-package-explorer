@@ -1359,7 +1359,6 @@ namespace AasxIntegrationBase.AasForms
             }
         }
     }
-
     public class FormInstanceProperty : FormInstanceSubmodelElement
     {
         public FormInstanceProperty(
@@ -1566,6 +1565,164 @@ namespace AasxIntegrationBase.AasForms
                         return new AnyUiLambdaActionNone();
                     });
             }
+        }
+    }
+
+    public class FormInstanceRange : FormInstanceSubmodelElement
+    {
+        public FormInstanceRange(
+            FormInstanceListOfSame parentInstance, FormDescRange parentDesc,
+            Aas.ISubmodelElement source = null, bool deepCopy = false)
+        {
+            // way back to description
+            this.parentInstance = parentInstance;
+            this.desc = parentDesc;
+
+            // initialize Referable
+            var p = new Aas.Range(Aas.DataTypeDefXsd.String);
+            this.sme = p;
+            InitReferable(parentDesc, source);
+
+            // check, if a source is present
+            this.sourceSme = source;
+            var pSource = this.sourceSme as Aas.Range;
+            if (pSource != null)
+            {
+                // take over
+                p.ValueType = pSource.ValueType;
+                p.Min = pSource.Min;
+                p.Max = pSource.Max;
+            }
+            else
+            {
+                // some more preferences
+                if (parentDesc.allowedValueTypes != null && parentDesc.allowedValueTypes.Length >= 1)
+                    p.ValueType = Aas.Stringification.DataTypeDefXsdFromString(parentDesc.allowedValueTypes[0])
+                        ?? Aas.DataTypeDefXsd.String;
+
+                if (parentDesc.presetMin != null && parentDesc.presetMax != null)
+                {
+                    p.Min = parentDesc.presetMin;
+                    p.Max = parentDesc.presetMax;
+                    // immediately set touched in order to have this value saved
+                    this.Touch();
+                }
+            }
+
+            // create user control
+#if USE_WPF
+            if (createSubControls)
+            {
+                this.subControl = new FormSubControlProperty();
+                this.subControl.DataContext = this;
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Before rendering the SME into a list of new elements, process the SME.
+        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set,
+        /// this function shall write back the new values instead of
+        /// producing a new element. Returns True, if a new element shall be rendered.
+        /// </summary>
+        public override bool ProcessSmeForRender(
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
+        {
+            // refer to base (SME) function, but not caring about result
+            base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
+
+            var p = this.sme as Aas.Range;
+            var pSource = this.sourceSme as Aas.Range;
+            if (p != null && Touched && pSource != null && editSource)
+            {
+                pSource.ValueType = p.ValueType;
+                pSource.Min = p.Min;
+                pSource.Max = p.Max;
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Event was raised from master because matching slave.
+        /// </summary>
+        public override void OnSlaveEvent(
+            FormDescSubmodelElement masterDesc, FormInstanceSubmodelElement masterInst, int index)
+        {
+            // access to master
+            var pMasterInst = masterInst as FormInstanceRange;
+            var pMaster = pMasterInst?.sme as Aas.Range;
+            if (pMaster?.Min == null || pMaster.Max == null)
+                return;
+
+            // accues to this
+            var pThis = this.sme as Aas.Range;
+            if (pThis == null)
+                return;
+
+            // refresh
+#if USE_WPF
+            if (this.subControl != null && this.subControl is FormSubControlRange scr)
+                scr.UpdateDisplay();
+#endif
+            if (MainControl is AnyUiTextBox mtb)
+            {
+                mtb.Text = pThis.Min + ".." + pThis.Max;
+                mtb.Touch();
+            }
+
+            if (MainControl is AnyUiComboBox mcb && mcb.IsEditable == true)
+            {
+                mcb.Text = pThis.Min + ".." + pThis.Max;
+                mcb.Touch();
+            }
+        }
+
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx)
+        {
+            // access
+            var prop = sme as Aas.Range;
+            var pDesc = desc as FormDescRange;
+            if (prop == null || pDesc == null)
+                return;
+
+            // Intended layout
+            // Grid
+            //    Index
+            //    TextBox | ComboBox
+
+            var g = view.Add(
+                uitk.AddSmallGrid(rows: 2, cols: 3, colWidths: new[] { "2:", "*", "2:" }));
+
+
+            MainControl = AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallTextBoxTo(g, 0, 1,
+                    margin: new AnyUiThickness(0, 2, 0, 2),
+                    text: "" + prop.Min),
+                    (o) =>
+                    {
+                        if (o is string os)
+                            prop.Min = os;
+                        Touch();
+                        return new AnyUiLambdaActionNone();
+                    });
+
+
+            MainControl = AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallTextBoxTo(g, 1, 1,
+                    margin: new AnyUiThickness(0, 2, 0, 2),
+                    text: "" + prop.Max),
+                    (o) =>
+                    {
+                        if (o is string os)
+                            prop.Max = os;
+                        Touch();
+                        return new AnyUiLambdaActionNone();
+                    });
         }
     }
 

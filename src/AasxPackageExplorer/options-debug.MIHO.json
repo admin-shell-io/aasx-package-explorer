@@ -117,6 +117,10 @@
       "Args": []
     },
     {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxPluginAID\\bin\\Debug\\net6.0-windows\\AasxPluginAID.dll",
+      "Args": []
+    },
+    {
       "Path": "..\\..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
       "Args": []
     },
