@@ -60,8 +60,8 @@ namespace AasxPackageLogic
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
                     () => string.IsNullOrEmpty(asset.GlobalAssetId) == true,
-                    "It is strobly encouraged to have the AAS associated with an global asset id from the " +
-                    "very beginning. If the AAS describes a product, the individual asset id should to be " +
+                    "It is strongly encouraged to have the AAS associated with a global asset id from the " +
+                    "very beginning. If the AAS describes a product, the individual asset id should be " +
                     "found on its name plate. " +
                     "This  attribute  is  required  as  soon  as  the  AAS  is exchanged via partners in " +
                     "the life cycle of the asset.",

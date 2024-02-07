@@ -1001,7 +1001,7 @@ namespace AasxPluginDocumentShelf
                                 }
                                 catch (Exception ex)
                                 {
-                                    _log?.Error(ex, "while saveing digital file to user specified loacation");
+                                    _log?.Error(ex, "while saving digital file to user specified location");
                                 }
 
                                 // OK

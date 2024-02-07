@@ -159,7 +159,7 @@ namespace AasxDictionaryImport.Eclass
                 certFound = false;
                 X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection2,
                     "Test Certificate Select",
-                    "Select an ECLASS client certificate which you alreay imported into your certificate store",
+                    "Select an ECLASS client certificate which you already imported into your certificate store",
                     X509SelectionFlag.SingleSelection);
                 if (scollection.Count != 0)
                 {

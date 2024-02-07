@@ -784,7 +784,7 @@ namespace AasxPluginDigitalNameplate
                     .Set(description: "SerialNumber:\n" +
                         "Unique combination of numbers and letters used to identify the " +
                         "product (asset) instance once it has been manufactured. Does not need to be " +
-                        "worldwide unqiue, only for the manufacturer."));
+                        "worldwide unique, only for the manufacturer."));
 
             // Product designation
 
