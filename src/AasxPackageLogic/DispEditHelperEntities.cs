@@ -1454,7 +1454,7 @@ namespace AasxPackageLogic
 
             // Identifiable
             this.DisplayOrEditEntityIdentifiable(
-                stack, aas,
+                stack, env, aas,
                 Options.Curr.TemplateIdAas,
                 null);
 
@@ -1967,7 +1967,7 @@ namespace AasxPackageLogic
 
                 // Identifiable
                 this.DisplayOrEditEntityIdentifiable(
-                    stack, submodel,
+                    stack, env, submodel,
                     (submodel.Kind == Aas.ModellingKind.Template)
                         ? Options.Curr.TemplateIdSubmodelTemplate
                         : Options.Curr.TemplateIdSubmodelInstance,
@@ -2146,7 +2146,7 @@ namespace AasxPackageLogic
             // Identifiable
 
             this.DisplayOrEditEntityIdentifiable(
-                stack, cd,
+                stack, env, cd,
                 Options.Curr.TemplateIdConceptDescription,
                 new DispEditHelperModules.DispEditInjectAction(
                 new[] { "Rename" },
