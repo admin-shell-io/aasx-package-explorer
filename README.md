@@ -12,7 +12,7 @@
 > This repository will be archived in the near future.  
 > Please refrain from committing or forking this repository.  
 > Please move the development to the new repository and update your links.  
-> See <a href="">CONTRIBUTING</a> for information on how to migrate your development.
+> See <a href="https://github.com/eclipse-aaspe/aaspe/blob/main/CONTRIBUTING">aaspe/CONTRIBUTING</a> for information on how to migrate your development.
 
 <hr>
 
