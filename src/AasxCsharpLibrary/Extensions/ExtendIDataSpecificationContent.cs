@@ -18,7 +18,7 @@ namespace Extensions
         public static Key GetKeyForIec61360()
         {
             return new Key(KeyTypes.GlobalReference,
-                "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0");
+                "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0");
         }
 
         public static Reference GetReferencForIec61360()
@@ -29,7 +29,7 @@ namespace Extensions
         public static Key GetKeyForPhysicalUnit()
         {
             return new Key(KeyTypes.GlobalReference,
-                "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationPhysicalUnit/3/0");
+                "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationPhysicalUnit/3/0");
         }
 
         public static Key GetKeyFor(ContentTypes ct)
