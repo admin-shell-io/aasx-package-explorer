@@ -256,7 +256,7 @@ namespace AasxPluginAID
                 foreground: AnyUiBrushes.DarkBlue,
                 fontSize: 1.5f,
                 setBold: true,
-                content: $"AssetInterfaceDescriptions");
+                content: $"AssetInterfacesDescription");
 
             if (_opContext?.IsDisplayModeEditOrAdd == true)
                 AnyUiUIElement.RegisterControl(
@@ -275,7 +275,7 @@ namespace AasxPluginAID
             {
                 Margin = new AnyUiThickness(2),
                 MinHeight = 21,
-                Content = "Import Interface Description .."
+                Content = "Import Thing Description .."
             }), (o) =>
             {
                 ButtonTabPanels_Click("ButtonImportInterface");
@@ -704,7 +704,7 @@ namespace AasxPluginAID
                         // ask back via display context
                         if (AnyUiMessageBoxResult.Cancel == await _displayContext?.MessageBoxFlyoutShowAsync(
                                     "Delete Interface description? This cannot be reverted!",
-                                    "AssetInterfaceDescriptions",
+                                    "AssetInterfacesDescription",
                                     AnyUiMessageBoxButton.OKCancel,
                                     AnyUiMessageBoxImage.Question))
                             return;
@@ -899,7 +899,7 @@ namespace AasxPluginAID
                 var targetFn = String.Format("{0}_{1}{2}", onlyFn, salt, onlyExt);
 
                 var desc = AIDTDImport.CreateAssetInterfaceDescriptionFromTd(tdJObject,
-                                               targetPath + "/"+targetFn,_submodel.Id.ToString(),_submodel.SubmodelElements.Count,"JSONLD");
+                                               targetPath + targetFn,_submodel.Id.ToString(),_submodel.SubmodelElements.Count,"JSONLD");
                 _submodel.Add(desc);
                 PushUpdatenRedrawEvent();
                 return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel };

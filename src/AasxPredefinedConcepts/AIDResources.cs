@@ -337,6 +337,34 @@ namespace AasxPredefinedConcepts
                           }
                         ]
                       },
+{
+                        'AasElementType': 'SubmodelElementCollection',
+                        'multiplcity': '0..1',
+                        'description': 'Basic Security Definition',
+                        'semanticReference': 'https://www.w3.org/2019/wot/security#NoSecurityScheme',
+                        'formtext': 'nosec_sc',
+                        'presetIdShort': 'nosec_sc',
+                        'childs': [
+                          {
+                            'AasElementType': 'Property',
+                            'valueType' : 'xs:anyURI',
+                            'formtext': 'proxy',
+                            'presetIdShort': 'proxy',
+                            'multiplcity': '0..1',
+                            'description': 'Identification of the security mechanism being configured.',
+                            'semanticReference': 'https://www.w3.org/2019/wot/security#proxy'
+                          },
+                          {
+                            'AasElementType': 'Property',
+							'valueType' : 'xs:string',
+                            'formtext': 'scheme',
+                            'presetIdShort': 'scheme',
+                            'multiplcity': '1',
+                            'description': 'URI of the proxy server this security configuration provides access to. If not given, the corresponding security configuration is for the endpoint.',
+                            'semanticReference': 'https://www.w3.org/2019/wot/security#SecurityScheme'
+                          }
+                        ]
+                      },
                       {
                         'AasElementType': 'SubmodelElementCollection',
                         'multiplcity': '0..1',
@@ -492,8 +520,8 @@ namespace AasxPredefinedConcepts
     'multiplcity': '0..1',
     'description': 'An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things.',
     'semanticReference': 'https://admin-shell.io/idta/AssetInterfacesDescription/1/0/InteractionMetadata',
-    'formtext': 'InteractionMetaData',
-    'presetIdShort': 'InteractionMetaData',
+    'formtext': 'InteractionMetadata',
+    'presetIdShort': 'InteractionMetadata',
     'childs': [
       {
         'AasElementType': 'SubmodelElementCollection',

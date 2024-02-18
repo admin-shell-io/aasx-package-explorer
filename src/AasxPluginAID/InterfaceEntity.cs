@@ -161,7 +161,7 @@ namespace AasxPluginAID
                 {
                     created = (elem as Aas.Property).Value.ToString();
                 }
-                else if (elem.IdShort == "InterfaceMetaData")
+                else if (elem.IdShort == "InteractionMetadata")
                 {
                     Aas.SubmodelElementCollection InterfaceMetaData = (elem as Aas.SubmodelElementCollection);
                     foreach (var imdElem in InterfaceMetaData.Value)

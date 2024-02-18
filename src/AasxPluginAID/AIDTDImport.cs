@@ -14,6 +14,9 @@ using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using AasxIntegrationBase.AasForms;
 using System.Text.RegularExpressions;
+using System.Windows.Input;
+using System.Web.Services.Description;
+using System.Net;
 
 namespace AasxPluginAID
 {
@@ -21,66 +24,78 @@ namespace AasxPluginAID
     {
         public static string submodelId = null;
         public static string interfaceId = null;
+        public static string contentType = "";
+        public static string fileName = "";
         public static AasxPredefinedConcepts.IDTAAid idtaDef = AasxPredefinedConcepts.IDTAAid.Static;
-        public static Aas.ISubmodelElement BuildAasElement(JObject tdJObject, JObject tdSchemaObject)
+        
+        public static Property BuildAasProperty(string idShort, Reference semanticReference,
+                                                    LangStringTextType description, string value, DataTypeDefXsd valueType)
         {
-            Aas.ISubmodelElement submodelElement = null;   
-            Aas.Reference semanticReference = idtaDef.ConstructReference(tdSchemaObject["semanticReference"].ToString());
+            Property _property = new Property(valueType, idShort: idShort,
+                                                         semanticId: semanticReference, description: new List<ILangStringTextType> { description },
+                                                         value: value);
+            return _property;
+        }
+        public static File BuildAasFile(string idShort, Reference semanticReference, string contentType)
+        {
+            File descriptorName = new Aas.File(contentType: contentType, idShort: idShort,
+                                                 semanticId: semanticReference);
+            return descriptorName;
+        }
+        
+        public static SubmodelElementCollection BuildSEC(string idShort, Reference semanticReference, LangStringTextType description)
+        {
+            SubmodelElementCollection sec = new SubmodelElementCollection(idShort: idShort,
+                                                                semanticId: semanticReference,
+                                                                description: new List<ILangStringTextType> { description });
+            return sec;
+        }
+        public static ISubmodelElement BuildAasElement(JObject tdJObject, JObject tdSchemaObject)
+        {
+            string formText = tdSchemaObject["formtext"].ToString();
+            ISubmodelElement submodelElement = null;
+            Reference semanticReference = idtaDef.ConstructReference(tdSchemaObject["semanticReference"].ToString());
             FormMultiplicity multiplicity = idtaDef.GetFormMultiplicity(tdSchemaObject["multiplcity"].ToString());
             string presetIdShort = tdSchemaObject["presetIdShort"].ToString();
             string elemType = tdSchemaObject["AasElementType"].ToString();
-            string formText = tdSchemaObject["formtext"].ToString();
             LangStringTextType description = new Aas.LangStringTextType("en", tdSchemaObject["description"].ToString());
-            
             if (elemType == "Property")
             {
-                DataTypeDefXsd valueType = idtaDef.GetValueType( tdSchemaObject["valueType"].ToString());
-                submodelElement = new Property(valueType, idShort:presetIdShort,
-                                                     semanticId : semanticReference, description : new List<ILangStringTextType> { description },
-                                                     value: tdJObject[formText].ToString());
+                DataTypeDefXsd valueType = idtaDef.GetValueType(tdSchemaObject["valueType"].ToString());
+                submodelElement = BuildAasProperty(presetIdShort, semanticReference, description, tdJObject[formText].ToString(),
+                                    valueType);
                 return submodelElement;
             }
             else if (elemType == "SubmodelElementCollection")
             {
                 submodelElement = new SubmodelElementCollection(idShort: presetIdShort,
-                    semanticId: semanticReference, description: new List<ILangStringTextType> { description });
-                foreach (var childSchemaElem in tdSchemaObject["childs"])
+                                               semanticId: semanticReference, description: new List<ILangStringTextType> { description });                
+                if (formText == "scopes" || formText == "enum")
                 {
-                    JObject childSchemaElemObject = JObject.FromObject(childSchemaElem);
-                    string celemType = childSchemaElemObject["AasElementType"].ToString();
-                    string cFormtext = childSchemaElemObject["formtext"].ToString();
-                    string cpresetIdShort = childSchemaElemObject["presetIdShort"].ToString();
-                    Aas.Reference csemanticReference = idtaDef.ConstructReference(childSchemaElemObject["semanticReference"].ToString());
-                    List<ILangStringTextType> cdescription = new List<ILangStringTextType> { new Aas.LangStringTextType("en", childSchemaElemObject["description"].ToString()) };
-                    if (tdJObject.ContainsKey(cFormtext))
+                    if (!tdJObject.ContainsKey(formText))
                     {
-                        if (celemType == "SubmodelElementCollection")
-                        {
-                            if (cFormtext == "scopes" || cFormtext == "enum")
-                            {
-                                Aas.SubmodelElementCollection _elems = new SubmodelElementCollection(idShort: cpresetIdShort,
-                                                                                semanticId: csemanticReference,
-                                                                                description: cdescription);
-                                JObject _cSchemaObject = JObject.FromObject(childSchemaElemObject["childs"][0]);
-                                int j = 0;
-                                foreach (var _scope in tdJObject[cFormtext])
-                                {
-                                    _elems.Add(new Property(Aas.DataTypeDefXsd.String, idShort: _cSchemaObject["presetIdShort"].ToString(),
-                                                     semanticId: csemanticReference, description: new List<ILangStringTextType> { new Aas.LangStringTextType("en", "Authorization scope identifier") },
-                                                     value: _scope.ToString()));
-                                    j++;
-                                }
-                                submodelElement.Add(_elems);
-                            }
-                            else if (cFormtext == "security")
-                            {
-                                Aas.SubmodelElementCollection security = new SubmodelElementCollection(idShort: cpresetIdShort,
-                                                                                semanticId: csemanticReference,
-                                                                                description: cdescription);
-                                int j = 0;
-                                foreach (var _security in tdJObject["security"])
-                                {
-                                    List<Aas.IKey> _keys = new List<Aas.IKey>
+                        return null;
+                    }
+                    JObject _cSchemaObject = JObject.FromObject(tdSchemaObject["childs"][0]);
+                    int j = 0;
+                    foreach (var cElem in tdJObject[formText])
+                    {
+                        submodelElement.Add(BuildAasProperty(formText + string.Format("{00:00}", j), semanticReference,
+                            description, cElem.ToString(), DataTypeDefXsd.String));
+                        j++;
+                    }
+                    return submodelElement;
+                }
+                else if (formText == "security")
+                {
+                    if (!tdJObject.ContainsKey(formText))
+                    {
+                        return null;
+                    }
+                    int j = 0;
+                    foreach (var _security in tdJObject["security"])
+                    {
+                        List<Aas.IKey> _keys = new List<Aas.IKey>
                                     {
                                         idtaDef.ConstructKey(KeyTypes.Submodel,submodelId),
                                         idtaDef.ConstructKey(KeyTypes.SubmodelElementCollection,interfaceId),
@@ -88,116 +103,151 @@ namespace AasxPluginAID
                                         idtaDef.ConstructKey(KeyTypes.SubmodelElementCollection,"securityDefinitions"),
                                         idtaDef.ConstructKey(KeyTypes.SubmodelElementCollection,_security.ToString())
                                     };
-                                    
-                                    Aas.ReferenceElement _secRef = new ReferenceElement(idShort: "security" + string.Format("{00:00}", j),
-                                                     semanticId: csemanticReference, description: new List<ILangStringTextType> { new Aas.LangStringTextType("en", "Reference element to security scheme definition") },
-                                                     value: new Reference(ReferenceTypes.ModelReference, _keys));
 
-                                    security.Add(_secRef);
-                                    j++;
-                                }
-                                submodelElement.Add(security);
-                            }
-                            else if (cFormtext == "properties")
-                            {
-                                Aas.SubmodelElementCollection propoerties = new SubmodelElementCollection(idShort: cpresetIdShort,
-                                                                                semanticId: csemanticReference,
-                                                                                description: cdescription);
-                                foreach(JProperty _property in tdJObject["properties"])
-                                {
-                                    string _key = _property.Name;
-                                    JObject propertyJObject = JObject.FromObject(_property.Value);
-                                    JObject propertySchemaJObject = JObject.FromObject(childSchemaElemObject["childs"][0]);
-                                    Aas.SubmodelElementCollection _propertySMC = BuildAasElement(propertyJObject, propertySchemaJObject) as Aas.SubmodelElementCollection;
-                                    _propertySMC.Add(new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "key",
-                                                     semanticId: semanticReference, description: new List<ILangStringTextType> { new Aas.LangStringTextType("en", "Optional element when the idShort of {property_name} cannot be used to reflect the desired property name due to the idShort restrictions ") },
-                                                     value : _key));
-                                    propoerties.Add(_propertySMC);
-                                }
-                                submodelElement.Add(propoerties);
-                            }
-                            else if (cFormtext == "forms")
-                            {
-                                Aas.SubmodelElementCollection forms = new SubmodelElementCollection(idShort: cpresetIdShort,
-                                                                                semanticId: csemanticReference,
-                                                                                description: cdescription);
-                                foreach (var _form in tdJObject["forms"])
-                                {
-                                    JObject formJObject = JObject.FromObject(_form);
-                                    List<string> keys = formJObject.Properties().Select(p => p.Name).ToList();
-                                    if (keys.Contains("htv_methodName"))
-                                    {
-                                        JObject formSchemaJObject = JObject.FromObject(childSchemaElemObject["childs"][0]);
-                                        forms.Add(BuildAasElement(formJObject, formSchemaJObject));
-                                    }
-                                    else if (isMQTTForm(keys))
-                                    {
-                                        JObject formSchemaJObject = JObject.FromObject(childSchemaElemObject["childs"][1]);
-                                        forms.Add(BuildAasElement(formJObject, formSchemaJObject));
-                                    }
-                                    else if (isModBusForm(keys))
-                                    {
-                                        JObject formSchemaJObject = JObject.FromObject(childSchemaElemObject["childs"][2]);
-                                        forms.Add(BuildAasElement(formJObject, formSchemaJObject));
-                                    }
-                                    break;
-                                }
-                                submodelElement.Add(forms);
-                            }
-                            else
-                            {
-                                JObject childTDJobject = JObject.FromObject(tdJObject[cFormtext]);
-                                submodelElement.Add(BuildAasElement(childTDJobject, childSchemaElemObject));
-                            }
-                        }
-                        else if (celemType == "Property")
-                        {
-                            submodelElement.Add(BuildAasElement(tdJObject, childSchemaElemObject));
-                        }
+                        Aas.ReferenceElement _secRef = new ReferenceElement(idShort: "security" + string.Format("{00:00}", j),
+                                         semanticId: semanticReference, description: new List<ILangStringTextType> { new Aas.LangStringTextType("en", "Reference element to security scheme definition") },
+                                         value: new Reference(ReferenceTypes.ModelReference, _keys));
+
+                        submodelElement.Add(_secRef);
+                        j++;
                     }
-                    else if (celemType == "Range")
+                    return submodelElement;
+                }
+                else if (formText == "properties")
+                {
+                    foreach (JProperty _property in tdJObject["properties"])
                     {
-                        DataTypeDefXsd valueType = idtaDef.GetValueType(childSchemaElemObject["valueType"].ToString());
+                        string _key = _property.Name;
+                        JObject propertyJObject = new JObject();
+                        propertyJObject["property"] = JToken.FromObject(_property.Value);
+                        propertyJObject["property"]["key"] = _key;
+                        JObject propertySchemaJObject = JObject.FromObject(tdSchemaObject["childs"][0]);
+                        SubmodelElementCollection _pSEC =  BuildAasElement(propertyJObject, propertySchemaJObject) as
+                                                            SubmodelElementCollection;
+                        _pSEC.IdShort = _key;
+                        submodelElement.Add(_pSEC);
+                    }
+                    return submodelElement;
+                }
+                else if (formText == "forms")
+                {
+                    if (!tdJObject.ContainsKey(formText))
+                    {
+                        return null;
+                    }
+                    int i = 1;
+                    foreach (var _form in tdJObject["forms"])
+                    {
+                        JObject formJObject = JObject.FromObject(_form);
+                        List<string> keys = formJObject.Properties().Select(p => p.Name).ToList();
+                        if (keys.Contains("htv:methodName"))
+                        {
+                            JObject formSchemaJObject = JObject.FromObject(tdSchemaObject["childs"][0]);
+                            string methodName = formJObject["htv:methodName"].ToString();
+                            formJObject.Remove("htv:methodName");
+                            formJObject["htv_methodName"] = methodName;
+                            JObject httpFormJobject = new JObject();
+                            httpFormJobject["HTTP Form"] = JToken.FromObject(formJObject);
+                            ISubmodelElement fsmc = BuildAasElement(httpFormJobject, formSchemaJObject);
+                            fsmc.IdShort = "form" + string.Format("{00:00}", i);
+                            submodelElement.Add(fsmc);
+                        }
+                        else if (isMQTTForm(keys))
+                        {
+                            JObject mttFormJobject = new JObject();
+                            mttFormJobject["MQTT Form"] = JToken.FromObject(formJObject);
+                            JObject formSchemaJObject = JObject.FromObject(tdSchemaObject["childs"][1]);
+                            ISubmodelElement fsmc = BuildAasElement(mttFormJobject, formSchemaJObject);
+                            fsmc.IdShort = "form" + string.Format("{00:00}", i);
+                            submodelElement.Add(fsmc);
+                        }
+                        else if (isModBusForm(keys))
+                        {
+                            JObject modbusFormJobject = new JObject();
+                            modbusFormJobject["MODBUS Form"] = JToken.FromObject(formJObject);
+                            JObject formSchemaJObject = JObject.FromObject(tdSchemaObject["childs"][2]);
+                            ISubmodelElement fsmc = BuildAasElement(modbusFormJobject, formSchemaJObject);
+                            fsmc.IdShort = "form" + string.Format("{00:00}", i);
+                            submodelElement.Add(fsmc);
+                        }
+                        break;
+                    }
+                }
+                else
+                {
+                    JObject jobject = JObject.FromObject(tdJObject[formText]);
+                    foreach (var childSchemaElem in tdSchemaObject["childs"])
+                    {
+                        string cformText = childSchemaElem["formtext"].ToString();
+                        string cElementType = childSchemaElem["AasElementType"].ToString();
 
-                        Aas.Range _range = new Aas.Range(Aas.DataTypeDefXsd.String, idShort: cpresetIdShort,
-                                                             semanticId: csemanticReference, description: cdescription);
-                        if (cFormtext == "min_max")
+                        if (cElementType == "Range")
                         {
-                            if (tdJObject.ContainsKey("minimum"))
+                            string cpresetIdShort = childSchemaElem["presetIdShort"].ToString();
+                            Reference csemanticReference = idtaDef.ConstructReference(childSchemaElem["semanticReference"].ToString());
+                            LangStringTextType cdescription = new Aas.LangStringTextType("en", childSchemaElem["description"].ToString());
+
+                            bool present = false;
+                            Aas.Range _range = new Aas.Range(Aas.DataTypeDefXsd.String, idShort: cpresetIdShort,
+                                                                 semanticId: csemanticReference, description: new List<ILangStringTextType> { cdescription });
+                            if (cformText == "min_max")
                             {
-                                _range.Min = tdJObject["minimum"].ToString();
+                                if (jobject.ContainsKey("minimum"))
+                                {
+                                    present = true;
+                                    _range.Min = jobject["minimum"].ToString();
+                                }
+                                if (jobject.ContainsKey("maximum"))
+                                {
+                                    present = true;
+                                    _range.Max = jobject["maximum"].ToString();
+                                }
                             }
-                            if (tdJObject.ContainsKey("maximum"))
+                            else if (cformText == "itemsRange")
                             {
-                                _range.Max = tdJObject["maximum"].ToString();
+                                if (jobject.ContainsKey("minItems"))
+                                {
+                                    present = true;
+                                    _range.Min = jobject["minItems"].ToString();
+                                }
+                                if (jobject.ContainsKey("maxItems"))
+                                {
+                                    present = true;
+                                    _range.Max = jobject["maxItems"].ToString();
+                                }
+                            }
+                            else if (cformText == "lengthRange")
+                            {
+                                if (jobject.ContainsKey("minLength"))
+                                {
+                                    present = true;
+                                    _range.Min = jobject["minLength"].ToString();
+                                }
+                                if (jobject.ContainsKey("maxLength"))
+                                {
+                                    present = true;
+                                    _range.Max = jobject["maxLength"].ToString();
+                                }
+                            }
+                            if (present)
+                            {
+                                submodelElement.Add(_range);
                             }
                         }
-                        else if (cFormtext == "itemsRange")
+                        else if (jobject.ContainsKey(cformText))
                         {
-                            if (tdJObject.ContainsKey("minItems"))
-                            {
-                                _range.Min = tdJObject["minItems"].ToString();
-                            }
-                            if (tdJObject.ContainsKey("maxItems"))
-                            {
-                                _range.Max = tdJObject["maxItems"].ToString();
-                            }
+                            JObject childSchemaElemObject = JObject.FromObject(childSchemaElem);
+                            submodelElement.Add(BuildAasElement(jobject, childSchemaElemObject));
                         }
-                        else if (cFormtext == "lengthRange")
-                        {
-                            if (tdJObject.ContainsKey("minLength"))
-                            {
-                                _range.Min = tdJObject["minLength"].ToString();
-                            }
-                            if (tdJObject.ContainsKey("maxLength"))
-                            {
-                                _range.Max = tdJObject["maxLength"].ToString();
-                            }
-                        }
-                        submodelElement.Add(_range);
                     }
                 }
                 return submodelElement;
+            }
+            else if (elemType == "File")
+            {
+                File dName =  BuildAasFile("fileName", idtaDef.ConstructReference("https://admin-shell.io/idta/AssetInterfacesDescription/1/0/externalDescriptorName"), contentType);
+                dName.Value = fileName;
+                return dName;
             }
             return submodelElement;
 
@@ -220,28 +270,14 @@ namespace AasxPluginAID
             }
             return false;
         }
-        public static SubmodelElementCollection BuildExternalDescriptor(string filename,JToken externalDescriptionTdObject, string contentType)
-        {
-            Aas.SubmodelElementCollection externalDescriptor = new Aas.SubmodelElementCollection();
-            externalDescriptor.IdShort = "ExternalDescriptor";
-            externalDescriptor.AddDescription("en", externalDescriptionTdObject["description"].ToString());
-            externalDescriptor.SemanticId = idtaDef.ConstructReference(externalDescriptionTdObject["semanticReference"].ToString());
-
-            Aas.File descriptorName = new Aas.File(contentType: contentType, idShort: "fileName",
-                                                    semanticId: idtaDef.ConstructReference("https://admin-shell.io/idta/AssetInterfacesDescription/1/0/externalDescriptorName")
-                                                    ); 
-            descriptorName.Value = filename;
-
-            externalDescriptor.Add(descriptorName);
-
-            return externalDescriptor;
-        }
         public static SubmodelElementCollection CreateAssetInterfaceDescriptionFromTd(
             JObject tdJObject, string filename, string _submodelId, int interfaceCount, string _contentType)
-        {
+        {   
             interfaceCount++;
             submodelId = _submodelId;
+            contentType = _contentType;
             interfaceId = "interface" + string.Format("{00:00}", interfaceCount);
+            fileName = filename;
             JObject interfaceJObject = JObject.FromObject(idtaDef.EndpointMetadataJObject["interface"]);
             Aas.Reference semanticReference = idtaDef.ConstructReference(interfaceJObject["semanticReference"].ToString());
             LangStringTextType description = new Aas.LangStringTextType("en", interfaceJObject["description"].ToString());
@@ -253,14 +289,42 @@ namespace AasxPluginAID
                 foreach (var childElem in interfaceJObject["childs"])
                 {
                     JObject childSchemaObject = JObject.FromObject(childElem);
-                    if (childElem["formtext"].ToString() == "ExternalDescriptor")
+                    string formText = childSchemaObject["formtext"].ToString();
+                    if (formText  == "EndpointMetadata" || formText == "InteractionMetadata" || 
+                                formText == "ExternalDescriptor")
                     {
-                        interfaceDescription.Add(BuildExternalDescriptor(filename, childSchemaObject, _contentType));
+                        Reference smcsemanticReference = idtaDef.ConstructReference(childSchemaObject["semanticReference"].ToString());
+                        LangStringTextType smcdescription = new Aas.LangStringTextType("en", childSchemaObject["description"].ToString());
+                        SubmodelElementCollection smc = BuildSEC(formText, smcsemanticReference, smcdescription);
+                        foreach (var childSchemaElem in childSchemaObject["childs"])
+                        {
+                            JObject childSchemaElemObject = JObject.FromObject(childSchemaElem);
+                            string cElemformText = childSchemaElem["formtext"].ToString();
+                            if (cElemformText != "descriptorName")
+                            {
+                                if (tdJObject.ContainsKey(cElemformText))
+                                {
+                                    smc.Add(BuildAasElement(tdJObject, childSchemaElemObject));
+                                }
+                            }
+                            else
+                            {
+                                smc.Add(BuildAasElement(tdJObject, childSchemaElemObject));
+                            }
+                            
+                            
+                        }
+                        interfaceDescription.Add(smc); 
+
                     }
                     else
                     {
-                        interfaceDescription.Add(BuildAasElement(tdJObject, childSchemaObject));
-                    }
+                        Aas.ISubmodelElement tdElement = BuildAasElement(tdJObject, childSchemaObject);
+                        if (tdElement != null)
+                        {
+                            interfaceDescription.Add(tdElement);
+                        }
+                    }               
                 }
 
             }
@@ -268,16 +332,6 @@ namespace AasxPluginAID
             {
                 Console.WriteLine(e.ToString());
             }
-            
-            /*
-
-            interfaceDescription.Add(BuildEndPointMetaData(tdJObject, submodelId, interfaceDescription.IdShort));
-            interfaceDescription.Add(BuildInterfaceMetaData(tdJObject));
-            interfaceDescription.Add(BuildExternalDescriptor(filename));
-
-            interfaceDescription.SemanticId = idtaDef.AID_Interface;
-
-            */
             return interfaceDescription;
 
         }

@@ -102,7 +102,9 @@ namespace AasxPluginAID
                     if (semanticReference == "https://admin-shell.io/idta/AssetInterfaceDescription/1/0/PropertyDefinition"
                         || semanticReference == "https://www.w3.org/2019/wot/json-schema#propertyName")
                     {
-                        TDJson[smcJObject["key"].ToString()] = JToken.FromObject(smcJObject);
+                        string _key = smcJObject["key"].ToString();
+                        smcJObject.Remove("key");
+                        TDJson[_key] = JToken.FromObject(smcJObject);
                     }
                     else
                     {
@@ -131,9 +133,9 @@ namespace AasxPluginAID
                     {
 
                     }
-                    else if (se.IdShort == "InterfaceMetaData")
+                    else if (se.IdShort == "InteractionMetadata")
                     {
-                        JToken InterfaceMetaData = serialize_aid_elem(idtaDef.EndpointMetadataJObject["interface"]["childs"][6], se)["InterfaceMetaData"];
+                        JToken InterfaceMetaData = serialize_aid_elem(idtaDef.EndpointMetadataJObject["interface"]["childs"][6], se)["InteractionMetadata"];
                         TDJson.Merge(JObject.FromObject(InterfaceMetaData));
                     }
                     else
