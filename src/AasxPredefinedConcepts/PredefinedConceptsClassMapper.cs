@@ -716,7 +716,7 @@ namespace AasxPredefinedConcepts
             if (eai?.Fi == null || eai.Attr == null || sme == null)
                 return;
 
-            if (sme?.IdShort == "MapRel01")
+            if (sme?.IdShort == "ManufacturerName")
             { ; }
            
             // straight?

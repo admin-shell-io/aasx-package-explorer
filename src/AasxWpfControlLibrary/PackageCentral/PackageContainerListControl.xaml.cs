@@ -25,6 +25,7 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AdminShellNS;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {

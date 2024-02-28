@@ -842,10 +842,13 @@ namespace AasxPackageLogic
             gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.ColumnDefinitions.Add(gc);
 
-            // 3 buttons behind it
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-            g.ColumnDefinitions.Add(gc);
+            // 3++ buttons behind it
+            for (int i = 0; i < 2; i++)
+            {
+                gc = new AnyUiColumnDefinition();
+                gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+                g.ColumnDefinitions.Add(gc);
+            }
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
@@ -864,11 +867,15 @@ namespace AasxPackageLogic
             if (repo != null)
             {
                 AnyUiUIElement.RegisterControl(
-                    AddSmallButtonTo(
-                        g, 0, 3,
-                        margin: new AnyUiThickness(2, 2, 2, 2),
-                        padding: new AnyUiThickness(5, 0, 5, 0),
-                        content: "Add blank"),
+                    Set(
+                        AddSmallButtonTo(
+                            g, 0, 3,
+                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            padding: new AnyUiThickness(5, 0, 5, 0),
+                            content: "Add blank"),
+                        verticalAlignment: AnyUiVerticalAlignment.Top,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                        colSpan: 3),
                     (o) =>
                     {
                         langStr.Add<T>("", "");
@@ -903,18 +910,22 @@ namespace AasxPackageLogic
                         var currentI = 0 + i;
 
                         // lang
-                        var tbLang = AddSmallComboBoxTo(
-                            g, 0 + i + rowOfs, 1,
-                            margin: NormalOrCapa(
-                                new AnyUiThickness(4, 2, 2, 2),
-                                AnyUiContextCapability.Blazor, new AnyUiThickness(4, 2, 2, 0)),
-                            padding: NormalOrCapa(
-                                new AnyUiThickness(0, -1, 0, -1),
-                                AnyUiContextCapability.Blazor, new AnyUiThickness(0, 4, 0, 4)),
-                            text: "" + langStr[currentI].Language,
-                            minWidth: 60,
-                            items: defaultLanguages,
-                            isEditable: true);
+                        var tbLang = Set(
+                                AddSmallComboBoxTo(
+                                    g, 0 + i + rowOfs, 1,
+                                    margin: NormalOrCapa(
+                                        new AnyUiThickness(4, 2, 2, 2),
+                                        AnyUiContextCapability.Blazor, new AnyUiThickness(4, 2, 2, 0)),
+                                    padding: NormalOrCapa(
+                                        new AnyUiThickness(0, 0, 0, 0),
+                                        AnyUiContextCapability.Blazor, new AnyUiThickness(0, 4, 0, 4)),
+                                    text: "" + langStr[currentI].Language,
+                                    minWidth: 60,
+                                    items: defaultLanguages,
+                                    isEditable: true),
+                                verticalAlignment: AnyUiVerticalAlignment.Top,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center
+                            );
                         AnyUiUIElement.RegisterControl(
                             tbLang,
                             (o) =>
@@ -960,20 +971,72 @@ namespace AasxPackageLogic
                                 // CompareUtils.Compare<IAbstractLangString>((IAbstractLangString)this.highlightField.containingObject, langStr[currentI]))
                             this.HighligtStateElement(tbStr, true);
 
-                        // button [-]
+                        // button [≡]
                         AnyUiUIElement.RegisterControl(
                             AddSmallButtonTo(
                                 g, 0 + i + rowOfs, 3,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
                                 padding: new AnyUiThickness(5, 0, 5, 0),
-                                verticalAlignment: AnyUiVerticalAlignment.Center,
-                                content: "-"),
+                                verticalAlignment: AnyUiVerticalAlignment.Top,
+                                content: "\u2261"), 
                             (o) =>
                             {
-                                langStr.RemoveAt(currentI);
-								emitCustomEvent?.Invoke(relatedReferable);
-								return new AnyUiLambdaActionRedrawEntity();
+                                var uc = new AnyUiDialogueDataTextEditor(
+                                    caption: $"Edit Text @ {langStr[currentI].Language} ...",
+                                    mimeType: "text/markdown",
+                                    text: langStr[currentI].Text);
+
+                                if (this.context.StartFlyoverModal(uc))
+                                {
+                                    langStr[currentI].Text = uc.Text;
+                                    emitCustomEvent?.Invoke(relatedReferable);
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+								return new AnyUiLambdaActionNone();
                             });
+
+                        // button [⋮]
+                        Set(
+                            AddSmallContextMenuItemTo(
+                                    g, 0 + i + rowOfs, 4,
+                                    "\u22ee",
+                                    repo, new[] {
+                                        "\u2702", "Delete",
+                                        "\u25b2", "Move Up",
+                                        "\u25bc", "Move Down",
+                                    },
+                                    margin: new AnyUiThickness(2, 2, 2, 2),
+                                    padding: new AnyUiThickness(5, 0, 5, 0),
+                                    menuItemLambda: (o) =>
+                                    {
+                                        var action = false;
+
+                                        if (o is int ti)
+                                            switch (ti)
+                                            {
+                                                case 0:
+                                                    langStr.RemoveAt(currentI);
+                                                    action = true;
+                                                    break;
+                                                case 1:
+                                                    MoveElementInListUpwards<T>(langStr, langStr[currentI]);
+                                                    action = true;
+                                                    break;
+                                                case 2:
+                                                    MoveElementInListDownwards<T>(langStr, langStr[currentI]);
+                                                    action = true;
+                                                    break;
+                                            }
+
+                                        emitCustomEvent?.Invoke(relatedReferable);
+
+                                        if (action)
+                                            return new AnyUiLambdaActionRedrawEntity();
+                                        return new AnyUiLambdaActionNone();
+                                    }),
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                            verticalAlignment: AnyUiVerticalAlignment.Top
+                        );
                     }
 
             // in total
@@ -1622,6 +1685,7 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages = null,
             PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
             string addExistingEntities = null,
+            Func<Aas.IReference, Aas.IReference> modifyAddExistingKey = null,
             bool addEclassIrdi = false,
             bool addFromKnown = false,
             string[] addPresetNames = null, List<Aas.IKey>[] addPresetKeyLists = null,
@@ -1790,6 +1854,14 @@ namespace AasxPackageLogic
                         (o) =>
                         {
                             var k2 = SmartSelectAasEntityKeys(packages, selector, addExistingEntities);
+
+                            if (modifyAddExistingKey != null)
+                            {
+                                var outRefs = ExtendReference.CreateNew(k2);
+                                var inRefs = modifyAddExistingKey.Invoke(outRefs);
+                                if (inRefs != null)
+                                    k2 = inRefs.Keys;
+                            }                                                      
 
                             // some special cases
                             if (!Options.Curr.ModelRefCd && k2 != null && k2.Count == 1
@@ -2585,7 +2657,7 @@ namespace AasxPackageLogic
                         if (rf is Aas.ISubmodelElement rfsme && rfsme.SemanticId != null
                             && rfsme.SemanticId.Keys.Count() >= 1)
                         {
-                            rfsme.SemanticId.Keys[0].Type = Aas.KeyTypes.ConceptDescription;
+                            rfsme.SemanticId.Keys[0].Type = Aas.KeyTypes.GlobalReference;
                         }
                     }
 

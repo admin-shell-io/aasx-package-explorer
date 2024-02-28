@@ -26,6 +26,10 @@ namespace AasxPredefinedConcepts
         public Aas.ConceptDescription
 			CD_ContactInfoPreviewFile;
 
+        public Aas.IKey
+            Key_SmtDropinDefinition,
+            Key_SmtDropinUse;
+
         public SmtAdditions()
         {
             // info
@@ -36,6 +40,14 @@ namespace AasxPredefinedConcepts
 				"ContactInfoPreviewFile",
 				"https://admin-shell.io/tmp/SMT/Additions/ContactInformation/PreviewFile",
 				@"Provides a preview image of the contact, e.g. an image of a person or a symbolic pictuture, in a commonly used image format and low resolution.");
+
+            // SMT dropins
+            Key_SmtDropinDefinition = new Aas.Key(Aas.KeyTypes.GlobalReference,
+                "https://admin-shell.io/smt-dropin/smt-dropin-definition/1/0");
+
+            Key_SmtDropinUse = new Aas.Key(Aas.KeyTypes.GlobalReference,
+                "https://admin-shell.io/smt-dropin/smt-dropin-use/1/0");
+
 
             // reflect
             AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);

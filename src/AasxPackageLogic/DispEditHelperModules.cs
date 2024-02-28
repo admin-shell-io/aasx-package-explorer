@@ -2265,7 +2265,7 @@ namespace AasxPackageLogic
                                 }
                                 else
                                 {
-                                    Log.Singleton.Info(
+                                    Log.Singleton.Info(StoredPrint.Color.Blue,
                                         $"Added empty text-file {ptd + ptfn} to pending package items. " +
                                         $"A save-operation is required.");
                                     valueContent = mimeType;
@@ -2422,7 +2422,7 @@ namespace AasxPackageLogic
                                     }
                                     else
                                     {
-                                        Log.Singleton.Info(
+                                        Log.Singleton.Info(StoredPrint.Color.Blue,
                                             $"Added {ptfn} to pending package items. A save-operation is required.");
                                         valueContent = mimeType;
                                         valuePath = targetPath;

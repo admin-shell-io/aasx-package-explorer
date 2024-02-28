@@ -17,6 +17,7 @@ using System.Windows.Input;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
+using AdminShellNS;
 using AnyUi;
 
 namespace AasxPackageExplorer

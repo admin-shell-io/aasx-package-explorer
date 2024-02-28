@@ -78,7 +78,7 @@ namespace AasxPluginExportTable.Uml
                     var panel = new AnyUiStackPanel();
                     var helper = new AnyUiSmallWidgetToolkit();
 
-                    var g = helper.AddSmallGrid(7, 2, new[] { "220:", "*" },
+                    var g = helper.AddSmallGrid(10, 2, new[] { "220:", "*" },
                                 padding: new AnyUiThickness(0, 5, 0, 5));
                     panel.Add(g);
 
@@ -108,7 +108,7 @@ namespace AasxPluginExportTable.Uml
                         (i) => { record.PlantFormat = (PlantUmlFormat) i; });
 #endif
 
-                    // Row 2 : Suppress elementes
+                    // Row 2 : Suppress elements
                     helper.AddSmallLabelTo(g, 2, 0, content: "Suppress elements:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
@@ -121,12 +121,32 @@ namespace AasxPluginExportTable.Uml
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center)),
                         (s) => { record.Suppress = s; });
 
-                    // Row 3 : limiting of values im UML
-                    helper.AddSmallLabelTo(g, 3, 0, content: "Limit values:",
+                    // Row 3 : Depth
+                    helper.AddSmallLabelTo(g, 3, 0, content: "Depth:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                    var g2 = helper.AddSmallGridTo(g, 3, 1, 1, 2, new[] { "200:", "*" });
+                    var g11 = helper.AddSmallGridTo(g, 3, 1, 1, 2, new[] { "200:", "*" });
+                    AnyUiUIElement.SetIntFromControl(
+                        helper.Set(
+                            helper.AddSmallTextBoxTo(g11, 0, 0,
+                                margin: new AnyUiThickness(0, 2, 2, 2),
+                                text: $"{record.Depth:D}",
+                                verticalAlignment: AnyUiVerticalAlignment.Center,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center)),
+                        (i) => { record.Depth = i; });
+                    helper.AddSmallLabelTo(g11, 0, 1,
+                        content: "(0 = all, 1 = only top level, ..)",
+                        margin: new AnyUiThickness(10, 0, 0, 0),
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+
+                    // Row 4 : limiting of values im UML
+                    helper.AddSmallLabelTo(g, 4, 0, content: "Limit values:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+
+                    var g2 = helper.AddSmallGridTo(g, 4, 1, 1, 2, new[] { "200:", "*" });
                     AnyUiUIElement.SetIntFromControl(
                         helper.Set(
                             helper.AddSmallTextBoxTo(g2, 0, 0,
@@ -143,39 +163,65 @@ namespace AasxPluginExportTable.Uml
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
-                    // Row 4 : Outline
-                    helper.AddSmallLabelTo(g, 4, 0, content: "Outline:",
+                    // Row 5 : Outline
+                    helper.AddSmallLabelTo(g, 5, 0, content: "Outline:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetBoolFromControl(
                         helper.Set(
-                            helper.AddSmallCheckBoxTo(g, 4, 1,
+                            helper.AddSmallCheckBoxTo(g, 5, 1,
                                 content: "(no members in classes, compact)",
                                 isChecked: record.Outline,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),
                                 colSpan: 2),
                             (b) => { record.Outline = b; });
 
-                    // Row 5 : SwapDirection
-                    helper.AddSmallLabelTo(g, 5, 0, content: "Swap direction:",
+                    // Row 6 : SwapDirection
+                    helper.AddSmallLabelTo(g, 6, 0, content: "Swap direction:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetBoolFromControl(
                         helper.Set(
-                            helper.AddSmallCheckBoxTo(g, 5, 1,
+                            helper.AddSmallCheckBoxTo(g, 6, 1,
                                 content: "(changed direction for adding graphical elements)",
                                 isChecked: record.SwapDirection,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),
                                 colSpan: 2),
                             (b) => { record.SwapDirection = b; });
 
-                    // Row 6 : Copy to paste buffer
-                    helper.AddSmallLabelTo(g, 6, 0, content: "Copy to paste buffer:",
+                    // Row 7 : Copy to paste buffer
+                    helper.AddSmallLabelTo(g, 7, 0, content: "Classes from concepts:",
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center);
                     AnyUiUIElement.SetBoolFromControl(
                         helper.Set(
-                            helper.AddSmallCheckBoxTo(g, 6, 1,
+                            helper.AddSmallCheckBoxTo(g, 7, 1,
+                                content: "(will use concept idShort as names of classes)",
+                                isChecked: record.ClassesFromConcepts,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                                colSpan: 2),
+                            (b) => { record.ClassesFromConcepts = b; });
+
+                    // Row 8 : Copy to paste buffer
+                    helper.AddSmallLabelTo(g, 8, 0, content: "No association names:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.Set(
+                            helper.AddSmallCheckBoxTo(g, 8, 1,
+                                content: "(will not name ends of associations, cleaner)",
+                                isChecked: record.NoAssociationNames,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                                colSpan: 2),
+                            (b) => { record.NoAssociationNames = b; });
+
+                    // Row 9 : Copy to paste buffer
+                    helper.AddSmallLabelTo(g, 9, 0, content: "Copy to paste buffer:",
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                    AnyUiUIElement.SetBoolFromControl(
+                        helper.Set(
+                            helper.AddSmallCheckBoxTo(g, 9, 1,
                                 content: "(after export, file will be copied to paste buffer)",
                                 isChecked: record.CopyToPasteBuffer,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),

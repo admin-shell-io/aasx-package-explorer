@@ -671,7 +671,7 @@ namespace AasxPackageLogic
             if (order?.HasContent() != true)
                 return;
 			VisualElementEnvironmentItem._cdSortOrder = 
-                EnumHelper.GetEnumMemberFromValueString<ConceptDescSortOrder>(order);
+                AdminShellEnumHelper.GetEnumMemberFromValueString<ConceptDescSortOrder>(order);
 		}
 	}
 
@@ -1649,7 +1649,8 @@ namespace AasxPackageLogic
 
         private VisualElementConceptDescription GenerateVisualElementsForSingleCD(
             TreeViewLineCache cache, Aas.Environment env,
-            Aas.IConceptDescription cd, VisualElementGeneric parent)
+            Aas.IConceptDescription cd, VisualElementGeneric parent,
+            Aas.ISubmodel submodelForCDs)
         {
             // access
             if (cache == null || cd == null || parent == null)
@@ -1670,7 +1671,7 @@ namespace AasxPackageLogic
                         continue;
 
                     // try find in CDs
-                    var vrpCD = env?.FindConceptDescriptionByReference(vlp.ValueId);
+                    var vrpCD = env?.FindConceptDescriptionByReference(vlp.ValueId);                    
                     if (vrpCD != null && tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme)
                     {
                         // nice, add "real" CD
@@ -1682,6 +1683,12 @@ namespace AasxPackageLogic
                         // add as VLP
                         var tiVP = new VisualElementValueRefPair(tiCD, cache, env, cd, vlp);
                         tiCD.Members.Add(tiVP);
+                    }
+
+                    // remember, that this value pair CD hangs "below" an Submodel
+                    if (submodelForCDs != null)
+                    {
+                        _cdToSm.Add(vrpCD, submodelForCDs);
                     }
                 }
             }
@@ -1731,7 +1738,8 @@ namespace AasxPackageLogic
                 if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
                     && tism.CachedCD != null)
                 {
-                    GenerateVisualElementsForSingleCD(cache, env, tism.CachedCD, tism);
+                    GenerateVisualElementsForSingleCD(cache, env, tism.CachedCD, tism,
+                        submodelForCDs: sm);
                 }
             }
 
@@ -2021,7 +2029,8 @@ namespace AasxPackageLogic
                 lambdaAddRecurse = (tiParent, cd, recDepth) =>
                 {
                     // add
-                    var tiCD = GenerateVisualElementsForSingleCD(cache, env, cd, tiParent);
+                    var tiCD = GenerateVisualElementsForSingleCD(cache, env, cd, tiParent,
+                        submodelForCDs: null);
                     tiCD.ApplyShade(recDepth);
 
                     // when straight called, might be not part of a structure
@@ -2122,7 +2131,8 @@ namespace AasxPackageLogic
                             if (null == _cdToSm[cd].Where((cdsm) => cdsm == sm).FirstOrDefault())
                                 continue;
 
-							GenerateVisualElementsForSingleCD(cache, env, cd, tiSM);
+							GenerateVisualElementsForSingleCD(cache, env, cd, tiSM,
+                                submodelForCDs: sm);
 						}
 					}
 
@@ -2159,7 +2169,8 @@ namespace AasxPackageLogic
 					continue;
 
                 // add to the "unstructured" branch of the tree
-				GenerateVisualElementsForSingleCD(cache, env, cd, tiUnstructuredRoot);
+				GenerateVisualElementsForSingleCD(cache, env, cd, tiUnstructuredRoot,
+                    submodelForCDs: null);
             }
 
             //

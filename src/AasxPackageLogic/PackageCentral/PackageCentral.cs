@@ -399,6 +399,25 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
+        /// <summary>
+        /// Will go to all accessible containers to find Referables by a provided reference
+        /// </summary>
+		public IEnumerable<Aas.IReferable> FindAllReferablesWith(Aas.IReference reference) 
+        {
+            if (reference == null || reference.Count() < 1)
+                yield break;
+
+            foreach (var cnt in GetAllContainer())
+            {
+                if (cnt.Env?.AasEnv != null)
+                {
+                    var rf = cnt.Env.AasEnv.FindReferableByReference(reference);
+                    if (rf != null)
+                        yield return rf;
+                }
+            }
+        }
+
         //
         // Event management
         //

@@ -25,6 +25,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 using Aas = AasCore.Aas3_0;
+using AasxPredefinedConcepts;
 
 // ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
 
@@ -203,6 +204,22 @@ namespace AasxPluginExportTable.Table
                 rep(head + "@" + "" + ls.Language, "" + ls.Text);
             }
 
+            private void repListOfLangStrSingleLanguages<T>(
+                string head, List<T> lss) where T : Aas.IAbstractLangString
+            {
+                if (lss == null)
+                    return;
+
+                var md = new MultiValueDictionary<string, string>();
+                foreach (var ls in lss)
+                    md.Add(ls.Language, ls.Text);
+                foreach (var key in md.Keys)
+                {
+                    var txt = string.Join("\r\n\r\n", md[key]);
+                    rep(head + "@" + "" + key, "" + txt);
+                }
+            }
+
             private void repListOfLangStr(string head, List<Aas.ILangStringTextType> lss)
             {
                 if (lss == null)
@@ -211,9 +228,9 @@ namespace AasxPluginExportTable.Table
                 // entity in total
                 rep(head, "" + lss.ToStringExtended(format: 2));
 
-                // single entities
-                foreach (var ls in lss)
-                    repLangStr(head, ls);
+                // single entities (make a dict of languages, for each language add all 
+                // occurences with line breaks)
+                repListOfLangStrSingleLanguages(head, lss);
             }
 
             private void repListOfLangStr(string head, List<Aas.ILangStringDefinitionTypeIec61360> lss)
@@ -224,9 +241,9 @@ namespace AasxPluginExportTable.Table
                 // entity in total
                 rep(head, "" + lss.ToString());
 
-                // single entities
-                foreach (var ls in lss)
-                    repLangStr(head, ls);
+                // single entities (make a dict of languages, for each language add all 
+                // occurences with line breaks)
+                repListOfLangStrSingleLanguages(head, lss);
             }
 
             private void repListOfLangStr(string head, List<Aas.ILangStringShortNameTypeIec61360> lss)
@@ -237,9 +254,9 @@ namespace AasxPluginExportTable.Table
                 // entity in total
                 rep(head, "" + lss.ToString());
 
-                // single entities
-                foreach (var ls in lss)
-                    repLangStr(head, ls);
+                // single entities (make a dict of languages, for each language add all 
+                // occurences with line breaks)
+                repListOfLangStrSingleLanguages(head, lss);
             }
 
             private void repListOfLangStr(string head, List<Aas.ILangStringPreferredNameTypeIec61360> lss)
@@ -263,6 +280,14 @@ namespace AasxPluginExportTable.Table
                     rep(head + "idShort", rf.IdShort);
                 if (rf.Category != null)
                     rep(head + "category", rf.Category);
+
+                if (rf?.Description != null && rf.Description.Count > 0 
+                    && rf.Description[0].Text?.Contains("Each SMC represents a change of a technical data element") == true
+                    && rf.Description.Count > 1)
+                {
+                    ;
+                }
+
                 if (rf.Description != null)
                     repListOfLangStr(head + "description", rf.Description);
                 rep(head + "elementName", "" + rf.GetSelfDescription()?.AasElementName);
@@ -313,7 +338,7 @@ namespace AasxPluginExportTable.Table
                 rep(head + "qualifiers", "" + qualifiers.ToStringExtended(1));
             }
 
-            private void repMultiplicty(string head, List<Aas.IQualifier> qualifiers)
+            private void repMultiplicty(string head, IEnumerable<Aas.IQualifier> qualifiers)
             {
                 // access
                 if (qualifiers == null)
@@ -321,14 +346,14 @@ namespace AasxPluginExportTable.Table
 
                 // try find
                 string multiStr = null;
-                var q = qualifiers.FindType("Multiplicity");
-                if (q != null)
+
+                var qf = AasSmtQualifiers.FindSmtCardinalityQualfier(qualifiers);
+                if (qf?.Value != null)
                 {
-                    foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
-                        if ("" + q.Value == Enum.GetName(typeof(FormMultiplicity), m))
-                        {
-                            multiStr = "" + AasFormConstants.FormMultiplicityAsUmlCardinality[(int)m];
-                        }
+                    var card = AdminShellEnumHelper.
+                                GetEnumMemberFromValueString<AasSmtQualifiers.SmtCardinality>(
+                            qf.Value, valElse: AasSmtQualifiers.SmtCardinality.One);
+                    multiStr = AasSmtQualifiers.CardinalityToString(card, 3);
                 }
 
                 //-9- {Qualifiable}.multiplicity
@@ -392,6 +417,7 @@ namespace AasxPluginExportTable.Table
                 rep("nl", "" + Environment.NewLine);
                 rep("br", "\r");
                 rep("tab", "\t");
+                rep("brpost", "%BRPOST%");
 
                 // for the provided AAS entites, set the replacements
                 if (Item != null)
@@ -1593,6 +1619,26 @@ namespace AasxPluginExportTable.Table
             return colStart + colBody + Environment.NewLine;
         }
 
+        private string ExportAsciiDocPostProcessAsciiDoc(string st)
+        {
+            var lines = Regex.Split(st, @"\+\r\n|\+\r|\r\n\r\n").ToList();
+            
+            // remove empty
+            lines.RemoveAll((s) => s?.HasContent() != true );
+
+            // join the result lines with correct "+" 
+            var res = string.Join(" +" + Environment.NewLine, lines);
+
+            // make sure there is another line end at the end
+            res = res.TrimEnd('\r', '\n');
+            res += Environment.NewLine;
+
+            // additional line breaks in post-process
+            res = res.Replace("%BRPOST%", " +" + Environment.NewLine);
+
+            return res;
+        }
+
         public bool ExportAsciiDoc(
             string fn,
             List<ExportTableAasEntitiesList> iterateAasEntities)
@@ -1720,6 +1766,9 @@ namespace AasxPluginExportTable.Table
 
                                 // cell formatting
                                 var colText = ExportAsciiDocEvalColumnText(cr, colorState, ref colSkip);
+
+                                // post process
+                                colText = ExportAsciiDocPostProcessAsciiDoc(colText);
 
                                 // add
                                 line += colText;

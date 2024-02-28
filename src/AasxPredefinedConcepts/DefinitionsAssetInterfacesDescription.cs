@@ -1,4 +1,5 @@
 ﻿/*
+/*
 Copyright (c) 2018-2023 Festo SE & Co. KG
 <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
@@ -16,6 +17,10 @@ using Extensions;
 using System;
 using System.Collections.Generic;
 using Aas = AasCore.Aas3_0;
+
+// These classes were serialized by "export predefined concepts"
+// and shall allow to automatically de-serialize AAS elements structures
+// into C# classes.
 
 namespace AasxPredefinedConcepts.AssetInterfacesDescription
 {

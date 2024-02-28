@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml;
 using AasxIntegrationBase;
+using AdminShellNS;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -96,6 +97,12 @@ namespace AasxPluginAdvancedTextEditor
                     highlightingComboBox.SelectedItem = item;
                     break;
                 }
+
+            // set word wrap accordingly
+            var mt = mimeType.ToLower().Trim();
+            var isWordWrap = mt.Contains("markdown") || mt.Contains("asciidoc") 
+                || mt.Contains("xml") || mt.Contains("json");
+            textEditor.WordWrap = isWordWrap;
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

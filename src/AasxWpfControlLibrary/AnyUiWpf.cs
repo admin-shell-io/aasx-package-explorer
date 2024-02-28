@@ -11,6 +11,7 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AdminShellNS;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

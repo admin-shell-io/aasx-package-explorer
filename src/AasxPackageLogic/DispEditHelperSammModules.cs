@@ -841,7 +841,7 @@ namespace AasxPackageLogic
 					var currEM = pii.GetValue(sammInst);
 
 					// generate a list for combo box
-					var eMems = EnumHelper.EnumHelperGetMemberInfo(underlyingType).ToList();
+					var eMems = AdminShellEnumHelper.EnumHelperGetMemberInfo(underlyingType).ToList();
 
 					// find selected index
 					int? selectedIndex = null;
@@ -1202,50 +1202,7 @@ namespace AasxPackageLogic
 		
 	}
 
-	/// <summary>
-	/// This class adds some helpers for handling enums.
-	/// </summary>
-	public static class EnumHelper
-	{
-		// TODO (MIHO, 2023-11-03): move to general utility class
-		public class EnumHelperMemberInfo
-		{
-			public string MemberValue = "";
-			public string MemberDisplay = "";
-			public object MemberInstance;
-		}
-
-		public static IEnumerable<EnumHelperMemberInfo> EnumHelperGetMemberInfo(Type underlyingType)
-		{
-			foreach (var enumMemberInfo in underlyingType.GetFields(BindingFlags.Public | BindingFlags.Static))
-			{
-				var enumInst = Activator.CreateInstance(underlyingType);
-
-				var memVal = enumMemberInfo.GetCustomAttribute<EnumMemberAttribute>()?.Value;
-				var memDisp = enumMemberInfo.GetCustomAttribute<EnumMemberDisplayAttribute>()?.Text;				
-
-				if (memVal?.HasContent() == true)
-				{
-					var ev = enumMemberInfo.GetValue(enumInst);
-
-					yield return new EnumHelperMemberInfo()
-					{
-						MemberValue = memVal,
-						MemberDisplay = (memDisp?.HasContent() == true) ? memDisp : memVal,
-						MemberInstance = ev
-					};
-				}
-			}
-		}
-
-		public static T GetEnumMemberFromValueString<T>(string valStr, T valElse = default(T) ) where T : struct
-		{
-			foreach (var em in EnumHelperGetMemberInfo(typeof(T)))
-				if (em.MemberValue.Equals(valStr?.Trim(), StringComparison.InvariantCultureIgnoreCase))
-					return (T) em.MemberInstance;
-			return (T) valElse;
-		}
-	}
+	
 
 	/// <summary>
 	/// This class provides a little help when dealing with RDF graphs provided by dotNetRdf
@@ -1675,7 +1632,7 @@ namespace AasxPackageLogic
 					if (underlyingType != null && underlyingType.IsEnum)
 					{
 
-						var eMems = EnumHelper.EnumHelperGetMemberInfo(underlyingType);
+						var eMems = AdminShellEnumHelper.EnumHelperGetMemberInfo(underlyingType);
 						foreach (var em in eMems)
 							if (objStr.Contains(em.MemberValue))
 							{
@@ -2098,7 +2055,7 @@ namespace AasxPackageLogic
 						var currEM = pi.GetValue(me);
 
 						// generate a list of string representations
-						var eMems = EnumHelper.EnumHelperGetMemberInfo(underlyingType).ToList();
+						var eMems = AdminShellEnumHelper.EnumHelperGetMemberInfo(underlyingType).ToList();
 
 						// find selected index
 						int? selectedIndex = null;

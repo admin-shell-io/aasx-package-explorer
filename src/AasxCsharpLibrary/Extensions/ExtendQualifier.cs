@@ -130,22 +130,29 @@ namespace Extensions
 
         #region QualifierCollection
 
-        public static IQualifier FindQualifierOfType(this List<IQualifier> qualifiers, string qualifierType)
+        public static IQualifier FindQualifierOfType(this IEnumerable<IQualifier> qualifiers, string qualifierType)
         {
-            if (qualifierType == null)
-            {
+            if (qualifiers == null || qualifierType == null)
                 return null;
-            }
 
             foreach (var qualifier in qualifiers)
-            {
                 if (qualifier != null && qualifierType.Equals(qualifier.Type))
-                {
                     return qualifier;
-                }
-            }
 
             return null;
+        }
+
+        public static IEnumerable<IQualifier> FindQualifierOfAnyType(
+            this IEnumerable<IQualifier> qualifiers, string[] qualifierTypes)
+        {
+            if (qualifierTypes == null || qualifierTypes.Length < 1)
+                yield break;
+            foreach (var qualifierType in qualifierTypes)
+            {
+                var res = FindQualifierOfType(qualifiers, qualifierType);
+                if (res != null)
+                    yield return res;
+            }
         }
 
         // ReSharper disable MethodOverloadWithOptionalParameter .. this seems to work, anyhow

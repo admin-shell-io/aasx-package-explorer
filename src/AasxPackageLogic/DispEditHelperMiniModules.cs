@@ -1178,6 +1178,7 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages = null,
             PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
             string addExistingEntities = null,
+            Func<Aas.IReference, Aas.IReference> modifyAddExistingKey = null,
             bool addEclassIrdi = false,
             bool addFromKnown = false,
             string[] addPresetNames = null, List<Aas.IKey>[] addPresetKeyLists = null,
@@ -1303,7 +1304,8 @@ namespace AasxPackageLogic
 
             AddKeyListKeys(
                 view, key, refkeys.Keys, repo, packages, selector,
-                addExistingEntities, addEclassIrdi, addFromKnown, addPresetNames, addPresetKeyLists,
+                addExistingEntities, modifyAddExistingKey,
+                addEclassIrdi, addFromKnown, addPresetNames, addPresetKeyLists,
                 jumpLambda, takeOverLambdaAction, noEditJumpLambda,
                 relatedReferable,
                 frontPanel: frontPanel,
@@ -1344,6 +1346,46 @@ namespace AasxPackageLogic
             return false;
         }
 
+        private IEnumerable<Aas.IValueReferencePair> PasteValueReferencePairsTextToList(string jsonInput)
+        {
+            var res = new List<Aas.IValueReferencePair>();
+            if (jsonInput == null)
+                return res;
+            jsonInput = jsonInput.Trim();
+
+            // text or json
+            if (!jsonInput.StartsWith('['))
+            {
+                // text based; multiple lines
+                var lines = jsonInput.Split(new string[] { System.Environment.NewLine },
+                    StringSplitOptions.RemoveEmptyEntries);
+                foreach (var ln in lines)
+                {
+                    var pairs = ln.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                    if (pairs.Length < 2)
+                        continue;
+                    res.Add(new Aas.ValueReferencePair(
+                        value: pairs[0],
+                        new Aas.Reference(ReferenceTypes.ExternalReference,
+                            (new Aas.IKey[] { new Aas.Key(KeyTypes.GlobalReference, pairs[1]) }).ToList())
+                        ));
+                }
+            }
+            else
+            {
+                // special read
+                JsonTextReader reader = new JsonTextReader(new StringReader(jsonInput));
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Converters.Add(new AdminShellConverters.AdaptiveAasIClassConverter(
+                    AdminShellConverters.AdaptiveAasIClassConverter.ConversionMode.AasCore));
+                res = serializer.Deserialize<List<Aas.ValueReferencePair>>(reader)
+                    .Cast<Aas.IValueReferencePair>().ToList();
+            }
+
+            // okay?
+            return res.AsEnumerable();
+        }
+
 
         public void ValueListHelper(
             Aas.Environment env,
@@ -1357,7 +1399,7 @@ namespace AasxPackageLogic
                 // let the user control the number of pairs
                 AddActionPanel(
                     stack, $"{key}:",
-                    new[] { "Add blank", "Add from clipboard", "Delete last" },
+                    new[] { "Add blank", "Add from clipboard", "Add multiple from clipboard", "Delete last" },
                     repo,
                     (buttonNdx) =>
                     {
@@ -1389,7 +1431,24 @@ namespace AasxPackageLogic
                             }
                         }
 
-                        if (buttonNdx == 2 && valuePairs.Count > 0)
+                        if (buttonNdx == 2)
+                        {
+                            try
+                            {
+                                var pNew = PasteValueReferencePairsTextToList(this.context?.ClipboardGet()?.Text);
+                                if (pNew != null && pNew.Count() > 0)
+                                {
+                                    valuePairs.AddRange(pNew);
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex, "while accessing ValueReferencePair data in clipboard");
+                            }
+                        }
+
+                        if (buttonNdx == 3 && valuePairs.Count > 0)
                             valuePairs.RemoveAt(valuePairs.Count - 1);
 
                         return new AnyUiLambdaActionRedrawEntity();

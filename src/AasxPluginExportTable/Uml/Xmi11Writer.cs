@@ -38,8 +38,9 @@ namespace AasxPluginExportTable.Uml
 
         public XmlElement Package;
 
-        public void StartDoc(ExportUmlRecord options)
+        public void StartDoc(ExportUmlRecord options, Aas.Environment env)
         {
+            _env = env;
             if (options != null)
                 _options = options;
 

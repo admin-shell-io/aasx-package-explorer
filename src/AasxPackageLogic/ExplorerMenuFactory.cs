@@ -12,6 +12,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasxIntegrationBase;
 using AasxPackageLogic;
+using AdminShellNS;
 using Extensions;
 
 namespace AasxPackageExplorer

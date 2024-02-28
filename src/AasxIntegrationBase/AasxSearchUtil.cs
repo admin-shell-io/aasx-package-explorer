@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AdminShellNS;
 using Extensions;
 using System;
 using System.Collections;
@@ -263,7 +264,9 @@ namespace AasxIntegrationBase
         /// </summary>
         public static void CheckSearchable(
             SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
-            MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash,
+            MemberInfo mi, object memberValue, object containingObject, 
+            Func<int> getMemberHash,
+            object foundObjectToDisplay,
             Action<bool, int> progress = null, LogInstance log = null)
         {
             // try get a speaking name
@@ -293,7 +296,6 @@ namespace AasxIntegrationBase
                 var isProp = (businessObject is Aas.Property);
 
                 var isMLP = (businessObject is Aas.MultiLanguageProperty);
-
 
                 if (!options.SearchCollection && isColl)
                     return;
@@ -340,7 +342,7 @@ namespace AasxIntegrationBase
                     sri.metaModelName = metaModelName;
                     sri.businessObject = businessObject;
                     sri.foundText = foundText;
-                    sri.foundObject = memberValue;
+                    sri.foundObject = foundObjectToDisplay;
                     sri.containingObject = containingObject;
                     if (getMemberHash != null)
                         sri.foundHash = getMemberHash();
@@ -666,6 +668,11 @@ namespace AasxIntegrationBase
             // report a "false" progress
             progress?.Invoke(false, 0);
 
+            if (businessObject is Aas.Blob)
+            {
+                ;
+            }
+
             // look at fields, first
             var fields = objType.GetFields();
             foreach (var fi in fields)
@@ -684,7 +691,7 @@ namespace AasxIntegrationBase
                     // field is a single entity .. check it
                     CheckSearchable(
                         results, options, qualifiedName, businessObject, fi, fieldValue, obj,
-                        () => { return fieldValue.GetHashCode(); }, progress, log);
+                        () => { return fieldValue.GetHashCode(); }, fieldValue, progress, log);
                 }
             }
 
@@ -705,13 +712,23 @@ namespace AasxIntegrationBase
                 if (valueElems != null)
                 {
                     // property is a collection 
+                    // some special case: Blob having a text inside
+                    if (propValue is byte[] pvbytes
+                        && businessObject is Aas.IBlob blb
+                        && AdminShellUtil.CheckForTextContentType(blb.ContentType))
+                    {
+                        string strData = System.Text.Encoding.UTF8.GetString(pvbytes);
+                        CheckSearchable(
+                            results, options, qualifiedName, businessObject, pi, strData, obj,
+                            () => { return propValue.GetHashCode(); }, propValue, progress, log);
+                    }
                 }
                 else
                 {
                     // field is a single entity .. check it
                     CheckSearchable(
                         results, options, qualifiedName, businessObject, pi, propValue, obj,
-                        () => { return propValue.GetHashCode(); }, progress, log);
+                        () => { return propValue.GetHashCode(); }, propValue, progress, log);
                 }
             }
 

@@ -272,7 +272,7 @@ namespace AasxPackageLogic
 				return;
 
 			// generate a list for combo box
-			var eMems = EnumHelper.EnumHelperGetMemberInfo(typeForEnum).ToList();
+			var eMems = AdminShellEnumHelper.EnumHelperGetMemberInfo(typeForEnum).ToList();
 
 			// find selected index
 			int? selectedIndex = null;
@@ -1420,7 +1420,7 @@ namespace AasxPackageLogic
 					|| qti.Type == "Cardinality"
 					|| qti.Type == "Multiplicity")
 					rec.SmeCardinality = (SmtCardinality)
-							EnumHelper.GetEnumMemberFromValueString<SmtCardinality>(qf.Value);
+							AdminShellEnumHelper.GetEnumMemberFromValueString<SmtCardinality>(qf.Value);
 
 				if (qti.Type == "SMT/EitherOr")
 					rec.EitherOr = qf.Value;
@@ -1448,7 +1448,7 @@ namespace AasxPackageLogic
 
 				if (qti.Type == "SMT/AccessMode")
 					rec.AccessMode = (AccessMode)
-							EnumHelper.GetEnumMemberFromValueString<AccessMode>(qf.Value);
+							AdminShellEnumHelper.GetEnumMemberFromValueString<AccessMode>(qf.Value);
 
 				// remove in qualfiers?
 				if (removeQualifers)
@@ -1474,68 +1474,6 @@ namespace AasxPackageLogic
 
 			// attach
 			return DispEditHelperExtensions.GeneralExtensionHelperAddJsonExtension(rf, rec.GetType(), rec);
-		}
-	}
-
-	/// <summary>
-	/// Some string based flags to attach to the property
-	/// </summary>
-	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
-	public class ExtensionFlagsAttribute : System.Attribute
-	{
-		public string Flags = "";
-
-		public ExtensionFlagsAttribute(string flags)
-		{
-			Flags = flags;
-		}
-	}
-
-	/// <summary>
-	/// This attribute gives a list of given presets to an field or property.
-	/// in order to avoid cycles
-	/// </summary>
-	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = false)]
-	public class ExtensionHintAttributeAttribute : System.Attribute
-	{
-		public string HintText = "";
-
-		public ExtensionHintAttributeAttribute(string hintText)
-		{
-			if (hintText != null)
-				HintText = hintText;
-		}
-	}
-
-	/// <summary>
-	/// This attribute marks a string field/ property as multiline.
-	/// in order to avoid cycles
-	/// </summary>
-	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property)]
-	public class ExtensionMultiLineAttribute : System.Attribute
-	{
-		public int? MaxLines = null;
-
-		public ExtensionMultiLineAttribute(int maxLines = -1)
-		{
-			if (maxLines > 0)
-				MaxLines = maxLines;
-		}
-	}
-
-	/// <summary>
-	/// This attribute marks a string field/ property as multiline.
-	/// in order to avoid cycles
-	/// </summary>
-	[System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property)]
-	public class EnumMemberDisplayAttribute : System.Attribute
-	{
-		public string Text = "";
-
-		public EnumMemberDisplayAttribute(string text)
-		{
-			if (text != null)
-				Text = text;
 		}
 	}
 
@@ -1724,7 +1662,7 @@ namespace AasxPackageLogic
 		static SmtAttributeRecord()
 		{
 			// cardinalities
-			CardinalitiesShort = EnumHelper.EnumHelperGetMemberInfo(typeof(AasSmtQualifiers.SmtCardinality))
+			CardinalitiesShort = AdminShellEnumHelper.EnumHelperGetMemberInfo(typeof(AasSmtQualifiers.SmtCardinality))
 					.Select((em) =>
 					{
 						var st = em.MemberDisplay;
@@ -2215,7 +2153,7 @@ namespace AasxPackageLogic
 				var qf = smeFromDictKey?.FindQualifierOfAnyType(new[] { 
 							"SMT/Cardinality", "Cardinality", "Multiplicity" })?.FirstOrDefault();
 				if (qf?.Value != null)
-					card = (SmtCardinality) EnumHelper.GetEnumMemberFromValueString<SmtCardinality>(
+					card = (SmtCardinality) AdminShellEnumHelper.GetEnumMemberFromValueString<SmtCardinality>(
 							qf.Value, valElse: SmtCardinality.One);
 
 				// access cardinality of the SME by SmtAttributeRec?

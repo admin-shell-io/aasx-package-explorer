@@ -24,12 +24,13 @@ using Newtonsoft.Json;
 using Aas = AasCore.Aas3_0;
 using AdminShellNS;
 using Extensions;
+using AasxPredefinedConcepts;
 
 namespace AasxPluginExportTable.Uml
 {
     public interface IBaseWriter
     {
-        void StartDoc(ExportUmlRecord options);
+        void StartDoc(ExportUmlRecord options, Aas.Environment env);
         void ProcessTopElement(Aas.IReferable rf, int remainDepth = int.MaxValue);
         void ProcessPost();
         void SaveDoc(string fn);
@@ -44,6 +45,7 @@ namespace AasxPluginExportTable.Uml
         // Members
         //
 
+        protected Aas.Environment _env = null;
         protected ExportUmlRecord _options = new ExportUmlRecord();
 
         //
@@ -61,23 +63,18 @@ namespace AasxPluginExportTable.Uml
         // Rendering of attributes
         //
 
-        // TODO (MIHO, 2021-12-24): check if to refactor multiplicity handling as utility
-
         public string EvalUmlMultiplicity(Aas.ISubmodelElement sme, bool noOne = false)
         {
-            var one = AasFormConstants.FormMultiplicityAsUmlCardinality[(int)FormMultiplicity.One];
-            string res = one;
-            var q = sme?.Qualifiers?.FindType("Multiplicity");
-            if (q != null)
+            string res = AasSmtQualifiers.CardinalityToString(
+                AasSmtQualifiers.SmtCardinality.One, format: 3, oneIsEmpty: noOne);
+            var qf = AasSmtQualifiers.FindSmtCardinalityQualfier(sme?.Qualifiers);
+            if (qf?.Value != null)
             {
-                foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
-                    if (("" + q.Value) == Enum.GetName(typeof(FormMultiplicity), m))
-                        res = "" + AasFormConstants.FormMultiplicityAsUmlCardinality[(int)m];
+                var card = AdminShellEnumHelper.GetEnumMemberFromValueString<AasSmtQualifiers.SmtCardinality>(
+                        qf.Value, valElse: AasSmtQualifiers.SmtCardinality.One);
+
+                res = AasSmtQualifiers.CardinalityToString(card, format: 3, oneIsEmpty: noOne);
             }
-
-            if (noOne && res == one)
-                res = "";
-
             return res;
         }
 
@@ -88,12 +85,48 @@ namespace AasxPluginExportTable.Uml
             return new Tuple<string, string>("" + multiplicity[0], "" + multiplicity[3]);
         }
 
-        public string EvalFeatureType(Aas.IReferable rf)
+        public bool IsUmlClass(Aas.IReferable rf)
+        {
+            // check, if rf is a class
+            return (rf is Aas.Submodel 
+                || rf is Aas.SubmodelElementCollection
+                || rf is Aas.SubmodelElementList 
+                || rf is Aas.Entity
+                || rf is Aas.Operation);
+        }
+
+        public string EvalPossibleConceptClassName(
+            Aas.IReferable rf, bool allowConceptClasses,
+            out Aas.IConceptDescription resCd)
+        {
+            resCd = null;
+            if (IsUmlClass(rf)
+                    && allowConceptClasses
+                    && _options?.ClassesFromConcepts == true
+                    && rf is Aas.IHasSemantics ihs)
+            {
+                var cd = _env?.FindConceptDescriptionByReference(ihs.SemanticId);
+                if (cd?.IdShort?.HasContent() == true
+                    && rf.IdShort.Trim() != cd.IdShort.Trim())
+                {
+                    resCd = cd;
+                    return cd.IdShort;
+                }
+            }
+            return null;
+        }
+
+        public string EvalFeatureType(Aas.IReferable rf, bool allowConceptClasses = false)
         {
             if (rf is Aas.ISubmodelElement sme)
             {
                 if (sme is Aas.Property p)
                     return Aas.Stringification.ToString(p.ValueType);
+                var pcn = EvalPossibleConceptClassName(sme, 
+                    allowConceptClasses: allowConceptClasses,
+                    out var resCd);
+                if (pcn != null)
+                    return pcn;
             }
 
             return rf.GetSelfDescription().ElementAbbreviation;

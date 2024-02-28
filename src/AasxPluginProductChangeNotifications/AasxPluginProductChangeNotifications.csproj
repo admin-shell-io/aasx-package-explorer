@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <OutputType>library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWPF>true</UseWPF>
+
+    <!-- force NuGet / Build to put required.dll and more to bin folder -->
+    <!-- Drawback: puts all other *.dll as well :-( -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="AasxPluginProductChangeNotifications.options.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AasxPluginProductChangeNotifications.plugin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="LICENSE.TXT" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LICENSE.TXT" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AasxIntegrationBaseGdi\AasxIntegrationBaseGdi.csproj" />
+    <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
+    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
+    <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Opc.Ua.SampleClient.Config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

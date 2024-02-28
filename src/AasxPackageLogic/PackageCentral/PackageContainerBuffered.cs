@@ -8,6 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using AasxIntegrationBase;
+using AdminShellNS;
 using Newtonsoft.Json;
 using System;
 using System.IO;

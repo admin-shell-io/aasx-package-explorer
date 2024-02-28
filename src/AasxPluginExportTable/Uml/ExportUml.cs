@@ -57,8 +57,9 @@ namespace AasxPluginExportTable.Uml
 
             if (writer != null)
             {
-                writer.StartDoc(options);
-                writer.ProcessTopElement(submodel);
+                writer.StartDoc(options, env);
+                writer.ProcessTopElement(submodel, 
+                    remainDepth: (options.Depth > 0) ? options.Depth : int.MaxValue);
                 writer.ProcessPost();
                 writer.SaveDoc(fn);
             }

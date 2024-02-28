@@ -17,6 +17,10 @@ using System;
 using System.Collections.Generic;
 using Aas = AasCore.Aas3_0;
 
+// These classes were serialized by "export predefined concepts"
+// and shall allow to automatically de-serialize AAS elements structures
+// into C# classes.
+
 namespace AasxPredefinedConcepts.AssetInterfacesMappingConfiguration
 {
     [AasConcept(Cd = "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/1/0/MappingConfigurations")]

@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Controls;
 using AasxIntegrationBase;
 using AasxPackageLogic;
+using AdminShellNS;
 
 namespace AasxPackageExplorer
 {

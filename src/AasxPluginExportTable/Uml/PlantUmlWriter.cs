@@ -42,8 +42,9 @@ namespace AasxPluginExportTable.Uml
             public bool Valid => Id.HasContent();
         }
 
-        public void StartDoc(ExportUmlRecord options)
+        public void StartDoc(ExportUmlRecord options, Aas.Environment env)
         {
+            _env = env;
             if (options != null)
                 _options = options;
 
@@ -91,7 +92,7 @@ namespace AasxPluginExportTable.Uml
                 return rf?.IdShort;
             if (parent is Aas.ISubmodelElementList)
             {
-                return $"[{index:00}]";
+                return $"[{index:00}] {rf?.IdShort}";
             }
             else
                 return rf?.IdShort;
@@ -114,21 +115,52 @@ namespace AasxPluginExportTable.Uml
 
         public UmlHandle AddClass(Aas.IReferable rf, string visIdShort)
         {
+#if __old__
             // the Referable shall enumerate children (if not, then its not a class)
-            var features = rf.EnumerateChildren().ToList();
             if (features.Count < 1)
                 return null;
+#else
+            // check, if rf is a class
+            if (!IsUmlClass(rf))
+                return null;
+
+            // need features of the class
+            var features = rf.EnumerateChildren().ToList();
+#endif
 
             // check, if to suppress
             if (CheckIfNameIsSuppressed(rf?.IdShort))
                 return null;
 
-            // add
-            var classId = RegisterObject(rf);
-            var stereotype = EvalFeatureType(rf);
+            // check if getting a class name instead of idSHort
+            string classId = "??";
+            var pcn = EvalPossibleConceptClassName(rf, allowConceptClasses: true,
+                        out var resCd);
+            if (pcn != null && resCd != null)
+            {
+                classId = RegisterObject(resCd);
+                visIdShort = pcn;
+            }
+            else
+            {
+                classId = RegisterObject(rf);
+            }
+
+            // add stereotype
+            var stereotype = EvalFeatureType(rf, allowConceptClasses: false);
             if (stereotype.HasContent())
                 stereotype = "<<" + stereotype + ">>";
 
+            // check if using SMT dropin
+            if (rf is Aas.IHasSemantics ihs
+                && ihs.SupplementalSemanticIds?.MatchesAnyWithExactlyOneKey(
+                    AasxPredefinedConcepts.SmtAdditions.Static.Key_SmtDropinUse,
+                    MatchMode.Relaxed) == true)
+            {
+                stereotype += " <<smt-dropin-use>>";
+            }
+
+            // add detail information
             if (true)
             {
 
@@ -139,7 +171,7 @@ namespace AasxPluginExportTable.Uml
                     int idx = 0;
                     foreach (var sme in features)
                     {
-                        var type = EvalFeatureType(sme);
+                        var type = EvalFeatureType(sme, allowConceptClasses: true);
                         var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
                         var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
 
@@ -218,8 +250,11 @@ namespace AasxPluginExportTable.Uml
                                 multiplicity = "\"" + multiplicity + "\"";
 
                             var smeIdS = ClearName(smeIdShort);
-                            if (_options.Outline)
+                            if (_options.Outline || _options.NoAssociationNames)
+                            {
+                                multiplicity = "";
                                 smeIdS = "";
+                            }
 
                             // make an "composition" arrow to the class
                             Writeln(post: true,

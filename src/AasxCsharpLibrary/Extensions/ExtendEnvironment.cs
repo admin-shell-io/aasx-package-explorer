@@ -174,18 +174,17 @@ namespace Extensions
                 }
                 foreach (var sourceAas in sourceEnvironement.AdministrationShells)
                 {
+                    var newAssetInformation = new AssetInformation(AssetKind.Instance);
+                    var newAas = new AssetAdministrationShell(
+                        id: sourceAas.identification.id, newAssetInformation);
+                    environment.AssetAdministrationShells.Add(newAas);
+
                     var sourceAsset = sourceEnvironement?.FindAsset(sourceAas.assetRef);
                     if (sourceAsset != null)
                     {
-                        var newAssetInformation = new AssetInformation(AssetKind.Instance);
                         newAssetInformation = newAssetInformation.ConvertFromV10(sourceAsset);
-
-                        var newAas = new AssetAdministrationShell(id: sourceAas.identification.id, newAssetInformation);
-                        newAas = newAas.ConvertFromV10(sourceAas);
-
-                        environment.AssetAdministrationShells.Add(newAas);
+                        newAas.AssetInformation = newAssetInformation;
                     }
-
                 }
             }
 
@@ -766,17 +765,20 @@ namespace Extensions
             {
                 var submodelElement = submodelElems.Where(
                     sme => sme.IdShort.Equals(keyList[keyIndex].Value,
-                        StringComparison.OrdinalIgnoreCase)).First();
+                        StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                //This is required element
-                if (keyIndex + 1 >= keyList.Count)
+                if (submodelElement != null)
                 {
-                    return submodelElement;
-                }
+                    //This is required element
+                    if (keyIndex + 1 >= keyList.Count)
+                    {
+                        return submodelElement;
+                    }
 
-                //Recurse again
-                if (submodelElement?.EnumeratesChildren() == true)
-                    return environment.FindReferableByReference(reference, ++keyIndex, submodelElement.EnumerateChildren());
+                    //Recurse again
+                    if (submodelElement?.EnumeratesChildren() == true)
+                        return environment.FindReferableByReference(reference, ++keyIndex, submodelElement.EnumerateChildren());
+                }
             }
 
             //Nothing in this environment

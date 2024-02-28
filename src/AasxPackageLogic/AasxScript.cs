@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasxIntegrationBase;
 using AasxPackageLogic;
+using AdminShellNS;
 using Scripting.SSharp;
 using Scripting.SSharp.Runtime;
 using System;

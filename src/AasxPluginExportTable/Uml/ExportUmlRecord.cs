@@ -56,6 +56,10 @@ namespace AasxPluginExportTable.Uml
             "positive match will suppress rendering of such class.")]
         public string Suppress = null;
 
+        [AasxMenuArgument(help: "If greater 0, will determine the depth level of UML generation. " +
+            "A value of 1 will process only the top level and stop.")]
+        public int Depth = 0;
+
         [AasxMenuArgument(help: "If greater or equal zero, limits the number of characters for inital values.")]
         public int LimitInitialValue = 15;
 
@@ -64,6 +68,13 @@ namespace AasxPluginExportTable.Uml
 
         [AasxMenuArgument(help: "If set, changes the direction of adding graphical elements (PlantUML).")]
         public bool SwapDirection = false;
+
+        [AasxMenuArgument(help: "If set, will use concept idShort as names of classes.")]
+        public bool ClassesFromConcepts = false;
+
+        [AasxMenuArgument(help: "If set, will not name the ends of an association, in order to " +
+            "minimize graphical clutter.")]
+        public bool NoAssociationNames = false;
 
         [AasxMenuArgument(help: "If set, system clipboard will have generated code, in order e.g. to directly " +
             "paste to PlantUML.")]

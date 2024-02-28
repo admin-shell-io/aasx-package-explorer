@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
+using AdminShellNS;
 using AnyUi;
 using Extensions;
 using System;
@@ -133,9 +134,11 @@ namespace AasxPackageLogic
             if (filter == null)
                 return null;
             var res = filter;
-            if (res.Trim().ToLower() == "submodelelement")
-                foreach (var s in Enum.GetNames(typeof(Aas.AasSubmodelElements)))
-                    res += " " + s + " ";
+            if (res.Trim().ToLower().Contains("submodelelement"))
+            {
+                var allElems = " " + string.Join(" ", Enum.GetNames(typeof(Aas.AasSubmodelElements))) + " ";
+                res = res.Replace("submodelelement", allElems, StringComparison.InvariantCultureIgnoreCase);
+            }
             if (res.Trim().ToLower() == "all")
                 return null;
             else

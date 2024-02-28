@@ -69,6 +69,22 @@ namespace AasxPluginExportTable.Smt
             _adoc.AppendLine(header + text);
         }
 
+        protected string EvalLinkArguments(ExportSmtArguments args, Aas.ISubmodelElement sme)
+        {
+            var astr = "";
+
+            if (args?.width != null)
+                astr += $",width=\"{AdminShellUtil.FromDouble(args.width ?? 0.0, "{0:0.0}")}%\"";
+
+            var titStr = sme?.Description?.GetDefaultString();
+            if (titStr?.HasContent() == true)
+                astr += $",title=\"{titStr}\"";
+
+            astr = astr.Trim(',');
+
+            return astr;
+        }
+
         protected void ProcessImageLink(Aas.ISubmodelElement sme)
         {
             // first get to the data
@@ -151,10 +167,10 @@ namespace AasxPluginExportTable.Smt
             File.WriteAllBytes(absFn, data);
             _log?.Info("Image data with {0} bytes writen to {1}.", data.Length, absFn);
 
+            // create link arguments
+            var astr = EvalLinkArguments(args, sme);
+
             // create link text
-            var astr = "";
-            if (args?.width != null)
-                astr = $"width=\"{AdminShellUtil.FromDouble(args.width ?? 0.0, "{0:0.0}")}%\"";
             if (doLink)
             {
                 _adoc.AppendLine("");
@@ -197,15 +213,18 @@ namespace AasxPluginExportTable.Smt
 
             // make writer
             var writer = new PlantUmlWriter();
-            writer.StartDoc(umlOptions);
+            writer.StartDoc(umlOptions, _package.AasEnv);
             writer.ProcessTopElement(target, processDepth);
             writer.ProcessPost();
             _log?.Info("ExportSMT: writing PlantUML to {0} ..", absPumlFn);
             writer.SaveDoc(absPumlFn);
 
+            // create link arguments
+            var astr = EvalLinkArguments(args, refel);
+
             // include file into AsciiDoc
             _adoc.AppendLine("");
-            _adoc.AppendLine($"[plantuml, {pumlName}, svg]");
+            _adoc.AppendLine($"[plantuml, {pumlName}, svg, {astr}]");
             _adoc.AppendLine("----");
             _adoc.AppendLine("include::" + pumlFn + "[]");
             _adoc.AppendLine("----");

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using AasxIntegrationBase;
+using AdminShellNS;
 using Aml.Engine.CAEX;
 using WpfMtpControl.DataSources;
 
