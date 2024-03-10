@@ -33,7 +33,7 @@ namespace AasxPredefinedConcepts
         public JObject EndpointMetadataJObject = AIDResources.EndpointMetadataJObject;
         public List<string> mqttFormElemList = new List<string>() { "mqv_retain",
                                               "mqv_controlPacket","mqv_qos"};
-        public List<string> modvFormElemList = new List<string>() { "modv_function",
+        public List<string> modvFormElemList = new List<string>() { "modv:function",
                                    "modv_entity","modv_zeroBasedAddressing","modv_pollingTime",
                                    "modv_type","modv_mostSignificantByte","modv_mostSignificantWord"
                                    };

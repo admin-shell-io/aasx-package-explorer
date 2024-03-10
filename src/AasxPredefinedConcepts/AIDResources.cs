@@ -533,7 +533,7 @@ namespace AasxPredefinedConcepts
         'childs': [
           {
             'AasElementType': 'SubmodelElementCollection',
-            'multiplcity': '0..1',
+            'multiplcity': '0..*',
             'description': 'An Interaction Affordance that exposes state of the Thing',
             'semanticReference': 'https://admin-shell.io/idta/AssetInterfaceDescription/1/0/PropertyDefinition',
             'formtext': 'property',
@@ -638,29 +638,41 @@ namespace AasxPredefinedConcepts
                       },
                       {
                         'AasElementType': 'SubmodelElementCollection',
-                        'formtext': 'htv_header',
+                        'formtext': 'htv_headers',
+                        'presetIdShort': 'htv_headers',
                         'multiplcity': '0..*',
                         'semanticReference': 'https://www.w3.org/2011/http#headers',
                         'presetIdShort': '',
                         'description': ' Information for http message header definition',
                         'childs': [
                           {
-                            'AasElementType': 'Property',
-							'valueType' : 'xs:string',
-                            'formtext': 'htv_fieldName',
-                            'multiplcity': '0..1',
-                            'semanticReference': 'https://www.w3.org/2011/http#fieldName',
-                            'presetIdShort': 'htv_fieldName',
-                            'description': ''
-                          },
-                          {
-                            'AasElementType': 'Property',
-							'valueType' : 'xs:string',							
-                            'formtext': 'htv_fieldValue',
-                            'multiplcity': '0..1',
-                            'semanticReference': 'https://www.w3.org/2011/http#fieldValue',
-                            'presetIdShort': 'htv_fieldValue',
-                            'description': ''
+                            'AasElementType': 'SubmodelElementCollection',
+                            'formtext': 'htv_header',
+                            'presetIdShort': 'htv_header{00:00}',
+                            'multiplcity': '0..*',
+                            'semanticReference': 'https://www.w3.org/2011/http#headers',
+                            'presetIdShort': '',
+                            'description': ' Information for http message header definition',
+                            'childs': [
+                                {
+                                    'AasElementType': 'Property',
+							        'valueType' : 'xs:string',
+                                    'formtext': 'htv_fieldName',
+                                    'multiplcity': '0..1',
+                                    'semanticReference': 'https://www.w3.org/2011/http#fieldName',
+                                    'presetIdShort': 'htv_fieldName',
+                                    'description': ''
+                                  },
+                                  {
+                                    'AasElementType': 'Property',
+							        'valueType' : 'xs:string',							
+                                    'formtext': 'htv_fieldValue',
+                                    'multiplcity': '0..1',
+                                    'semanticReference': 'https://www.w3.org/2011/http#fieldValue',
+                                    'presetIdShort': 'htv_fieldValue',
+                                    'description': ''
+                                  }
+                             ]
                           }
                         ]
                       }

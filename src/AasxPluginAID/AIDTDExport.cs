@@ -11,6 +11,41 @@ namespace AasxPluginAID
     class AIDTDExport
     {
         public static AasxPredefinedConcepts.IDTAAid idtaDef = AasxPredefinedConcepts.IDTAAid.Static;
+        public static JToken ReplaceformProperties(JToken form)
+        {
+            JObject temp = new JObject();
+            foreach (var elem in JObject.FromObject(form))
+            {
+                string name = (elem.Key).Replace("_", ":");
+                if (name == "htv:headers")
+                {
+                    int i = 0;
+                    List<JObject> headers = new List<JObject>();
+                    foreach (var _header in JObject.FromObject(elem.Value))
+                    {
+                        JObject htvHeader = JObject.FromObject(_header.Value);
+                        JObject headerElem = new JObject();
+                        if (htvHeader.ContainsKey("htv_fieldName"))
+                        {
+                            headerElem["htv:fieldName"] = htvHeader["htv_fieldName"].ToString();
+                        }
+                        if (htvHeader.ContainsKey("htv_fieldName"))
+                        {
+                            headerElem["htv:fieldValue"] = htvHeader["htv_fieldValue"].ToString();
+                        }
+                        headers.Add(headerElem);
+                        i = i + 1;
+                    }
+                    temp["htv:headers"] = JToken.FromObject(headers);
+                }
+                else
+                {
+                    string value = elem.Value.ToString();
+                    temp[name] = value;
+                }
+            }
+            return JToken.FromObject(temp);
+        }
         public static JToken TDelemDefinition(ISubmodelElement se, JObject tdSchemaObject, string addParams = null)
         {
             string semanticReference = se.SemanticId.GetAsExactlyOneKey().Value;
@@ -86,7 +121,7 @@ namespace AasxPluginAID
                     foreach (var form in formsSC.Value)
                     {
                         JToken formSchemadefinition = TDelemDefinition(form, tdSchemaObject);
-                        forms.Add(serialize_aid_elem(formSchemadefinition, form)[form.IdShort]);
+                        forms.Add(ReplaceformProperties(serialize_aid_elem(formSchemadefinition, form)[form.IdShort]));
                     }
                     TDJson["forms"] = JToken.FromObject(forms);
                 }
