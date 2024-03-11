@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using Aas = AasCore.Aas3_0;
 
 namespace AasxPluginAID
@@ -11,10 +12,10 @@ namespace AasxPluginAID
     class AIDTDExport
     {
         public static AasxPredefinedConcepts.IDTAAid idtaDef = AasxPredefinedConcepts.IDTAAid.Static;
-        public static JToken ReplaceformProperties(JToken form)
+        public static JObject ReplaceformProperties(JObject form)
         {
             JObject temp = new JObject();
-            foreach (var elem in JObject.FromObject(form))
+            foreach (var elem in form)
             {
                 string name = (elem.Key).Replace("_", ":");
                 if (name == "htv:headers")
@@ -44,7 +45,7 @@ namespace AasxPluginAID
                     temp[name] = value;
                 }
             }
-            return JToken.FromObject(temp);
+            return temp;
         }
         public static JToken TDelemDefinition(ISubmodelElement se, JObject tdSchemaObject, string addParams = null)
         {
@@ -114,17 +115,6 @@ namespace AasxPluginAID
                     }
                     TDJson[presetIdShort] = JToken.FromObject(listElem);
                 }
-                else if (presetIdShort == "forms")
-                {
-                    List<JToken> forms = new List<JToken>();
-                    Aas.ISubmodelElementCollection formsSC = sme as Aas.SubmodelElementCollection;
-                    foreach (var form in formsSC.Value)
-                    {
-                        JToken formSchemadefinition = TDelemDefinition(form, tdSchemaObject);
-                        forms.Add(ReplaceformProperties(serialize_aid_elem(formSchemadefinition, form)[form.IdShort]));
-                    }
-                    TDJson["forms"] = JToken.FromObject(forms);
-                }
                 else
                 {
                     JObject smcJObject = new JObject();
@@ -140,6 +130,12 @@ namespace AasxPluginAID
                         string _key = smcJObject["key"].ToString();
                         smcJObject.Remove("key");
                         TDJson[_key] = JToken.FromObject(smcJObject);
+                    }
+                    else if(presetIdShort == "forms")
+                    {
+                        List<JObject> forms = new List<JObject>();
+                        forms.Add(ReplaceformProperties(smcJObject));
+                        TDJson[sme.IdShort] = JToken.FromObject(forms);
                     }
                     else
                     {

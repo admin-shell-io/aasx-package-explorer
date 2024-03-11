@@ -177,35 +177,30 @@ namespace AasxPluginAID
                                     if (propertyElem.IdShort == "forms")
                                     {
                                         Aas.SubmodelElementCollection formsSMC = (propertyElem as Aas.SubmodelElementCollection);
-                                        foreach(var form in formsSMC.Value)
+                                        foreach(var formElem in formsSMC.Value)
                                         {
-                                            Aas.SubmodelElementCollection formSMC = (form as Aas.SubmodelElementCollection);
-                                            foreach (var formElem in formSMC.Value)
+                                            if (formElem.IdShort == "htv_methodName")
                                             {
-                                                if (formElem.IdShort == "htv_methodName")
-                                                {
-                                                    protocolType = "HTTP";
-                                                    break;
-                                                }
-                                                else if (idtaDef.mqttFormElemList.Contains(formElem.IdShort))
-                                                {
-                                                    protocolType = "MQTT";
-                                                    break;
-                                                }
-                                                else if (idtaDef.modvFormElemList.Contains(formElem.IdShort))
-                                                {
-                                                    protocolType = "MODBUS";
-                                                    break;
-                                                }
-                                            }
-                                            foreach (var formElem in formSMC.Value)
-                                            {
-                                                if (formElem.IdShort == "contentType")
-                                                {
-                                                    contentype = (formElem as Aas.Property).Value.ToString();
-                                                }
-                                            }
+                                                protocolType = "HTTP";
                                                 break;
+                                            }
+                                            else if (idtaDef.mqttFormElemList.Contains(formElem.IdShort))
+                                            {
+                                                protocolType = "MQTT";
+                                                break;
+                                            }
+                                            else if (idtaDef.modvFormElemList.Contains(formElem.IdShort))
+                                            {
+                                                protocolType = "MODBUS";
+                                                break;
+                                            }
+                                        }
+                                        foreach (var formElem in formsSMC.Value)
+                                        {
+                                            if (formElem.IdShort == "contentType")
+                                            {
+                                                contentype = (formElem as Aas.Property).Value.ToString();
+                                            }
                                         }
                                     }
                                 }

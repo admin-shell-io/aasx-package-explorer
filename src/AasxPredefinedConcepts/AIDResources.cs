@@ -575,14 +575,6 @@ namespace AasxPredefinedConcepts
                 'presetIdShort': 'forms',
                 'childs': [
                   {
-                    'AasElementType': 'SubmodelElementCollection',
-                    'formtext': 'HTTP Form',
-                    'presetIdShort': 'form{00:00}',
-                    'multiplcity': '0..1',
-                    'description': 'HTTP form',
-                    'semanticReference': 'https://www.w3.org/2019/wot/td#hasHTTPForm',
-                    'childs': [
-                      {
                         'AasElementType': 'Property',
 						'valueType' : 'xs:string',
                         'formtext': 'contentType',
@@ -675,63 +667,8 @@ namespace AasxPredefinedConcepts
                              ]
                           }
                         ]
-                      }
-                    ]
-                  },
+                      },
                   {
-                    'AasElementType': 'SubmodelElementCollection',
-                    'formtext': 'MQTT Form',
-                    'presetIdShort': 'form{00:00}',
-                    'multiplcity': '0..1',
-                    'description': 'MQTT form',
-                    'semanticReference': 'https://www.w3.org/2019/wot/td#hasMQTTForm',
-                    'childs': [
-                      {
-                        'AasElementType': 'Property',
-						'valueType' : 'xs:string',
-                        'formtext': 'contentType',
-                        'multiplcity': '0..1',
-                        'semanticReference': 'https://www.w3.org/2019/wot/hypermedia#forContentType',
-                        'presetIdShort': 'contentType',
-                        'description': 'Indicates the datapoint media type specified by IANA.'
-                      },
-                      {
-                        'AasElementType': 'Property',
-						'valueType' : 'xs:string',
-                        'formtext': 'subprotocol',
-                        'multiplcity': '0..1',
-                        'semanticReference': 'https://www.w3.org/2019/wot/hypermedia#forSubProtocol',
-                        'presetIdShort': 'subprotocol',
-                        'description': 'Indicates the exact mechanism by which an interaction will be accomplished for a given protocol when there are multiple options.'
-                      },
-                      {
-                        'AasElementType': 'Property',
-						'valueType' : 'xs:string',
-                        'formtext': 'href',
-                        'multiplcity': '0..1',
-                        'semanticReference': 'https://www.w3.org/2019/wot/hypermedia#hasTarget',
-                        'presetIdShort': 'href',
-                        'description': 'Target IRI relative path or full IRI of assets datapoint.The relative endpoint definition in href is always relative to base defined in EndpointMetadata'
-                      },
-                      {
-                        'AasElementType': 'SubmodelElementCollection',
-                        'formtext': 'security',
-                        'multiplcity': '0..1',
-                        'semanticReference': 'https://www.w3.org/2019/wot/td#hasSecurityConfiguration',
-                        'presetIdShort': 'security',
-                        'description': 'Selects one or more of the security scheme(s) that can be applied at runtime from the collection of security schemes defines in securityDefinitions',
-                        'childs': [
-                          {
-                            'AasElementType': 'ReferenceElement',
-                            'formtext': 'security',
-                            'multiplcity': '0..*',
-                            'semanticReference': 'https://www.w3.org/2019/wot/td#hasSecurityConfiguration',
-                            'presetIdShort': '',
-                            'description': 'Reference element to security scheme definition'
-                          }
-                        ]
-                      },
-                      {
                         'AasElementType': 'Property',
 						'valueType' : 'xs:boolean',
                         'formtext': 'mqv_retain',
@@ -739,16 +676,16 @@ namespace AasxPredefinedConcepts
                         'semanticReference': 'https://www.w3.org/2019/wot/mqtt#hasRetainFlag',
                         'presetIdShort': 'mqv_retain',
                         'description': 'It is an indicator that tells the broker to always retain last published payload.'
-                      },
-                      {
+                   },
+                   {
                         'AasElementType': 'Property',
 						'valueType' : 'xs:string',
                         'formtext': 'mqv_controlPacket',
-                        'multiplcity': '1',
+                        'multiplcity': '0..1',
                         'semanticReference': 'https://www.w3.org/2019/wot/mqtt#ControlPacket',
                         'presetIdShort': 'mqv_controlPacket',
                         'description': 'Defines the method associated to the datapoint in relation to the broker.'
-                      },
+                   },
                       {
                         'AasElementType': 'Property',
 						'valueType' : 'xs:string',
@@ -757,61 +694,6 @@ namespace AasxPredefinedConcepts
                         'semanticReference': 'https://www.w3.org/2019/wot/mqtt#hasQoSFlag',
                         'presetIdShort': 'mqv_qos',
                         'description': 'Defined the level of guarantee for message delivery between clients.'
-                      }
-                    ]
-                  },
-                  {
-                    'AasElementType': 'SubmodelElementCollection',
-                    'formtext': 'MODBUS Form',
-                    'presetIdShort': 'form{00:00}',
-                    'multiplcity': '0..1',
-                    'description': 'MODBUS form',
-                    'semanticReference': 'https://www.w3.org/2019/wot/td#hasMODBUSForm',
-                    'childs': [
-                      {
-                        'AasElementType': 'Property',
-						'valueType' : 'xs:string',						
-                        'formtext': 'contentType',
-                        'multiplcity': '0..1',
-                        'semanticReference': 'https://www.w3.org/2019/wot/hypermedia#forContentType',
-                        'presetIdShort': 'contentType',
-                        'description': 'Indicates the datapoint media type specified by IANA.'
-                      },
-                      {
-                        'AasElementType': 'Property',
-						'valueType' : 'xs:string',						
-                        'formtext': 'subprotocol',
-                        'multiplcity': '0..1',
-                        'semanticReference': 'https://www.w3.org/2019/wot/hypermedia#forSubProtocol',
-                        'presetIdShort': 'subprotocol',
-                        'description': 'Indicates the exact mechanism by which an interaction will be accomplished for a given protocol when there are multiple options.'
-                      },
-                      {
-                        'AasElementType': 'Property',
-						'valueType' : 'xs:string',						
-                        'formtext': 'href',
-                        'multiplcity': '0..1',
-                        'semanticReference': 'https://www.w3.org/2019/wot/hypermedia#hasTarget',
-                        'presetIdShort': 'href',
-                        'description': 'Target IRI relative path or full IRI of assets datapoint.The relative endpoint definition in href is always relative to base defined in EndpointMetadata'
-                      },
-                      {
-                        'AasElementType': 'SubmodelElementCollection',
-                        'formtext': 'security',
-                        'multiplcity': '0..1',
-                        'semanticReference': 'https://www.w3.org/2019/wot/td#hasSecurityConfiguration',
-                        'presetIdShort': 'security',
-                        'description': 'Selects one or more of the security scheme(s) that can be applied at runtime from the collection of security schemes defines in securityDefinitions',
-                        'childs': [
-                          {
-                            'AasElementType': 'ReferenceElement',
-                            'formtext': 'security',
-                            'multiplcity': '0..*',
-                            'semanticReference': 'https://www.w3.org/2019/wot/td#hasSecurityConfiguration',
-                            'presetIdShort': '',
-                            'description': 'Reference element to security scheme definition'
-                          }
-                        ]
                       },
                       {
                         'AasElementType': 'Property',
@@ -886,8 +768,6 @@ namespace AasxPredefinedConcepts
                         'description': 'When true, it describes that the word order of the data in the Modbus message is the most significant word first (i.e., no word swapping). When false, it describes the least significant word first (i.e. word swapping) '
                       }
                     ]
-                  }
-                ]
               },
               {
                 'AasElementType': 'ReferenceElement',

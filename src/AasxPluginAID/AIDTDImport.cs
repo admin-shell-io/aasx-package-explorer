@@ -27,7 +27,7 @@ namespace AasxPluginAID
         public static string contentType = "";
         public static string fileName = "";
         public static AasxPredefinedConcepts.IDTAAid idtaDef = AasxPredefinedConcepts.IDTAAid.Static;
-        
+        public static string hrefBase = "";
         public static JObject ReplaceformProperties(JObject form)
         {
             JObject temp = JObject.FromObject(form);    
@@ -62,7 +62,9 @@ namespace AasxPluginAID
                     temp[name] = value;
                 }
             }
-            return temp;
+            JObject temp2 = new JObject();
+            temp2["forms"] = JToken.FromObject(temp);
+            return temp2;
         }
         public static Property BuildAasProperty(string idShort, Reference semanticReference,
                                                     LangStringTextType description, string value, DataTypeDefXsd valueType)
@@ -97,8 +99,17 @@ namespace AasxPluginAID
             LangStringTextType description = new Aas.LangStringTextType("en", tdSchemaObject["description"].ToString());
             if (elemType == "Property")
             {
+                string propertyValue = tdJObject[formText].ToString();
+                if (formText == "base")
+                {
+                    hrefBase = propertyValue;
+                }
+                if (formText == "href")
+                {
+                    propertyValue = propertyValue.Replace(hrefBase+"/","");
+                }
                 DataTypeDefXsd valueType = idtaDef.GetValueType(tdSchemaObject["valueType"].ToString());
-                submodelElement = BuildAasProperty(presetIdShort, semanticReference, description, tdJObject[formText].ToString(),
+                submodelElement = BuildAasProperty(presetIdShort, semanticReference, description, propertyValue,
                                     valueType);
                 return submodelElement;
             }
@@ -164,48 +175,6 @@ namespace AasxPluginAID
                         submodelElement.Add(_pSEC);
                     }
                     return submodelElement;
-                }
-                else if (formText == "forms")
-                {
-                    if (!tdJObject.ContainsKey(formText))
-                    {
-                        return null;
-                    }
-                    int i = 1;
-                    foreach (var _form in tdJObject["forms"])
-                    {
-                        JObject formJObject = ReplaceformProperties(JObject.FromObject(_form));
-                        
-                        List<string> keys = formJObject.Properties().Select(p => p.Name).ToList();
-                        if (keys.Contains("htv_methodName"))
-                        {
-                            JObject formSchemaJObject = JObject.FromObject(tdSchemaObject["childs"][0]);
-                            JObject httpFormJobject = new JObject();
-                            httpFormJobject["HTTP Form"] = JToken.FromObject(formJObject);
-                            ISubmodelElement fsmc = BuildAasElement(httpFormJobject, formSchemaJObject);
-                            fsmc.IdShort = "form" + string.Format("{00:00}", i);
-                            submodelElement.Add(fsmc);
-                        }
-                        else if (isMQTTForm(keys))
-                        {
-                            JObject mttFormJobject = new JObject();
-                            mttFormJobject["MQTT Form"] = ReplaceformProperties(formJObject);
-                            JObject formSchemaJObject = JObject.FromObject(tdSchemaObject["childs"][1]);
-                            ISubmodelElement fsmc = BuildAasElement(mttFormJobject, formSchemaJObject);
-                            fsmc.IdShort = "form" + string.Format("{00:00}", i);
-                            submodelElement.Add(fsmc);
-                        }
-                        else if (isModBusForm(keys))
-                        {
-                            JObject modbusFormJobject = new JObject();
-                            modbusFormJobject["MODBUS Form"] = ReplaceformProperties(formJObject);
-                            JObject formSchemaJObject = JObject.FromObject(tdSchemaObject["childs"][2]);
-                            ISubmodelElement fsmc = BuildAasElement(modbusFormJobject, formSchemaJObject);
-                            fsmc.IdShort = "form" + string.Format("{00:00}", i);
-                            submodelElement.Add(fsmc);
-                        }
-                        break;
-                    }
                 }
                 else if (formText == "htv_headers")
                 {
@@ -293,7 +262,20 @@ namespace AasxPluginAID
                         else if (jobject.ContainsKey(cformText))
                         {
                             JObject childSchemaElemObject = JObject.FromObject(childSchemaElem);
-                            submodelElement.Add(BuildAasElement(jobject, childSchemaElemObject));
+                            if (cformText == "forms")
+                            {
+                                foreach (var _form in jobject["forms"])
+                                {
+                                    JObject formJObject = ReplaceformProperties(JObject.FromObject(_form));
+                                    ISubmodelElement fsmc = BuildAasElement(formJObject, childSchemaElemObject);
+                                    submodelElement.Add(fsmc);
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                submodelElement.Add(BuildAasElement(jobject, childSchemaElemObject));
+                            }
                         }
                     }
                 }
