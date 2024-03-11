@@ -898,8 +898,15 @@ namespace AasxPluginAID
                 var salt = Guid.NewGuid().ToString().Substring(0, 8);
                 var targetFn = String.Format("{0}_{1}{2}", onlyFn, salt, onlyExt);
 
+                int submodelELementCount = 0;
+
+                if (_submodel.SubmodelElements != null )
+                {
+                    submodelELementCount = _submodel.SubmodelElements.Count;
+                }
+
                 var desc = AIDTDImport.CreateAssetInterfaceDescriptionFromTd(tdJObject,
-                                               targetPath + targetFn,_submodel.Id.ToString(),_submodel.SubmodelElements.Count,"JSONLD");
+                                               targetPath + targetFn,_submodel.Id.ToString(), submodelELementCount, "JSONLD");
                 _submodel.Add(desc);
                 PushUpdatenRedrawEvent();
                 return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel };

@@ -71,7 +71,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // check for a record in options, that matches Submodel
                 var found = false;
                 // ReSharper disable once UnusedVariable
-                if (sm.SemanticId.GetAsExactlyOneKey().Value.ToString() == "https://admin-shell.io/idta/AssetInterfacesDescription/1/0/Submodel")
+                if (sm.SemanticId?.GetAsExactlyOneKey().Value.ToString() == "https://admin-shell.io/idta/AssetInterfacesDescription/1/0/Submodel")
                     found = true;
                 if (!found)
                     return null;
